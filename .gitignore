@@ -1,0 +1,14 @@
+# IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.settings/
+.classpath
+.project
+
+# Compiled sources
+target/
+
