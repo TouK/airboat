@@ -7,6 +7,7 @@ import org.apache.maven.scm.repository.ScmRepository
 import org.apache.maven.scm.provider.git.repository.GitScmProviderRepository
 
 import org.apache.maven.scm.ScmFileSet
+import testFixture.Fixture
 
 class MavenScmApiLearningSpec extends Specification {
 
@@ -14,6 +15,7 @@ class MavenScmApiLearningSpec extends Specification {
 
         given:
             ScmFileSet allFilesInProject = new ScmFileSet(new File("."), "*.*")
+            //FIXME use testFixture.Fixture.PROJECT_REPOSITORY_URL and make it work under Grails build
             def gitProviderRepository = new GitScmProviderRepository("git@git.touk.pl:touk/codereview.git")
             def gitRepository = new ScmRepository("git", gitProviderRepository)
             def git = new GitExeScmProvider()
@@ -23,13 +25,17 @@ class MavenScmApiLearningSpec extends Specification {
                     .changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, "master")
 
         then:
-            def changelog = changeLogScmResult.getChangeLog()
-            changelog.getChangeSets().size() >= 2
+            def changelog = changeLogScmResult.getChangeLog().getChangeSets()
+            changelog == changelog.sort(false, { -it.date.time })
+            changelog.size() >= Fixture.LOWER_BOUND_FOR_NUMBER_OF_COMMITS
 
         then:
-            def firstCommit = changelog.getChangeSets().last()
-            firstCommit.getAuthor() == "Kacper Pietrasik <kpt@touk.pl>"
-            firstCommit.getComment() == "initial commit"
+            //TODO extract constants for first commit in this project
+            def firstCommit = changelog.last()
+            firstCommit.revision == Fixture.FIRST_COMMIT_HASH
+            firstCommit.author == Fixture.FIRST_COMMIT_AUTHOR
+            firstCommit.comment == Fixture.FIRST_COMMIT_COMMENT
+            firstCommit.date == Fixture.FIRST_COMMIT_DATE
     }
 
 }

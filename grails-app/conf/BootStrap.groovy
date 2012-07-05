@@ -1,10 +1,11 @@
 import codereview.Changeset
+import codereview.ChangesetImporter
+import codereview.GitRepository
 
 class BootStrap {
 
     def init = { servletContext ->
-        new Changeset("hash23", "agj", new Date()).save()
-        new Changeset("hash24", "kpt", new Date()).save()
+        new ChangesetImporter(new GitRepository()).importFrom("git@git.touk.pl:touk/codereview.git")
     }
     def destroy = {
     }
