@@ -16,6 +16,6 @@ class GitRepository {
         List<ChangeSet> changeLog = changeLogScmResult.getChangeLog().getChangeSets()
         changeLog
                 .collect { new Changeset(it.revision, it.author, it.date) }
-                .sort { it.date.time } //TODO it seems that somehow sort order is build-depenent (IDEA vs Grails)
+                .sort { it.date.time } //TODO it seems that somehow sort order is build-depenent (IDEA vs Grails) - find cause
     }
 }

@@ -13,5 +13,7 @@ class Changeset {
     }
 
     static constraints = {
+        author blank: false
+        identifier blank: false, unique: true
     }
 }
