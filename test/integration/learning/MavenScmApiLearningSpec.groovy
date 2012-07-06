@@ -1,12 +1,10 @@
-package codereview
-
-import spock.lang.Specification
-
-import org.apache.maven.scm.provider.git.gitexe.GitExeScmProvider
-import org.apache.maven.scm.repository.ScmRepository
-import org.apache.maven.scm.provider.git.repository.GitScmProviderRepository
+package learning
 
 import org.apache.maven.scm.ScmFileSet
+import org.apache.maven.scm.provider.git.gitexe.GitExeScmProvider
+import org.apache.maven.scm.provider.git.repository.GitScmProviderRepository
+import org.apache.maven.scm.repository.ScmRepository
+import spock.lang.Specification
 import testFixture.Fixture
 
 class MavenScmApiLearningSpec extends Specification {

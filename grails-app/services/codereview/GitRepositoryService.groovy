@@ -1,13 +1,13 @@
 package codereview
 
+import org.apache.maven.scm.ChangeSet
 import org.apache.maven.scm.ScmFileSet
+import org.apache.maven.scm.provider.git.gitexe.GitExeScmProvider
 import org.apache.maven.scm.provider.git.repository.GitScmProviderRepository
 import org.apache.maven.scm.repository.ScmRepository
-import org.apache.maven.scm.provider.git.gitexe.GitExeScmProvider
 
-import org.apache.maven.scm.ChangeSet
+class GitRepositoryService {
 
-class GitRepository {
     Changeset[] fetchChangelog(String gitScmUrl) {
         //FIXME this assumes that only this project's gitScmUrl will be ever passed to this method
         ScmFileSet allFilesInProject = new ScmFileSet(new File("."), "*.*")

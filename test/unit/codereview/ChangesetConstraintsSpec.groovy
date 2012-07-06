@@ -1,7 +1,7 @@
 package codereview
 
-import spock.lang.Specification
 import grails.test.mixin.TestFor
+import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(Changeset)
