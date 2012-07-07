@@ -19,8 +19,9 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
-        build "org.apache.maven.scm:maven-scm-api:1.7"
-        build "org.apache.maven.scm:maven-scm-provider-gitexe:1.7"
+        compile "org.apache.maven.scm:maven-scm-api:1.7"
+        compile "org.apache.maven.scm:maven-scm-provider-gitexe:1.7"
+        compile "com.google.guava:guava:12.0"
     }
 
     plugins {
