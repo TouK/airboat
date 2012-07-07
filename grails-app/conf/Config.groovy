@@ -1,3 +1,5 @@
+import org.apache.log4j.*
+
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
@@ -72,26 +74,28 @@ environments {
 
 // log4j configuration
 log4j = {
-    // Example of changing the log pattern for the default console
-    // appender:
-    //TODO - check if new solution works with tomcat
 
-    //By default grails try to write stacktracelog in a place with permission denied with tomcat
-    //It cause a lot of troubles, app cannot be run on server! Solution's below:
     appenders {
-       // Setting new directory for logs files
-       def _logDir = '/var/codereview/logs/tomcat/'
-       console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+
+       def catalinaBase = System.properties.getProperty('catalina.base')
+       if (!catalinaBase) catalinaBase = '.'
+       def logDirectory = "${catalinaBase}/logs"
+
+       console name:'stdout', layout:pattern(conversionPattern: '%p %c{2} %m%n')
+
        rollingFile name: 'rollingFileError', layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c{2} >>%m%n'),
-                threshold: Level.ERROR, maxFileSize: 102400, file: _logDir + 'Error.log'
+                threshold: Level.ERROR, maxFileSize: 102400, file: "${logDirectory}/CodereviewError.log".toString()
        rollingFile name: 'rollingFileDebug', layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c{2} >>%m%n'),
-                threshold: Level.DEBUG, maxFileSize: 102400, file: _logDir + 'Debug.log'
+                threshold: Level.DEBUG, maxFileSize: 102400, file: "${logDirectory}/CodereviewDebug.log".toString()
        rollingFile name:'stacktrace',layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c{2} >>%m%n'),
-                threshold: Level.ERROR, maxFileSize: 102400, file:"${_logDir}StackTrace.log"
-        //  alternative version:
-        //disable stacktrace file
-        // 'null' name:'stacktrace'
+                threshold: Level.ERROR, maxFileSize: 102400, file: "${logDirectory}/CodereviewStackTrace.log".toString()
+
+        root {
+            info()
+        }
     }
+
+    debug  'codereview'
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
            'org.codehaus.groovy.grails.web.pages', //  GSP
@@ -100,8 +104,8 @@ log4j = {
            'org.codehaus.groovy.grails.web.mapping', // URL mapping
            'org.codehaus.groovy.grails.commons', // core / classloading
            'org.codehaus.groovy.grails.plugins', // plugins
-           'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
-           'org.springframework',
-           'org.hibernate',
-           'net.sf.ehcache.hibernate'
+           //'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
+           'org.springframework'
+           //'org.hibernate',
+           //'net.sf.ehcache.hibernate'
 }
