@@ -10,7 +10,7 @@ import org.apache.maven.scm.ChangeSet
 class GitRepositoryService {
 
     /**
-     * TODO naive
+     * TODO naive name, refactor: single responsibility (i.e. extract creation of the name)
      * @param scmUrl
      * @return
      */
