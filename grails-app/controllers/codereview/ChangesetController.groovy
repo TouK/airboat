@@ -14,10 +14,14 @@ class ChangesetController {
         [changesetInstanceList: Changeset.list(params), changesetInstanceTotal: Changeset.count()]
     }
 
+    //TODO initial checkout
+    def initialCheckOut() {
+
+    }
     def updateFromRepository() {
         deleteAllChangesets()
         changesetImportingService.importFrom("git@git.touk.pl:touk/codereview.git")
-        redirect(action: "list")
+        redirect(action: "list", params: params)
     }
 
     private void deleteAllChangesets() {
