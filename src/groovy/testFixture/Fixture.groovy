@@ -8,5 +8,7 @@ class Fixture {
     //TODO use better date creation api, NOT Calendar. JodaTime, maybe?
     public static final Date FIRST_COMMIT_DATE = new Date(1341318912000)
     public static final int LOWER_BOUND_FOR_NUMBER_OF_COMMITS = 3
-    public static final String PROJECT_REPOSITORY_URL = "git@git.touk.pl:touk/codereview.git"
+    //public static final String PROJECT_REPOSITORY_URL = "git@git.touk.pl:touk/codereview.git"
+    public static final String PROJECT_REPOSITORY_URL = "git://git.touk.pl/touk/codereview.git"
+
 }

@@ -23,7 +23,9 @@ class GitRepositoryService {
 
         //TODO test for it
         if (validateScmFileset(allFilesInProject)) {
-            new GitExeScmProvider().update(gitRepository, allFilesInProject)
+            def scmProvider = new GitExeScmProvider()
+            scmProvider.addListener(new Log4jScmLogger())
+            scmProvider.update(gitRepository, allFilesInProject)
         } else {
             log.warn("Project direcotry does not exist yet. Please checkout project first.")
         }
@@ -38,7 +40,10 @@ class GitRepositoryService {
         ScmFileSet allFilesInProject = prepareScmFileset(gitScmUrl)
         ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
 
-        def changeLogScmResult = new GitExeScmProvider().changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, "master")
+        def scmProvider = new GitExeScmProvider()
+        scmProvider.addListener(new Log4jScmLogger())
+        def changeLogScmResult = scmProvider.changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, "master")
+
         List<ChangeSet> changes = changeLogScmResult.getChangeLog().getChangeSets()
 
         changes
