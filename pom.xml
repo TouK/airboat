@@ -7,7 +7,7 @@
   <version>0.1</version>
   <name>codeReview</name>
   <build>
-    <sourceDirectory>src/main/groovy</sourceDirectory>
+     <sourceDirectory>grails-app</sourceDirectory>
   </build> 
   <properties>
     <sonar.language>grvy</sonar.language>
