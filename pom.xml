@@ -6,6 +6,9 @@
   <packaging>war</packaging>
   <version>0.1</version>
   <name>codeReview</name>
+  <build>
+    <sourceDirectory>src/main/groovy</sourceDirectory>
+  </build> 
   <properties>
     <sonar.language>grvy</sonar.language>
     <sonar.dynamicAnalysis>false</sonar.dynamicAnalysis>
