@@ -4,10 +4,7 @@ import org.apache.maven.scm.ScmFileSet
 import org.apache.maven.scm.provider.git.repository.GitScmProviderRepository
 import org.apache.maven.scm.repository.ScmRepository
 import org.apache.maven.scm.provider.git.gitexe.GitExeScmProvider
-
 import org.apache.maven.scm.ChangeSet
-import org.spockframework.compiler.model.FixtureMethod
-import com.sun.xml.internal.bind.v2.TODO
 
 class GitRepositoryService {
 
@@ -19,6 +16,7 @@ class GitRepositoryService {
     boolean isValidDirectoryPath(String dirPath) { //TODO implement! and finish test!
         return true
     }
+
     File getBaseDir() {
         def result = System.getProperty("codereview.workingDirectory")
         File baseDir
@@ -38,6 +36,7 @@ class GitRepositoryService {
         }
 
     }
+
     File createWorkingDirectory(File baseDir, String scmUrl){
         if(!baseDir.exists()) {
             baseDir.mkdir()
@@ -52,6 +51,7 @@ class GitRepositoryService {
 
         throw new IllegalStateException("Failed to create directory: " + dir);
     }
+
     File resolveProjectWorkingDirectory(String scmUrl) {
         File baseDir = getBaseDir()
         createWorkingDirectory(baseDir, scmUrl)

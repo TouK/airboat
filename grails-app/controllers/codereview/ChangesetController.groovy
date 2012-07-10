@@ -18,6 +18,7 @@ class ChangesetController {
     def initialCheckOut() {
 
     }
+
     def updateFromRepository() {
         deleteAllChangesets()
         changesetImportingService.importFrom("git@git.touk.pl:touk/codereview.git")
