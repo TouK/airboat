@@ -21,7 +21,16 @@ class GitRepositoryService {
         ScmFileSet allFilesInProject = prepareScmFileset(gitScmUrl)
         ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
 
-        new GitExeScmProvider().update(gitRepository, allFilesInProject)
+        //TODO test for it
+        if (validateScmFileset(allFilesInProject)) {
+            new GitExeScmProvider().update(gitRepository, allFilesInProject)
+        } else {
+            log.warn("Project direcotry does not exist yet. Please checkout project first.")
+        }
+    }
+
+    def validateScmFileset(ScmFileSet scmFileSet) {
+        return scmFileSet.basedir.exists()
     }
 
     Changeset[] fetchFullChangelog(String gitScmUrl) {

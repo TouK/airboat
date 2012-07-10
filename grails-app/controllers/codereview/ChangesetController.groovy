@@ -17,7 +17,7 @@ class ChangesetController {
     }
 
     def initialCheckOut() {
-        log.info("Checing out project.")
+        log.info("Checking out project.")
         gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
         redirect(action: "list", params: params)
     }
