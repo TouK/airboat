@@ -1,9 +1,12 @@
 package codereview
 
+import testFixture.Fixture
+
 
 class ChangesetController {
 
-    ChangesetImportingService changesetImportingService
+    ChangelogAccessService changelogAccessService
+    GitRepositoryService gitRepositoryService
 
     def index() {
         redirect(action: "list", params: params)
@@ -14,18 +17,9 @@ class ChangesetController {
         [changesetInstanceList: Changeset.list(params), changesetInstanceTotal: Changeset.count()]
     }
 
-    //TODO initial checkout
     def initialCheckOut() {
-
+        gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
     }
 
-    def updateFromRepository() {
-        deleteAllChangesets()
-        changesetImportingService.importFrom("git@git.touk.pl:touk/codereview.git")
-        redirect(action: "list", params: params)
-    }
 
-    private void deleteAllChangesets() {
-        Changeset.createCriteria().list { ge("date", new Date(0)) }*.delete() //couldn't find an easier way with H2...
-    }
 }

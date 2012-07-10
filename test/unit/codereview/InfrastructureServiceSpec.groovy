@@ -1,0 +1,53 @@
+package codereview
+
+import static org.junit.Assert.*
+
+import grails.test.mixin.*
+import grails.test.mixin.support.*
+import org.junit.*
+import spock.lang.Specification
+
+/**
+ * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
+ */
+@TestMixin(GrailsUnitTestMixin)
+class InfrastructureServiceSpec extends Specification {
+
+    def "temporary dir path should be returned for base directory name"() {
+        given:
+
+        when:
+            def name = new InfrastructureService().getBaseDirectoryName()
+
+        then:
+            name == "/tmp"
+    }
+
+    //TODO later on name will be generated
+    def "directory name for a project should be constant"() {
+        given:
+
+        when:
+            def name = new InfrastructureService().getDirectoryNameForTheProject("abc")
+
+        then:
+            name == "projekt"
+    }
+}
+
+//    def "Should validate directory path"  () {        //still in red phase
+//        when:
+//            def gitRepositoryService = new GitRepositoryService()
+//
+//        then:
+//        gitRepositoryService.isExisting(path) == value
+//
+//        where:
+//        path                    | value
+//        "/tmp/workDir"          | true
+//        "blablabla"             | false
+//        "/tmp"                  | true
+//        "/home/lubieKartofle"   | false
+//
+//
+//    }

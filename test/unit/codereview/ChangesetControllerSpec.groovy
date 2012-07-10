@@ -36,34 +36,11 @@ class ChangesetControllerSpec extends Specification {
         model.changesetInstanceTotal == 2
     }
 
-    ChangesetImportingService changesImporterMock
+    ChangelogAccessService changelogAccessServiceMock
 
     def setup() {
-        changesImporterMock = Mock(ChangesetImportingService)
-        controller.changesetImportingService = changesImporterMock
-    }
-
-    //TODO this is a temporary solution, implement incremental imports ASAP
-    void "should delete all old changesets during updating"() {
-        given:
-        new Changeset("hash23", "agj", new Date()).save()
-
-        when:
-        controller.updateFromRepository()
-
-        then:
-        Changeset.count() == 0
-    }
-
-    void "should import changesets during updating and not delete any of newley imported ones"() {
-        given:
-        1 * changesImporterMock.importFrom(_) >> { new Changeset("hash23", "agj", new Date()).save() }
-
-        when:
-        controller.updateFromRepository()
-
-        then:
-        Changeset.count() != 0
+        changelogAccessServiceMock = Mock(ChangelogAccessService)
+        controller.changelogAccessService = changelogAccessServiceMock
     }
 
 }
