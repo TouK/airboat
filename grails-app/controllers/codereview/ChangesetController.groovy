@@ -2,7 +2,6 @@ package codereview
 
 import testFixture.Fixture
 
-
 class ChangesetController {
 
     ChangelogAccessService changelogAccessService
@@ -19,6 +18,7 @@ class ChangesetController {
 
     def initialCheckOut() {
         gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
+        redirect(action: "list", params: params)
     }
 
 

@@ -13,11 +13,15 @@ class InfrastructureService {
 
     String getBaseDirectoryName() {
         def customWorkingDirectoryName = System.getProperty("codereview.workingDirectory")
+        def name = "/tmp"
         if (customWorkingDirectoryName != null) {
-            return customWorkingDirectoryName;
+            name = customWorkingDirectoryName;
         } else {
-            return System.getProperty("java.io.tmpdir");
+            name = System.getProperty("java.io.tmpdir");
         }
+
+        log.info("Effective working directory is: " + name)
+        return name
     }
 
     File createWorkingDirectory(File baseDirectory, String scmUrl) {
