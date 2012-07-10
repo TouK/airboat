@@ -6,6 +6,8 @@ import org.apache.maven.scm.repository.ScmRepository
 import org.apache.maven.scm.provider.git.gitexe.GitExeScmProvider
 
 import org.apache.maven.scm.ChangeSet
+import org.spockframework.compiler.model.FixtureMethod
+import com.sun.xml.internal.bind.v2.TODO
 
 class GitRepositoryService {
 
@@ -14,22 +16,45 @@ class GitRepositoryService {
      * @param scmUrl
      * @return
      */
-    File resolveProjectWorkingDirectory(String scmUrl) {
-        File baseDir = new File(System.getProperty("java.io.tmpdir"));
-        log.info("basedir is: " + baseDir)
+    boolean isValidDirectoryPath(String dirPath) { //TODO implement! and finish test!
+        return true
+    }
+    File getBaseDir() {
+        def result = System.getProperty("codereview.workingDirectory")
+        File baseDir
+        if(isValidDirectoryPath(result))     {
 
-        File dir = new File(baseDir, scmUrl.hashCode().toString());
-        log.info("project working directory is: " + dir)
+            if (result != null)     {
+                baseDir = new File(result);
+            }
+            else {
+                baseDir = new File(System.getProperty("java.io.tmpdir"));
+            }
+            return baseDir
 
-        if (dir.exists()) {
-            return dir;
+        }
+        else {
+            throw new IllegalStateException("Cannot get base directory: " + baseDir)
         }
 
+    }
+    File createWorkingDirectory(File baseDir, String scmUrl){
+        if(!baseDir.exists()) {
+            baseDir.mkdir()
+        }
+        File dir = new File(baseDir, "/" + scmUrl.hashCode().toString())    // log.info("basedir is: " + baseDir)
+        if (dir.exists()) {                                                 // log.info("project working directory is: " +dir.toString())
+            return dir;
+        }
         if (dir.mkdir()) {
             return dir;
         }
 
         throw new IllegalStateException("Failed to create directory: " + dir);
+    }
+    File resolveProjectWorkingDirectory(String scmUrl) {
+        File baseDir = getBaseDir()
+        createWorkingDirectory(baseDir, scmUrl)
     }
 
     Changeset[] fetchChangelog(String gitScmUrl) {

@@ -16,4 +16,20 @@ class GitRepositoryServiceSpec extends Specification {
             changelog.first().author == Fixture.FIRST_COMMIT_AUTHOR
             changelog.first().date == Fixture.FIRST_COMMIT_DATE
     }
+//    def "Should validate directory path"  () {        //still in red phase
+//        when:
+//            def gitRepositoryService = new GitRepositoryService()
+//
+//        then:
+//        gitRepositoryService.isValidDirectoryPath(path) == value
+//
+//        where:
+//        path                    | value
+//        "/tmp/workDir"          | true
+//        "blablabla"             | false
+//        "/tmp"                  | true
+//        "/home/lubieKartofle"   | false
+//
+//
+//    }
 }
