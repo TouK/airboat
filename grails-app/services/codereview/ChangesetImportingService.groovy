@@ -4,9 +4,10 @@ class ChangesetImportingService {
 
     GitRepositoryService gitRepositoryService
 
-
-
-    //checkout
+    ChangesetImportingService() {
+        this.gitRepositoryService = new GitRepositoryService()
+    }
+//checkout
     //utworz katalog
     //zrob checkout
 
