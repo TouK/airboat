@@ -14,7 +14,7 @@ class GitRepositoryService {
     /**
      * TODO naive name, refactor: single responsibility (i.e. extract creation of the name)
      * @param scmUrl
-     * @return
+     * @return    l
      */
     boolean isValidDirectoryPath(String dirPath) { //TODO implement! and finish test!
         return true
