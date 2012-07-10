@@ -6,6 +6,7 @@ grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 
 grails.project.dependency.resolution = {
+
     inherits("global") {}
     log "error" // log level of Ivy resolver
     checksums true // Whether to verify checksums on resolve
@@ -33,4 +34,9 @@ grails.project.dependency.resolution = {
 
         test ":spock:0.6"
     }
+}
+
+coverage {
+    enabledByDefault = false
+    xml = true
 }
