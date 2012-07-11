@@ -13,7 +13,7 @@ class InfrastructureService {
 
     String getBaseDirectoryName() {
         def customWorkingDirectoryName = System.getProperty("codereview.workingDirectory")
-        def name = "/tmp"
+        def name
         if (customWorkingDirectoryName != null) {
             name = customWorkingDirectoryName;
         } else {
@@ -44,6 +44,11 @@ class InfrastructureService {
         throw new IllegalStateException("Failed to create directory: " + dir);
     }
 
+    /**
+     * TODO implement later on
+     * @param scmUrl
+     * @return
+     */
     String getDirectoryNameForTheProject(String scmUrl) {
         "projekt"
     }

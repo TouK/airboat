@@ -5,7 +5,7 @@ class ProjectUpdateJob {
     ChangelogAccessService changelogAccessService
 
     static triggers = {
-      simple repeatInterval: 60000l // execute job once in 10 seconds
+      simple repeatInterval: 10000l // execute job once in 10 seconds
     }
 
     def execute() {

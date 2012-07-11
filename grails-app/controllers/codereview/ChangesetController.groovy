@@ -1,6 +1,7 @@
 package codereview
 
 import testFixture.Fixture
+import grails.converters.JSON
 
 class ChangesetController {
 
@@ -21,5 +22,20 @@ class ChangesetController {
         gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
         redirect(action: "list", params: params)
     }
+
+    def getChangesetFromDatabase() {       //TODO: pobrać z bazy  i wyświetlić
+        HashMap jsonMap = new HashMap()
+        List<Changeset> changesetFromDatabase = Changeset.list()
+
+        def tempList  = changesetFromDatabase.collect {uniqueChangeset ->
+            return [identifier: uniqueChangeset.identifier, author: uniqueChangeset.author, date:uniqueChangeset.date ]
+        } .findAll{it.author = "ww"} .sort{it.date} .reverse()
+
+
+        jsonMap.changeset    = tempList.subList(0,5)
+
+    render jsonMap as JSON
+    }
+
 
 }
