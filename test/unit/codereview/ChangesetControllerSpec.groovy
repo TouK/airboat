@@ -43,7 +43,6 @@ class ChangesetControllerSpec extends Specification {
         new Changeset("hash24", "kpt", new Date()).save()
             def jasonList = Changeset.list(max: 20, sort: "date", order: "desc") as JSON
 
-
         then:
         jasonList != null
     }
