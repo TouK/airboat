@@ -23,18 +23,8 @@ class ChangesetController {
         redirect(action: "list", params: params)
     }
 
-    def getChangesetFromDatabase() {       //TODO: pobrać z bazy  i wyświetlić
-        HashMap jsonMap = new HashMap()
-        List<Changeset> changesetFromDatabase = Changeset.list()
-
-        def tempList  = changesetFromDatabase.collect {uniqueChangeset ->
-            return [identifier: uniqueChangeset.identifier, author: uniqueChangeset.author, date:uniqueChangeset.date ]
-        } .findAll{it.author = "ww"} .sort{it.date} .reverse()
-
-
-        jsonMap.changeset    = tempList.subList(0,5)
-
-    render jsonMap as JSON
+    def getLastChangesets() {
+        render Changeset.list(max: 20, sort: "date", order: "desc") as JSON
     }
 
 
