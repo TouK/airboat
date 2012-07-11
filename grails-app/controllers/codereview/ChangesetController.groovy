@@ -27,7 +27,8 @@ class ChangesetController {
         render Changeset.list(max: 20, sort: "date", order: "desc") as JSON
     }
     def main() {
-
+        //how to pass data to particular view
+          [author: "jil", identifier: "hhh", date: "today"]
     }
 
 }

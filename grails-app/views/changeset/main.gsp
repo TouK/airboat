@@ -1,17 +1,17 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: touk
-  Date: 11.07.12
-  Time: 11:32
-  To change this template use File | Settings | File Templates.
---%>
-
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="codereview.Changeset" %>
+<!doctype html>
 <html>
 <head>
-  <title>JSON response</title>
+
 </head>
 <body>
+    <div id="header">
      <h1>JSON response</h1>
+    </div>
+     <div id="content">
+         <p>Hello ${author}</p>
+         <p>Your id is: ${identifier}</p>
+
+     </div>
 </body>
 </html>
