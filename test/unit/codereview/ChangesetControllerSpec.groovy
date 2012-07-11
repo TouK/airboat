@@ -9,11 +9,9 @@ import grails.converters.JSON
 @Mock(Changeset)
 class ChangesetControllerSpec extends Specification {
 
-    ChangelogAccessService changelogAccessServiceMock
-
     def setup() {
-        changelogAccessServiceMock = Mock(ChangelogAccessService)
-        controller.changelogAccessService = changelogAccessServiceMock
+        controller.changelogAccessService = Mock(ChangelogAccessService)
+        controller.gitRepositoryService = Mock(GitRepositoryService)
     }
 
     void "list should have changesets in context"() {
@@ -52,6 +50,16 @@ class ChangesetControllerSpec extends Specification {
         then:
             changesets.size() == JSON.parse(response.contentAsString).size()
             response.getContentType().startsWith("application/json")
+    }
+
+    def "initial checkout should delgate to service and display index afterwards"() {
+
+        when:
+            controller.initialCheckOut()
+
+        then:
+            1 * controller.gitRepositoryService.checkoutProject(_)
+            response.redirectedUrl == "/changeset/index"
     }
 
 }

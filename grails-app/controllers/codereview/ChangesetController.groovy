@@ -16,11 +16,13 @@ class ChangesetController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [changesetInstanceList: Changeset.list(params), changesetInstanceTotal: Changeset.count()]
     }
-
+    /**
+     * TODO helper method for development phase
+     */
     def initialCheckOut() {
         log.info("Checking out project.")
         gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
-        redirect(action: "list", params: params)
+        redirect(action: "index", params: params)
     }
 
     def getLastChangesets = {
