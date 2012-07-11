@@ -9,7 +9,7 @@ class ChangesetController {
     GitRepositoryService gitRepositoryService
 
     def index() {
-        redirect(action: "list", params: params)
+        //redirect(action: "list", params: params)
     }
 
     def list() {
@@ -23,15 +23,9 @@ class ChangesetController {
         redirect(action: "list", params: params)
     }
 
-    def getLastChangesets() {
-        def myList
-        myList = Changeset.list(max: 20, sort: "date", order: "desc") as JSON
-        render    myList
-        myList
-    }
-    def main() {
-
-
+    def getLastChangesets = {
+        render Changeset.list(max: 20, sort: "date", order: "desc") as JSON
     }
 
 }
+

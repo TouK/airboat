@@ -1,4 +1,3 @@
-
 <%@ page import="codereview.Changeset" %>
 <!doctype html>
 <html>
