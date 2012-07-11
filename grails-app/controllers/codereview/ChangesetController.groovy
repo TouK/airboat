@@ -24,11 +24,14 @@ class ChangesetController {
     }
 
     def getLastChangesets() {
-        render Changeset.list(max: 20, sort: "date", order: "desc") as JSON
+        def myList
+        myList = Changeset.list(max: 20, sort: "date", order: "desc") as JSON
+        render    myList
+        myList
     }
     def main() {
-        //how to pass data to particular view
-          [author: "jil", identifier: "hhh", date: "today"]
+
+
     }
 
 }
