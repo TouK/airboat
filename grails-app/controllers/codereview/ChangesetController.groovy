@@ -29,5 +29,7 @@ class ChangesetController {
         render Changeset.list(max: 20, sort: "date", order: "desc") as JSON
     }
 
+
+
 }
 
