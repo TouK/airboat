@@ -31,6 +31,11 @@ class ChangesetController {
     def getLastChangeset = {
         render Changeset.list(max: 1, sort: "date", order: "desc") as JSON
     }
+    def getChangeset = {
+        def id = params.id
+        def changeset = Changeset.list(max: 20, sort: "date", order: "desc")
+        render changeset[id.toInteger()..id.toInteger()] as JSON
+    }
 
 
 }

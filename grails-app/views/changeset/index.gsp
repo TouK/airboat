@@ -14,17 +14,54 @@
         <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
 
         <script src="${createLink(uri:'/js/jquery.colorbox-min.js')}" type="text/javascript"></script>
-
-
         <script src="http://borismoore.github.com/jsviews/jsrender.js" type="text/javascript"></script>
 
 
     </head>
+
+
+
     <body>
+     <!-- function to handle click for more info in new layer for chosen changeset -->
+    <script type="text/javascript">
+        function popInfoBox (id)         {
+
+            var identifier = id
+            $(".show-changeset-button").colorbox({opacity:0.3 ,
+                    inline: true,
+                    width:"80%",
+                    height:"80%" ,
+                    onOpen:function(){
+                        $('#layer_content').html("") ;
+                        var url = '${createLink(uri:'/changeset/getChangeset/')}';
+                        url = url.concat(id.toString());
+                $.getJSON(url, function(data) {
+
+                    for(i = 0; i < data.length; i++) {
+                        var changesets = {
+                            author: data[i].author,
+                            identifier: data[i].identifier,
+                            date: data[i].date
+
+                        }
+                        $('#layer_content').append($("#changeset").render(changesets));
+
+                    }
+                });
+
+            },
+                onLoad:function(){
+                    //code
+                }
+            });
+        }
+    </script>
 
 
 
-    <a href="#" id="getdata-button">Get Last Changes</a>
+
+   <h3><a href="#" id="getdata-button" >Get Last Changes</a>   </h3>
+
     <!-- ==========container=============== -->
     <table>
         <thead>
@@ -32,6 +69,7 @@
                 <th>Author</th>
                 <th>Idenifier</th>
                 <th>Date</th>
+                <th>More</th>
             </tr>
         </thead>
         <tbody id="content"></tbody>
@@ -52,11 +90,14 @@
                 <td>
                     {{>date}}
                 </td>
+                <td>
+                    <button type="button" class="show-changeset-button" href="#inline_content" onclick="popInfoBox({{>number}})">Info</button>
+                </td>
 
             </tr>
 
         </script>
-
+    <!-- =============template=============== -->
     <script id="changeset" type="text/x-jsrender">
 
         <h3>Author</h3>
@@ -74,6 +115,7 @@
     </script>
 
         <!--- ============script================= -->
+        <!-- generates table with listed changes -->
         <script type="text/javascript">
             $(document).ready(function() {
                 $('#getdata-button').live('click', function(){
@@ -83,7 +125,8 @@
                             var changesets = {
                                 author: data[i].author,
                                 identifier: data[i].identifier,
-                                date: data[i].date
+                                date: data[i].date,
+                                number: i
                             }
                             $('#content').append($("#showdata").render(changesets));
                         }
@@ -92,43 +135,7 @@
             });
         </script>
 
-
-    <!-- =============COLORBOX=============== -->
-    <a href='${createLink(uri:'/changeset/getLastChangesets')}' id='link_content' >Kliknij mnie</a>
-
-    <script>
-        $(document).ready(function(){
-            //Examples of how to assign the ColorBox event to elements
-
-            $(".ajax").colorbox({opacity:0.3 ,
-                    inline: true,
-                    width:"80%",
-                    height:"80%" ,
-                    onOpen:function(){
-                        $('#layer_content').html("") ;
-                        $.getJSON('${createLink(uri:'/changeset/getLastChangeset')}', function(data) {
-
-                            for(i = 0; i < data.length; i++) {
-                                var changesets = {
-                                    author: data[i].author,
-                                    identifier: data[i].identifier,
-                                    date: data[i].date
-                                }
-                                $('#layer_content').append($("#changeset").render(changesets));
-                            }
-                        });
-
-                    },
-                    onLoad:function(){
-                    //code
-                    }
-             });
-
-        });
-    </script>
-    <p><p><a class='ajax' href="#inline_content" title="ChangesetList">Changeset info (Ajax)</a></p></p>
-    <p>It should look pretty different, but we've got problem with CSS :< </p>
-
+    <!-- template for a new layer -->
     <div style='display:none'>
         <div id='inline_content' style='padding:10px; background:#fff;'>
             <h1>Last changeset</h1>
