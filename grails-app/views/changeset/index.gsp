@@ -57,6 +57,22 @@
 
         </script>
 
+    <script id="changeset" type="text/x-jsrender">
+
+        <h3>Author</h3>
+         <p>   {{>author}}         </p>
+
+        <h3>Identifier</h3>
+         <p>     {{>identifier}}   </p>
+
+        <h3>Date</h3>
+         <p >   {{>date}}          </p>
+
+
+
+
+    </script>
+
         <!--- ============script================= -->
         <script type="text/javascript">
             $(document).ready(function() {
@@ -98,7 +114,7 @@
                                     identifier: data[i].identifier,
                                     date: data[i].date
                                 }
-                                $('#layer_content').append($("#showdata").render(changesets));
+                                $('#layer_content').append($("#changeset").render(changesets));
                             }
                         });
 
@@ -119,16 +135,9 @@
             <p><strong>Hello, here's the layer with changeset</strong></p>
             <div id="layer">
                 <!-- ==========container=============== -->
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Author</th>
-                        <th>Idenifier</th>
-                        <th>Date</th>
-                    </tr>
-                    </thead>
-                    <tbody id="layer_content"></tbody>
-                </table>
+
+                    <div id="layer_content"></div>
+
             </div>
             <h2>Elephants</h2>
             <p>Elephants are large land mammals in two extant genera of the family Elephantidae: Elephas and Loxodonta,
