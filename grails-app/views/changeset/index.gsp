@@ -12,7 +12,9 @@
         <!--###################COLORBOX###################-->
         <link media="screen" rel="stylesheet" href=" ${createLink(uri:'/css/colorbox.css')}" />
         <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+
         <script src="${createLink(uri:'/js/jquery.colorbox-min.js')}" type="text/javascript"></script>
+
 
         <script src="http://borismoore.github.com/jsviews/jsrender.js" type="text/javascript"></script>
 
@@ -90,7 +92,7 @@
         $(document).ready(function(){
             //Examples of how to assign the ColorBox event to elements
 
-            $(".iframe").colorbox({iframe:true, width:"85%", height:"85%"});
+            $(".ajax").colorbox();
 
 
             //Example of preserving a JavaScript event for inline calls.
@@ -100,7 +102,7 @@
             });
         });
     </script>
-    <p><a class='iframe' href="${createLink(uri:'/changeset/list')}">Click to see a layer which content is /changeset/list!</a></p>
+    <p><p><a class='ajax' href="${createLink(uri:'/changeset/getLastChangesets')}" title="Homer Defined">Outside HTML (Ajax)</a></p></p>
     <p>It should look pretty different, but we've got problem with CSS :< </p>
     </body>
 </html>
