@@ -64,8 +64,8 @@ class GitRepositoryService {
         changes
                 .collect {
 
-                            List<ProjectFile> files
-                            files = it.getFiles().collect { file ->
+                            //List<ProjectFile> files
+                            def files = it.getFiles().collect { file ->
                                 new ProjectFile(name: file.getName())
 
                             }
