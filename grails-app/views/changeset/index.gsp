@@ -48,6 +48,19 @@
 
                     }
                 });
+                 var fileUrl = '${createLink(uri:'/changeset/getFileNamesForChangeset/')}';
+                    fileUrl = fileUrl.concat(id.toString());
+                $.getJSON(fileUrl, function(data) {
+                    for(i = 0; i < data.length; i++) {
+                        var files = {
+                            name: data[i].name,
+                            identifier: data[i].id
+
+                        }
+                        $('#layer_files').append($("#project-files").render(files));
+
+                    }
+                });
 
             },
                 onLoad:function(){
@@ -100,17 +113,18 @@
     <!-- =============template=============== -->
     <script id="changeset" type="text/x-jsrender">
 
-        <h3>Author</h3>
-         <p>   {{>author}}         </p>
-
-        <h3>Identifier</h3>
-         <p>     {{>identifier}}   </p>
-
-        <h3>Date</h3>
-         <p >   {{>date}}          </p>
+        <h3>Author: {{>author}}</h3>
 
 
+        <h3>Identifier:  {{>identifier}}</h3>
 
+        <h3>Date:  {{>date}}</h3>
+
+    </script>
+    <!-- =============template=============== -->
+    <script id="project-files" type="text/x-jsrender">
+
+        <h3>File name: {{>name}},  Id {{>identifier}}</h3>
 
     </script>
 
@@ -126,7 +140,7 @@
                                 author: data[i].author,
                                 identifier: data[i].identifier,
                                 date: data[i].date,
-                                number: i
+                                number: data[i].id
                             }
                             $('#content').append($("#showdata").render(changesets));
                         }
@@ -139,34 +153,17 @@
     <div style='display:none'>
         <div id='inline_content' style='padding:10px; background:#fff;'>
             <h1>Last changeset</h1>
-            <p><strong>Hello, here's the layer with changeset</strong></p>
+
             <div id="layer">
                 <!-- ==========container=============== -->
 
                     <div id="layer_content"></div>
 
             </div>
-            <h2>Elephants</h2>
-            <p>Elephants are large land mammals in two extant genera of the family Elephantidae: Elephas and Loxodonta,
-            with the third genus Mammuthus extinct.[1] Three living species of elephant are recognized: the
-            African bush elephant, the African forest elephant and the Indian or Asian elephant;[2] although some group
-            the two African species into one[3] and some researchers also postulate the existence of a fourth species
-            in West Africa.[4] All other species and genera of Elephantidae are extinct. Most have been extinct since
-            the last ice age, although dwarf forms of mammoths might have survived as late as 2,000 BCE.[5]
-            Elephants and other Elephantidae were once classified with other thick-skinned animals in a now
-            invalid order, Pachydermata.
-            Elephants are the largest living land animals on Earth today.[6] The elephant's gestation
-            period is 22 months, the longest of any land animal.[7] At birth, an elephant calf typically weighs
-            105 kilograms (230 lb).[7] They typically live for 50 to 70 years, but the oldest recorded elephant
-            lived for 82 years.[8] The largest elephant ever recorded was shot in Angola in 1955.[9] This male weighed
-            about 10,900 kg (24,000 lb),[10] with a shoulder height of 3.96 metres (13.0 ft), 1 metre (3.3 ft) taller
-            than the average male African elephant.[10] The smallest elephants, about the size of a calf or a large pig, were
-            a prehistoric species that lived on the island of Crete during the Pleistocene epoch.[11]</p>
-
-
-
-        </div>
+            <h2>Files changed in commit:`</h2>
+            <div id="layer_files">
+            </div>
     </div>
-
+    </div>
     </body>
 </html>

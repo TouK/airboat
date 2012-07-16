@@ -5,7 +5,7 @@ class Changeset {
     String identifier
     String author
     Date date
-
+    static hasMany = [projectFiles: ProjectFile]
     Changeset(String identifier, String author, Date date) {
         this.identifier = identifier
         this.author = author
@@ -15,5 +15,6 @@ class Changeset {
     static constraints = {
         author blank: false
         identifier blank: false, unique: true
+        projectFiles nullable: true
     }
 }
