@@ -7,6 +7,8 @@ class ChangelogAccessService {
     void fetchChangelogAndSave(String scmUrl) {
         gitRepositoryService.updateProject(scmUrl)
         //TODO save only new changes
-        gitRepositoryService.fetchNewChangelog(scmUrl).each { it.save() }
+        if(gitRepositoryService.fetchNewChangelog(scmUrl) != null) {
+            gitRepositoryService.fetchNewChangelog(scmUrl).each { it.save() }
+        }
     }
 }
