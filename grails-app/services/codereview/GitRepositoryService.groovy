@@ -36,7 +36,12 @@ class GitRepositoryService {
     }
 
     Changeset[] fetchFullChangelog(String gitScmUrl) {
+        List<ChangeSet> changes =   getGitChangeSets( gitScmUrl)
+        returnChangesets(changes)
+    }
+    //not ready yet
 
+    List<ChangeSet> getGitChangeSets(String gitScmUrl)   {
         ScmFileSet allFilesInProject = prepareScmFileset(gitScmUrl)
         ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
 
@@ -45,12 +50,22 @@ class GitRepositoryService {
         def changeLogScmResult = scmProvider.changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, "master")
 
         List<ChangeSet> changes = changeLogScmResult.getChangeLog().getChangeSets()
+    }
 
-        changes
+    def returnChangesets(List<ChangeSet> changes){
+
+         changes
                 .collect { new Changeset(it.revision, it.author, it.date) }
                 .sort { it.date.time } //TODO it seems that somehow sort order is build-depenent (IDEA vs Grails) - find cause
     }
+    def getFileNamesFromChangeSetsList(List<ChangeSet> changes)    {
 
+          changes
+                  .collect {it.getFiles()}
+    }
+    def getFileNamesFromGitChangeSet(ChangeSet change)      {
+        change.getFiles()
+    }
     private ScmRepository createScmRepositoryObject(String gitScmUrl) {
         new ScmRepository("git", new GitScmProviderRepository(gitScmUrl))
     }

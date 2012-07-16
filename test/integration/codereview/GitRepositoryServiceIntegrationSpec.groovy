@@ -21,6 +21,14 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
             changelog.first().date == Fixture.FIRST_COMMIT_DATE
     }
 
+    def "should get the name of first changed file in codereview project"() {
+        when:
+        def changes = gitRepositoryService.getGitChangeSets(Fixture.PROJECT_REPOSITORY_URL)
+        def changedFiles = gitRepositoryService.getFileNamesFromChangeSetsList(changes)
+
+        then:
+        changedFiles[0][0]?.getName() == "grails-app/controllers/codereview/ChangesetController.groovy"
+    }
     //TODO add test for fetchFullChangelog when in case project was not been checked out
 }
 
