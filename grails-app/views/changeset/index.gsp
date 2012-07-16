@@ -33,6 +33,7 @@
                     height:"80%" ,
                     onOpen:function(){
                         $('#layer_content').html("") ;
+                        $('#layer_files').html("");
                         var url = '${createLink(uri:'/changeset/getChangeset/')}';
                         url = url.concat(id.toString());
                 $.getJSON(url, function(data) {
