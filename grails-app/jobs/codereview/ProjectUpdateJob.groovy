@@ -13,7 +13,7 @@ class ProjectUpdateJob {
     }
 
     def update() {
-        deleteAllChangesets()
+        //deleteAllChangesets()
         changelogAccessService.fetchChangelogAndSave("git@git.touk.pl:touk/codereview.git")
     }
 

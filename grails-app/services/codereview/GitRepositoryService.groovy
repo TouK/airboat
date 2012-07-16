@@ -41,7 +41,13 @@ class GitRepositoryService {
         returnChangesetsWithAddedFiles(changes)
     }
     //not ready yet
-
+    Changeset[] fetchNewChangelog(String gitScmUrl){
+        List<ChangeSet> changes = getNewGitChangeSets(gitScmUrl)
+        if(changes != null)  {
+        returnChangesetsWithAddedFiles(changes)
+        }
+        else return null
+    }
     List<ChangeSet> getGitChangeSets(String gitScmUrl)   {
         ScmFileSet allFilesInProject = prepareScmFileset(gitScmUrl)
         ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
@@ -51,6 +57,14 @@ class GitRepositoryService {
         def changeLogScmResult = scmProvider.changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, "master")
 
         List<ChangeSet> changes = changeLogScmResult.getChangeLog().getChangeSets()
+    }
+    List<ChangeSet> getNewGitChangeSets(String gitScmUrl)   {
+        def allChanges = getGitChangeSets(gitScmUrl)
+        if (allChanges.size() > Changeset.count() ) {
+        return  allChanges[Changeset.count()..-1]
+        }
+        else
+            return null
     }
 
     def returnChangesets(List<ChangeSet> changes){
@@ -63,8 +77,6 @@ class GitRepositoryService {
 
         changes
                 .collect {
-
-                            //List<ProjectFile> files
                             def files = it.getFiles().collect { file ->
                                 new ProjectFile(name: file.getName())
 
