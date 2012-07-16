@@ -13,7 +13,7 @@ class ProjectUpdateJobSpec extends Specification {
         changelogAccessServiceMock = Mock(ChangelogAccessService)
     }
 
-    void "should delete all old changesets during updating"() {
+    void "shouldn't delete all old changesets during updating"() {
 
         given:
             new Changeset("hash23", "agj", new Date()).save()
@@ -24,7 +24,7 @@ class ProjectUpdateJobSpec extends Specification {
             job.update()
 
         then:
-            Changeset.count() == 0
+            Changeset.count() != 0
     }
 
     void "should import changesets during updating and not delete any of newley imported ones"() {
