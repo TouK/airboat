@@ -59,7 +59,7 @@ class GitRepositoryService {
         scmProvider.addListener(new Log4jScmLogger())
         def changeLogScmResult = scmProvider.changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, "master")
 
-        List<ChangeSet> changes = changeLogScmResult.getChangeLog().getChangeSets()
+        List<ChangeSet> changes = changeLogScmResult.getChangeLog()?.getChangeSets()
     }
 
     List<ChangeSet> getNewGitChangeSets(String gitScmUrl)   {
@@ -82,16 +82,18 @@ class GitRepositoryService {
 
         changes
                 .collect {
-                            def files = it.getFiles().collect { file ->
-                                new ProjectFile(name: file.getName())
+                            if(it){
+                                def files = it.getFiles().collect { file ->
+                                    new ProjectFile(name: file.getName())
 
+                                }
+                                Changeset changeset = new Changeset(it.revision, it.author, it.date)
+                                files.each {
+                                    changeset.addToProjectFiles(it)
+                                }
+                                return changeset.save()
                             }
-                            Changeset changeset = new Changeset(it.revision, it.author, it.date)
-                            files.each {
-                                changeset.addToProjectFiles(it)
-                            }
-                            return changeset.save()
-        }
+                 }
                 .sort { it.date.time } //TODO it seems that somehow sort order is build-depenent (IDEA vs Grails) - find cause
     }
 
