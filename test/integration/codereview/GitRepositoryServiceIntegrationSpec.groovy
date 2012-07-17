@@ -11,7 +11,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     def "should fetch changesets from project's repository"() {
 
         when:
-            gitRepositoryService.checkoutProject()
+            gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
             def changelog = gitRepositoryService.fetchNewChangelog()
 
         then:
