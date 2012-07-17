@@ -12,7 +12,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
         when:
             gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
-            def changelog = gitRepositoryService.fetchFullChangelog(Fixture.PROJECT_REPOSITORY_URL)
+            def changelog = gitRepositoryService.fetchNewChangelog(Fixture.PROJECT_REPOSITORY_URL)
 
         then:
             changelog == changelog.sort(false, { it.date.time })
