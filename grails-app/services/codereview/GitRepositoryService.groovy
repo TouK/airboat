@@ -37,15 +37,14 @@ class GitRepositoryService {
 
     Changeset[] fetchFullChangelog(String gitScmUrl) {
         List<ChangeSet> changes =   getGitChangeSets( gitScmUrl)
-        //returnChangesets(changes)
+
         if (changes != null)
         returnChangesetsWithAddedFiles(changes)
         else
         return null
     }
-    //not ready yet
+
     Changeset[] fetchNewChangelog(String gitScmUrl){
-        //List<ChangeSet> changes = getNewGitChangeSets(gitScmUrl)
         List<ChangeSet> changes = getGitChangeSets(gitScmUrl)
         if(changes != null)  {
         returnChangesetsWithAddedFiles(changes)
@@ -63,21 +62,6 @@ class GitRepositoryService {
         List<ChangeSet> changes = changeLogScmResult.getChangeLog()?.getChangeSets()
     }
 
-    List<ChangeSet> getNewGitChangeSets(String gitScmUrl)   {
-        def allChanges = getGitChangeSets(gitScmUrl)
-        if (allChanges.size() > Changeset.count() ) {
-            return  allChanges[Changeset.count()..-1]
-        }
-        else
-            return null
-    }
-
-   // def returnChangesets(List<ChangeSet> changes){
-   //
-   //      changes
-   //             .collect { new Changeset(it.revision, it.author, it.date) }
-   //             .sort { it.date.time } //TODO it seems that somehow sort order is build-depenent (IDEA vs Grails) - find cause
-   // }
 
     def returnChangesetsWithAddedFiles(List<ChangeSet> changes){
 
