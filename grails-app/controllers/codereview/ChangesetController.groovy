@@ -9,7 +9,10 @@ class ChangesetController {
     GitRepositoryService gitRepositoryService
 
     def index() {
-        //redirect(action: "list", params: params)
+        if (gitRepositoryService.needsCheckOut() ) {
+           redirect(action: "initialCheckOut", params: params)
+        }
+
     }
 
     def list() {
@@ -26,7 +29,7 @@ class ChangesetController {
     }
 
     def getLastChangesets = {
-        render Changeset.list(max: 20, sort: "date", order: "desc") as JSON
+        render Changeset.list(max: 21, sort: "date", order: "desc") as JSON
         //render ProjectFile.list()  as JSON
     }
     def getLastChangeset = {
@@ -47,6 +50,8 @@ class ChangesetController {
         def files = ProjectFile.findAllByChangeset(changeset)
         render files as JSON
     }
+
+
 
 }
 
