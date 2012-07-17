@@ -12,7 +12,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
         when:
             gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
-            def changelog = gitRepositoryService.fetchNewChangelog()
+            def changelog = gitRepositoryService.fetchNewChangelog(Fixture.PROJECT_REPOSITORY_URL)
 
         then:
             changelog == changelog.sort(false, { it.date.time })
@@ -24,7 +24,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     def "should get the name of first changed file in codereview project"() {
         when:
         gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
-        def changes = gitRepositoryService.getGitChangeSets()
+        def changes = gitRepositoryService.getGitChangeSets(Fixture.PROJECT_REPOSITORY_URL)
         def changedFiles = gitRepositoryService.getFileNamesFromChangeSetsList(changes)
 
         then:
@@ -33,8 +33,8 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     //TODO add test for fetchFullChangelog when in case project was not been checked out
     def "should return getFiles"(){
         when:
-        gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
-        def changes = gitRepositoryService.getGitChangeSets()
+
+        def changes = gitRepositoryService.getGitChangeSets(Fixture.PROJECT_REPOSITORY_URL)
         def change = changes[0]
         def changedFiles = gitRepositoryService.getFileNamesFromGitChangeSet(change)
         then:
@@ -48,8 +48,8 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     }
     def "should create changesets with added files" () {
         when:
-        gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
-        def changes = gitRepositoryService.getGitChangeSets()
+
+        def changes = gitRepositoryService.getGitChangeSets(Fixture.PROJECT_REPOSITORY_URL)
         def changesetsWithFiles = gitRepositoryService.returnChangesetsWithAddedFiles(changes)
         then:
         changesetsWithFiles !=  null
