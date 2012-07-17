@@ -10,8 +10,8 @@ class ChangelogAccessService {
 
         gitRepositoryService.updateProject(scmUrl)
         //TODO save only new changes
-        if(gitRepositoryService.fetchNewChangelog(scmUrl) != null) {
-            gitRepositoryService.fetchNewChangelog(scmUrl).each {
+        if(gitRepositoryService.fetchNewChangelog() != null) {
+            gitRepositoryService.fetchNewChangelog().each {
                 if(it.validate())
                 it.save() }
         }

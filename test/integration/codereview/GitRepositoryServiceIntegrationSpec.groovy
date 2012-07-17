@@ -11,8 +11,8 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     def "should fetch changesets from project's repository"() {
 
         when:
-            gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
-            def changelog = gitRepositoryService.fetchNewChangelog(Fixture.PROJECT_REPOSITORY_URL)
+            gitRepositoryService.checkoutProject()
+            def changelog = gitRepositoryService.fetchNewChangelog()
 
         then:
             changelog == changelog.sort(false, { it.date.time })
@@ -23,7 +23,8 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
     def "should get the name of first changed file in codereview project"() {
         when:
-        def changes = gitRepositoryService.getGitChangeSets(Fixture.PROJECT_REPOSITORY_URL)
+        gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
+        def changes = gitRepositoryService.getGitChangeSets()
         def changedFiles = gitRepositoryService.getFileNamesFromChangeSetsList(changes)
 
         then:
@@ -32,7 +33,8 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     //TODO add test for fetchFullChangelog when in case project was not been checked out
     def "should return getFiles"(){
         when:
-        def changes = gitRepositoryService.getGitChangeSets(Fixture.PROJECT_REPOSITORY_URL)
+        gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
+        def changes = gitRepositoryService.getGitChangeSets()
         def change = changes[0]
         def changedFiles = gitRepositoryService.getFileNamesFromGitChangeSet(change)
         then:
@@ -46,7 +48,8 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     }
     def "should create changesets with added files" () {
         when:
-        def changes = gitRepositoryService.getGitChangeSets(Fixture.PROJECT_REPOSITORY_URL)
+        gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
+        def changes = gitRepositoryService.getGitChangeSets()
         def changesetsWithFiles = gitRepositoryService.returnChangesetsWithAddedFiles(changes)
         then:
         changesetsWithFiles !=  null

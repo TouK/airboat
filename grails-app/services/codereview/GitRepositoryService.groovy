@@ -37,28 +37,20 @@ class GitRepositoryService {
         return scmFileSet.basedir.exists()
     }
 
-  // Changeset[] fetchFullChangelog(String gitScmUrl) {
-  //     List<ChangeSet> changes =   getGitChangeSets( gitScmUrl)
-  //     if (changes != null)
-  //     returnChangesetsWithAddedFiles(changes)
-  //     else
-  //     return null
-  // }
-
-    Changeset[] fetchNewChangelog(String gitScmUrl){
-        List<ChangeSet> changes = getGitChangeSets(gitScmUrl)
+    Changeset[] fetchNewChangelog(){
+        List<ChangeSet> changes = getGitChangeSets()
         if(changes != null)  {
         returnChangesetsWithAddedFiles(changes)
         }
         else return null
     }
 
-    List<ChangeSet> getGitChangeSets(String gitScmUrl)   {
+    List<ChangeSet> getGitChangeSets()   {
         def scmProvider = new GitExeScmProvider()
         scmProvider.addListener(new Log4jScmLogger())
         def changeLogScmResult = scmProvider.changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, "master")
 
-        List<ChangeSet> changes = changeLogScmResult.getChangeLog()?.getChangeSets()
+        List<ChangeSet> changes = changeLogScmResult?.getChangeLog()?.getChangeSets()
     }
 
 

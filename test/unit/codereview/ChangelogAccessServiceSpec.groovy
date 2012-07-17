@@ -11,7 +11,7 @@ class ChangelogAccessServiceSpec extends Specification {
         given:
             def (gitScmUrl, changesetId, changesetAuthor)  = [Fixture.PROJECT_REPOSITORY_URL, "id123", "agj"]
             GitRepositoryService gitRepositoryMock = Mock()
-            gitRepositoryMock.fetchNewChangelog(gitScmUrl) >> [new Changeset(changesetId, changesetAuthor, new Date())]
+            gitRepositoryMock.fetchNewChangelog() >> [new Changeset(changesetId, changesetAuthor, new Date())]
             ChangelogAccessService cas = new ChangelogAccessService()
             cas.gitRepositoryService = gitRepositoryMock
 
