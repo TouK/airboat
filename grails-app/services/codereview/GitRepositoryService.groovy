@@ -45,7 +45,8 @@ class GitRepositoryService {
     }
     //not ready yet
     Changeset[] fetchNewChangelog(String gitScmUrl){
-        List<ChangeSet> changes = getNewGitChangeSets(gitScmUrl)
+        //List<ChangeSet> changes = getNewGitChangeSets(gitScmUrl)
+        List<ChangeSet> changes = getGitChangeSets(gitScmUrl)
         if(changes != null)  {
         returnChangesetsWithAddedFiles(changes)
         }
@@ -71,18 +72,18 @@ class GitRepositoryService {
             return null
     }
 
-    def returnChangesets(List<ChangeSet> changes){
-
-         changes
-                .collect { new Changeset(it.revision, it.author, it.date) }
-                .sort { it.date.time } //TODO it seems that somehow sort order is build-depenent (IDEA vs Grails) - find cause
-    }
+   // def returnChangesets(List<ChangeSet> changes){
+   //
+   //      changes
+   //             .collect { new Changeset(it.revision, it.author, it.date) }
+   //             .sort { it.date.time } //TODO it seems that somehow sort order is build-depenent (IDEA vs Grails) - find cause
+   // }
 
     def returnChangesetsWithAddedFiles(List<ChangeSet> changes){
 
         changes
                 .collect {
-                            if(it){
+                            if(it!=null){
                                 def files = it.getFiles().collect { file ->
                                     new ProjectFile(name: file.getName())
 
@@ -91,7 +92,7 @@ class GitRepositoryService {
                                 files.each {
                                     changeset.addToProjectFiles(it)
                                 }
-                                return changeset.save()
+                                return changeset
                             }
                  }
                 .sort { it.date.time } //TODO it seems that somehow sort order is build-depenent (IDEA vs Grails) - find cause
