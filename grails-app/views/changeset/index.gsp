@@ -174,35 +174,6 @@
 
 
 
-    <!--############################Infinite Scrolling script#################################-->
-
-    <script type="text/javascript" charset="utf-8">
-
-            $(document).endlessScroll({
-                bottomPixels: 500,
-                fireDelay: 50,
-                content:function(i,p) {
-                //    alert ("Dlaczego to nie działa tak jak trzeba??");
-                    var last_img = $("#images");
-                    last_img.after(last_img.prev().prev().prev().prev().prev().prev().prev().prev().prev().prev().prev().clone());
-                }
-            });
-
-
-    </script>
-
-
-    <ul id="images">
-          <li><img src='${createLink(uri:'/images/img/grass-blades.jpg')}' width="580" height="360" alt="Grass Blades" /></li>
-          <li><img src='${createLink(uri:'/images/img/stones.jpg')}' width="580" height="360" alt="Stones" /></li>
-          <li><img src='${createLink(uri:'/images/img/sea-mist.jpg')}' width="580" height="360" alt="Sea Mist" /></li>
-          <li><img src='${createLink(uri:'/images/img/pier.jpg')}' width="580" height="360" alt="Pier" /></li>
-          <li><img src='${createLink(uri:'/images/img/lotus.jpg')}' width="580" height="360" alt="Lotus" /></li>
-          <li><img src='${createLink(uri:'/images/img/mojave.jpg')}' width="580" height="360" alt="Mojave" /></li>
-          <li><img src='${createLink(uri:'/images/img/lightning.jpg')}' width="580" height="360" alt="Lightning" /></li>
-    </ul>
-
-
 
 
     </body>
