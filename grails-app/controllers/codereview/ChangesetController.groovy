@@ -26,7 +26,7 @@ class ChangesetController {
     }
 
     def getLastChangesets = {
-        render Changeset.list(max: 20, sort: "date", order: "desc") as JSON
+        render Changeset.list(max: 21, sort: "date", order: "desc") as JSON
         //render ProjectFile.list()  as JSON
     }
     def getLastChangeset = {
@@ -47,6 +47,8 @@ class ChangesetController {
         def files = ProjectFile.findAllByChangeset(changeset)
         render files as JSON
     }
+
+
 
 }
 
