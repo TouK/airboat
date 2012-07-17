@@ -9,7 +9,10 @@ class ChangesetController {
     GitRepositoryService gitRepositoryService
 
     def index() {
-        //redirect(action: "list", params: params)
+        if (gitRepositoryService.needsCheckOut() ) {
+           redirect(action: "initialCheckOut", params: params)
+        }
+
     }
 
     def list() {
