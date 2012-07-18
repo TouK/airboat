@@ -17,11 +17,46 @@
         <script src="http://borismoore.github.com/jsviews/jsrender.js" type="text/javascript"></script>
 
 
-        <!--###################Infinite Scroll###################-->
-      <!--  <script src="${createLink(uri:'/js/jquery.infinitescroll.js')}" type="text/javascript"></script>    -->
-        <script type="text/javascript" src="${createLink(uri:'/js/jquery.endless-scroll.js')}"></script>
 
 
+
+        <!-- Jquery pagination -->
+        <script type="text/javascript" src="${createLink(uri:'/js/scrollpagination.js')}"></script>
+        <link href="${createLink(uri:'/css/scrollpagination_demo.css')}" rel="stylesheet" media="screen" />
+
+
+<script type="text/javascript">
+    $(function(){
+        $('#content2').scrollPagination({
+            'contentPage': "${createLink(uri:'/changeset/getLastChangesets/')}", // the page where you are searching for results
+            'contentData': {}, // you can pass the children().size() to know where is the pagination
+            'scrollTarget': $(window), // who gonna scroll? in this example, the full window
+            'heightOffset': 10, // how many pixels before reaching end of the page would loading start? positives numbers only please
+            'beforeLoad': function(){ // before load, some function, maybe display a preloader div
+                $('#loading').fadeIn();
+            },
+            'afterLoad': function(elementsLoaded){ // after loading, some function to animate results and hide a preloader div
+                $('#loading').fadeOut();
+                var i = 0;
+                $(elementsLoaded).fadeInWithDelay();
+                if ($('#content').children().size() > 100){ // if more than 100 results loaded stop pagination (only for test)
+                    $('#nomoreresults').fadeIn();
+                    $('#content').stopScrollPagination();
+                }
+            }
+        });
+
+        // code for fade in element by element with delay
+        $.fn.fadeInWithDelay = function(){
+            var delay = 0;
+            return this.each(function(){
+                $(this).delay(delay).animate({opacity:1}, 200);
+                delay += 100;
+            });
+        };
+
+    });
+    </script>
     </head>
 
 
@@ -82,39 +117,35 @@
    <h3><a href="#" id="getdata-button" >Get Last Changes</a>   </h3>
 
     <!-- ==========container=============== -->
-    <table>
-        <thead>
-            <tr>
-                <th>Author</th>
-                <th>Idenifier</th>
-                <th>Date</th>
-                <th>More</th>
-            </tr>
-        </thead>
-        <tbody id="content"></tbody>
-    </table>
+
+          <h2>      Author
+               Idenifier
+                Date
+               More   </h2>
+    <br />
+
+        <div id="content"></div>
 
 
          <!-- =============template=============== -->
         <script id="showdata" type="text/x-jsrender">
-            <tr>
+        <hr />
+               <div class="changeset">
 
-                <td>
+               <div class="author">
                     {{>author}}
-                </td>
-                <td>
+               </div>
+                   <div class="identifier">
                     {{>identifier}}
+               </div>
 
-                </td>
-                <td>
+                <div class="date">
                     {{>date}}
-                </td>
-                <td>
+               </div>
+                <div class="buttons">
                     <button type="button" class="show-changeset-button" href="#inline_content" onclick="popInfoBox({{>number}})">Info</button>
-                </td>
-
-            </tr>
-
+                </div>
+               </div>
         </script>
     <!-- =============template=============== -->
     <script id="changeset" type="text/x-jsrender">
@@ -172,7 +203,16 @@
     </div>
     </div>
 
-
+    <ul id="content2">
+        <li><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc elementum elementum felis. Quisque porta turpis nec eros consectetur lacinia. Pellentesque sagittis adipiscing egestas. </p></li>
+        <li><p>Aliquam dapibus tincidunt odio. Phasellus volutpat dui nec ante volutpat euismod. </p></li>
+        <li><p>Phasellus vehicula turpis nec dui facilisis eget condimentum risus ullamcorper. Nunc imperdiet, tortor ultrices aliquam eleifend, nisl turpis venenatis dui, at vestibulum magna tellus in tortor. </p></li>
+        <li><p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris tincidunt nisi in tortor tincidunt ut ullamcorper lectus dapibus.  </p></li>
+        <li><p>Aenean interdum dui vitae purus molestie nec placerat nibh semper. Maecenas ultrices elementum dapibus. Aenean feugiat, metus in mattis mattis, justo nisi dignissim libero, ac volutpat dui nibh quis metus.</p></li>
+        <li><p> Morbi eget tristique dui. Vivamus nec turpis eu nisi euismod accumsan sed in tortor. Maecenas laoreet leo ut tortor viverra facilisis.</p></li>
+    </ul>
+    <div class="loading" id="loading">Wait a moment... it's loading!</div>
+    <div class="loading" id="nomoreresults">Sorry, no more results for your pagination demo.</div>
 
 
 
