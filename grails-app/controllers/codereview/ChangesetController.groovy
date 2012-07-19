@@ -9,7 +9,14 @@ class ChangesetController {
     GitRepositoryService gitRepositoryService
 
     def index() {
-
+        def offset = "0"
+        if(session.offset != null){
+            session["offset"]   = "0"
+        }
+        else {
+            session.setAttribute("offset", offset)
+        }
+      [offset: offset]
 
     }
 
@@ -28,7 +35,6 @@ class ChangesetController {
 
     def getLastChangesets = {
         render Changeset.list(max: 21, sort: "date", order: "desc") as JSON
-        //render ProjectFile.list()  as JSON
     }
     def getLastChangeset = {
         render Changeset.list(max: 1, sort: "date", order: "desc") as JSON
@@ -36,9 +42,6 @@ class ChangesetController {
     }
     def getChangeset = {
         def id = params.id
-        //def changeset = Changeset.list(max: 20, sort: "date", order: "desc")
-        //render changeset[id.toInteger()..id.toInteger()] as JSON
-
         def changeset = Changeset.findById(params.id)
         def changesetList = [changeset]
         render changesetList as JSON
@@ -48,8 +51,17 @@ class ChangesetController {
         def files = ProjectFile.findAllByChangeset(changeset)
         render files as JSON
     }
+    def getNextTenChangesets = {
+        def id = params.id
+        def myOffset = id.toInteger()*10 +1
+        render Changeset.list(max: 10, sort: "date", order: "desc", offset: myOffset) as JSON
+    }
+    def nextTenChangesets = {
 
+        def offset =   params.id
 
+        [offset: offset]
+    }
 
 }
 
