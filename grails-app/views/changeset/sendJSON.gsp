@@ -41,6 +41,7 @@
             }).done(function() {
 
                     });
+            $.post(url, { name: "John", time: "2pm" } );
         });
     });
 
