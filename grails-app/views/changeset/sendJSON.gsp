@@ -24,24 +24,10 @@
     $(document).ready(function() {
 
         $('#send-JSON').live('click', function(){
-            var JSONObject = new Object;
-            JSONObject.id = "23";
-            JSONObject.name = "Test 1";
-            var JSONstring;
-            JSONstring =  JSON.stringify(JSONObject);
-
-
 
             var url = "${createLink(controller:'UserComment', action:'receiveJSON')}";
-            $.ajax({
-                url: url,
-                context: document.body,
-                data: JSONstring,
-                async: true
-            }).done(function() {
 
-                    });
-            $.post(url, { name: "John", time: "2pm" } );
+            $.post(url, { username: "John", time: "2pm", content: "Hello there, do you like my comment?" } );
         });
     });
 
