@@ -12,7 +12,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
         when:
             gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
-            def changelog = gitRepositoryService.fetchNewChangelog(Fixture.PROJECT_REPOSITORY_URL)
+            def changelog = gitRepositoryService.fetchAllChangesetsWithFiles(Fixture.PROJECT_REPOSITORY_URL)
 
         then:
             changelog == changelog.sort(false, { it.date.time })
@@ -23,23 +23,24 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
     def "should get the name of first changed file in codereview project"() {
         when:
-        gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
-        def changes = gitRepositoryService.getGitChangeSets(Fixture.PROJECT_REPOSITORY_URL)
-        def changedFiles = gitRepositoryService.getFileNamesFromChangeSetsList(changes)
+            gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
+            def changes = gitRepositoryService.getAllChangeSets(Fixture.PROJECT_REPOSITORY_URL)
+            def changedFiles = gitRepositoryService.getFileNamesFromChangeSetsList(changes)
 
         then:
-        changedFiles[0][0]?.getName() != null
+            changedFiles[0][0]?.getName() != null
     }
     //TODO add test for fetchFullChangelog when in case project was not been checked out
     def "should return getFiles"(){
         when:
 
-        def changes = gitRepositoryService.getGitChangeSets(Fixture.PROJECT_REPOSITORY_URL)
-        def change = changes[0]
-        def changedFiles = gitRepositoryService.getFileNamesFromGitChangeSet(change)
+            def changes = gitRepositoryService.getAllChangeSets(Fixture.PROJECT_REPOSITORY_URL)
+            def change = changes[0]
+            def changedFiles = gitRepositoryService.getFileNamesFromGitChangeSet(change)
+
         then:
-        changedFiles.size() != 0
-        changedFiles[0].getName() != null
+            changedFiles.size() != 0
+            changedFiles[0].getName() != null
 
 
 
@@ -49,13 +50,14 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     def "should create changesets with added files" () {
         when:
 
-        def changes = gitRepositoryService.getGitChangeSets(Fixture.PROJECT_REPOSITORY_URL)
-        def changesetsWithFiles = gitRepositoryService.returnChangesetsWithAddedFiles(changes)
+            def changes = gitRepositoryService.getAllChangeSets(Fixture.PROJECT_REPOSITORY_URL)
+            def changesetsWithFiles = gitRepositoryService.createChangesetsWithFiles(changes)
+
         then:
-        changesetsWithFiles !=  null
-        //changesetsWithFiles[-1].projectFiles.size() != 0
-        //changesetsWithFiles[-1].projectFiles.size() == 2
-       // changesetsWithFiles[-1].projectFiles["name"][0] =~ "/"
+            changesetsWithFiles !=  null
+            //changesetsWithFiles[-1].projectFiles.size() != 0
+            //changesetsWithFiles[-1].projectFiles.size() == 2
+           // changesetsWithFiles[-1].projectFiles["name"][0] =~ "/"
     }
 }
 

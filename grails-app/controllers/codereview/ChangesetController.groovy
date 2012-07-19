@@ -5,8 +5,7 @@ import grails.converters.JSON
 
 class ChangesetController {
 
-    ChangelogAccessService changelogAccessService
-    GitRepositoryService gitRepositoryService
+    ScmAccessService scmAccessService
 
     def index() {
         def offset = "0"
@@ -23,7 +22,7 @@ class ChangesetController {
      */
     def initialCheckOut() {
         log.info("Checking out project.")
-        gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
+        scmAccessService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
         redirect(action: "index", params: params)
     }
 

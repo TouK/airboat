@@ -10,8 +10,7 @@ import grails.converters.JSON
 class ChangesetControllerSpec extends Specification {
 
     def setup() {
-        controller.changelogAccessService = Mock(ChangelogAccessService)
-        controller.gitRepositoryService = Mock(GitRepositoryService)
+        controller.scmAccessService = Mock(ScmAccessService)
     }
 
     def "getLastChangesets should return JSON"() {
@@ -29,13 +28,13 @@ class ChangesetControllerSpec extends Specification {
             response.getContentType().startsWith("application/json")
     }
 
-    def "initial checkout should delgate to service and display index afterwards"() {
+    def "initial checkout should delegate to service and display index afterwards"() {
 
         when:
             controller.initialCheckOut()
 
         then:
-            1 * controller.gitRepositoryService.checkoutProject(_)
+            1 * controller.scmAccessService.checkoutProject(_)
             response.redirectedUrl == "/changeset/index"
     }
 

@@ -1,16 +1,16 @@
 package codereview
 
 import spock.lang.Specification
-import grails.test.mixin.TestFor
+
 import grails.test.mixin.Mock
 
 @Mock(Changeset)
 class ProjectUpdateJobSpec extends Specification {
 
-    ChangelogAccessService changelogAccessServiceMock
+    ScmAccessService scmAccessServiceMock
 
     def setup() {
-        changelogAccessServiceMock = Mock(ChangelogAccessService)
+        scmAccessServiceMock = Mock(ScmAccessService)
     }
 
     void "shouldn't delete all old changesets during updating"() {
@@ -18,7 +18,7 @@ class ProjectUpdateJobSpec extends Specification {
         given:
             new Changeset("hash23", "agj", "", new Date()).save()
             def job = new ProjectUpdateJob()
-            job.changelogAccessService = changelogAccessServiceMock
+            job.scmAccessService = scmAccessServiceMock
 
         when:
             job.update()
@@ -31,8 +31,8 @@ class ProjectUpdateJobSpec extends Specification {
 
         given:
             def job = new ProjectUpdateJob()
-            job.changelogAccessService = changelogAccessServiceMock
-            1 * job.changelogAccessService.fetchChangelogAndSave(_) >> { new Changeset("hash23", "agj", "", new Date()).save() }
+            job.scmAccessService = scmAccessServiceMock
+            1 * job.scmAccessService.fetchAllChangesetsWithFilesAndSave(_) >> { new Changeset("hash23", "agj", "", new Date()).save() }
 
         when:
             job.update()

@@ -6,6 +6,9 @@ import org.apache.maven.scm.repository.ScmRepository
 import org.apache.maven.scm.provider.git.gitexe.GitExeScmProvider
 import org.apache.maven.scm.ChangeSet
 
+/**
+ * Zabronione uzywanie klas domenowych w tej klasie.
+ */
 class GitRepositoryService {
 
     def infrastructureService
@@ -26,7 +29,7 @@ class GitRepositoryService {
             scmProvider.addListener(new Log4jScmLogger())
             scmProvider.update(gitRepository, allFilesInProject)
         } else {
-            log.warn("Project direcotry does not exist yet. Please checkout project first.")
+            log.warn("Project directory does not exist yet. Please checkout project first.")
         }
     }
 
@@ -34,26 +37,7 @@ class GitRepositoryService {
         return scmFileSet.basedir.exists()
     }
 
-    Changeset[] fetchFullChangelog(String gitScmUrl) {
-        List<ChangeSet> changes = getGitChangeSets( gitScmUrl)
-
-        if (changes != null) {
-            returnChangesetsWithAddedFiles(changes)
-        } else {
-            return null
-        }
-    }
-
-    Changeset[] fetchNewChangelog(String gitScmUrl){
-        List<ChangeSet> changes = getGitChangeSets(gitScmUrl)
-        if(changes != null)  {
-            returnChangesetsWithAddedFiles(changes)
-        } else {
-            return null
-        }
-    }
-
-    List<ChangeSet> getGitChangeSets(String gitScmUrl)   {
+    List<ChangeSet> getAllChangeSets(String gitScmUrl)   {
         ScmFileSet allFilesInProject = prepareScmFileset(gitScmUrl)
         ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
 
@@ -61,27 +45,7 @@ class GitRepositoryService {
         scmProvider.addListener(new Log4jScmLogger())
         def changeLogScmResult = scmProvider.changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, "master")
 
-        List<ChangeSet> changes = changeLogScmResult.getChangeLog()?.getChangeSets()
-    }
-
-
-    def returnChangesetsWithAddedFiles(List<ChangeSet> changes){
-
-        changes
-                .collect {
-                            if(it!=null){
-                                def files = it.getFiles().collect { file ->
-                                    new ProjectFile(name: file.getName())
-
-                                }
-                                Changeset changeset = new Changeset(it.revision, it.author, it.comment, it.date)
-                                files.each {
-                                    changeset.addToProjectFiles(it)
-                                }
-                                return changeset
-                            }
-                 }
-                .sort { it.date.time } //TODO it seems that somehow sort order is build-depenent (IDEA vs Grails) - find cause
+        changeLogScmResult.getChangeLog()?.getChangeSets()
     }
 
     def getFileNamesFromChangeSetsList(List<ChangeSet> changes)    {
