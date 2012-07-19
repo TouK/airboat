@@ -146,6 +146,7 @@
         <!-- generates list of changesets -->
         <script type="text/javascript">
         var offset = 2;
+
         $(document).ready(function() {
 
                 $('#getdata-button').live('click', function(){
@@ -164,11 +165,12 @@
                         }
                     });
                 });
-            $('#get-more-data-button').live('click', function(){
+
+                $('#get-more-data-button').live('click', function(){
 
                     var url = '${createLink(uri:'/changeset/getNextTenChangesets/')}';
                     url = url.concat(offset);
-                    offset = offset +1;
+                    offset = offset + 1;
 
                     $.getJSON(url, function(data) {
                         for(i = 0; i < data.length; i++) {
@@ -190,39 +192,36 @@
         </script>
 
 
-    <!-- template for a new layer -->
-    <div style='display:none'>
-        <div id='inline_content' style='padding:10px; background:#fff;'>
-            <h1>Last changeset</h1>
+        <!-- template for a new layer -->
+        <div style='display:none'>
+            <div id='inline_content' style='padding:10px; background:#fff;'>
+                <h1>Last changeset</h1>
 
-            <div id="layer">
-                <!-- ==========container=============== -->
+                <div id="layer">
+                    <!-- ==========container=============== -->
 
-            <div id="layer_content"></div>
+                <div id="layer_content"></div>
 
+                </div>
+                <h2>Files changed in commit:</h2>
+                <div id="layer_files">
+                </div>
             </div>
-            <h2>Files changed in commit:</h2>
-            <div id="layer_files">
-            </div>
-    </div>
-    </div>
-
-    <div id="content2">
-
-    </div>
-    <g:form action="addComment" controller="UserComment"  >
-        <div>
-            <label>Name: </label> <input type="text" name="username"/>
-            <label>Comment: </label>        <input type="text" name="content"/>
-            <label>Post: </label>   <input type="submit" value="post"/>
         </div>
-    </g:form>
 
-    <h3><a href="#" id="get-more-data-button">Older</a>   </h3>
-    <div class="loading" id="loading">Wait a moment... it's loading!</div>
-    <div class="loading" id="nomoreresults">Sorry, no more results for your pagination demo.</div>
+        <div id="content2"></div>
 
+        <g:form action="addComment" controller="UserComment"  >
+            <div>
+                <label>Name: </label> <input type="text" name="username"/>
+                <label>Comment: </label>        <input type="text" name="content"/>
+                <label>Post: </label>   <input type="submit" value="post"/>
+            </div>
+        </g:form>
 
+        <h3><a href="#" id="get-more-data-button">Older</a></h3>
+        <div class="loading" id="loading">Wait a moment... it's loading!</div>
+        <div class="loading" id="nomoreresults">Sorry, no more results for your pagination demo.</div>
 
     </body>
 </html>

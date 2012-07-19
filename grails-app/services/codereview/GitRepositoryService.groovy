@@ -13,7 +13,6 @@ class GitRepositoryService {
     void checkoutProject(String gitScmUrl) {
         ScmFileSet allFilesInProject = prepareScmFileset(gitScmUrl)
         ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
-
         new GitExeScmProvider().checkOut(gitRepository, allFilesInProject)
     }
 
@@ -36,20 +35,22 @@ class GitRepositoryService {
     }
 
     Changeset[] fetchFullChangelog(String gitScmUrl) {
-        List<ChangeSet> changes =   getGitChangeSets( gitScmUrl)
+        List<ChangeSet> changes = getGitChangeSets( gitScmUrl)
 
-        if (changes != null)
-        returnChangesetsWithAddedFiles(changes)
-        else
-        return null
+        if (changes != null) {
+            returnChangesetsWithAddedFiles(changes)
+        } else {
+            return null
+        }
     }
 
     Changeset[] fetchNewChangelog(String gitScmUrl){
         List<ChangeSet> changes = getGitChangeSets(gitScmUrl)
         if(changes != null)  {
             returnChangesetsWithAddedFiles(changes)
+        } else {
+            return null
         }
-        else return null
     }
 
     List<ChangeSet> getGitChangeSets(String gitScmUrl)   {
@@ -84,13 +85,13 @@ class GitRepositoryService {
     }
 
     def getFileNamesFromChangeSetsList(List<ChangeSet> changes)    {
-
-          changes
-                  .collect {it.getFiles()}
+          changes.collect {it.getFiles()}
     }
+
     def getFileNamesFromGitChangeSet(ChangeSet change)      {
         change.getFiles()
     }
+
     private ScmRepository createScmRepositoryObject(String gitScmUrl) {
         new ScmRepository("git", new GitScmProviderRepository(gitScmUrl))
     }

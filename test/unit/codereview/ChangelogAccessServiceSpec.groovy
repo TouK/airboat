@@ -9,9 +9,9 @@ class ChangelogAccessServiceSpec extends Specification {
 
     def "should fetch and save changesets in db"() {
         given:
-            def (gitScmUrl, changesetId, changesetAuthor)  = [Fixture.PROJECT_REPOSITORY_URL, "id123", "agj"]
+            def (gitScmUrl, changesetId, commitComment, changesetAuthor)  = [Fixture.PROJECT_REPOSITORY_URL, "id", "comment", "agj@touk.pl"]
             GitRepositoryService gitRepositoryMock = Mock()
-            gitRepositoryMock.fetchNewChangelog(Fixture.PROJECT_REPOSITORY_URL) >> [new Changeset(changesetId, changesetAuthor, new Date())]
+            gitRepositoryMock.fetchNewChangelog(Fixture.PROJECT_REPOSITORY_URL) >> [new Changeset(changesetId, changesetAuthor, commitComment, new Date())]
             ChangelogAccessService cas = new ChangelogAccessService()
             cas.gitRepositoryService = gitRepositoryMock
 

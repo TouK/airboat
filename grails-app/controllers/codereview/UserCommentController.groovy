@@ -2,7 +2,9 @@ package codereview
 
 class UserCommentController {
 
-    def index() { }
+    def index() {
+    }
+
     def addComment = {
         def names = request.getParameterNames()
         String together = ""
@@ -11,6 +13,7 @@ class UserCommentController {
         }
         render together
     }
+
     def receiveJSON = {
         def json = request.JSON;
         render json
