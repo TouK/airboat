@@ -117,7 +117,7 @@
                 </div>
                </div>
                <div class="changeset-content" >
-                   Here's content of my changeset. For example comment which was written during commiting change.
+                   <b>Comment written during commiting:</b> {{>commitComment}}
                </div>
                    <div class="changeset-comments">
                        I don't know yet. But it'd probably be nice to have a div for comments.
@@ -157,6 +157,7 @@
                                 identifier: data[i].identifier,
                                 date: data[i].date,
                                 number: data[i].id,
+                                commitComment: data[i].commitComment,
                                 email: get_gravatar(data[i].email, 50)
                             }
                             $('#content').append($("#showdata").render(changesets));
@@ -176,6 +177,7 @@
                                 identifier: data[i].identifier,
                                 date: data[i].date,
                                 number: data[i].id,
+                                commitComment: data[i].commitComment,
                                 email: get_gravatar(data[i].email, 50)
                             }
                             $('#content2').append($("#showdata").render(changesets));
@@ -208,6 +210,13 @@
     <div id="content2">
 
     </div>
+    <g:form action="addComment" controller="UserComment"  >
+        <div>
+            <label>Name: </label> <input type="text" name="username"/>
+            <label>Comment: </label>        <input type="text" name="content"/>
+            <label>Post: </label>   <input type="submit" value="post"/>
+        </div>
+    </g:form>
 
     <h3><a href="#" id="get-more-data-button">Older</a>   </h3>
     <div class="loading" id="loading">Wait a moment... it's loading!</div>

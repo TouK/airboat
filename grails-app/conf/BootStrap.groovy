@@ -11,6 +11,8 @@ class BootStrap {
             returnMap['author'] = it.author
             returnMap['date'] = it.date
             returnMap['email'] = it.getEmail()
+            returnMap['commitComment'] = it.commitComment
+            returnMap['id'] = it.id
             return returnMap
         }
 

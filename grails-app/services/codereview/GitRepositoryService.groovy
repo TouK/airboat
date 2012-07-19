@@ -73,7 +73,7 @@ class GitRepositoryService {
                                     new ProjectFile(name: file.getName())
 
                                 }
-                                Changeset changeset = new Changeset(it.revision, it.author, it.date)
+                                Changeset changeset = new Changeset(it.revision, it.author, it.comment, it.date)
                                 files.each {
                                     changeset.addToProjectFiles(it)
                                 }

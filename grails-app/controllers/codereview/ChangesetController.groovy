@@ -64,6 +64,9 @@ class ChangesetController {
 
         [offset: offset]
     }
+    def sendJSON = {
+
+    }
 
 }
 
