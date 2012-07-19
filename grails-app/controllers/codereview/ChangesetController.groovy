@@ -36,16 +36,18 @@ class ChangesetController {
     def getLastChangesets = {
         render Changeset.list(max: 21, sort: "date", order: "desc") as JSON
     }
+
     def getLastChangeset = {
         render Changeset.list(max: 1, sort: "date", order: "desc") as JSON
-
     }
+
     def getChangeset = {
         def id = params.id
         def changeset = Changeset.findById(params.id)
         def changesetList = [changeset]
         render changesetList as JSON
     }
+
     def getFileNamesForChangeset = {      //needs id of changeset
         def changeset = Changeset.findById(params.id)
         def files = ProjectFile.findAllByChangeset(changeset)

@@ -47,10 +47,11 @@ class GitRepositoryService {
     Changeset[] fetchNewChangelog(String gitScmUrl){
         List<ChangeSet> changes = getGitChangeSets(gitScmUrl)
         if(changes != null)  {
-        returnChangesetsWithAddedFiles(changes)
+            returnChangesetsWithAddedFiles(changes)
         }
         else return null
     }
+
     List<ChangeSet> getGitChangeSets(String gitScmUrl)   {
         ScmFileSet allFilesInProject = prepareScmFileset(gitScmUrl)
         ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
