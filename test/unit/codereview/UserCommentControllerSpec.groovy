@@ -1,26 +1,42 @@
 package codereview
 
-import static org.junit.Assert.*
 
-import grails.test.mixin.*
-import grails.test.mixin.support.*
-import org.junit.*
+import grails.test.mixin.Mock
+import grails.test.mixin.TestFor
+import spock.lang.Specification
+import grails.converters.JSON
 
-/**
- * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
- */
-@TestMixin(GrailsUnitTestMixin)
-class UserCommentControllerSpec {
+@TestFor(UserCommentController)
+@Mock(UserComment)
+class UserCommentControllerSpec extends Specification {           //TODO implement tests!
 
-    void setUp() {
-        // Setup logic here
+    def setup() {
+
     }
 
-    void tearDown() {
-        // Tear down logic here
+    def "should return comments to changeset when given right changeset id"() {
+
+        when:
+        def something = "something"
+
+        then:
+        true
     }
 
-    void testSomething() {
-        fail "Implement me"
+    def "should return last comments, sorted by dateCreated, descending"() {
+        when:
+        def something = "something"
+
+        then:
+        true
     }
+    def "should add comment correctly to db"() {
+        when:
+        def something = "something"
+
+        then:
+        true
+    }
+
+
 }

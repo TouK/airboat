@@ -19,13 +19,7 @@ class UserCommentController {
         render "I did it! Saved."
     }
 
-    def receiveJSON = {
-        //def json = request.JSON
-        def username = params.username
-        def content = params.content
-        def result = username + " wrote: " + content
-        render result
-    }
+
     def returnCommentsToChangeset = {
         def changeset = Changeset.findById(params.id)
         def comments = UserComment.findAllByChangeset(changeset)

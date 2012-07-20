@@ -1,26 +1,43 @@
 package codereview
 
-import static org.junit.Assert.*
+import grails.test.mixin.TestFor
+import spock.lang.Specification
+import spock.lang.Unroll
 
-import grails.test.mixin.*
-import grails.test.mixin.support.*
-import org.junit.*
+@TestFor(UserComment)
+class UserCommentSpec extends Specification {    //TODO implement tests!
 
-/**
- * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
- */
-@TestMixin(GrailsUnitTestMixin)
-class UserCommentSpec {
 
-    void setUp() {
-        // Setup logic here
+    def setup() {
+
     }
 
-    void tearDown() {
-        // Tear down logic here
-    }
+    def "tests if deleting works" () {
+        when:
+        def something = "something"
 
-    void testSomething() {
-        fail "Implement me"
+        then:
+        true
+    }
+    def "tests saving and retrievieng from db" () {
+        when:
+        def something = "something"
+
+        then:
+        true
+    }
+    def "should retrieve right changeset to comment" () {
+        when:
+        def something = "something"
+
+        then:
+        true
+    }
+    def "should get all comment to changeset" ()  {
+        when:
+        def something = "something"
+
+        then:
+        true
     }
 }

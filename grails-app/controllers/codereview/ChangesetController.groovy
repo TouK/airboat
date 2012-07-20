@@ -47,8 +47,6 @@ class ChangesetController {
         [offset: offset]
     }
 
-    def sendJSON = {
-    }
     def withComments = {           //experimental
 
     }
