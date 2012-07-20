@@ -17,6 +17,29 @@
         <!-- Jquery pagination -->
         <script type="text/javascript" src="${createLink(uri:'/js/scrollpagination.js')}"></script>
         <link href="${createLink(uri:'/css/scrollpagination_demo.css')}" rel="stylesheet" media="screen" />
+        <link href="${createLink(uri:'/css/main-content.css')}" rel="stylesheet" media="screen" />
+
+        <script type="text/javascript">
+            function addComment(changesetId) {
+                var rawText = $('textarea#add-comment-'+changesetId.toString()).val();
+                var text = "<h1>your comment is: " +rawText ;
+                var username =      $('textarea#username-'+changesetId.toString()).val();
+                text = text + " written by: " + username  + " changeset id: " + changesetId.toString() + "</h1><br />";
+
+                var comment = {
+                    author: username,
+                    content: rawText,
+                    date: new Date()
+                }
+                $('#comments-'+changesetId.toString()).append($("#comment-template").render(comment));
+                var url = "${createLink(controller:'UserComment', action:'addComment')}";
+
+                $.post(url, { username: username, changesetId: changesetId, content: rawText } );
+                var howManyComments = $('#comments-count-'+changesetId.toString()).html();
+                howManyComments = (parseInt(howManyComments) + 1).toString();
+                $('#comments-count-'+changesetId.toString()).html(howManyComments.toString());
+            }
+        </script>
 
     </head>
 
@@ -80,38 +103,58 @@
                 }
             });
         }
+        function showCommentsToChangeset(id){
+            $('#comments-'+id.toString()).html("");
+            var fileUrl = '${createLink(uri:'/userComment/returnCommentsToChangeset/')}';
+            fileUrl = fileUrl.concat(id.toString());
+            $.getJSON(fileUrl, function(data) {
+                for(i = 0; i < data.length; i++) {
+                    var comments = {
+                        author: data[i].author,
+                        date: data[i].dateCreated,
+                        content: data[i].content
+
+                    }
+                    var howManyComments = data.length;
+                    $('#comments-count-'+id.toString()).html(howManyComments.toString());
+                    $('#comments-'+id.toString()).append($("<h3>Comments: </h3>"));
+                    $('#comments-'+id.toString()).append($("#comment-template").render(comments));
+
+                }
+            });
+        }
+        function hideCommentsToChangeset(id){
+            $('#comments-'+id.toString()).html("");
+        }
+
+
     </script>
 
 
 
 
-   <h3><a href="#" id="getdata-button" >Get Last Changes</a>   </h3>
 
     <!-- ==========container=============== -->
 
-          <h2>      Author
-               Idenifier
-                Date
-               More   </h2>
     <br />
 
-        <div id="content"></div>
+        <div id="content" class="main-content"></div>
 
          <!-- =============template=============== -->
         <script id="showdata" type="text/x-jsrender">
         <hr />
                <div class="changeset">
                <div class="changeset-header">
-                  <h3>
+
 
                       <img src="{{>email}}">
 
-                    Author: {{>author}},
+                     {{>author}},
 
-                    Identifier: {{>identifier}},
+                    {{>identifier}},
 
-                    Date: {{>date}},
-                  </h3>
+                    {{>date}},
+
                 <div class="buttons" style="float:right">
                     <button type="button" class="show-changeset-button" href="#inline_content" onclick="popInfoBox({{>number}})">Info</button>
                 </div>
@@ -119,11 +162,55 @@
                <div class="changeset-content" >
                    <b>Comment written during commiting:</b> {{>commitComment}}
                </div>
-                   <div class="changeset-comments">
-                       I don't know yet. But it'd probably be nice to have a div for comments.
+                   <div class="comments-preview">
+                   <h3>There are <b id="comments-count-{{>number}}"> {{>howManyComments}}</b> comments
+                       <button type="button" class="show-comments-button" href="#" onclick="showCommentsToChangeset({{>number}})"> Show comments</button>
+                       <button type="button" class="hide-comments-button" href="#" onclick="hideCommentsToChangeset({{>number}})"> Hide comments</button>
+                   </h3>
                    </div>
+                   <div class="comments" id="comments-{{>number}}">
+
+
+                   </div>
+                   <div class="add_comment">
+
+
+                           <div class="add-comment-content">
+                           <label>Comment</label>
+                           <br />
+                           <textarea  cols="90" rows="5" id="add-comment-{{>number}}">Write your comment here!</textarea>
+                           </div>
+
+                            <div class="add-comment-username">
+                           <label>Name</label>
+                           <br>
+                           <textarea rows="1"  cols="30" id="username-{{>number}}">your name!</textarea>
+                            <br />
+                            </div>
+
+
+
+
+
+                   </div>
+                   <button type="button" onClick="addComment({{>number}})"  href="#">Add Comment</button>
                </div>
+
+                <br />
         </script>
+
+     <script id="comment-template" type="text/x-jsrender">
+        <div class="comments">
+            <h3>Author: {{>author}}, Date:  {{>date}}</h3>
+
+
+            <div class="comment-content">{{>content}}</h3>  </div>
+
+            <h3></h3>
+        </div>
+
+    </script>
+
     <!-- =============template=============== -->
     <script id="changeset" type="text/x-jsrender">
 
@@ -146,10 +233,9 @@
         <!-- generates list of changesets -->
         <script type="text/javascript">
         var offset = 2;
-
         $(document).ready(function() {
 
-                $('#getdata-button').live('click', function(){
+
                     $('#content').html("");
                     $.getJSON('${createLink(uri:'/changeset/getLastChangesets')}', function(data) {
                        for(i = 0; i < data.length; i++) {
@@ -159,18 +245,18 @@
                                 date: data[i].date,
                                 number: data[i].id,
                                 commitComment: data[i].commitComment,
-                                email: get_gravatar(data[i].email, 50)
+                                email: get_gravatar(data[i].email, 50),
+                                howManyComments: data[i].howManyComments
                             }
                             $('#content').append($("#showdata").render(changesets));
                         }
                     });
-                });
 
-                $('#get-more-data-button').live('click', function(){
+            $('#get-more-data-button').live('click', function(){
 
                     var url = '${createLink(uri:'/changeset/getNextTenChangesets/')}';
                     url = url.concat(offset);
-                    offset = offset + 1;
+                    offset = offset +1;
 
                     $.getJSON(url, function(data) {
                         for(i = 0; i < data.length; i++) {
@@ -180,9 +266,10 @@
                                 date: data[i].date,
                                 number: data[i].id,
                                 commitComment: data[i].commitComment,
-                                email: get_gravatar(data[i].email, 50)
+                                email: get_gravatar(data[i].email, 50),
+                                howManyComments: data[i].howManyComments
                             }
-                            $('#content2').append($("#showdata").render(changesets));
+                            $('#content').append($("#showdata").render(changesets));
                         }
                     });
                 });
@@ -192,36 +279,31 @@
         </script>
 
 
-        <!-- template for a new layer -->
-        <div style='display:none'>
-            <div id='inline_content' style='padding:10px; background:#fff;'>
-                <h1>Last changeset</h1>
+    <!-- template for a new layer -->
+    <div style='display:none'>
+        <div id='inline_content' style='padding:10px; background:#fff;'>
+            <h1>Last changeset</h1>
 
-                <div id="layer">
-                    <!-- ==========container=============== -->
+            <div id="layer">
+                <!-- ==========container=============== -->
 
-                <div id="layer_content"></div>
+            <div id="layer_content"></div>
 
-                </div>
-                <h2>Files changed in commit:</h2>
-                <div id="layer_files">
-                </div>
             </div>
-        </div>
-
-        <div id="content2"></div>
-
-        <g:form action="addComment" controller="UserComment"  >
-            <div>
-                <label>Name: </label> <input type="text" name="username"/>
-                <label>Comment: </label>        <input type="text" name="content"/>
-                <label>Post: </label>   <input type="submit" value="post"/>
+            <h2>Files changed in commit:</h2>
+            <div id="layer_files">
             </div>
-        </g:form>
+    </div>
+    </div>
 
-        <h3><a href="#" id="get-more-data-button">Older</a></h3>
-        <div class="loading" id="loading">Wait a moment... it's loading!</div>
-        <div class="loading" id="nomoreresults">Sorry, no more results for your pagination demo.</div>
+
+
+
+    <h3><a href="#" id="get-more-data-button">Older</a>   </h3>
+    <div class="loading" id="loading">Wait a moment... it's loading!</div>
+    <div class="loading" id="nomoreresults">Sorry, no more results for your pagination demo.</div>
+
+
 
     </body>
 </html>

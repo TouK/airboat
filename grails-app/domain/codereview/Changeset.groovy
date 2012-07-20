@@ -27,7 +27,12 @@ class Changeset {
             return null;
         }
     }
-
+    String countComments() {        //TODO implement me!
+        def commentsCount
+        def comments = UserComment.findAllByChangeset(this)
+        commentsCount = comments.size()
+        return commentsCount.toString()
+    }
     static constraints = {
         author blank: false
         identifier blank: false, unique: true
@@ -36,5 +41,6 @@ class Changeset {
         userComments nullable: true
         commitComment nullable: true, blank: true //TODO remove it after changing tests
     }
+
 
 }

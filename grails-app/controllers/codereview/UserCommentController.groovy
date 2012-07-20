@@ -11,8 +11,10 @@ class UserCommentController {
         def username = params.username
         def content = params.content
         def changesetId = params.changesetId
-        new UserComment(content: content, author: username).save()
-        //add to changeset
+        def changeset = Changeset.findById(params.changesetId)
+        def comment = new UserComment(content: content, author: username)
+        changeset?.addToUserComments(comment)
+        comment.save()
 
         render "I did it! Saved."
     }
@@ -24,7 +26,12 @@ class UserCommentController {
         def result = username + " wrote: " + content
         render result
     }
+    def returnCommentsToChangeset = {
+        def changeset = Changeset.findById(params.id)
+        def comments = UserComment.findAllByChangeset(changeset)
+        render comments as JSON
+    }
     def getLastComments = {
-        render UserComment.list(max: 10, sort: "author", order: "desc") as JSON
+        render UserComment.list(max: 10, sort: "dateCreated", order: "desc") as JSON
     }
 }

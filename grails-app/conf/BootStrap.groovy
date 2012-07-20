@@ -13,6 +13,7 @@ class BootStrap {
             returnMap['email'] = it.getEmail()
             returnMap['commitComment'] = it.commitComment
             returnMap['id'] = it.id
+            returnMap['howManyComments'] = it.countComments()
             return returnMap
         }
 

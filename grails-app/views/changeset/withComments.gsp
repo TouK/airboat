@@ -11,16 +11,20 @@
     <script src="http://borismoore.github.com/jsviews/jsrender.js" type="text/javascript"></script>
 
     <script type="text/javascript">
-        function addComment() {
-            var rawText = $('textarea#add-comment').val();
-            var text = "your comment is: " +rawText ;
-            var username =      $('textarea#username').val();
-            text = text + " written by: " + username  + "<br />";
-            $('#comments').append(text);
+        function addComment(changesetId) {
+            var rawText = $('textarea#add-comment-'+changesetId.toString()).val();
+            var text = "<h1>your comment is: " +rawText ;
+            var username =      $('textarea#username-'+changesetId.toString()).val();
+            text = text + " written by: " + username  + " changeset id: " + changesetId.toString() + "</h1><br />";
 
+            var comment = {
+                author: username,
+                content: rawText
+            }
+            $('#comments-'+changesetId.toString()).append($("#comment-template").render(comment));
             var url = "${createLink(controller:'UserComment', action:'addComment')}";
 
-            $.post(url, { username: username, changesetId: "11", content: rawText } );
+            $.post(url, { username: username, changesetId: changesetId, content: rawText } );
         }
     </script>
 
@@ -47,9 +51,9 @@
 </div>
 <hr />
     <div class="add_comment">
-    <div class="write shadow comment">
 
-        <p class="textarea right">
+
+        <div>
             <label>Comment</label>
             <br />
             <textarea class="left" cols="40" rows="5" id="add-comment">Write your comment here!</textarea>
@@ -58,10 +62,10 @@
             <br />
             <textarea rows="2" cols="10" id="username">your name!</textarea>
 
-        </p>
-    </div>
+        </div>
+
         <div id="comment"></div>
-    <button type="button" onClick="addComment()"  href="#">Add Comment</button>
+    <button type="button" onClick="addComment(73)"  href="#">Add Comment</button>
 
 </div>
 
@@ -69,7 +73,7 @@
 <!-- =============template=============== -->
 <script id="showdata" type="text/x-jsrender">
     <hr />
-    <div class="changeset">
+    <div class="changeset" id="changeset-{{>number}}">
         <div class="changeset-header">
             <h3>
 
@@ -88,13 +92,43 @@
         <div class="changeset-content" >
             <b>Comment written during commiting:</b> {{>commitComment}}
         </div>
-        <div class="changeset-comments">
-          <textarea rows="5" cols="70" > I don't know yet. But it'd probably be nice to have a div for comments.   </textarea>
-          <button type="button" class="show-changeset-button" href="#inline_content" >post</button>
+
+        <div class="comments" id="comments-{{>number}}">
+            <h3>Comments: </h3>
+        </div>
+        <div class="add_comment">
+
+
+                <div>
+                    <label>Comment</label>
+                    <br />
+                    <textarea class="left" cols="40" rows="5" id="add-comment-{{>number}}">Write your comment here!</textarea>
+                    <br />
+                    <label>Name</label>
+                    <br />
+                    <textarea rows="2" cols="10" id="username-{{>number}}">your name!</textarea>
+
+                </div>
+
+
+
+            <button type="button" onClick="addComment({{>number}})"  href="#">Add Comment</button>
+
         </div>
     </div>
 </script>
 
+<script id="comment-template" type="text/x-jsrender">
+    <div class="comments">
+    <h3>Author: {{>author}}, Date:  Now</h3>
+
+
+    <div class="comment-content">{{>content}}</h3>  </div>
+
+    <h3></h3>
+    </div>
+
+</script>
 
 <script type="text/javascript">
     $(document).ready(function() {
