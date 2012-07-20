@@ -4,7 +4,9 @@ import grails.converters.JSON
 
 class UserCommentController {
 
-    def index() { }
+    def index() {
+    }
+
     def addComment = {
         def username = params.username
         def content = params.content
@@ -14,6 +16,7 @@ class UserCommentController {
 
         render "I did it! Saved."
     }
+
     def receiveJSON = {
         //def json = request.JSON
         def username = params.username

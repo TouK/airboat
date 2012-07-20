@@ -2,10 +2,10 @@ package codereview
 
 class ProjectUpdateJob {
 
-    ChangelogAccessService changelogAccessService
+    ScmAccessService scmAccessService
 
     static triggers = {
-      simple repeatInterval: 10000l // execute job once in 10 seconds
+      simple repeatInterval: 30000l // execute job once in 10 seconds
     }
 
     def execute() {
@@ -13,6 +13,7 @@ class ProjectUpdateJob {
     }
 
     def update() {
-        changelogAccessService.fetchChangelogAndSave("git@git.touk.pl:touk/codereview.git")
+        scmAccessService.updateProject("git@git.touk.pl:touk/codereview.git")
+        scmAccessService.fetchAllChangesetsWithFilesAndSave("git@git.touk.pl:touk/codereview.git")
     }
 }

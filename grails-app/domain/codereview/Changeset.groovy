@@ -9,13 +9,6 @@ class Changeset {
 
     static hasMany = [projectFiles: ProjectFile, userComments: UserComment]
 
-
-    Changeset(String identifier, String author, Date date) {      //TODO change tests to use constructor below and remove this one
-        this.identifier = identifier
-        this.author = author
-        this.date = date
-    }
-
     Changeset(String identifier, String author, String commitComment, Date date) {
         this.identifier = identifier
         this.author = author
@@ -23,8 +16,16 @@ class Changeset {
         this.commitComment = commitComment
     }
 
+    /**
+     * TODO Later on should be called on User object.
+     * @return
+     */
     String getEmail() {
-      return author[author.indexOf("<")+1.. author.indexOf(">")-1]
+        if (author != null && author.contains("@")) {
+            return author[author.indexOf("<") + 1 .. author.indexOf(">") - 1]
+        } else {
+            return null;
+        }
     }
 
     static constraints = {
@@ -34,8 +35,6 @@ class Changeset {
         projectFiles nullable: true
         userComments nullable: true
         commitComment nullable: true, blank: true //TODO remove it after changing tests
-
-
     }
 
 }

@@ -10,38 +10,14 @@ import grails.converters.JSON
 class ChangesetControllerSpec extends Specification {
 
     def setup() {
-        controller.changelogAccessService = Mock(ChangelogAccessService)
-        controller.gitRepositoryService = Mock(GitRepositoryService)
-    }
-
-    void "list should have changesets in context"() {
-        when:
-            def model = controller.list()
-
-        then:
-            model.changesetInstanceList.size() == 0
-            model.changesetInstanceTotal == 0
-    }
-
-    void testListWithAddedChangesets() {
-
-        given:
-            new Changeset("hash23", "agj", new Date()).save()
-            new Changeset("hash24", "kpt", new Date()).save()
-
-        when:
-            def model = controller.list()
-
-        then:
-            model.changesetInstanceList.size() == 2
-            model.changesetInstanceTotal == 2
+        controller.scmAccessService = Mock(ScmAccessService)
     }
 
     def "getLastChangesets should return JSON"() {
 
         given:
-            new Changeset("hash23", "agj", new Date()).save()
-            new Changeset("hash24", "kpt", new Date()).save()
+            new Changeset("hash23", "agj", "", new Date()).save()
+            new Changeset("hash24", "kpt", "", new Date()).save()
             def changesets = Changeset.list(max: 20, sort: "date", order: "desc")
 
         when:
@@ -52,13 +28,13 @@ class ChangesetControllerSpec extends Specification {
             response.getContentType().startsWith("application/json")
     }
 
-    def "initial checkout should delgate to service and display index afterwards"() {
+    def "initial checkout should delegate to service and display index afterwards"() {
 
         when:
             controller.initialCheckOut()
 
         then:
-            1 * controller.gitRepositoryService.checkoutProject(_)
+            1 * controller.scmAccessService.checkoutProject(_)
             response.redirectedUrl == "/changeset/index"
     }
 
