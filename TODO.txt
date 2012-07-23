@@ -2,3 +2,4 @@ Remove from project:
 fancybox legacy script-files
 scrolling script-files
 prototype
+UserComment view files - or change it

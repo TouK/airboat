@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" %>              <!-- TODO this page was made for experimental using of new libraries, should be removed now -->
 <html>
 <head>
     <title></title>

@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
     <head>
+        <!-- TODO  tidy up resources section, it's a mess -->
         <g:javascript library="jquery" />
         <r:layoutResources/>
           <link href="http://borismoore.github.com/jsviews/demos/resources/presentation.css" rel="stylesheet" type="text/css" />
@@ -16,8 +17,11 @@
 
         <!-- Jquery pagination -->
         <script type="text/javascript" src="${createLink(uri:'/js/scrollpagination.js')}"></script>
-        <link href="${createLink(uri:'/css/scrollpagination_demo.css')}" rel="stylesheet" media="screen" />
+        <link href="${createLink(uri:'/css/scrollpagination_demo.css')}" rel="stylesheet" media="screen" />       <!-- TODO not used anymore - remove -->
         <link href="${createLink(uri:'/css/main-content.css')}" rel="stylesheet" media="screen" />
+
+
+        <!--TODO extract function scripts, because they're making this view unreadable -->
 
         <script type="text/javascript">
             function addComment(changesetId) {
@@ -140,6 +144,8 @@
 
         <div id="content" class="main-content"></div>
 
+       <!--TODO extract these templates, put in another file gathering js-view templates or something -->
+
          <!-- =============template=============== -->
         <script id="showdata" type="text/x-jsrender">
         <hr />
@@ -229,6 +235,7 @@
 
     </script>
 
+
         <!--- ============script================= -->
         <!-- generates list of changesets -->
         <script type="text/javascript">
@@ -262,7 +269,7 @@
                         for(i = 0; i < data.length; i++) {
                             var changesets = {
                                 author: data[i].author,
-                                identifier: data[i].identifier,
+                                identifier: data[i].identifier,                        //TODO extract this <- it looks the same as above
                                 date: data[i].date,
                                 number: data[i].id,
                                 commitComment: data[i].commitComment,
@@ -300,7 +307,7 @@
 
 
     <h3><a href="#" id="get-more-data-button">Older</a>   </h3>
-    <div class="loading" id="loading">Wait a moment... it's loading!</div>
+    <div class="loading" id="loading">Wait a moment... it's loading!</div>         <!--TODO remove these two lines -->
     <div class="loading" id="nomoreresults">Sorry, no more results for your pagination demo.</div>
 
 
