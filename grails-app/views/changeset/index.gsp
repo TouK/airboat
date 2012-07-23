@@ -250,7 +250,7 @@
                                 author: data[i].author,
                                 identifier: data[i].identifier,
                                 date: data[i].date,
-                                number: data[i].id,
+                                number: data[i].id,                                                           //TODO: duplicate code
                                 commitComment: data[i].commitComment,
                                 email: get_gravatar(data[i].email, 50),
                                 howManyComments: data[i].howManyComments
