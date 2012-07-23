@@ -22,9 +22,6 @@
         <link href="${createLink(uri:'/css/scrollpagination_demo.css')}" rel="stylesheet" media="screen" />       <!-- TODO not used anymore - remove -->
         <link href="${createLink(uri:'/css/main-content.css')}" rel="stylesheet" media="screen" />
 
-        <link rel="stylesheet" href="${resource(dir: 'css', file: 'codereview.css')}" type="text/css">
-
-
         <!--TODO extract function scripts, because they're making this view unreadable -->
 
         <script type="text/javascript">
@@ -73,7 +70,8 @@
             $(".show-changeset-button").colorbox({opacity:0.3 ,
                     inline: true,
                     width:"80%",
-                    height:"80%" ,
+                    height:"80%",
+                    fixed: true,
                     onOpen:function(){
                         $('#layer_content').html("") ;
                         $('#layer_files').html("");
