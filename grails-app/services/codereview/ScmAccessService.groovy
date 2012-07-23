@@ -50,6 +50,6 @@ class ScmAccessService {
 
             return changeset
 
-        }.sort { it.date.time } //TODO it seems that somehow sort order is build-depenent (IDEA vs Grails) - find cause
+        }.sort { it.date.time } //TODO it seems that somehow sort order is build-dependent (IDEA vs Grails) - find cause
     }
 }

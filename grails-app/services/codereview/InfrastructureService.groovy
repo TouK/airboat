@@ -20,8 +20,8 @@ class InfrastructureService {
         }
     }
 
-    File createWorkingDirectory(File baseDirectory, String scmUrl) {
-
+    File createWorkingDirectory(File baseDirectory, String scmUrl) {        //TODO function name doesn't say anything about checking and warnings in logs
+                                                                             //TODO it's to big and does too many thing, some of it can be extracted
         if(!baseDirectory.exists()) {
             log.warn("Directory " + baseDirectory + " does not exist. Creating one.")
             baseDirectory.mkdir()
