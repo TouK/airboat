@@ -5,7 +5,8 @@ class ProjectUpdateJob {
     ScmAccessService scmAccessService
 
     static triggers = {
-      simple repeatInterval: 30000l // execute job once in 10 seconds
+      simple repeatInterval: 30000l // execute job once in 30 seconds?
+        //TODO remove magical number from here and comment above, use constant variable instead
     }
 
     def execute() {
