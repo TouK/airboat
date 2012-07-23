@@ -8,6 +8,9 @@ class UserCommentController {
     }
 
     def addComment = {
+        //TODO initialize this variables in different way
+        //TODO like that: def ( changesetId, commitComment, changesetAuthor)  = [ "id", "comment", "agj@touk.pl"]
+        //TODOor finding how to pass it through controller methods arguments if possible
         def username = params.username
         def content = params.content
         def changesetId = params.changesetId

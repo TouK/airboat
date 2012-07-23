@@ -11,7 +11,7 @@ class ChangesetController {
         def offset = "0"
         if(session.offset != null){          //TODO: change flag on method which compare this
             session["offset"]   = "0"        //TODO: change "0" and "offset" on variables
-        } else {
+        } else {                                             //TODO check if it is used and if not - remove
             session.setAttribute("offset", offset)
         }
         [offset: offset]
@@ -43,7 +43,7 @@ class ChangesetController {
     }
 
     def nextTenChangesets = {       //TODO:refactor name getAnotherTenChangesets
-        def offset = params.id
+        def offset = params.id     //TODO Why? It's actually not getting, but rendering - check view, javascript involved
         [offset: offset]
     }
 
