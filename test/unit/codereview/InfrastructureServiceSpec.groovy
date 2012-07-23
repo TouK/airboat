@@ -34,20 +34,3 @@ class InfrastructureServiceSpec extends Specification {
             name == "projekt"
     }
 }
-
-//    def "Should validate directory path"  () {        //still in red phase
-//        when:
-//            def gitRepositoryService = new GitRepositoryService()
-//
-//        then:
-//        gitRepositoryService.isExisting(path) == value
-//
-//        where:
-//        path                    | value
-//        "/tmp/workDir"          | true
-//        "blablabla"             | false
-//        "/tmp"                  | true
-//        "/home/lubieKartofle"   | false
-//
-//
-//    }

@@ -1,0 +1,4 @@
+Remove from project:
+fancybox legacy script-files
+scrolling script-files
+prototype

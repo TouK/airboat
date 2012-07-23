@@ -4,7 +4,7 @@ import spock.lang.Specification
 
 class SystemPropertySpec extends Specification {
 
-    def "read system property"() {
+    def "read system property"() {                //TODO test makes too much assumptions, environment dependent
 
         when:
             def result = System.getProperty("java.io.tmpdir")
@@ -13,7 +13,7 @@ class SystemPropertySpec extends Specification {
             result == "/tmp"
     }
 
-    def "read codereview.workingDirectory property"() {
+    def "read codereview.workingDirectory property"() {          //TODO test makes too much assumptions, environment dependent
 
         when:
             def result = System.getProperty("codereview.workingDirectory")
