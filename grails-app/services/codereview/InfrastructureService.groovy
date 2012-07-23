@@ -12,11 +12,11 @@ class InfrastructureService {
     }
 
     String getBaseDirectoryName() {
-        def customBaseDirectoryName = System.getProperty("codereview.workingDirectory")
-        if (customBaseDirectoryName != null) {
+        def customBaseDirectoryName = System.getProperty("codereview.workingDirectory")        //TODO: change "codereview.workingDirectory"" on variable
+        if (customBaseDirectoryName != null) {       //TODO: should be method instead of flag
             return customBaseDirectoryName;
         } else {
-            return System.getProperty("java.io.tmpdir");
+            return System.getProperty("java.io.tmpdir");                     //TODO: change "java..." on variable
         }
     }
 
@@ -46,7 +46,7 @@ class InfrastructureService {
      * @return
      */
     String getDirectoryNameForTheProject(String scmUrl) {
-        "projekt"
+        "projekt"                                        //TODO: change on variable
     }
 
 
