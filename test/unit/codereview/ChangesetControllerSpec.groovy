@@ -7,7 +7,7 @@ import grails.converters.JSON
 
 @TestFor(ChangesetController)
 @Mock(Changeset)
-class ChangesetControllerSpec extends Specification {
+class ChangesetControllerSpec extends Specification {          //TODO make tests up to date, changesetController has more methods to test now
 
     def setup() {
         controller.scmAccessService = Mock(ScmAccessService)
@@ -37,5 +37,6 @@ class ChangesetControllerSpec extends Specification {
             1 * controller.scmAccessService.checkoutProject(_)
             response.redirectedUrl == "/changeset/index"
     }
+
 
 }

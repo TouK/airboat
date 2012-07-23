@@ -16,7 +16,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
             def changelog = gitRepositoryService.getAllChangeSets(Fixture.PROJECT_REPOSITORY_URL)
 
         then:
-            //changelog == changelog.sort(true, { it.date.time })
+            //changelog == changelog.sort(true, { it.date.time })    //TODO if not useful - remove
             changelog.size() >= Fixture.LOWER_BOUND_FOR_NUMBER_OF_COMMITS
             changelog.last().author == Fixture.FIRST_COMMIT_AUTHOR
             changelog.last().date == Fixture.FIRST_COMMIT_DATE
@@ -29,7 +29,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
             def changedFiles = gitRepositoryService.getFileNamesFromChangeSetsList(changes)
 
         then:
-            changedFiles[0][0]?.getName() != null
+            changedFiles[0][0]?.getName() != null    //TODO change validation of getting, we only know, that we got "something"!
     }
 
     //TODO add test for fetchFullChangelog when in case project was not been checked out
@@ -45,7 +45,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
             changedFiles[0].getName() != null
     }
 
-    def "should create changesets with added files" () {
+    def "should create changesets with added files" () {                //TODO, check if files are added correctly
         when:
 
             def changes = gitRepositoryService.getAllChangeSets(Fixture.PROJECT_REPOSITORY_URL)
@@ -53,7 +53,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
         then:
             changesetsWithFiles !=  null
-            changesetsWithFiles.size() == changes.size()
+            changesetsWithFiles.size() == changes.size()                  //TODO add more validation
     }
 }
 

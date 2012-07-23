@@ -36,5 +36,8 @@ class MavenScmApiLearningSpec extends Specification {
             firstCommit.comment == Fixture.FIRST_COMMIT_COMMENT
             firstCommit.date == Fixture.FIRST_COMMIT_DATE
     }
+    //TODO explore this class more, we encountered some surprising behaviour,
+    //TODO how does it behave when asking for changelog for second or third time?
+    //TODO how exactly does it look like, it's not explicit right now
 
 }
