@@ -9,8 +9,8 @@ class ChangesetController {
 
     def index() {
         def offset = "0"
-        if(session.offset != null){
-            session["offset"]   = "0"
+        if(session.offset != null){          //TODO: change flag on method which compare this
+            session["offset"]   = "0"        //TODO: change "0" and "offset" on variables
         } else {
             session.setAttribute("offset", offset)
         }
@@ -42,7 +42,7 @@ class ChangesetController {
         render Changeset.list(max: 10, sort: "date", order: "desc", offset: myOffset) as JSON
     }
 
-    def nextTenChangesets = {
+    def nextTenChangesets = {       //TODO:refactor name getAnotherTenChangesets
         def offset = params.id
         [offset: offset]
     }
