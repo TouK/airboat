@@ -24,9 +24,9 @@ class GitRepositoryService {
         ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
 
         //TODO test for it
-        if (validateScmFileset(allFilesInProject)) {               //TODO it's operating on diffrent level
-            def scmProvider = new GitExeScmProvider()              // of abstraction, there should be one level of abstraction
-            scmProvider.addListener(new Log4jScmLogger())          //so -> this should be extracted
+        if (validateScmFileset(allFilesInProject)) {
+            def scmProvider = new GitExeScmProvider()
+            scmProvider.addListener(new Log4jScmLogger())
             scmProvider.update(gitRepository, allFilesInProject)
         } else {
             log.warn("Project directory does not exist yet. Please checkout project first.")
@@ -37,7 +37,7 @@ class GitRepositoryService {
         return scmFileSet.basedir.exists()
     }
 
-    List<ChangeSet> getAllChangeSets(String gitScmUrl)   {                 //TODO three parts of code in function?
+    List<ChangeSet> getAllChangeSets(String gitScmUrl)   {
         ScmFileSet allFilesInProject = prepareScmFileset(gitScmUrl)
         ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
 

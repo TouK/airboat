@@ -28,10 +28,10 @@ class ScmAccessService {
 
     Changeset[] fetchAllChangesetsWithFiles(String gitScmUrl){
         List<org.apache.maven.scm.ChangeSet> scmChanges = gitRepositoryService.getAllChangeSets(gitScmUrl)
-        if(scmChanges != null) {
+        if(scmChanges != null) {   //TODO: method instead of flag
             createChangesetsWithFiles(scmChanges)
         } else {
-            return null
+            return null       //TODO: should return null
         }
     }
 
