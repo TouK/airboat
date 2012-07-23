@@ -4,11 +4,13 @@
         <!-- TODO  tidy up resources section, it's a mess -->
         <g:javascript library="jquery" />
         <r:layoutResources/>
-          <link href="http://borismoore.github.com/jsviews/demos/resources/presentation.css" rel="stylesheet" type="text/css" />
+
+        <!-- jsviews -->
+        <link href="http://borismoore.github.com/jsviews/demos/resources/presentation.css" rel="stylesheet" type="text/css" />
         <link href="http://borismoore.github.com/jsviews/demos/resources/syntaxhighlighter.css" rel="stylesheet" type="text/css" />
         <script src="http://borismoore.github.com/jsviews/demos/resources/syntaxhighlighter.min.js" type="text/javascript"></script>
 
-        <!--###################COLORBOX###################-->
+        <!--###################COLORBOX###################--> <!-- TODO ASCII ART... -->
         <link media="screen" rel="stylesheet" href=" ${createLink(uri:'/css/colorbox.css')}" />
         <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
 
@@ -19,6 +21,8 @@
         <script type="text/javascript" src="${createLink(uri:'/js/scrollpagination.js')}"></script>
         <link href="${createLink(uri:'/css/scrollpagination_demo.css')}" rel="stylesheet" media="screen" />       <!-- TODO not used anymore - remove -->
         <link href="${createLink(uri:'/css/main-content.css')}" rel="stylesheet" media="screen" />
+
+        <link rel="stylesheet" href="${resource(dir: 'css', file: 'codereview.css')}" type="text/css">
 
 
         <!--TODO extract function scripts, because they're making this view unreadable -->
@@ -234,7 +238,6 @@
         <h3>File name: {{>name}},  Id {{>identifier}}</h3>
 
     </script>
-
 
         <!--- ============script================= -->
         <!-- generates list of changesets -->
