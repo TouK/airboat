@@ -13,7 +13,7 @@ class ProjectUpdateJob {
     }
 
     def update() {
-        scmAccessService.updateProject("git@git.touk.pl:touk/codereview.git")
-        scmAccessService.fetchAllChangesetsWithFilesAndSave("git@git.touk.pl:touk/codereview.git")
+        scmAccessService.updateProject("git@git.touk.pl:touk/codereview.git")            //TODO: change it to variable from class Fixture
+        scmAccessService.fetchAllChangesetsWithFilesAndSave("git@git.touk.pl:touk/codereview.git")   //TODO: change it to variable from class Fixture
     }
 }
