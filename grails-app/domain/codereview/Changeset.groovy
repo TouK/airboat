@@ -23,9 +23,15 @@ class Changeset {
     String getEmail() {
         if (author != null && author.contains("@")) {   //TODO: refactor "@","<",">","1" on variables
             return author[author.indexOf("<") + 1 .. author.indexOf(">") - 1]
+            //TODO I would suggest extracting this code in another function
+            //TODO because it was only a temporary solution based on data from maven git scm api
+            //TODO this should be hidden, abstraction level is incorrect
+            //TODO for example String (or Email) extractEmailFromString(String stringWithEmailInIt)
+            //TODO we can think about Email class, but it's not necessary as for now
         } else {
             return null;                 //TODO: method shouldn't return null?
         }
+
     }
 
     String countComments() {        //TODO implement me!
