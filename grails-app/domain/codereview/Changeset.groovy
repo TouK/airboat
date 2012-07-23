@@ -21,12 +21,13 @@ class Changeset {
      * @return
      */
     String getEmail() {
-        if (author != null && author.contains("@")) {
+        if (author != null && author.contains("@")) {   //TODO: refactor "@","<",">","1" on variables
             return author[author.indexOf("<") + 1 .. author.indexOf(">") - 1]
         } else {
-            return null;
+            return null;                 //TODO: method shouldn't return null?
         }
     }
+
     String countComments() {        //TODO implement me!
         def commentsCount
         def comments = UserComment.findAllByChangeset(this)
