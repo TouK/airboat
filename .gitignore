@@ -12,3 +12,5 @@
 # Compiled sources
 target/stacktrace.log
 
+#logs
+*.log
