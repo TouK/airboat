@@ -14,12 +14,12 @@
         <link media="screen" rel="stylesheet" href=" ${createLink(uri:'/css/colorbox.css')}" />
         <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
 
-        <script src="${createLink(uri:'/js/jquery.colorbox-min.js')}" type="text/javascript"></script>
+
         <script src="http://borismoore.github.com/jsviews/jsrender.js" type="text/javascript"></script>
 
         <!-- Jquery pagination -->
-        <script type="text/javascript" src="${createLink(uri:'/js/scrollpagination.js')}"></script>
-        <link href="${createLink(uri:'/css/scrollpagination_demo.css')}" rel="stylesheet" media="screen" />       <!-- TODO not used anymore - remove -->
+
+              <!-- TODO not used anymore - remove -->
         <link href="${createLink(uri:'/css/main-content.css')}" rel="stylesheet" media="screen" />
 
         <!--TODO extract function scripts, because they're making this view unreadable -->

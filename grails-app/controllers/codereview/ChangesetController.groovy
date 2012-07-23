@@ -46,9 +46,12 @@ class ChangesetController {
         def offset = params.id     //TODO Why? It's actually not getting, but rendering - check view, javascript involved
         [offset: offset]
     }
-
-    def withComments = {           //experimental
-
+    def getChangeset = {
+        def id = params.id
+        def changeset = Changeset.findById(params.id)
+        def changesetList = [changeset]
+        render changesetList as JSON
     }
+
 }
 
