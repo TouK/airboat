@@ -7,6 +7,7 @@ import org.apache.maven.scm.repository.ScmRepository
 import spock.lang.Specification
 import testFixture.Fixture
 import com.google.common.io.Files
+import org.apache.maven.scm.ChangeSet
 
 class MavenScmApiLearningSpec extends Specification {
 
@@ -25,7 +26,7 @@ class MavenScmApiLearningSpec extends Specification {
 
         then:
             def changelog = changeLogScmResult.getChangeLog().getChangeSets()
-            changelog == changelog.sort(false, { -it.date.time })
+            isNOTSortedChronologically(changelog)
             changelog.size() >= Fixture.LOWER_BOUND_FOR_NUMBER_OF_COMMITS
 
         then:
@@ -36,6 +37,11 @@ class MavenScmApiLearningSpec extends Specification {
             firstCommit.comment == Fixture.FIRST_COMMIT_COMMENT
             firstCommit.date == Fixture.FIRST_COMMIT_DATE
     }
+
+    private boolean isNOTSortedChronologically(List<ChangeSet> changelog) {
+        changelog != changelog.sort(false, { -it.date.time })
+    }
+
     //TODO explore this class more, we encountered some surprising behaviour,
     //TODO how does it behave when asking for changelog for second or third time?
     //TODO how exactly does it look like, it's not explicit right now
