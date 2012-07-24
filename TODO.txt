@@ -1,7 +1,6 @@
 Remove from project:
 fancybox legacy script-files
 scrolling script-files
-prototype
 remove img directory
 UserComment view files - or change it
 
