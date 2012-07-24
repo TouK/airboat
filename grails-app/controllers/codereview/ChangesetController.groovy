@@ -8,13 +8,7 @@ class ChangesetController {
     ScmAccessService scmAccessService
 
     def index() {
-        def offset = "0"
-        if(session.offset != null){          //TODO: change flag on method which compare this
-            session["offset"]   = "0"        //TODO: change "0" and "offset" on variables
-        } else {                                             //TODO check if it is used and if not - remove
-            session.setAttribute("offset", offset)
-        }
-        [offset: offset]
+
     }
 
     /**
@@ -23,7 +17,7 @@ class ChangesetController {
     def initialCheckOut() {
         log.info("Checking out project.")
         scmAccessService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
-        redirect(action: "index", params: params)
+        redirect(views: "/index", params: params)
     }
 
     def getLastChangesets = {
