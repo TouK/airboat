@@ -1,11 +1,4 @@
-/**
- * Created with IntelliJ IDEA.
- * User: touk
- * Date: 23.07.12
- * Time: 15:16
- * To change this template use File | Settings | File Templates.
- */
-function popInfoBox (id)         {
+function showChangedFilesBox(id)         {
 
     var identifier = id
     $(".show-changeset-button").colorbox({opacity:0.3 ,

@@ -27,7 +27,7 @@
             Date: {{>date}},
 
             <div class="buttons" style="float:right">
-                <button type="button" class="show-changeset-button" href="#inline_content" onclick="popInfoBox({{>number}})">Info</button>
+                <button type="button" class="show-changeset-button" href="#inline_content" onclick="showChangedFilesBox({{>number}})">Info</button>
             </div>
         </div>
         <div class="changeset-content" >

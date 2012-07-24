@@ -4,7 +4,12 @@
         <!-- TODO  tidy up resources section, it's a mess -->
         <g:javascript library="jquery" />
         <r:layoutResources/>
-          <link href="http://borismoore.github.com/jsviews/demos/resources/presentation.css" rel="stylesheet" type="text/css" />
+
+        <link media="screen" rel="stylesheet" href=" ${createLink(uri:'/css/bootstrap.css')}" />
+
+
+        <!--FIXME host own copies of jsviews inside application, don't rely on external resources (github?!)-->
+        <link href="http://borismoore.github.com/jsviews/demos/resources/presentation.css" rel="stylesheet" type="text/css" />
         <link href="http://borismoore.github.com/jsviews/demos/resources/syntaxhighlighter.css" rel="stylesheet" type="text/css" />
     <link href="${createLink(uri:'/js/js-view-templates.html')}"  type="text/css" />
 
@@ -24,9 +29,9 @@
 
         <script type="text/javascript">
             function addComment(changesetId) {
-                var rawText = $('textarea#add-comment-'+changesetId.toString()).val();
+                var rawText = $('#add-comment-'+changesetId.toString()).val();
                 var text = "<h1>your comment is: " +rawText ;
-                var username =      $('textarea#username-'+changesetId.toString()).val();
+                var username = $('#username-'+changesetId.toString()).val();
                 text = text + " written by: " + username  + " changeset id: " + changesetId.toString() + "</h1><br />";
 
                 var comment = {
@@ -62,16 +67,15 @@
 
      <!-- function to handle click for more info in new layer for chosen changeset -->
     <script type="text/javascript">
-        function popInfoBox (id)         {
+        function showChangedFilesBox(id)         {
 
-            var identifier = id
             $(".show-changeset-button").colorbox({opacity:0.3 ,
                     inline: true,
                     width:"80%",
                     height:"80%" ,
-            fixed: true,
+                    fixed: true,
                     onOpen:function(){
-                        $('#layer_content').html("") ;
+                        $('#changesetInfo').html("") ;
                         $('#layer_files').html("");
                         var url = '${createLink(uri:'/changeset/getChangeset/')}';
                         url = url.concat(id.toString());
@@ -84,7 +88,7 @@
                             date: data[i].date
 
                         }
-                        $('#layer_content').append($("#changeset").render(changesets));
+                        $('#changesetInfo').append($("#changeset").render(changesets));
 
                     }
                 });
@@ -121,7 +125,6 @@
                     }
                     var howManyComments = data.length;
                     $('#comments-count-'+id.toString()).html(howManyComments.toString());
-                    $('#comments-'+id.toString()).append($("<h3>Comments: </h3>"));
                     $('#comments-'+id.toString()).append($("#comment-template").render(comments));
 
                 }
@@ -140,7 +143,7 @@
 
     <br />
 
-        <div id="content" class="main-content"></div>
+        <div id="content" class="container"></div>
 
        <!--TODO extract these templates, put in another file gathering js-view templates or something -->
 
@@ -163,7 +166,7 @@
                     date: data[i].date,
                     number: data[i].id,                                                           //TODO: duplicate code
                     commitComment: data[i].commitComment,
-                    email: get_gravatar(data[i].email, 50),
+                    emailSubstitutedWithGravatar: get_gravatar(data[i].email, 50),
                     howManyComments: data[i].howManyComments
                 }
                 $('#content').append($("#showdata").render(changesets));
@@ -184,7 +187,8 @@
                         date: data[i].date,
                         number: data[i].id,
                         commitComment: data[i].commitComment,
-                        email: get_gravatar(data[i].email, 50),
+                        email: get_gravatar(data
+                                [i].email, 50),
                         howManyComments: data[i].howManyComments
                     }
                     $('#content').append($("#showdata").render(changesets));
@@ -200,17 +204,13 @@
 <!-- template for a new layer -->
 <div style='display:none'>
     <div id='inline_content' style='padding:10px; background:#fff;'>
-        <h1>Last changeset</h1>
-
-        <div id="layer">
-            <!-- ==========container=============== -->
-
-            <div id="layer_content"></div>
-
+        <h1>Changeset</h1>
+        <div>
+            <div id="changesetInfo"></div>
         </div>
+
         <h2>Files changed in commit:</h2>
-        <div id="layer_files">
-        </div>
+        <ul id="layer_files"></ul>
     </div>
 </div>
 
@@ -219,92 +219,63 @@
 
 <h3><a href="#" id="get-more-data-button">Older</a>   </h3>
 
-        <script id="showdata" type="text/x-jsrender">
-        <hr />
-               <div class="changeset">
-               <div class="changeset-header">
+    <script id="showdata" type="text/x-jsrender">
+        <div class="changeset well">
+            <div class="changeset-header">
+                <img src="{{>emailSubstitutedWithGravatar}}">
+                {{>author}},
+                {{>identifier}},
+                {{>date}}
+            </div>
 
+            <div class="changeset-content">
+                Comment: {{>commitComment}}
+            </div>
 
-                      <img src="{{>email}}">
+            <button type="button" class="show-changeset-button btn" href="#inline_content"
+                    onclick="showChangedFilesBox({{>number}})">Changed files</button>
 
-                     {{>author}},
+            <div class="comments-preview">
+                <span>There are <span id="comments-count-{{>number}}">{{>howManyComments}}</span> comments</span>
+                <button type="button" class="btn" href="#"
+                        onclick="showCommentsToChangeset({{>number}})">Show comments</button>
+                <button type="button" class="btn" href="#"
+                        onclick="hideCommentsToChangeset({{>number}})">Hide comments</button>
+            </div>
 
-                    {{>identifier}},
+            <div class="comments" id="comments-{{>number}}">
 
-                    {{>date}},
+            </div>
 
-                <div class="buttons" style="float:right">
-                    <button type="button" class="show-changeset-button" href="#inline_content" onclick="popInfoBox({{>number}})">Info</button>
-                </div>
-               </div>
-               <div class="changeset-content" >
-                   <b>Comment written during commiting:</b> {{>commitComment}}
-               </div>
-                   <div class="comments-preview">
-                   <h3>There are <b id="comments-count-{{>number}}"> {{>howManyComments}}</b> comments
-                       <button type="button" class="show-comments-button" href="#" onclick="showCommentsToChangeset({{>number}})"> Show comments</button>
-                       <button type="button" class="hide-comments-button" href="#" onclick="hideCommentsToChangeset({{>number}})"> Hide comments</button>
-                   </h3>
-                   </div>
-                   <div class="comments" id="comments-{{>number}}">
+            <form class="add_comment .form-inline">
+                <textarea cols="90" rows="5" id="add-comment-{{>number}}" placeholder="Write your comment here!"></textarea>
+                </br>
+                <input id="username-{{>number}}" type="text" class="input-small" placeholder="Your name!"></input>
+                </br>
+                <button type="button" class="btn" onClick="addComment({{>number}})" href="#">Add Comment</button>
+            </form>
+        </div>
 
-
-                   </div>
-                   <div class="add_comment">
-
-
-                           <div class="add-comment-content">
-                           <label>Comment</label>
-                           <br />
-                           <textarea  cols="90" rows="5" id="add-comment-{{>number}}">Write your comment here!</textarea>
-                           </div>
-
-                            <div class="add-comment-username">
-                           <label>Name</label>
-                           <br>
-                           <textarea rows="1"  cols="30" id="username-{{>number}}">your name!</textarea>
-                            <br />
-                            </div>
-
-
-
-
-
-                   </div>
-                   <button type="button" onClick="addComment({{>number}})"  href="#">Add Comment</button>
-               </div>
-
-                <br />
-        </script>
+        <br/>
+    </script>
 
      <script id="comment-template" type="text/x-jsrender">
-        <div class="comments">
-            <h3>Author: {{>author}}, Date:  {{>date}}</h3>
-
-
+        <div>
+            <span>Author: {{>author}}, Date:  {{>date}}</span>
             <div class="comment-content">{{>content}}</h3>  </div>
-
             <h3></h3>
         </div>
 
     </script>
 
-    <!-- =============template=============== -->
     <script id="changeset" type="text/x-jsrender">
-
-        <h3>Author: {{>author}}</h3>
-
-
-        <h3>Identifier:  {{>identifier}}</h3>
-
-        <h3>Date:  {{>date}}</h3>
-
+        Author: {{>author}}</br>
+        Identifier:  {{>identifier}}</br>
+        Date:  {{>date}}</br>
     </script>
-    <!-- =============template=============== -->
+
     <script id="project-files" type="text/x-jsrender">
-
-        <h3>File name: {{>name}},  Id {{>identifier}}</h3>
-
+        <li>{{>name}}</li>
     </script>
 
     </body>
