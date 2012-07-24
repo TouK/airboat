@@ -20,13 +20,7 @@
         <script src="${createLink(uri:'/js/jquery.colorbox-min.js')}" type="text/javascript"></script>
         <script src="http://borismoore.github.com/jsviews/jsrender.js" type="text/javascript"></script>
 
-        <!-- Jquery pagination -->
-        <script type="text/javascript" src="${createLink(uri:'/js/scrollpagination.js')}"></script>
-        <link href="${createLink(uri:'/css/scrollpagination_demo.css')}" rel="stylesheet" media="screen" />       <!-- TODO not used anymore - remove -->
-
-
         <!--TODO extract function scripts, because they're making this view unreadable -->
-
         <script type="text/javascript">
             function addComment(changesetId) {
                 var rawText = $('#add-comment-'+changesetId.toString()).val();
