@@ -46,6 +46,8 @@ class ChangesetController {
         def changesetList = [changeset]
         render changesetList as JSON
     }
+    def codeViewing = {
 
+    }
 }
 
