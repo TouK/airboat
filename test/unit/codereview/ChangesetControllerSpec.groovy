@@ -38,5 +38,23 @@ class ChangesetControllerSpec extends Specification {          //TODO make tests
             response.redirectedUrl == "/changeset/index"
     }
 
+    def "should return few next changesets older than one with given revision id as JSON"() {
+
+        given:
+            def latestChangesetId = "hash25"
+            new Changeset(latestChangesetId, "kpt", "", new Date(3)).save()
+            new Changeset("hash24", "kpt", "", new Date(2)).save()
+            new Changeset("hash23", "agj", "", new Date(1)).save()
+
+        when:
+            controller.params.id = latestChangesetId
+            controller.getNextFewChangesetsOlderThan()
+
+        then:
+            def responseChangesets = JSON.parse(response.contentAsString)
+            responseChangesets[0].identifier == "hash24"
+            responseChangesets[1].identifier == "hash23"
+    }
+
 
 }
