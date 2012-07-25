@@ -353,25 +353,41 @@
 <!-- generates list of changesets -->
 <script type="text/javascript">
 
-    var lastChangesetId;
-
-    function appendChangesets(changesets) {
-        lastChangesetId = $(changesets).last()[0].identifier //TODO find a better way
-        for(i = 0; i < changesets.length; i++) {
-            appendChangeset(changesets[i]);
-        }
-    }
-
-    function appendChangeset(changeset) {
-        changeset = $.extend({emailSubstitutedWithGravatar: get_gravatar(changeset.email, 50)}, changeset)
-        $('#content').append($("#changesetTemplate").render(changeset));
-    }
 
     $(document).ready(function () {
         $('#content').html("");
         $.getJSON('${createLink(uri:'/changeset/getLastChangesets')}', appendChangesets);
     });
 
+
+    $(window).scroll(function () {
+        if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+            onScrollThroughBottomAttempt()
+        }
+    });
+
+    function onScrollThroughBottomAttempt() {
+        if (!changesetsLoading) {
+            changesetsLoading = true;
+            $.getJSON('${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}' + lastChangesetId, appendChangesets)
+        }
+    }
+
+    var lastChangesetId;
+    var changesetsLoading;
+
+    function appendChangesets(changesets) {
+        lastChangesetId = $(changesets).last()[0].identifier //TODO find a better way
+        for(i = 0; i < changesets.length; i++) {
+            appendChangeset(changesets[i]);
+        }
+        changesetsLoading = false;
+    }
+
+    function appendChangeset(changeset) {
+        changeset = $.extend({emailSubstitutedWithGravatar: get_gravatar(changeset.email, 50)}, changeset)
+        $('#content').append($("#changesetTemplate").render(changeset));
+    }
 
 </script>
 
@@ -407,26 +423,26 @@
         </div>
 
         <button type="button" class="show-changeset-button btn" href="#inline_content"
-                onclick="showChangedFilesBox({{>number}})">Changed files</button>
+                onclick="showChangedFilesBox('{{>identifier}}')">Changed files</button>
 
         <div class="comments-preview">
-            <span>There are <span id="comments-count-{{>number}}">{{>howManyComments}}</span> comments</span>
+            <span>There are <span id="comments-count-{{>identifier}}">{{>howManyComments}}</span> comments</span>
             <button type="button" class="btn" href="#"
-                    onclick="showCommentsToChangeset({{>number}})">Show comments</button>
+                    onclick="showCommentsToChangeset('{{>identifier}}')">Show comments</button>
             <button type="button" class="btn" href="#"
-                    onclick="hideCommentsToChangeset({{>number}})">Hide comments</button>
+                    onclick="hideCommentsToChangeset('{{>identifier}}')">Hide comments</button>
         </div>
 
-        <div class="comments" id="comments-{{>number}}">
+        <div class="comments" id="comments-{{>identifier}}">
 
         </div>
 
         <form class="add_comment .form-inline">
-            <textarea cols="90" rows="5" id="add-comment-{{>number}}" placeholder="Write your comment here!"></textarea>
+            <textarea cols="90" rows="5" id="add-comment-{{>identifier}}" placeholder="Write your comment here!"></textarea>
         </br>
-            <input id="username-{{>number}}" type="text" class="input-small" placeholder="Your name!"></input>
+            <input id="username-{{>identifier}}" type="text" class="input-small" placeholder="Your name!"></input>
         </br>
-            <button type="button" class="btn" onClick="addComment({{>number}})" href="#">Add Comment</button>
+            <button type="button" class="btn" onClick="addComment('{{>identifier}}')" href="#">Add Comment</button>
         </form>
     </div>
 
@@ -452,24 +468,6 @@
 
 <script id="project-files" type="text/x-jsrender">
     <li>{{>name}}</li>
-</script>
-
-<script>
-    $(window).scroll(function () {
-        if ($(window).scrollTop() == $(window).height() - $(window).height()) {
-            onScrollThroughBottomAttempt()
-        }
-    });
-
-    var changesetsLoading = false;
-
-    function onScrollThroughBottomAttempt() {
-        if (!changesetsLoading) {
-            changesetsLoading = true;
-            $.getJSON('${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}' + lastChangesetId, appendChangesets)
-        }
-    }
-
 </script>
 
     </body>

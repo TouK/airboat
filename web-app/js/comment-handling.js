@@ -1,6 +1,5 @@
 function showChangedFilesBox(id)         {
 
-    var identifier = id
     $(".show-changeset-button").colorbox({opacity:0.3 ,
         inline: true,
         width:"80%",

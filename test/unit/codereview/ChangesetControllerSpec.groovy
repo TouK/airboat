@@ -47,7 +47,8 @@ class ChangesetControllerSpec extends Specification {          //TODO make tests
             new Changeset("hash23", "agj", "", new Date(1)).save()
 
         when:
-            controller.getNextFewChangesetsOlderThan(latestChangesetId)
+            controller.params.id = latestChangesetId
+            controller.getNextFewChangesetsOlderThan()
 
         then:
             def responseChangesets = JSON.parse(response.contentAsString)

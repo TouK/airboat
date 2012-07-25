@@ -14,7 +14,7 @@ class UserCommentController {
         def username = params.username
         def content = params.content
         def changesetId = params.changesetId
-        def changeset = Changeset.findById(params.changesetId)      //TODO:refactor this, add new method "findChangesetId"
+        def changeset = Changeset.findByIdentifier(changesetId)      //TODO:refactor this, add new method "findChangesetId"
         def comment = new UserComment(content: content, author: username)
         changeset?.addToUserComments(comment)       //TODO: refactor , add new method "saveUserCommentsInDB"
         comment.save()
@@ -24,7 +24,7 @@ class UserCommentController {
 
 
     def returnCommentsToChangeset = {
-        def changeset = Changeset.findById(params.id)                //TODO: refactor this, add new method  "findUserComments" and use   "findChangesetId"
+        def changeset = Changeset.findByIdentifier(params.id)                //TODO: refactor this, add new method  "findUserComments" and use   "findChangesetId"
         def comments = UserComment.findAllByChangeset(changeset)
         render comments as JSON
     }

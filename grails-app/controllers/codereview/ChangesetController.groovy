@@ -23,22 +23,23 @@ class ChangesetController {
         render Changeset.list(max: 21, sort: 'date', order: 'desc') as JSON
     }
 
-    def getFileNamesForChangeset = {      //needs id of changeset
-        def changeset = Changeset.findById(params.id)
+    //FIXME add test
+    def getFileNamesForChangeset = {
+        def changeset = Changeset.findByIdentifier(params.id)
         def files = ProjectFile.findAllByChangeset(changeset)
         render files as JSON
     }
 
+    //FIXME add test
     def getChangeset = {
-        def id = params.id
-        def changeset = Changeset.findById(params.id)
+        def changeset = Changeset.findByIdentifier(params.id)
         def changesetList = [changeset]
         render changesetList as JSON
     }
 
-    def getNextFewChangesetsOlderThan = { String revisionId ->
+    def getNextFewChangesetsOlderThan = {
         def nextFewChangesets = Changeset.where {
-            date < property(date).of { identifier == revisionId }
+            date < property(date).of { identifier == params.id }
         }.list(max: 10, sort: 'date', order: 'desc')
         render nextFewChangesets as JSON
     }
