@@ -30,4 +30,5 @@ class ScmAccessServiceSpec extends Specification {
     }
 
     //TODO this testing is incomplete, because service has got many methods and they're aren't tested anywhere - More tests!
+
 }

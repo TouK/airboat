@@ -88,6 +88,7 @@
                 });
                  var fileUrl = '${createLink(uri:'/changeset/getFileNamesForChangeset/')}';
                     fileUrl = fileUrl.concat(id.toString());
+                        var fileIdList = new Array;
                 $.getJSON(fileUrl, function(data) {
                     for(i = 0; i < data.length; i++) {
                         var files = {
@@ -95,14 +96,25 @@
                             identifier: data[i].id
 
                         }
+                        fileIdList.push(data[i].id);
                         $('#layer_files').append($("#project-files").render(files));
 
                     }
                 });
+                        $("#code").html("<p>Click on file to see the content</p>");
             },
                 onLoad:function(){
                     //code
                 }
+            });
+        }
+        function showFile(id) {
+            var fileContentUrl = '${createLink(uri:'/projectFile/getFileWithContent/')}';
+            fileContentUrl = fileContentUrl.concat(id);
+            var fileContent;
+            $.getJSON(fileContentUrl, function(data) {
+                fileContent = data.content;
+                $("#code").text(fileContent);
             });
         }
         function showCommentsToChangeset(id){
@@ -188,6 +200,7 @@
                     $('#content').append($("#showdata").render(changesets));
                 }
             });
+
         });
     });
 
@@ -205,6 +218,7 @@
 
         <h2>Files changed in commit:</h2>
         <ul id="layer_files"></ul>
+        <pre id="code"></pre>
     </div>
 </div>
 
@@ -269,7 +283,7 @@
     </script>
 
     <script id="project-files" type="text/x-jsrender">
-        <li>{{>name}}</li>
+        <li><a href="#" onclick="showFile({{>identifier}})" >{{>name}}</a> </li>
     </script>
 
     </body>
