@@ -53,8 +53,8 @@ function showCommentsToChangeset(id){
                 content: data[i].content
 
             }
-            var howManyComments = data.length;
-            $('#comments-count-'+id.toString()).html(howManyComments.toString());
+            var commentsCount = data.length;
+            $('#comments-count-'+id.toString()).html(commentsCount.toString());
             $('#comments-'+id.toString()).append($("<h3>Comments: </h3>"));
             $('#comments-'+id.toString()).append($("#comment-template").render(comments));
 

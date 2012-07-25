@@ -39,9 +39,9 @@
             var url = "${createLink(controller:'UserComment', action:'addComment')}";
 
             $.post(url, { username:username, changesetId:changesetId, content:rawText });
-            var howManyComments = $('#comments-count-' + changesetId.toString()).html();
-            howManyComments = (parseInt(howManyComments) + 1).toString();
-            $('#comments-count-' + changesetId.toString()).html(howManyComments.toString());
+            var commentsCount = $('#comments-count-' + changesetId.toString()).html();
+            commentsCount = (parseInt(commentsCount) + 1).toString();
+            $('#comments-count-' + changesetId.toString()).html(commentsCount.toString());
         }
     </script>
 
@@ -334,8 +334,8 @@
                         date: data[i].dateCreated,
                         content: data[i].content
                     }
-                    var howManyComments = data.length;
-                    $('#comments-count-' + id.toString()).html(howManyComments.toString());
+                    var commentsCount = data.length;
+                    $('#comments-count-' + id.toString()).html(commentsCount.toString());
                     $('#comments-' + id.toString()).append($("#comment-template").render(comments));
                 }
             });
@@ -431,7 +431,7 @@
                 onclick="showChangedFilesBox('{{>identifier}}')">Changed files</button>
 
         <div class="comments-preview">
-            <span>There are <span id="comments-count-{{>identifier}}">{{>howManyComments}}</span> comments</span>
+            <span>There are <span id="comments-count-{{>identifier}}">{{>commentsCount}}</span> comments</span>
             <button type="button" class="btn" href="#"
                     onclick="showCommentsToChangeset('{{>identifier}}')">Show comments</button>
             <button type="button" class="btn" href="#"

@@ -1,14 +1,14 @@
 package codereview
 
 class UserComment {
-    String content
+    String text
     Date dateCreated
     String author
 
     static belongsTo = [changeset: Changeset]
 
     static constraints = {
-        author blank: false, nullable: false
-        content nullable: false, blank: false
+        author nullable: false, blank: false
+        text nullable: false, blank: false
     }
 }

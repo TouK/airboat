@@ -27,8 +27,8 @@ class UserCommentConstraintsSpec extends Specification {
 
         where:
         field           | constraint    | violatingValue
-        'content'       | 'blank'       | ""
-        'content'       | 'nullable'    | null
+        'text'       | 'blank'       | ""
+        'text'       | 'nullable'    | null
         'author'        | 'blank'       | ""
         'author'        | 'nullable'    | null
 

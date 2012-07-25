@@ -7,24 +7,20 @@ class UserCommentController {
     def index() {
     }
 
-    def addComment = {
-        //TODO initialize this variables in different way
-        //TODO like that: def ( changesetId, commitComment, changesetAuthor)  = [ "id", "comment", "agj@touk.pl"]
-        //TODOor finding how to pass it through controller methods arguments if possible
-        def username = params.username
-        def content = params.content
-        def changesetId = params.changesetId
-        def changeset = Changeset.findByIdentifier(changesetId)      //TODO:refactor this, add new method "findChangesetId"
-        def comment = new UserComment(content: content, author: username)
-        changeset?.addToUserComments(comment)       //TODO: refactor , add new method "saveUserCommentsInDB"
+    //TODO think which option is better: artificial or natural (compound!) keys for changesets
+    def addComment(String username, String text, String changesetId) {
+        def changeset = Changeset.findByIdentifier(changesetId)
+        def comment = new UserComment(text: text, author: username)
+        changeset?.addToUserComments(comment)
         comment.save()
 
         render "I did it! Saved."
     }
 
 
+    //TODO rewrite all controller actions from closures to methods
     def returnCommentsToChangeset = {
-        def changeset = Changeset.findByIdentifier(params.id)                //TODO: refactor this, add new method  "findUserComments" and use   "findChangesetId"
+        def changeset = Changeset.findByIdentifier(params.id) //TODO check that only one query is executed, refactor otherwise
         def comments = UserComment.findAllByChangeset(changeset)
         render comments as JSON
     }
