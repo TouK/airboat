@@ -287,7 +287,7 @@
                             date: data[i].date
 
                         }
-                        $('#changesetInfo').append($("#changeset").render(changesets));
+                        $('#changesetInfo').append($("#box-changeset").render(changesets));
 
                     }
                 });
@@ -359,33 +359,10 @@
 <!-- generates list of changesets -->
 <script type="text/javascript">
 
-
-    $(document).ready(function () {
-        $('#content').html("");
-        $.getJSON('${createLink(uri:'/changeset/getLastChangesets')}', appendChangesets);
-    });
-
-
-            var url = '${createLink(uri:'/changeset/getNextTenChangesets/')}';
-            url = url.concat(offset);
-            offset = offset +1;
-
-            $.getJSON(url, function(data) {
-                for(i = 0; i < data.length; i++) {
-                    var changesets = {
-                        author: data[i].author,
-                        identifier: data[i].identifier,                        //TODO extract this <- it looks the same as above
-                        date: data[i].date,
-                        number: data[i].id,
-                        commitComment: data[i].commitComment,
-                        email: get_gravatar(data
-                                [i].email, 50),
-                        howManyComments: data[i].howManyComments
-                    }
-                    $('#content').append($("#showdata").render(changesets));
-                }
-            });
-        });
+    $(window).scroll(function () {
+        if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+            onScrollThroughBottomAttempt()
+        }
     });
 
     function onScrollThroughBottomAttempt() {
@@ -394,6 +371,11 @@
             $.getJSON('${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}' + lastChangesetId, appendChangesets)
         }
     }
+
+    $(document).ready(function () {
+        $('#content').html("");
+        $.getJSON('${createLink(uri:'/changeset/getLastChangesets')}', appendChangesets);
+    });
 
     var lastChangesetId;
     var changesetsLoading;
@@ -463,7 +445,7 @@
         <form class="add_comment .form-inline">
             <textarea cols="90" rows="5" id="add-comment-{{>identifier}}" placeholder="Write your comment here!"></textarea>
         </br>
-            <input id="username-{{>identifier}}" type="text" class="input-small" placeholder="Your name!"></input>
+            <input id="username-{{>identifier}}" type="text" class="input-small" placeholder="Your name!"/>
         </br>
             <button type="button" class="btn" onClick="addComment('{{>identifier}}')" href="#">Add Comment</button>
         </form>
@@ -476,13 +458,17 @@
     <div>
         <span>Author: {{>author}}, Date:  {{>date}}</span>
 
-        <div class="comment-content">{{>content}}</h3></div>
+        <div class="comment-content">{{>content}}</div>
 
-        <h3></h3>
     </div>
 
 </script>
 
+    <script id="box-changeset" type="text/x-jsrender">
+        Author: {{>author}}</br>
+        Identifier:  {{>identifier}}</br>
+        Date:  {{>date}}</br>
+    </script>
     <script id="project-files" type="text/x-jsrender">
         <li><a href="#" onclick="showFile({{>identifier}})" >{{>name}}</a> </li>
     </script>
