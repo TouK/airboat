@@ -1,6 +1,7 @@
 package codereview
 
 import org.apache.maven.scm.ChangeSet
+import com.google.common.annotations.VisibleForTesting
 
 /**
  * Deleguje operacje na projekcie w SCM do odpowiedniej implementacji w zależności od rodzaju repozutorium kodu.
@@ -18,40 +19,51 @@ class ScmAccessService {
         gitRepositoryService.updateProject(scmUrl)
     }
 
-    void fetchAllChangesetsWithFilesAndSave(String scmUrl) {
-        fetchAllChangesetsWithFiles(scmUrl).each {
-            if(it.validate()) {
-                it.save(failOnError: true)
-            }
+    void importAllChangesets(String scmUrl) {
+        fetchAllChangesets(scmUrl).each {
+            saveChangeset(it) //TODO examine if "fetchAllChangesets(scmUrl).each(saveChangeset)" is somehow possible
         }
     }
 
-    Changeset[] fetchAllChangesetsWithFiles(String gitScmUrl){
+    //TODO examine if global failOnError is possible
+    //TODO examine if save does validate()
+    @VisibleForTesting void saveChangeset(Changeset changesetToSave) {
+        def commiter = changesetToSave.commiter
+        def commiterFromDb = Commiter.find(commiter)
+        if (commiterFromDb != null) {
+            commiter = commiterFromDb
+            commiter.addToChangesets(changesetToSave)
+        }
+        if (changesetToSave.validate()) {
+            changesetToSave.save(failOnError: true)
+            commiter.save(failOnError: true)
+        }
+    }
+
+    Changeset[] fetchAllChangesets(String gitScmUrl){
         List<org.apache.maven.scm.ChangeSet> scmChanges = gitRepositoryService.getAllChangeSets(gitScmUrl)
-        if (scmChanges != null) {
-            createChangesetsWithFiles(scmChanges)
+        if (scmChanges != null) { //TODO move this if to convert function
+            convertToChangesets(scmChanges)
         } else {
             return []
         }
     }
 
+    Changeset[] convertToChangesets(List<org.apache.maven.scm.ChangeSet> scmChanges) {
+        scmChanges.collect { convertToChangeset(it) }.sort { it.date.time }
+    }
 
-    def createChangesetsWithFiles(List<org.apache.maven.scm.ChangeSet> scmChanges) {
+    @VisibleForTesting Changeset convertToChangeset(ChangeSet scmApiChangeSet) {
+        Commiter commiter = new Commiter(scmApiChangeSet.getAuthor())
+        Changeset changeset = new Changeset(scmApiChangeSet.revision, scmApiChangeSet.comment, scmApiChangeSet.date)
+        commiter.addToChangesets(changeset)
 
-        scmChanges.collect { ChangeSet it ->
+        scmApiChangeSet.getFiles().each { file ->
+            def projectFile = new ProjectFile(name: file.getName(), content: gitRepositoryService.returnFileContent())
+            changeset.addToProjectFiles(projectFile)
+        }
 
-            def files = it.getFiles().collect { file ->
-                new ProjectFile(file.getName(), gitRepositoryService.returnFileContent())
-            }
-
-            Changeset changeset = new Changeset(it.revision, it.author, it.comment, it.date)
-            files.each {
-                changeset.addToProjectFiles(it)
-            }
-
-            return changeset
-
-        }.sort { it.date.time }
+        return changeset
     }
 
 

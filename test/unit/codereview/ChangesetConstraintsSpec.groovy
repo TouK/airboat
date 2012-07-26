@@ -10,7 +10,7 @@ class ChangesetConstraintsSpec extends Specification {
     static String alreadyUsedIdentifier = "alreadyUsedIdentifier"
 
     def setup() {
-        mockForConstraintsTests(Changeset, [new Changeset(alreadyUsedIdentifier, "agj", "", new Date())])
+        mockForConstraintsTests(Changeset, [new Changeset(alreadyUsedIdentifier, "coding", new Date())])
     }
 
     @Unroll("Field '#field' of class Changeset should have constraint '#constraint' violated by value '#violatingValue'")
@@ -27,18 +27,9 @@ class ChangesetConstraintsSpec extends Specification {
             field           | constraint    | violatingValue
             'identifier'    | 'blank'       | ""
             'identifier'    | 'unique'      | alreadyUsedIdentifier
-            'author'        | 'blank'       | ""
             'identifier'    | 'nullable'    | null
-            'author'        | 'nullable'    | null
+            'commitComment' | 'nullable'    | null
             'date'          | 'nullable'    | null
     }
 
-    def "Changeset author does not have to have an email"() {
-        when:
-            def changeset = new Changeset("hash23", "Email-less Author", "", new Date())
-
-        then:
-            changeset.email == null
-            changeset.validate() == true
-    }
 }

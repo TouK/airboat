@@ -16,7 +16,7 @@ class ProjectUpdateJobSpec extends Specification {
     void "shouldn't delete all old changesets during updating"() {
 
         given:
-            new Changeset("hash23", "agj", "", new Date()).save()
+            new Changeset("hash23", "coding", new Date()).save()
             def job = new ProjectUpdateJob()
             job.scmAccessService = scmAccessServiceMock
 
@@ -32,7 +32,7 @@ class ProjectUpdateJobSpec extends Specification {
         given:
             def job = new ProjectUpdateJob()
             job.scmAccessService = scmAccessServiceMock
-            1 * job.scmAccessService.fetchAllChangesetsWithFilesAndSave(_) >> { new Changeset("hash23", "agj", "", new Date()).save() }
+            1 * job.scmAccessService.importAllChangesets(_) >> { new Changeset("hash23", "coding", new Date()).save() }
 
         when:
             job.update()

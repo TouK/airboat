@@ -18,6 +18,6 @@ class ProjectUpdateJob {
 
     def update() {
         scmAccessService.updateProject(Constants.PROJECT_REPOSITORY_URL)
-        scmAccessService.fetchAllChangesetsWithFilesAndSave(Constants.PROJECT_REPOSITORY_URL)
+        scmAccessService.importAllChangesets(Constants.PROJECT_REPOSITORY_URL)
     }
 }

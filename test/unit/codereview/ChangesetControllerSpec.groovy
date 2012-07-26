@@ -16,8 +16,8 @@ class ChangesetControllerSpec extends Specification {
     def "getLastChangesets should return JSON"() {
 
         given:
-            new Changeset("hash23", "agj", "", new Date()).save()
-            new Changeset("hash24", "kpt", "", new Date()).save()
+            new Changeset("hash23", "coding", new Date()).save()
+            new Changeset("hash24", "coding", new Date()).save()
             def changesets = Changeset.list(max: 20, sort: "date", order: "desc")
 
         when:
@@ -42,9 +42,9 @@ class ChangesetControllerSpec extends Specification {
 
         given:
             def latestChangesetId = "hash25"
-            new Changeset(latestChangesetId, "kpt", "", new Date(3)).save()
-            new Changeset("hash24", "kpt", "", new Date(2)).save()
-            new Changeset("hash23", "agj", "", new Date(1)).save()
+            new Changeset(latestChangesetId, "coding", new Date(3)).save()
+            new Changeset("hash24", "coding", new Date(2)).save()
+            new Changeset("hash23", "coding", new Date(1)).save()
 
         when:
             controller.params.id = latestChangesetId
@@ -58,8 +58,8 @@ class ChangesetControllerSpec extends Specification {
     def "getLastChangesets should return table of jasonized objects" () {
 
         given:
-        new Changeset("hash23", "agj", "", new Date()).save()
-        new Changeset("hash24", "kpt", "", new Date()).save()
+        new Changeset("hash23", "coding", new Date()).save()
+        new Changeset("hash24", "coding", new Date()).save()
 
         when:
         controller.getLastChangesets()
