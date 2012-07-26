@@ -1,5 +1,6 @@
 package codereview
 
+
 class InfrastructureService {
 
     public File getProjectWorkingDirectory(String scmUrl) {
@@ -12,11 +13,11 @@ class InfrastructureService {
     }
 
     String getBaseDirectoryName() {
-        def customBaseDirectoryName = System.getProperty("codereview.workingDirectory")        //TODO: change "codereview.workingDirectory"" on variable
-        if (customBaseDirectoryName != null) {       //TODO: should be method instead of flag
+        def customBaseDirectoryName = System.getProperty("codereview.workingDirectory")
+        if (customBaseDirectoryName != null) {
             return customBaseDirectoryName;
         } else {
-            return System.getProperty("java.io.tmpdir");                     //TODO: change "java..." on variable
+            return System.getProperty("java.io.tmpdir");
         }
     }
 
@@ -39,13 +40,15 @@ class InfrastructureService {
         }
     }
 
+
+
     /**
      * TODO implement later on
      * @param scmUrl
      * @return
      */
     String getDirectoryNameForTheProject(String scmUrl) {
-        "projekt"                                        //TODO: change on variable
+        "projekt"
     }
 
 

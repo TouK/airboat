@@ -14,7 +14,7 @@ class ProjectFileController {
     }
 
     def getFileWithContent() {
-        def PROJECT_DIR = "/tmp/projekt/" //FIXME hardcoded
+        def PROJECT_DIR = "/tmp/projekt/" //FIXME hardcoded, does not work on production env. use ${codereview.workingDirectory}/projekt/
         def projectFile = ProjectFile.findById(params.id)
         projectFile.content = projectFileAccessService.fetchFileContentFromPath(projectFile.name, PROJECT_DIR)
 

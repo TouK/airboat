@@ -244,8 +244,5 @@
 <script id="project-files" type="text/x-jsrender">
     <li><a href="#" onclick="showFile({{>identifier}})" >{{>name}}</a> </li>
 </script>
-
-
-</script>
 </body>
 </html>

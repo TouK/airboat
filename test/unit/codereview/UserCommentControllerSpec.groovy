@@ -22,11 +22,11 @@ class UserCommentControllerSpec extends Specification {           //TODO impleme
 
     @Ignore
     def "should return last comments, sorted by dateCreated, descending"() {
-        when:
-        def something = "something"
+         when:
+         def something = "something"
 
-        then:
-        true
+         then:
+         true
     }
 
     @Ignore

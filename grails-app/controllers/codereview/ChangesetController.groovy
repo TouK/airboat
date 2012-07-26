@@ -23,14 +23,14 @@ class ChangesetController {
         render Changeset.list(max: 21, sort: 'date', order: 'desc') as JSON
     }
 
-    //FIXME add test
+
     def getFileNamesForChangeset = {
         def changeset = Changeset.findByIdentifier(params.id)
         def files = ProjectFile.findAllByChangeset(changeset)
         render files as JSON
     }
 
-    //FIXME add test
+
     def getChangeset = {
         def changeset = Changeset.findByIdentifier(params.id)
         def changesetList = [changeset]

@@ -6,7 +6,8 @@ import spock.lang.Specification
 import grails.converters.JSON
 
 @TestFor(ChangesetController)
-@Mock(Changeset)
+@Mock([Changeset, ProjectFile] )
+
 class ChangesetControllerSpec extends Specification {
 
     def setup() {
@@ -72,5 +73,49 @@ class ChangesetControllerSpec extends Specification {
         rendered.contains("}")
     }
 
+    def "getChangeset should return one specific changeset "() {
 
+        given:
+        def  specificChangeset = "hash24"
+        new Changeset("hash23", "agj", "", new Date()).save()
+        new Changeset("hash24", "kpt", "", new Date()).save()
+        new Changeset("hash25", "jil", "", new Date()).save()
+
+        when:
+        controller.params.id = specificChangeset
+        controller.getChangeset()
+
+        then:
+        response.json.size() == 1
+        def  responseSpecificChangeset = response.json.first()
+        responseSpecificChangeset.identifier == "hash24"
+    }
+
+    def "getFileNamesForChangeset should return file names from changeset "() {
+
+
+        given:
+        def  specificChangesetHash = "hash23"
+        def testChangeset = new Changeset("hash23", "agj", "", new Date())
+
+        def projectFile1 = new ProjectFile(content: "print something", name: "test.txt")
+        def projectFile2 = new ProjectFile(content: "print something2", name: "test2.txt")
+        def projectFile3 = new ProjectFile(content: "print something3", name: "test3.txt")
+        testChangeset.addToProjectFiles(projectFile1)
+        testChangeset.addToProjectFiles(projectFile2)
+        testChangeset.addToProjectFiles(projectFile3)
+        testChangeset.save()
+
+        when:
+        controller.params.id = specificChangesetHash
+        controller.getFileNamesForChangeset()
+        String rendered = (response.contentAsString)
+
+        then:
+        response.json.size() == 3
+        rendered.contains("name")
+        rendered.contains("test.txt")
+        rendered.contains("test2.txt")
+        rendered.contains("test3.txt")
+    }
 }
