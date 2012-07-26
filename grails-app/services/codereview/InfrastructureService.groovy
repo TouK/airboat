@@ -13,7 +13,7 @@ class InfrastructureService {
 
     String getBaseDirectoryName() {
         def customBaseDirectoryName = System.getProperty("codereview.workingDirectory")        //TODO: change "codereview.workingDirectory"" on variable
-        if (customBaseDirectoryName != null) {       //TODO: should be method instead of flag
+        if (customBaseDirectoryName != null) {
             return customBaseDirectoryName;
         } else {
             return System.getProperty("java.io.tmpdir");                     //TODO: change "java..." on variable

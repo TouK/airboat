@@ -39,7 +39,7 @@
         $('#comments-' + changesetId.toString()).append($("#comment-template").render(comment));
         var url = "${createLink(controller:'UserComment', action:'addComment')}";
 
-        $.post(url, { username:username, changesetId:changesetId, content:rawText });
+        $.post(url, { username:username, changesetId:changesetId, text:rawText });
     }
 
     function showCommentsToChangeset(id) {
@@ -297,12 +297,12 @@
 
                     for (i = 0; i < data.length; i++) {
                         var changesets = {
-                            author:data[i].author,
-                            identifier:data[i].identifier,
-                            date:data[i].date
+                            author: data[i].author,
+                            identifier: data[i].identifier,
+                            date: data[i].date
 
                         }
-                        $('#changesetInfo').append($("#changeset").render(changesets));
+                        $('#changesetInfo').append($("#box-changeset").render(changesets));
 
                     }
                 });
@@ -312,14 +312,15 @@
                 $.getJSON(fileUrl, function (data) {
                     for (i = 0; i < data.length; i++) {
                         var files = {
-                            name:data[i].name,
-                            identifier:data[i].id
+                            name: data[i].name,
+                            identifier: data[i].id
 
                         }
                         $('#layer_files').append($("#project-files").render(files));
 
                     }
                 });
+                        $("#code").html("<p>Click on file to see the content</p>");
             },
             onLoad:function () {
                 //code
@@ -359,6 +360,11 @@
         }
     }
 
+    $(document).ready(function () {
+        $('#content').html("");
+        $.getJSON('${createLink(uri:'/changeset/getLastChangesets')}', appendChangesets);
+    });
+
     var lastChangesetId;
     var changesetsLoading;
 
@@ -375,6 +381,7 @@
         $('#content').append($("#changesetTemplate").render(changeset));
         showCommentsToChangeset(changeset.identifier)
     }
+
 </script>
 
 
@@ -389,6 +396,7 @@
 
         <h2>Files changed in commit:</h2>
         <ul id="layer_files"></ul>
+        <pre id="code"></pre>
     </div>
 </div>
 

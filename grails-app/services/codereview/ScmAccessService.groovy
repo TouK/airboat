@@ -35,12 +35,13 @@ class ScmAccessService {
         }
     }
 
+
     def createChangesetsWithFiles(List<org.apache.maven.scm.ChangeSet> scmChanges) {
 
         scmChanges.collect { ChangeSet it ->
 
             def files = it.getFiles().collect { file ->
-                new ProjectFile(name: file.getName())
+                new ProjectFile(name: file.getName(), content: gitRepositoryService.returnFileContent())
             }
 
             Changeset changeset = new Changeset(it.revision, it.author, it.comment, it.date)
@@ -52,4 +53,6 @@ class ScmAccessService {
 
         }.sort { it.date.time } //TODO it seems that somehow sort order is build-dependent (IDEA vs Grails) - find cause
     }
+
+
 }

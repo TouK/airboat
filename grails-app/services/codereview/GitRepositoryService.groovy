@@ -5,6 +5,8 @@ import org.apache.maven.scm.provider.git.repository.GitScmProviderRepository
 import org.apache.maven.scm.repository.ScmRepository
 import org.apache.maven.scm.provider.git.gitexe.GitExeScmProvider
 import org.apache.maven.scm.ChangeSet
+import org.apache.maven.scm.ScmFile
+import org.apache.maven.scm.command.diff.DiffScmResult
 
 /**
  * Zabronione uzywanie klas domenowych w tej klasie.
@@ -48,14 +50,6 @@ class GitRepositoryService {
         changeLogScmResult.getChangeLog()?.getChangeSets()
     }
 
-    def getFileNamesFromChangeSetsList(List<ChangeSet> changes)    {
-          changes.collect {it.getFiles()}
-    }
-
-    def getFileNamesFromGitChangeSet(ChangeSet change)      {
-        change.getFiles()
-    }
-
     private ScmRepository createScmRepositoryObject(String gitScmUrl) {
         new ScmRepository("git", new GitScmProviderRepository(gitScmUrl))
     }
@@ -64,5 +58,14 @@ class GitRepositoryService {
         new ScmFileSet(infrastructureService.getProjectWorkingDirectory(gitScmUrl), "*.*")
     }
 
-
+     def returnFileContent() {
+         """Lubie buraki, bo sa fajne i smaczne
+         function genialne() {
+         var doprawdy_fantastyczne;
+         doprawdy_fantastyczne = "nomnomnom!" ;
+         print doprawdy_fantastyczne;
+         }
+         """
+     }
 }
+

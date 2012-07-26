@@ -16,38 +16,23 @@ class Changeset {
         this.commitComment = commitComment
     }
 
-    /**
-     * TODO Later on should be called on User object.
-     * @return
-     */
+     //TODO Later on should be called on User object. Make sure user object stores EMAIL and not git user string
     String getEmail() {
-        if (author != null && author.contains("@")) {   //TODO: refactor "@","<",">","1" on variables
+        if (author?.contains("@")) {
             return author[author.indexOf("<") + 1 .. author.indexOf(">") - 1]
-            //TODO I would suggest extracting this code in another function
-            //TODO because it was only a temporary solution based on data from maven git scm api
-            //TODO this should be hidden, abstraction level is incorrect
-            //TODO for example String (or Email) extractEmailFromString(String stringWithEmailInIt)
-            //TODO we can think about Email class, but it's not necessary as for now
         } else {
-            return null;                 //TODO: method shouldn't return null?
+            return null;
         }
-
     }
 
-    String countComments() {        //TODO implement me!
-        def commentsCount
-        def comments = UserComment.findAllByChangeset(this)
-        commentsCount = comments.size()
-        return commentsCount.toString()
+    Integer commentsCount() {
+        return UserComment.findAllByChangeset(this).size()
     }
+
     static constraints = {
         author blank: false
         identifier blank: false, unique: true
         email nullable: true, blank:true
-        projectFiles nullable: true
-        userComments nullable: true
-        commitComment nullable: true, blank: true //TODO remove it after changing tests
+        commitComment blank: true
     }
-
-
 }
