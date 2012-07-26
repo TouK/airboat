@@ -17,21 +17,21 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
     def "should fetch and save changesets in db"() {    //TODO it's inconsistent with our naming convention
         given:
-        def (gitScmUrl, changesetId, commitComment, changesetAuthor)  = [Fixture.PROJECT_REPOSITORY_URL, "id", "comment", "agj@touk.pl"]
+            def (gitScmUrl, changesetId, commitComment, changesetAuthor)  = [Fixture.PROJECT_REPOSITORY_URL, "id", "comment", "agj@touk.pl"]
 
-        def cs = new ChangeSet(new Date(), commitComment, changesetAuthor, null)
-        cs.setRevision(changesetId)
-        GitRepositoryService gitRepositoryService = Mock()
-        1 * gitRepositoryService.getAllChangeSets(Fixture.PROJECT_REPOSITORY_URL) >> [ cs ]
+            def cs = new ChangeSet(new Date(), commitComment, changesetAuthor, null)
+            cs.setRevision(changesetId)
+            GitRepositoryService gitRepositoryService = Mock()
+            1 * gitRepositoryService.getAllChangeSets(Fixture.PROJECT_REPOSITORY_URL) >> [ cs ]
 
-        scmAccessService.gitRepositoryService = gitRepositoryService
+            scmAccessService.gitRepositoryService = gitRepositoryService
 
         when:
-        scmAccessService.importAllChangesets(gitScmUrl)
+            scmAccessService.importAllChangesets(gitScmUrl)
 
         then:
-        Changeset.count() == 1
-        Changeset.findAllByIdentifierAndCommitComment(changesetId, commitComment).size() == 1
+            Changeset.count() == 1
+            Changeset.findAllByIdentifierAndCommitComment(changesetId, commitComment).size() == 1
     }
 
     //TODO this testing is incomplete, because service has got many methods and they're aren't tested anywhere - More tests!
