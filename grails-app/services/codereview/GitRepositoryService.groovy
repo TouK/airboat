@@ -59,12 +59,8 @@ class GitRepositoryService {
     }
 
      def returnFileContent() {
-         """Lubie buraki, bo sa fajne i smaczne
-         function genialne() {
-         var doprawdy_fantastyczne;
-         doprawdy_fantastyczne = "nomnomnom!" ;
-         print doprawdy_fantastyczne;
-         }
+         """
+
          """
      }
 }

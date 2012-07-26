@@ -27,7 +27,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
         when:
 
             def changes = gitRepositoryService.getAllChangeSets(Fixture.PROJECT_REPOSITORY_URL)
-            def changesetsWithFiles = scmAccessService.createChangesetsWithFiles(changes)
+            def changesetsWithFiles = scmAccessService.convertToChangesets(changes)
 
         then:
             changesetsWithFiles !=  null
