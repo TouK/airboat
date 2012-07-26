@@ -1,7 +1,9 @@
 package codereview
 import grails.converters.JSON
 
+//FIXME add tests
 class ProjectFileController {
+
     def projectFileAccessService
 
     def index() { }
@@ -17,6 +19,6 @@ class ProjectFileController {
         projectFile.content = projectFileAccessService.fetchFileContentFromPath(projectFile.name, PROJECT_DIR)
 
         //TODO show a message for non-text files that they cannot be displayed
-        render projectFile as JSON
+        render([content: projectFile.content] as JSON)
     }
 }

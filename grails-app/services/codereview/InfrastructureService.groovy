@@ -13,31 +13,30 @@ class InfrastructureService {
 
     String getBaseDirectoryName() {
         def customBaseDirectoryName = System.getProperty("codereview.workingDirectory")        //TODO: change "codereview.workingDirectory"" on variable
-        if (customBaseDirectoryName != null) {
+        if (customBaseDirectoryName != null) {       //TODO: should be method instead of flag
             return customBaseDirectoryName;
         } else {
             return System.getProperty("java.io.tmpdir");                     //TODO: change "java..." on variable
         }
     }
 
-    File createWorkingDirectory(File baseDirectory, String scmUrl) {        //TODO function name doesn't say anything about checking and warnings in logs
-                                                                             //TODO it's to big and does too many thing, some of it can be extracted
+    File createWorkingDirectory(File baseDirectory, String scmUrl) {
         if(!baseDirectory.exists()) {
             log.warn("Directory " + baseDirectory + " does not exist. Creating one.")
             baseDirectory.mkdir()
         }
 
-        File dir = new File(baseDirectory, File.separator + getDirectoryNameForTheProject(scmUrl))
+        File dir = new File(baseDirectory, getDirectoryNameForTheProject(scmUrl))
         if (dir.exists()) {
             return dir;
         }
 
+        log.info("Directory " + dir + " does not exist. Creating one.")
         if (dir.mkdir()) {
-            log.info("Directory " + dir + " does not exist. Creating one.")
             return dir;
+        } else {
+            throw new IllegalStateException("Failed to create directory: " + dir);
         }
-
-        throw new IllegalStateException("Failed to create directory: " + dir);
     }
 
     /**

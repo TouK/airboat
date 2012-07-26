@@ -15,8 +15,7 @@ class MavenScmApiLearningSpec extends Specification {
 
         given:
             ScmFileSet allFilesInProject = new ScmFileSet(Files.createTempDir(), "*.*")
-            //FIXME use testFixture.Fixture.PROJECT_REPOSITORY_URL and make it work under Grails build
-            def gitProviderRepository = new GitScmProviderRepository("git@git.touk.pl:touk/codereview.git")
+            def gitProviderRepository = new GitScmProviderRepository(Fixture.PROJECT_REPOSITORY_URL)
             def gitRepository = new ScmRepository("git", gitProviderRepository)
             def git = new GitExeScmProvider()
 

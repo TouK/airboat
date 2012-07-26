@@ -7,7 +7,7 @@ import grails.converters.JSON
 
 @TestFor(ChangesetController)
 @Mock(Changeset)
-class ChangesetControllerSpec extends Specification {          //TODO make tests up to date, changesetController has more methods to test now
+class ChangesetControllerSpec extends Specification {
 
     def setup() {
         controller.scmAccessService = Mock(ScmAccessService)
@@ -54,6 +54,22 @@ class ChangesetControllerSpec extends Specification {          //TODO make tests
             def responseChangesets = JSON.parse(response.contentAsString)
             responseChangesets[0].identifier == "hash24"
             responseChangesets[1].identifier == "hash23"
+    }
+    def "getLastChangesets should return table of jasonized objects" () {
+
+        given:
+        new Changeset("hash23", "agj", "", new Date()).save()
+        new Changeset("hash24", "kpt", "", new Date()).save()
+
+        when:
+        controller.getLastChangesets()
+        String rendered = (response.contentAsString)
+
+        then:
+        rendered.contains("[")
+        rendered.contains("]")
+        rendered.contains("{")
+        rendered.contains("}")
     }
 
 

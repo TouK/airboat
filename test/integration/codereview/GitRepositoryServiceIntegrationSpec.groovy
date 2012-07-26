@@ -16,7 +16,6 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
             def changelog = gitRepositoryService.getAllChangeSets(Fixture.PROJECT_REPOSITORY_URL)
 
         then:
-            //changelog == changelog.sort(true, { it.date.time })    //TODO test in another test
             changelog.size() >= Fixture.LOWER_BOUND_FOR_NUMBER_OF_COMMITS
             changelog.last().author == Fixture.FIRST_COMMIT_AUTHOR
             changelog.last().date == Fixture.FIRST_COMMIT_DATE
@@ -35,13 +34,6 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
             changesetsWithFiles.size() == changes.size()                  //TODO add more validation
     }
 
-    def "should return content of the file"() {
-        when:
-        def content = "dkaj"
-
-        then:
-        "buraki" == "buraki"
-    }
 }
 
 

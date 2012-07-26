@@ -24,11 +24,11 @@ class ScmAccessServiceSpec extends Specification {
             sas.fetchAllChangesetsWithFilesAndSave(gitScmUrl)
 
         then:
-            //1 * gitRepositoryService.getAllChangeSets(gitScmUrl)
             Changeset.count() == 1
             Changeset.findAllByIdentifierAndAuthor(changesetId, changesetAuthor).size() == 1
     }
 
     //TODO this testing is incomplete, because service has got many methods and they're aren't tested anywhere - More tests!
 
+    //FIXME test for sort order of changesets
 }
