@@ -28,24 +28,38 @@ class UserCommentControllerSpec extends Specification {           //TODO impleme
 
     }
 
-
-
-    @Ignore
     def "should return last comments, sorted by dateCreated, descending"() {
-         when:
-         def something = "something"
+       given:
+       def changeset = new Changeset("hash23", "agj", "zmiany", new Date())
+       def comments = [new UserComment("Jil", "oooohhhh"),new UserComment("Troll", "oooohhhh?"), new UserComment("Jil", "No way!") ].each() {
+           changeset.addToUserComments(it)
+       }
+       changeset.save()
 
-         then:
-         true
+       when:
+       controller.getLastComments()
+       String rendered = (response.contentAsString)
+
+       then:
+       comments.size() == JSON.parse(rendered).size()
+       JSON.parse(rendered)[0].toString().contains('"id":3,"author":"Jil"')
+       JSON.parse(rendered)[1].toString().contains('"id":2,"author":"Troll"')
+       JSON.parse(rendered)[2].toString().contains('"id":1,"author":"Jil"')
     }
 
-    @Ignore
-    def "should add comment correctly to db"() {
-        when:
-        def something = "something"
 
+    def "should add comment correctly to db"() {
+        given:
+        def changeset = new Changeset("hash23", "agj", "zmiany", new Date()).save()
+        String username = "troll"
+        String text = "hey"
+        String changesetId = "hash23"
+        when:
+        controller.addComment(username, text, changesetId)
         then:
-        true
+        UserComment.findByText(text) != null
+        UserComment.findByTextAndAuthor(text, username) != null
+        UserComment.findByChangeset(changeset) != null
     }
 
 
