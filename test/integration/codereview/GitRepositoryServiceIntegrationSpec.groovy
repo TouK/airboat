@@ -42,6 +42,9 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
             }
     }
 
+    def "Should do initial check out" () {
+
+    }
 
     //TODO tests to be written:
     //TODO test initialCheckOut and updateProject methods if they work as we expect

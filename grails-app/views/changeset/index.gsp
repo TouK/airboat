@@ -33,10 +33,24 @@
             content:rawText,
             date:new Date()
         }
+        if(rawText == "" || username == "") {
+            return false
+        }
+
         $('#comments-' + changesetId.toString()).append($("#comment-template").render(comment));
         var url = "${createLink(controller:'UserComment', action:'addComment')}";
 
         $.post(url, { username:username, changesetId:changesetId, text:rawText });
+        changeAddCommentDivToDefault(changesetId);
+    }
+    function cancelComment(changesetId) {
+            changeAddCommentDivToDefault(changesetId);
+    }
+    function changeAddCommentDivToDefault(changesetId) {
+        $('#add-comment-' + changesetId.toString()).val("");
+        $('#username-' + changesetId.toString()).val("");
+        $('#add-comment-' + changesetId.toString()).width("200px");
+        $('#add-comment-' + changesetId.toString()).height("20px");
     }
 
     function showCommentsToChangeset(id) {
@@ -222,6 +236,7 @@
                               placeholder="Write your comment here!" class="slideable"/>
             <input id="username-{{>identifier}}" type="text" class="input-small" placeholder="Your name!"/>
             <button type="button"  class="btn" onClick="addComment('{{>identifier}}')">Add comment</button>
+            <button type="button"  class="btn" onClick="cancelComment('{{>identifier}}')">Cancel</button>
        </form>
       </div>
     <br/>

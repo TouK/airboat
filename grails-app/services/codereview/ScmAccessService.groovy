@@ -12,7 +12,7 @@ class ScmAccessService {
 
     void checkoutProject(String scmUrl) {
         gitRepositoryService.checkoutProject(scmUrl)
-    }
+    }                                                  //TODO remove "with files" from methods names
 
     void updateProject(String scmUrl) {
         gitRepositoryService.updateProject(scmUrl)
