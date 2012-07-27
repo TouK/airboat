@@ -1,7 +1,6 @@
 package codereview
 
 
-//FIXME add constructor with all fields but dateCreated, remove usages of map-constructor
 class UserComment {
     String text
     Date dateCreated
