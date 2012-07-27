@@ -21,7 +21,7 @@ class ChangesetConstraintsSpec extends Specification {
 
         then:
             changeset.validate() == false
-            changeset.errors[field] == constraint
+            changeset.errors[field].toString() == constraint
 
         where:
             field           | constraint    | violatingValue

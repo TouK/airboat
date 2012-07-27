@@ -8,7 +8,7 @@ import org.apache.maven.scm.ChangeSet
 @Mock([Changeset, ProjectFile])
 class ScmAccessServiceSpec extends Specification {
 
-    def "should fetch and save changesets in db"() {    //TODO it's inconsistent with our naming convention
+    def "should fetch and save changesets in db"() {
         given:
             def (gitScmUrl, changesetId, commitComment, changesetAuthor)  = [Fixture.PROJECT_REPOSITORY_URL, "id", "comment", "agj@touk.pl"]
             ScmAccessService sas = new ScmAccessService()
