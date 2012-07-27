@@ -8,17 +8,27 @@ import grails.converters.JSON
 import spock.lang.Ignore
 
 @TestFor(UserCommentController)
-@Mock(UserComment)
+@Mock([Changeset, UserComment])
 class UserCommentControllerSpec extends Specification {           //TODO implement tests!
 
-    @Ignore
     def "should return comments to changeset when given right changeset id"() {
+        given:
+
+        new Changeset("hash23", "agj", "zmiany", new Date())
+            .addToUserComments(new UserComment(text: "fajno", author: "jil@touk.pl"))
+            .save()
+
         when:
-        def something = "something"
+        params.id = "hash23"
+        controller.returnCommentsToChangeset()
 
         then:
-        true
+        response.json.size() == 1
+        response.json[0].text == "fajno"
+
     }
+
+
 
     @Ignore
     def "should return last comments, sorted by dateCreated, descending"() {
