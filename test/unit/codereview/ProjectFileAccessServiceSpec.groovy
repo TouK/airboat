@@ -3,19 +3,18 @@ package codereview
 import grails.test.mixin.Mock
 import spock.lang.Specification
 import testFixture.Fixture
-import org.apache.maven.scm.ChangeSet
 
 @Mock([Changeset, ProjectFile])
 class ProjectFileAccessServiceSpec extends Specification{
     def "when given project and file name and file doesn't exist should return info about it"() {
         given:
         def fileName = "idontexist.txt"
-        def projectPath = '/tmp/projekt/'
+        def projectPath = Fixture.DEFAULT_PROJECT_LOCATION_IN_DEVELOPMENT_ENVIRONMENT
         ProjectFileAccessService projectFileAccessService  = new ProjectFileAccessService()
         def content
 
         when:
-        content = projectFileAccessService.fetchFileContentFromPath(fileName, projectPath)
+        content = projectFileAccessService.fetchFileContentFromPath(projectPath, fileName)
 
         then:
         content != null
@@ -25,12 +24,12 @@ class ProjectFileAccessServiceSpec extends Specification{
     def "should return file content if file exists"() {
         given:
         def fileName = "grails-app/conf/Config.groovy"
-        def projectPath = '/tmp/projekt/'
+        def projectPath = Fixture.DEFAULT_PROJECT_LOCATION_IN_DEVELOPMENT_ENVIRONMENT
         ProjectFileAccessService projectFileAccessService  = new ProjectFileAccessService()
         def content
 
         when:
-        content = projectFileAccessService.fetchFileContentFromPath(fileName, projectPath)
+        content = projectFileAccessService.fetchFileContentFromPath(projectPath, fileName)
 
         then:
         content != null
