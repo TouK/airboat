@@ -9,7 +9,7 @@ import spock.lang.Ignore
 
 @TestFor(UserCommentController)
 @Mock([Changeset, UserComment])
-class UserCommentControllerSpec extends Specification {           //TODO implement tests!
+class UserCommentControllerSpec extends Specification {
 
     def "should return comments to changeset when given right changeset id"() {
         given:
