@@ -98,9 +98,9 @@ class ChangesetControllerSpec extends Specification {
         def  specificChangesetHash = "hash23"
         def testChangeset = new Changeset("hash23", "agj", "", new Date())
 
-        def projectFile1 = new ProjectFile(content: "print something", name: "test.txt")
-        def projectFile2 = new ProjectFile(content: "print something2", name: "test2.txt")
-        def projectFile3 = new ProjectFile(content: "print something3", name: "test3.txt")
+        def projectFile1 = new ProjectFile("test.txt", "print something" )
+        def projectFile2 = new ProjectFile("test2.txt", "print something2")
+        def projectFile3 = new ProjectFile("test3.txt", "print something3" )
         testChangeset.addToProjectFiles(projectFile1)
         testChangeset.addToProjectFiles(projectFile2)
         testChangeset.addToProjectFiles(projectFile3)

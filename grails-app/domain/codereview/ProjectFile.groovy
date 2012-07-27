@@ -10,6 +10,10 @@ class ProjectFile {
     static belongsTo = [changeset: Changeset]
     static transients = ['content']
 
+   ProjectFile(String name, String content) {
+        this.name = name
+        this.content = content
+    }
     static constraints = {
         content nullable: true, blank: true
         name nullable: true

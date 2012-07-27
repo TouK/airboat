@@ -54,6 +54,10 @@
             }
         });
     }
+        function slideTextArea(id) {
+            $("#add-comment-" + id).width = 500;
+
+        }
     </script>
 
 
@@ -213,7 +217,9 @@
         <div class="comments" id="comments-{{>identifier}}"></div>
 
         <form class="add_comment .form-inline" >
-                   <input id="add-comment-{{>identifier}}" type="text" placeholder="Write your comment here!"/>
+                   <textarea onfocus="this.style.width = '600px'; this.style.height = '200px';"
+                             id="add-comment-{{>identifier}}"
+                              placeholder="Write your comment here!" class="slideable"/>
             <input id="username-{{>identifier}}" type="text" class="input-small" placeholder="Your name!"/>
             <button type="button"  class="btn" onClick="addComment('{{>identifier}}')">Add comment</button>
        </form>
@@ -244,5 +250,7 @@
 <script id="project-files" type="text/x-jsrender">
     <li><a href="#" onclick="showFile({{>identifier}})" >{{>name}}</a> </li>
 </script>
+
+
 </body>
 </html>

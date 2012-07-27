@@ -18,13 +18,13 @@ class UserCommentController {
     }
 
     //TODO rewrite all controller actions from closures to methods
-    def returnCommentsToChangeset = {
-        def changeset = Changeset.findByIdentifier(params.id) //TODO check that only one query is executed, refactor otherwise
+    def returnCommentsToChangeset(String id) {
+        def changeset = Changeset.findByIdentifier(id) //TODO check that only one query is executed, refactor otherwise
         def comments = UserComment.findAllByChangeset(changeset)
         render comments as JSON
     }
 
-    def getLastComments = {
+    def getLastComments() {
         render UserComment.list(max: 10, sort: "dateCreated", order: "desc") as JSON
     }
 }

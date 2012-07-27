@@ -41,7 +41,7 @@ class ScmAccessService {
         scmChanges.collect { ChangeSet it ->
 
             def files = it.getFiles().collect { file ->
-                new ProjectFile(name: file.getName(), content: gitRepositoryService.returnFileContent())
+                new ProjectFile(file.getName(), gitRepositoryService.returnFileContent())
             }
 
             Changeset changeset = new Changeset(it.revision, it.author, it.comment, it.date)
