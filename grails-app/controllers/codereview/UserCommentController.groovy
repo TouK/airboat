@@ -17,7 +17,7 @@ class UserCommentController {
         render "I did it! Saved."
     }
 
-    //TODO rewrite all controller actions from closures to methods
+
     def returnCommentsToChangeset(String id) {
         def changeset = Changeset.findByIdentifier(id) //TODO check that only one query is executed, refactor otherwise
         def comments = UserComment.findAllByChangeset(changeset)
