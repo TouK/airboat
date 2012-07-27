@@ -65,6 +65,4 @@ class ScmAccessService {
 
         return changeset
     }
-
-
 }
