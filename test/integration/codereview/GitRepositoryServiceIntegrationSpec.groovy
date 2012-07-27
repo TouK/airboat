@@ -33,6 +33,8 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
             changesetsWithFiles !=  null
             changesetsWithFiles.size() == changes.size()                  //TODO add more validation
     }
+    //TODO tests to be written:
+    //TODO test initialCheckOut and updateProject methods if they work as we expect
 
 }
 

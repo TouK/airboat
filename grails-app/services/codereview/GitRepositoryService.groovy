@@ -25,13 +25,12 @@ class GitRepositoryService {
         ScmFileSet allFilesInProject = prepareScmFileset(gitScmUrl)
         ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
 
-        //TODO test for it
-        if (validateScmFileset(allFilesInProject)) {             //TODO it's operating on diffrent level
+        if (validateScmFileset(allFilesInProject)) {
             def scmProvider = new GitExeScmProvider()
             scmProvider.addListener(new Log4jScmLogger())
             scmProvider.update(gitRepository, allFilesInProject)
         } else {
-            log.warn("Project directory does not exist yet. Please checkout project first.")
+            log.warn("Project directory does not exist yet. Please, checkout project first.")
         }
     }
 
