@@ -20,7 +20,6 @@ class ProjectFileController {
      * @return
      */
     def getFileWithContent(Long id) {
-      //  def PROJECT_DIR = "/tmp/projekt/" //FIXME hardcoded, does not work on production env. use ${codereview.workingDirectory}/projekt/
         def projectFile = ProjectFile.findById(id)
         def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(Fixture.PROJECT_REPOSITORY_URL)
         def path = projectRootDirectory.getAbsolutePath()
