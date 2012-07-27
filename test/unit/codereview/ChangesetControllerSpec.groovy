@@ -6,8 +6,7 @@ import spock.lang.Specification
 import grails.converters.JSON
 
 @TestFor(ChangesetController)
-@Mock([Changeset, ProjectFile] )
-
+@Mock([Changeset, ProjectFile])
 class ChangesetControllerSpec extends Specification {
 
     def setup() {
