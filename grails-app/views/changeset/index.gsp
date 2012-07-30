@@ -143,8 +143,6 @@
     </script>
 
 
-    <!--TODO extract these templates, put in another file gathering js-view templates or something -->
-
 
     <!--- ============script================= -->
     <!-- generates list of changesets -->
