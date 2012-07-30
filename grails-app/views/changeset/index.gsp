@@ -64,7 +64,7 @@
                     var comments = {
                         author:data[i].author,
                         date:data[i].dateCreated,
-                        content:data[i].content
+                        content:data[i].text
                     }
                     $('#comments-' + id.toString()).append($("#comment-template").render(comments));
                 }
@@ -183,30 +183,42 @@
         }
 
         function appendChangeset(changeset) {
-            changeset = $.extend({emailSubstitutedWithGravatar: get_gravatar(changeset.email, 50)}, changeset)
+            var shortIdentifier = changeset.identifier.substr(0, 8) + "...";
+            changeset = $.extend({emailSubstitutedWithGravatar: get_gravatar(changeset.email, 50), shortIdentifier: shortIdentifier}, changeset)
             $('#content').append($("#changesetTemplate").render(changeset));
+            $('#less-button-' +changeset.identifier).hide();
 
-            appendAccordion(changeset);
-
-
-            showCommentsToChangeset(changeset.identifier)
         }
-        function appendAccordion(changeset) {
+        function appendAccordion(identifier) {
             var fileUrl = '${createLink(uri:'/changeset/getFileNamesForChangeset/')}';
-            fileUrl = fileUrl.concat(changeset.identifier);
-            $('accordion-' +changeset.identifier).html("");
+            fileUrl = fileUrl.concat(identifier);
+            $('#accordion-' +identifier).html("");
 
             $.getJSON(fileUrl, function (data) {
                 for (i = 0; i < data.length; i++) {
                     var files = {
                         name: data[i].name,
-                        identifier: changeset.identifier,
-                        collapseId: (changeset.identifier + i)
+                        identifier: identifier,
+                        collapseId: (identifier + i)
                     }
-                    $('#accordion-' +changeset.identifier).append($("#accordionFileTemplate").render(files));
+                    $('#accordion-' +identifier).append($("#accordionFileTemplate").render(files));
 
                 }
             });
+        }
+        function showMoreAboutChangeset(identifier)  {
+            appendAccordion(identifier);
+            $("#more-button-" +identifier).html("");
+            $('#less-button-' +identifier).show(100);
+            showCommentsToChangeset(identifier);
+            appendCommentForm(identifier);
+
+        }
+        function appendCommentForm(identifier) {
+            $("#comment-form-" + identifier).html('');
+            $('#comment-form-' +identifier).append($("#commentFormTemplate").render({identifier: identifier}));
+            $('.btn').hide();
+
         }
 
     </script>
@@ -245,7 +257,21 @@
 </script>
 
 
+<script id="commentFormTemplate" type="text/x-jsrender">
+    <form class="add_comment .form-inline"><textarea onfocus=" $('.btn').show(100); this.style.height='100px'; this.style.width='400px'; "
+                                                     id="add-comment-{{>identifier}}" placeholder="Add comment..." class="slideable"></textarea>
+        <input id="username-{{>identifier}}" type="text" class="input-small" placeholder="Your name"/></input>
+        <br />
+        <button type="button"  class="btn" onClick="addComment('{{>identifier}}')">Add comment</button>
+        <button type="button" class="btn" onClick="cancelComment('{{>identifier}}')">Cancel</button>
+    </form>
+</script>
 
+
+<script id="commentFormButtonsTemplate" type="text/x-jsrender">
+    <button type="button"  class="btn" onClick="addComment('{{>identifier}}')">Add comment</button>
+    <button type="button"  class="btn" onClick="cancelComment('{{>identifier}}')">Cancel</button>
+</script>
 
 
     <script id="changesetTemplate" type="text/x-jsrender">
@@ -255,39 +281,59 @@
         <div class="row-fluid">
             <div class="span4">
             <div class="span11 well">
+                <div class="row-fluid">
+
+                    <div class="span2">
                 <img src="{{>emailSubstitutedWithGravatar}}"/>
-                <div class="changeset-header">
+                    </div>
+                    <div class="span6">
+
                     <span class="label">{{>author}}</span>
-                    <span class="label label-info">{{>identifier}}</span>
+                        </div>
+                    <div class="span2">
                     <span class="label label-info">{{>date}}</span>
-                    <a class="show-changeset-button btn" href="#inline_content" onclick="showChangedFilesBox('{{>identifier}}')"><i class="icon-file"/> Files</a>
-                </div>
+                    <span class="label label-info">{{>shortIdentifier}}</span>
 
-                <hr/>
-
-                <div class="changeset-content">{{>commitComment}}</div>
-
-                <hr/>
-
-
-                    <div class="accordion" id="accordion-{{>identifier}}" >
+                   <!-- <a class="show-changeset-button btn" href="#inline_content" onclick="showChangedFilesBox('{{>identifier}}')"><i class="icon-file"/> Files</a>   -->
 
                     </div>
 
+                </div>
+                 <hr />
+                <div class="hero-unit">
+                    <h3>Commit message:</h3>
+                    <p>{{>commitComment}}</p>
 
-                <br />
+                </div>
+
+
+
+                <div class="changeset-content"></div>
+                <div id="more-button-{{>identifier}}">
+                <a class="btn btn-primary btn-big" onclick="showMoreAboutChangeset('{{>identifier}}')">
+                    More...
+                </a>
+                </div>
+                <div class="accordion" id="accordion-{{>identifier}}" ></div>
 
 
                 <div class="comments" id="comments-{{>identifier}}"></div>
 
                 <hr/>
+                <div id="comment-form-{{>identifier}}">
 
-                <form class="add_comment .form-inline">
-                    <textarea onfocus="this.style.width = '480px'; this.style.height = '120px';" id="add-comment-{{>identifier}}" placeholder="Write your comment here!" class="slideable"/>
-                    <input id="username-{{>identifier}}" type="text" class="input-small" placeholder="Your name!"/>
-                    <button type="button"  class="btn" onClick="addComment('{{>identifier}}')">Add comment</button>
-                    <button type="button"  class="btn" onClick="cancelComment('{{>identifier}}')">Cancel</button>
-                </form>
+                </div>
+
+                <div id="less-button-{{>identifier}}">
+                    <a class="btn btn-primary btn-big" onclick="">
+                        Less...
+                    </a>
+                </div>
+
+
+                <div id="comment-form-buttons-{{>identifier}}">
+
+                </div>
 
 
          </div>
