@@ -156,6 +156,8 @@
             $.getJSON('${createLink(uri:'/changeset/getLastChangesets')}', appendChangesets);
         });
 
+        $(".collapse").collapse();
+
         $(window).scroll(function () {
             if ($(window).scrollTop() == $(document).height() - $(window).height()) {
                 onScrollThroughBottomAttempt()
@@ -229,22 +231,21 @@
 
 
 <script id="accordionFileTemplate" type="text/x-jsrender">
+    <div class="accordion-group" >
+
     <div class="accordion-heading">
         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>identifier}}" href="#collapse-{{>collapseId}}">
             {{>name}}
         </a>
     </div>
-    <div id="collapse-{{>collapseId}}" class="accordion-body collapse in">
+    <div id="collapse-{{>collapseId}}" class="accordion-body collapse">
         <div class="accordion-inner">
             Here is the link to the source.
         </div>
     </div>
-
+    </div>
 </script>
-<script id="random" type="text/x-jsrender">
-    <p>   random! </p>
 
-</script>
 
 
 
@@ -271,9 +272,8 @@
                 <hr/>
 
 
-                    <div class="accordion" >
-                        <div class="accordion-group"  id="accordion-{{>identifier}}">
-                        </div>
+                    <div class="accordion" id="accordion-{{>identifier}}" >
+
                     </div>
 
 
