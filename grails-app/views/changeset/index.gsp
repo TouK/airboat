@@ -295,30 +295,20 @@
         <div class="row-fluid">
             <div class="span4">
             <div class="span11 well">
+                <div class="span2">
+                    <img src="{{>emailSubstitutedWithGravatar}}"/>
+                </div>
+
                 <div class="row-fluid">
-
-                    <div class="span2">
-                <img src="{{>emailSubstitutedWithGravatar}}"/>
+                    <div class="span7">
+                        <span class="label">{{>author}}</span>
                     </div>
-                    <div class="span6">
-
-                    <span class="label">{{>author}}</span>
-                        </div>
                     <div class="span2">
-                    <span class="label label-info">{{>date}}</span>
-                    <span class="label label-info">{{>shortIdentifier}}</span>
-
-                   <!-- <a class="show-changeset-button btn" href="#inline_content" onclick="showChangedFilesBox('{{>identifier}}')"><i class="icon-file"/> Files</a>   -->
-
+                        <span class="label label-info">{{>date}}</span>
+                        <span class="label label-info">{{>shortIdentifier}}</span>
                     </div>
-
                 </div>
-                 <hr />
-                <div class="hero-unit">
-                    <h3>Commit message:</h3>
-                    <p>{{>commitComment}}</p>
-
-                </div>
+                <div class="well-small">{{>commitComment}}</div>
 
 
 
@@ -333,7 +323,6 @@
 
                 <div class="comments" id="comments-{{>identifier}}"></div>
 
-                <hr/>
                 <div id="comment-form-{{>identifier}}">
 
                 </div>
