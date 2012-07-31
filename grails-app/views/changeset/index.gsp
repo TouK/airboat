@@ -23,42 +23,46 @@
 
         function addComment(changesetId) {
 
-            var rawText = $('#add-comment-' + changesetId.toString()).val();
-            var text = "<h1>your comment is: " + rawText;
-            var username = $('#username-' + changesetId.toString()).val();
-            text = text + " written by: " + username + " changeset id: " + changesetId.toString() + "</h1><br />";
+            var text = $('#add-comment-' + changesetId).val();
+            var username = $('#username-' + changesetId).val();
 
             var comment = {
                 author:username,
-                content:rawText,
+                content:text,
                 date:new Date()
             }
-            if(rawText == "" || username == "") {
+            if(text == "" || username == "") {
                 return false
             }
 
-            $('#comments-' + changesetId.toString()).append($("#comment-template").render(comment));
+            $('#comments-' + changesetId).append($("#comment-template").render(comment));
             var url = "${createLink(controller:'UserComment', action:'addComment')}";
 
-            $.post(url, { username:username, changesetId:changesetId, text:rawText });
+            $.post(url, { username:username, changesetId:changesetId, text:text });
             changeAddCommentDivToDefault(changesetId);
+            hideAddCommentButtons(changesetId);
         }
 
         function cancelComment(changesetId) {
                 changeAddCommentDivToDefault(changesetId);
-        }
+                hideAddCommentButtons(changesetId);
 
+        }
+        function hideAddCommentButtons(changesetId) {
+            $('#btn-' +changesetId).hide();
+            $('#c-btn-' +changesetId).hide();
+        }
         function changeAddCommentDivToDefault(changesetId) {
-            $('#add-comment-' + changesetId.toString()).val("");
-            $('#username-' + changesetId.toString()).val("");
-            $('#add-comment-' + changesetId.toString()).width("200px");
-            $('#add-comment-' + changesetId.toString()).height("20px");
+            $('#add-comment-' + changesetId).val("");
+            $('#username-' + changesetId).val("");
+            $('#add-comment-' + changesetId).width("200px");
+            $('#add-comment-' + changesetId).height("20px");
         }
 
         function showCommentsToChangeset(id) {
-            $('#comments-' + id.toString()).html("");
+            $('#comments-' + id).html("");
             var fileUrl = '${createLink(uri:'/userComment/returnCommentsToChangeset/')}';
-            fileUrl = fileUrl.concat(id.toString());
+            fileUrl += id;
             $.getJSON(fileUrl, function (data) {
                 for (i = 0; i < data.length; i++) {
                     var comments = {
@@ -66,14 +70,12 @@
                         date:data[i].dateCreated,
                         content:data[i].text
                     }
-                    $('#comments-' + id.toString()).append($("#comment-template").render(comments));
+                    $('#comments-' + id).append($("#comment-template").render(comments));
                 }
             });
         }
 
-        function slideTextArea(id) {
-            $("#add-comment-" + id).width = 500;
-        }
+
     </script>
 
 
@@ -95,8 +97,8 @@
                 onOpen:function () {
                     $('#changesetInfo').html("");
                     $('#layer_files').html("");
-                    var url = '${createLink(uri:'/changeset/getChangeset/')}';
-                    url = url.concat(id.toString());
+                    var url = '${createLink(uri:'/changeset/getChangeset/')}' + id;
+
                     $.getJSON(url, function (data) {
 
                         for (i = 0; i < data.length; i++) {
@@ -112,7 +114,7 @@
                     });
 
                     var fileUrl = '${createLink(uri:'/changeset/getFileNamesForChangeset/')}';
-                    fileUrl = fileUrl.concat(id.toString());
+                    fileUrl += id;
                     $.getJSON(fileUrl, function (data) {
                         for (i = 0; i < data.length; i++) {
                             var files = {
@@ -134,7 +136,7 @@
 
         function showFile(id) {
             var fileContentUrl = '${createLink(uri:'/projectFile/getFileWithContent/')}';
-            fileContentUrl = fileContentUrl.concat(id);
+            fileContentUrl += id;
             var fileContent;
             $.getJSON(fileContentUrl, function(file) {
                 $("#code").text(file.content);
@@ -186,9 +188,14 @@
             var shortIdentifier = changeset.identifier.substr(0, 8) + "...";
             changeset = $.extend({emailSubstitutedWithGravatar: get_gravatar(changeset.email, 50), shortIdentifier: shortIdentifier}, changeset)
             $('#content').append($("#changesetTemplate").render(changeset));
+            showCommentsToChangeset(changeset.identifier);
+            $('#comments-' + changeset.identifier).hide();
+            appendCommentForm(changeset.identifier);
             $('#less-button-' +changeset.identifier).hide();
-
+            appendAccordion(changeset.identifier);
+            $('#accordion-' +changeset.identifier).hide();
         }
+
         function appendAccordion(identifier) {
             var fileUrl = '${createLink(uri:'/changeset/getFileNamesForChangeset/')}';
             fileUrl = fileUrl.concat(identifier);
@@ -206,18 +213,29 @@
                 }
             });
         }
+
         function showMoreAboutChangeset(identifier)  {
-            appendAccordion(identifier);
-            $("#more-button-" +identifier).html("");
+            $("#more-button-" +identifier).hide();
             $('#less-button-' +identifier).show(100);
-            showCommentsToChangeset(identifier);
-            appendCommentForm(identifier);
+            $('#comments-' + identifier).show(100);
+            $('#comment-form-' +identifier).show(100);
+            $('#accordion-' +identifier).show(100);
 
         }
+
+        function showLessAboutChangeset(identifier) {
+            $("#less-button-" +identifier).hide();
+            $('#more-button-' +identifier).show(100);
+            $('#comments-' + identifier).hide();
+            $('#comment-form-' +identifier).hide();
+            $('#accordion-' +identifier).hide();
+        }
+
         function appendCommentForm(identifier) {
             $("#comment-form-" + identifier).html('');
             $('#comment-form-' +identifier).append($("#commentFormTemplate").render({identifier: identifier}));
-            $('.btn').hide();
+            $('#comment-form-' +identifier).hide();
+            hideAddCommentButtons(identifier);
 
         }
 
@@ -258,20 +276,16 @@
 
 
 <script id="commentFormTemplate" type="text/x-jsrender">
-    <form class="add_comment .form-inline"><textarea onfocus=" $('.btn').show(100); this.style.height='100px'; this.style.width='400px'; "
+    <form class="add_comment .form-inline"><textarea onfocus=" $('#btn-' +'{{>identifier}}').show(100); $('#c-btn-' +'{{>identifier}}').show(100); this.style.height='100px'; this.style.width='400px'; "
                                                      id="add-comment-{{>identifier}}" placeholder="Add comment..." class="slideable"></textarea>
         <input id="username-{{>identifier}}" type="text" class="input-small" placeholder="Your name"/></input>
         <br />
-        <button type="button"  class="btn" onClick="addComment('{{>identifier}}')">Add comment</button>
-        <button type="button" class="btn" onClick="cancelComment('{{>identifier}}')">Cancel</button>
+        <button type="button"  class="btn" id="btn-{{>identifier}}" onClick="addComment('{{>identifier}}')">Add comment</button>
+        <button type="button" class="btn" id="c-btn-{{>identifier}}" onClick="cancelComment('{{>identifier}}')">Cancel</button>
     </form>
 </script>
 
 
-<script id="commentFormButtonsTemplate" type="text/x-jsrender">
-    <button type="button"  class="btn" onClick="addComment('{{>identifier}}')">Add comment</button>
-    <button type="button"  class="btn" onClick="cancelComment('{{>identifier}}')">Cancel</button>
-</script>
 
 
     <script id="changesetTemplate" type="text/x-jsrender">
@@ -325,7 +339,7 @@
                 </div>
 
                 <div id="less-button-{{>identifier}}">
-                    <a class="btn btn-primary btn-big" onclick="">
+                    <a class="btn btn-primary btn-big" onclick="showLessAboutChangeset('{{>identifier}}')">
                         Less...
                     </a>
                 </div>
