@@ -26,9 +26,9 @@ class LineCommentControllerSpec extends Specification {
         def texts = ["wrong indentation, boy!", "what do you mean?", "well done"]
 
         when:
-        controller.addComment(texts[0], lineNumbers[0], fileId)
-        controller.addComment(texts[1], lineNumbers[1], fileId)
-        controller.addComment(texts[2], lineNumbers[2], fileId)
+        controller.addComment(texts[0], lineNumbers[0].toString(), fileId.toString())
+        controller.addComment(texts[1], lineNumbers[1].toString(), fileId.toString())
+        controller.addComment(texts[2], lineNumbers[2].toString(), fileId.toString())
         controller.returnCommentsToProjectFile(fileId.toString())
         String rendered = (response.contentAsString)
 
@@ -51,7 +51,7 @@ class LineCommentControllerSpec extends Specification {
         String text = "wrong indentation, boy!"
 
         when:
-        controller.addComment(text, lineNumber, fileId)
+        controller.addComment(text, lineNumber.toString(), fileId.toString())
         def lineComment
         lineComment =  LineComment.findByText(text)
         then:

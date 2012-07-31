@@ -32,4 +32,37 @@ class ProjectFileController {
 
         render([content: projectFile.content] as JSON)
     }
+    def getLineCommentsWithSnippetsToFile(Long id) {
+        def projectFile = ProjectFile.findById(id)
+        def comments = LineComment.findAllByProjectFile(projectFile)
+
+        def commentsWithSnippets = comments.collect {
+            [comment: it, snippet: getSnippet(it)]
+        }
+        render commentsWithSnippets as JSON
+    }
+
+    def getSnippet(LineComment comment) {
+        def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(Fixture.PROJECT_REPOSITORY_URL)
+        def path = projectRootDirectory.getAbsolutePath()
+        def fileContent =  projectFileAccessService.fetchFileContentFromPath(path, comment.projectFile.name)
+        return getLinesAround(fileContent, comment.lineNumber, 3)
+    }
+
+    def getLinesAround(String text, Integer at, Integer howMany){
+        def splitted = text.split("\n")
+        def from = at - (howMany -1)/2
+        def to  = at + (howMany)/2
+        if (from < 0) {
+            from = 0
+            to = from + howMany
+
+        }
+        if (to >= splitted.size()) {
+            to = splitted.size() - 1
+            from = to - howMany
+            if (from < 0) {from = 0 }
+        }
+        return splitted[from.toInteger()..to.toInteger()].join("\n")
+    }
 }

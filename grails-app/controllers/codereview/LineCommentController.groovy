@@ -6,7 +6,7 @@ class LineCommentController {
 
     def index() { }
 
-    def addComment(String text,  lineNumber, fileId) {
+    def addComment(String text, String lineNumber, String fileId) {
 
         def projectFile = ProjectFile.findById(fileId)
 
