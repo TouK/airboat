@@ -8,6 +8,7 @@ class ProjectFile {
     String name
 
     static belongsTo = [changeset: Changeset]
+    static hasMany = [lineComments: LineComment]
     static transients = ['content']
 
    ProjectFile(String name, String content) { //TODO check if content parameter is applicable here
