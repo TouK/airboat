@@ -28,29 +28,22 @@ class ScmAccessService {
     //TODO examine if global failOnError is possible
     //TODO examine if save does validate()
     @VisibleForTesting void saveChangeset(Changeset changesetToSave) {
-        def commiter = changesetToSave.commiter
-        def commiterFromDb = Commiter.find(commiter)
-        if (commiterFromDb != null) {
-            commiter = commiterFromDb
-            commiter.addToChangesets(changesetToSave)
-        }
-        if (changesetToSave.validate()) {
-            changesetToSave.save(failOnError: true)
-            commiter.save(failOnError: true)
-        }
+        def commiter = Commiter.findOrCreateWhere(cvsCommiterId: changesetToSave.commiter.cvsCommiterId)
+        commiter.addToChangesets(changesetToSave)
+        commiter.save(failOnError: true)
     }
 
-    Changeset[] fetchAllChangesets(String gitScmUrl){
-        List<org.apache.maven.scm.ChangeSet> scmChanges = gitRepositoryService.getAllChangeSets(gitScmUrl)
-        if (scmChanges != null) { //TODO move this if to convert function
-            convertToChangesets(scmChanges)
-        } else {
+    Set<Changeset> fetchAllChangesets(String gitScmUrl){
+        Set<org.apache.maven.scm.ChangeSet> scmChanges = gitRepositoryService.getAllChangeSets(gitScmUrl)
+        convertToChangesets(scmChanges)
+    }
+
+    Set<Changeset> convertToChangesets(Set<org.apache.maven.scm.ChangeSet> scmChanges) {
+        if (scmChanges == null) {
             return []
+        } else {
+            scmChanges.collect { convertToChangeset(it) }
         }
-    }
-
-    Changeset[] convertToChangesets(List<org.apache.maven.scm.ChangeSet> scmChanges) {
-        scmChanges.collect { convertToChangeset(it) }.sort { it.date.time }
     }
 
     @VisibleForTesting Changeset convertToChangeset(ChangeSet scmApiChangeSet) {

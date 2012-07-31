@@ -3,6 +3,7 @@ package codereview
 import testFixture.Fixture
 
 import grails.plugin.spock.IntegrationSpec
+import org.apache.maven.scm.ChangeSet
 
 class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
@@ -10,15 +11,17 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     def scmAccessService
 
     def "should fetch changesets from project's repository"() {
-
         when:
             gitRepositoryService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
             def changelog = gitRepositoryService.getAllChangeSets(Fixture.PROJECT_REPOSITORY_URL)
 
         then:
             changelog.size() >= Fixture.LOWER_BOUND_FOR_NUMBER_OF_COMMITS
-            changelog.last().author == Fixture.FIRST_COMMIT_AUTHOR
-            changelog.last().date == Fixture.FIRST_COMMIT_DATE
+            changelog.findAll { ChangeSet changeSet -> (
+                changeSet.date == Fixture.FIRST_COMMIT_DATE
+                && changeSet.author == Fixture.FIRST_COMMIT_AUTHOR
+                && changeSet.comment == Fixture.FIRST_COMMIT_COMMENT
+            )}.size() == 1
     }
 
     //TODO add test for fetchFullChangelog when in case project was not been checked out
@@ -32,9 +35,6 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
         then:
             changesetsWithFiles !=  null
             changesetsWithFiles.size() == changes.size()
-            changesetsWithFiles[0].author == Fixture.FIRST_COMMIT_AUTHOR
-            changesetsWithFiles[0].commitComment == Fixture.FIRST_COMMIT_COMMENT
-            changesetsWithFiles[0].identifier == Fixture.FIRST_COMMIT_HASH
             changesetsWithFiles.each {
                 assert(!it.projectFiles.isEmpty())
                 assert(it.projectFiles.iterator().next().name != null)

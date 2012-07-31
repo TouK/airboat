@@ -4,7 +4,7 @@ import spock.lang.Specification
 
 import grails.test.mixin.Mock
 
-@Mock(Changeset)
+@Mock([Commiter, Changeset])
 class ProjectUpdateJobSpec extends Specification {
 
     ScmAccessService scmAccessServiceMock
@@ -16,7 +16,7 @@ class ProjectUpdateJobSpec extends Specification {
     void "shouldn't delete all old changesets during updating"() {
 
         given:
-            new Changeset("hash23", "coding", new Date()).save()
+            new Commiter("agj").addToChangesets(new Changeset("hash23", "coding", new Date())).save()
             def job = new ProjectUpdateJob()
             job.scmAccessService = scmAccessServiceMock
 
@@ -32,7 +32,11 @@ class ProjectUpdateJobSpec extends Specification {
         given:
             def job = new ProjectUpdateJob()
             job.scmAccessService = scmAccessServiceMock
-            1 * job.scmAccessService.importAllChangesets(_) >> { new Changeset("hash23", "coding", new Date()).save() }
+            1 * job.scmAccessService.importAllChangesets(_) >> {
+                new Commiter("agj")
+                    .addToChangesets(new Changeset("hash23", "coding", new Date()))
+                    .save()
+            }
 
         when:
             job.update()
