@@ -15,6 +15,12 @@ class ProjectFile {
         this.name = name
         this.content = content
     }
+     //FIXME: add test
+    String getFileType() {
+        def extensionToFiletype = [js:'javascript', htm: 'html']
+        def extension = name[name.lastIndexOf('.') + 1 .. name.length() - 1]
+        extensionToFiletype.get(extension, extension)
+    }
 
     static constraints = {
         content nullable: true, blank: true

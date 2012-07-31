@@ -19,6 +19,9 @@
     <script src="${createLink(uri: '/js/gravatar.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-collapse.js')}" type="text/javascript"></script>
 
+    <script type="text/javascript" src="${createLink(uri: '/js/jquery.syntaxhighlighter.min.js')}"></script>
+
+
     <script type="text/javascript">
 
         function addComment(changesetId) {
@@ -78,73 +81,30 @@
 
     </script>
 
-
 </head>
 
 <body>
 
-    <div id="content" class="container-fluid"></div>
+<script type="text/javascript">$.SyntaxHighlighter.init();</script>
 
-    <!-- function to handle click for more info in new layer for chosen changeset -->
+<div id="content" class="container-fluid"></div>
+
     <script type="text/javascript">
-        function showChangedFilesBox(id) {
 
-            $(".show-changeset-button").colorbox({opacity:0.3,
-                inline:true,
-                width:"80%",
-                height:"80%",
-                fixed:true,
-                onOpen:function () {
-                    $('#changesetInfo').html("");
-                    $('#layer_files').html("");
-                    var url = '${createLink(uri:'/changeset/getChangeset/')}' + id;
+        function showFile(changesetId, fileId) {
 
-                    $.getJSON(url, function (data) {
-
-                        for (i = 0; i < data.length; i++) {
-                            var changesets = {
-                                author: data[i].author,
-                                identifier: data[i].identifier,
-                                date: data[i].date
-
-                            }
-                            $('#changesetInfo').append($("#box-changeset").render(changesets));
-
-                        }
-                    });
-
-                    var fileUrl = '${createLink(uri:'/changeset/getFileNamesForChangeset/')}';
-                    fileUrl += id;
-                    $.getJSON(fileUrl, function (data) {
-                        for (i = 0; i < data.length; i++) {
-                            var files = {
-                                name: data[i].name,
-                                identifier: data[i].id
-
-                            }
-                            $('#layer_files').append($("#project-files").render(files));
-
-                        }
-                    });
-                            $("#code").html("<p>Click on file to see the content</p>");
-                },
-                onLoad:function () {
-                    //code
-                }
-            });
-        }
-
-        function showFile(id) {
             var fileContentUrl = '${createLink(uri:'/projectFile/getFileWithContent/')}';
-            fileContentUrl += id;
+            fileContentUrl += fileId;
             var fileContent;
             $.getJSON(fileContentUrl, function(file) {
-                $("#code").text(file.content);
+                $("#content-files-" + changesetId).html("<pre class='codeViewer'/>")
+                $("#content-files-" + changesetId + " .codeViewer")
+                    .text(file.content)
+                    .addClass("language-" + file.filetype)
+                    .syntaxHighlight()
             });
         }
     </script>
-
-
 
     <!--- ============script================= -->
     <!-- generates list of changesets -->
@@ -177,9 +137,11 @@
 
 
         function appendChangesets(changesets) {
-            lastChangesetId = $(changesets).last()[0].identifier //TODO find a better way
-            for(i = 0; i < changesets.length; i++) {
-               appendChangeset(changesets[i]);
+            if (changesets.length > 0) {
+                lastChangesetId = $(changesets).last()[0].identifier //TODO find a better way
+                for(i = 0; i < changesets.length; i++) {
+                    appendChangeset(changesets[i]);
+                }
             }
             changesetsLoading = false;
         }
@@ -196,20 +158,20 @@
             $('#accordion-' +changeset.identifier).hide();
         }
 
-        function appendAccordion(identifier) {
+        function appendAccordion(changesetId) {
             var fileUrl = '${createLink(uri:'/changeset/getFileNamesForChangeset/')}';
-            fileUrl = fileUrl.concat(identifier);
-            $('#accordion-' +identifier).html("");
+            fileUrl = fileUrl.concat(changesetId);
+            $('#accordion-' +changesetId).html("");
 
             $.getJSON(fileUrl, function (data) {
                 for (i = 0; i < data.length; i++) {
-                    var files = {
-                        name: data[i].name,
-                        identifier: identifier,
-                        collapseId: (identifier + i)
-                    }
-                    $('#accordion-' +identifier).append($("#accordionFileTemplate").render(files));
-
+                    var accordionRow = $("#accordionFileTemplate").render({
+                        name:data[i].name,
+                        changesetId: changesetId,
+                        fileId:data[i].id,
+                        collapseId:(changesetId + i)
+                    });
+                    $('#accordion-' +changesetId).append(accordionRow);
                 }
             });
         }
@@ -242,33 +204,20 @@
     </script>
 
 
-    <!-- template for a new layer which is shown in popping box -->
-    <div style='display:none'>
-        <div id='inline_content' style='padding:10px; background:#fff;'>
-            <h1>Changeset</h1>
-
-            <div>
-                <div id="changesetInfo"></div>
-            </div>
-
-            <h2>Files changed in commit:</h2>
-            <ul id="layer_files"></ul>
-            <pre id="code"></pre>
-        </div>
-    </div>
 
 
 <script id="accordionFileTemplate" type="text/x-jsrender">
     <div class="accordion-group" >
 
     <div class="accordion-heading">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>identifier}}" href="#collapse-{{>collapseId}}">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
             {{>name}}
         </a>
+
     </div>
     <div id="collapse-{{>collapseId}}" class="accordion-body collapse">
         <div class="accordion-inner">
-            Here is the link to the source.
+            <button type="button" class="btn pull-right" onClick="showFile('{{>changesetId}}', '{{>fileId}}')">Show file &gt;</button>
         </div>
     </div>
     </div>
@@ -285,12 +234,7 @@
     </form>
 </script>
 
-
-
-
-    <script id="changesetTemplate" type="text/x-jsrender">
-
-
+<script id="changesetTemplate" type="text/x-jsrender">
 
         <div class="row-fluid">
             <div class="span4">
@@ -322,7 +266,7 @@
 
 
                 <div class="comments" id="comments-{{>identifier}}"></div>
-
+                <hr/>
                 <div id="comment-form-{{>identifier}}">
 
                 </div>
@@ -343,18 +287,17 @@
 
         </div>
 
-
             <div class="span8">
                 <div class="span11 well">
                 <div class="files-right">
-                    <p>Drogi Marszałku, Wysoka Izbo. PKB rośnie Nikt inny was nie możemy zdradzać iż aktualna struktura organizacji przedstawia interpretującą próbę sprawdzenia systemu szkolenia kadr zmusza nas do celu. Takowe informacje są tajne, nie trzeba udowadniać, ponieważ utworzenie komisji śledczej do przeanalizowania nowych propozycji. Nikt inny was nie zapewni iż wyeliminowanie korupcji przedstawia interpretującą próbę sprawdzenia dalszych poczynań. W związku z dotychczasowymi zasadami systemu zmusza nas do przeanalizowania istniejących kryteriów spełnia istotną rolę w większym stopniu tworzenie postaw uczestników wobec zadań stanowionych przez organizację. Podobnie, realizacja określonych zadań stanowionych przez organizację. Pomijając fakt, że zakres i określenia modelu rozwoju. Natomiast realizacja określonych zadań stanowionych przez organizację. Praca wre. Prawdą jest, iż nowy model działalności organizacyjnej wymaga niezwykłej precyzji w wypracowaniu dalszych poczynań. Nie mówili prawdy. W ten sposób zakres i realizacji nowych propozycji. Każdy już zapewne zdążył zauważyć iż dokończenie aktualnych projektów pomaga w wypracowaniu nowych propozycji. Gdy za najważniejszy punkt naszych działań obierzemy praktykę, nie zapewni iż zmiana przestarzałego systemu szkolenia kadr umożliwia w restrukturyzacji przedsiębiorstwa. W praktyce zakres i realizacji modelu rozwoju. Reasumując. konsultacja z dotychczasowymi zasadami systemu obsługi spełnia.</p>
+                    <div id="content-files-{{>identifier}}" > </div>
                     </div>
                     </div>
             </div>
         </div>
     </script>
 
-    <script id="comment-template" type="text/x-jsrender">
+<script id="comment-template" type="text/x-jsrender">
 
         <div class="alert">
             <img src=" ${createLink(uri: '/images/favicon.ico')}"/>    <!-- TODO: it should be a gravatar! -->
@@ -366,16 +309,12 @@
 
     </script>
 
+    <!--FIXME make all js-views templates have 'Template' suffix-->
     <script id="box-changeset" type="text/x-jsrender">
         Author: {{>author}}</br>
         Identifier:  {{>identifier}}</br>
         Date:  {{>date}}</br>
     </script>
-
-    <script id="project-files" type="text/x-jsrender">
-        <li><a href="#" onclick="showFile({{>identifier}})" >{{>name}}</a> </li>
-    </script>
-
 
 </body>
 </html>

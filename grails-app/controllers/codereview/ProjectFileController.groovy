@@ -30,7 +30,7 @@ class ProjectFileController {
         //and then use it in javascript accessing to it from JSON? However it would make js-scripts more complicated.
         //because, they'd have to check it before rendering and pass other arguments to render
 
-        render([content: projectFile.content] as JSON)
+        render([content: projectFile.content, filetype: projectFile.fileType] as JSON)
     }
     def getLineCommentsWithSnippetsToFile(Long id) {
         def projectFile = ProjectFile.findById(id)
