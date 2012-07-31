@@ -18,6 +18,7 @@ class ProjectUpdateJob {
 
     def update() {
         scmAccessService.updateProject(Constants.PROJECT_REPOSITORY_URL)
+        //FIXME this import should be INCREMENTAL - but it's not. Porbably will fail with an exception (save(failOnErrors:true))
         scmAccessService.importAllChangesets(Constants.PROJECT_REPOSITORY_URL)
     }
 }

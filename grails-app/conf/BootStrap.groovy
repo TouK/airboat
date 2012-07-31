@@ -8,9 +8,9 @@ class BootStrap {
         JSON.registerObjectMarshaller(Changeset) {
             def returnMap = [:]
             returnMap['identifier'] = it.identifier
-            returnMap['author'] = it.author
+            returnMap['author'] = it.commiter.cvsCommiterId
             returnMap['date'] = it.date
-            returnMap['email'] = it.getEmail()
+            returnMap['email'] = it.commiter.getEmail()
             returnMap['commitComment'] = it.commitComment
             returnMap['id'] = it.id
             returnMap['commentsCount'] = it.commentsCount()
