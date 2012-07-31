@@ -106,7 +106,7 @@
         }
     </script>
 
-    <!--- ============script================= -->
+
     <!-- generates list of changesets -->
     <script type="text/javascript">
 
@@ -202,6 +202,7 @@
         }
 
     </script>
+
 
 
 
