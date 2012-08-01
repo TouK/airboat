@@ -85,7 +85,7 @@
 
 <body>
 
-<script type="text/javascript">$.SyntaxHighlighter.init();</script>
+<script type="text/javascript">$.SyntaxHighlighter.init({'stripEmptyStartFinishLines': false, 'stripEmptyStartFinishLines': false});</script>
 
 <div id="content" class="container-fluid"></div>
 
@@ -206,7 +206,7 @@
                            $("#snippet-" + snippetData[j].comment.projectFile.id + "-" + snippetData[j].comment.id).html("<pre class='codeViewer'/></pre>");
                             $("#snippet-" + snippetData[j].comment.projectFile.id + "-" + snippetData[j].comment.id + " .codeViewer")
                                     .text(snippetData[j].snippet)
-                                    .addClass("firstline[10")
+                                    .addClass("linenums:"+snippetData[j].comment.lineNumber)
                                     .addClass("language-" + snippetData[j].filetype)
                                     .syntaxHighlight();
 
