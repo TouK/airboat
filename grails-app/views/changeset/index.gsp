@@ -54,7 +54,6 @@
 
         function addLineComment(fileIdentifier) {
 
-
             var text = $('#add-line-comment-' +fileIdentifier).val();
             var lineNumber = $('#line-number-' +fileIdentifier).val();
 
@@ -211,54 +210,44 @@
                         collapseId:(changesetId + i)
                     });
                     $('#accordion-' +changesetId).append(accordionRow);
-
-
-
-                    var snippetUrl =  '${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}' +data[i].id;
-                    $.getJSON(snippetUrl, function (snippetData) {
-                        if(snippetData.length > 0) {
-                        $('#accordion-inner-div-' +snippetData[0].commentGroup[0].projectFile.id).html("");
-
-                        for (j = 0; j < snippetData.length; j++) {
-                            var snippet = $("#snippetTemplate").render({
-
-                                snippet:snippetData[j].snippet,
-                                fileId: snippetData[j].commentGroup[0].projectFile.id,
-                                snippetId: snippetData[j].commentGroup[0].lineNumber
-
-                            });
-
-
-                            $('#accordion-inner-div-snippet-' +snippetData[j].commentGroup[0].projectFile.id).append(snippet);
-
-                           $("#snippet-" + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].lineNumber).html("<pre class='codeViewer'/></pre>");
-                            $("#snippet-" + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].lineNumber + " .codeViewer")
-                                    .text(snippetData[j].snippet)
-                                    .addClass("linenums:"+snippetData[j].commentGroup[0].lineNumber)
-                                    .addClass("language-" + snippetData[j].filetype)
-                                    .syntaxHighlight();
-
-                            for(z = 0; z < snippetData[j].commentGroup.length; z++) {
-                                var comment = $("#lineCommentTemplate").render({
-                                    text:snippetData[j].commentGroup[z].text,
-                                    author:snippetData[j].commentGroup[z].author
-                                });
-
-                                $('#div-comments-' +snippetData[j].commentGroup[0].projectFile.id +"-" + snippetData[j].commentGroup[0].lineNumber).append(comment);
-                            }
-                        }
-
-                            $(".hide-file").hide();
-                        }
-                    });
-
-
+                    appendSnippetToFileInAccordion(data[i].id)
                 }
             });
 
+        }
+        function appendSnippetToFileInAccordion(fileId)   {
+            var snippetUrl =  '${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}' +fileId;
+            $.getJSON(snippetUrl, function (snippetData) {
+                if(snippetData.length > 0) {
+                    $('#accordion-inner-div-' +snippetData[0].commentGroup[0].projectFile.id).html("");
 
+                    for (j = 0; j < snippetData.length; j++) {
+                        var snippet = $("#snippetTemplate").render({
+                            snippet:snippetData[j].snippet,
+                            fileId: snippetData[j].commentGroup[0].projectFile.id,
+                            snippetId: snippetData[j].commentGroup[0].lineNumber
+                        });
 
+                        $('#accordion-inner-div-snippet-' +snippetData[j].commentGroup[0].projectFile.id).append(snippet);
+                        $("#snippet-" + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].lineNumber).html("<pre class='codeViewer'/></pre>");
+                        $("#snippet-" + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].lineNumber + " .codeViewer")
+                                .text(snippetData[j].snippet)
+                                .addClass("linenums:"+snippetData[j].commentGroup[0].lineNumber)
+                                .addClass("language-" + snippetData[j].filetype)
+                                .syntaxHighlight();
 
+                        for(z = 0; z < snippetData[j].commentGroup.length; z++) {
+                            var comment = $("#lineCommentTemplate").render({
+                                text:snippetData[j].commentGroup[z].text,
+                                author:snippetData[j].commentGroup[z].author
+                            });
+
+                            $('#div-comments-' +snippetData[j].commentGroup[0].projectFile.id +"-" + snippetData[j].commentGroup[0].lineNumber).append(comment);
+                        }
+                    }
+                    $(".hide-file").hide();
+                }
+            });
         }
 
         function showMoreAboutChangeset(identifier)  {
@@ -287,9 +276,6 @@
         }
 
     </script>
-
-
-
 
 
 <script id="accordionFileTemplate" type="text/x-jsrender">
