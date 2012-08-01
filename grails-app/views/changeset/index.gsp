@@ -103,6 +103,17 @@
                     .addClass("language-" + file.filetype)
                     .syntaxHighlight()
             });
+            $("#content-files-" + changesetId).show(100);
+            $('#content-files-span-' +changesetId).show(100);
+
+            $(".show-file").hide();
+            $(".hide-file").show();
+        }
+        function hideFile(changesetId, fileId)  {
+            $("#content-files-" + changesetId).hide();
+            $(".show-file").show();
+            $(".hide-file").hide();
+            $('#content-files-span-' +changesetId).hide();
         }
     </script>
 
@@ -156,6 +167,8 @@
             $('#less-button-' +changeset.identifier).hide();
             appendAccordion(changeset.identifier);
             $('#accordion-' +changeset.identifier).hide();
+            $('#content-files-span-' +changeset.identifier).hide();
+
         }
 
         function appendAccordion(changesetId) {
@@ -172,8 +185,34 @@
                         collapseId:(changesetId + i)
                     });
                     $('#accordion-' +changesetId).append(accordionRow);
+
+
+
+                    var snippetUrl =  '${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}' +data[i].id;
+                    $.getJSON(snippetUrl, function (snippetData) {
+                        if(snippetData.length > 0) {
+                        $('#accordion-inner-div-' +snippetData[0].comment.projectFile.id).html("");
+
+                        for (j = 0; j < snippetData.length; j++) {
+                            var snippet = $("#snippetTemplate").render({
+                                text:snippetData[j].comment.text,
+                                snippet:snippetData[j].snippet,
+                                lineNumber:snippetData[j].comment.lineNumber
+                            });
+                            $('#accordion-inner-div-' +snippetData[j].comment.projectFile.id).append(snippet);
+
+                        }
+                            $(".hide-file").hide();
+                        }
+                    });
+
+
                 }
             });
+
+
+
+
         }
 
         function showMoreAboutChangeset(identifier)  {
@@ -217,12 +256,21 @@
 
     </div>
     <div id="collapse-{{>collapseId}}" class="accordion-body collapse">
-        <div class="accordion-inner">
-            <button type="button" class="btn pull-right" onClick="showFile('{{>changesetId}}', '{{>fileId}}')">Show file &gt;</button>
+        <div class="accordion-inner" >
+            <div id="accordion-inner-div-{{>fileId}}"></div>
+            <button type="button" class="btn pull-right show-file" id="sh-btn-{{>changesetId}}" onClick="showFile('{{>changesetId}}', '{{>fileId}}')">Show file &gt;</button>
+            <button type="button" class="btn pull-right hide-file" id="h-btn-{{>changesetId}}" onClick="hideFile('{{>changesetId}}', '{{>fileId}}')">Hide file (arrow);</button>
         </div>
     </div>
     </div>
 </script>
+
+<script id="snippetTemplate" type="text/x-jsrender">
+    <h3>Comment to line: {{>lineNumber}}</h3>
+    <h3>{{>text}}</h3>
+    <pre>{{>snippet}}</pre>
+</script>
+
 
 
 <script id="commentFormTemplate" type="text/x-jsrender">
@@ -289,7 +337,7 @@
         </div>
 
             <div class="span8">
-                <div class="span11 well">
+                <div class="span11 well" id="content-files-span-{{>identifier}}">
                 <div class="files-right">
                     <div id="content-files-{{>identifier}}" > </div>
                     </div>
