@@ -85,7 +85,7 @@
 
 <body>
 
-<script type="text/javascript">$.SyntaxHighlighter.init({'stripEmptyStartFinishLines': false, 'stripEmptyStartFinishLines': false});</script>
+<script type="text/javascript">$.SyntaxHighlighter.init({'stripEmptyStartFinishLines': false});</script>
 
 <div id="content" class="container-fluid"></div>
 
@@ -191,27 +191,37 @@
                     var snippetUrl =  '${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}' +data[i].id;
                     $.getJSON(snippetUrl, function (snippetData) {
                         if(snippetData.length > 0) {
-                        $('#accordion-inner-div-' +snippetData[0].comment.projectFile.id).html("");
+                        $('#accordion-inner-div-' +snippetData[0].commentGroup[0].projectFile.id).html("");
 
                         for (j = 0; j < snippetData.length; j++) {
                             var snippet = $("#snippetTemplate").render({
-                                text:snippetData[j].comment.text,
-                                snippet:snippetData[j].snippet,
-                                lineNumber:snippetData[j].comment.lineNumber,
-                                fileId: snippetData[j].comment.projectFile.id,
-                                snippetId: snippetData[j].comment.id
-                            });
-                            $('#accordion-inner-div-' +snippetData[j].comment.projectFile.id).append(snippet);
 
-                           $("#snippet-" + snippetData[j].comment.projectFile.id + "-" + snippetData[j].comment.id).html("<pre class='codeViewer'/></pre>");
-                            $("#snippet-" + snippetData[j].comment.projectFile.id + "-" + snippetData[j].comment.id + " .codeViewer")
+                                snippet:snippetData[j].snippet,
+                                fileId: snippetData[j].commentGroup[0].projectFile.id,
+                                snippetId: snippetData[j].commentGroup[0].id
+
+                            });
+
+
+                            $('#accordion-inner-div-snippet-' +snippetData[j].commentGroup[0].projectFile.id).append(snippet);
+
+                           $("#snippet-" + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].id).html("<pre class='codeViewer'/></pre>");
+                            $("#snippet-" + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].id + " .codeViewer")
                                     .text(snippetData[j].snippet)
-                                    .addClass("linenums:"+snippetData[j].comment.lineNumber)
+                                    .addClass("linenums:"+snippetData[j].commentGroup[0].lineNumber)
                                     .addClass("language-" + snippetData[j].filetype)
                                     .syntaxHighlight();
 
+                            for(z = 0; z < snippetData[j].commentGroup.length; z++) {
+                                var comment = $("#lineCommentTemplate").render({
+                                    text:snippetData[j].commentGroup[z].text,
+                                    author:snippetData[j].commentGroup[z].author
+                                });
 
+                                $('#div-comments-' +snippetData[j].commentGroup[0].projectFile.id +"-" + snippetData[j].commentGroup[0].id).append(comment);
+                            }
                         }
+
                             $(".hide-file").hide();
                         }
                     });
@@ -267,7 +277,8 @@
     </div>
     <div id="collapse-{{>collapseId}}" class="accordion-body collapse">
         <div class="accordion-inner" >
-            <div id="accordion-inner-div-{{>fileId}}"></div>
+
+            <div id="accordion-inner-div-snippet-{{>fileId}}"></div>
             <button type="button" class="btn pull-right show-file" id="sh-btn-{{>changesetId}}" onClick="showFile('{{>changesetId}}', '{{>fileId}}')">Show file &gt;</button>
             <button type="button" class="btn pull-right hide-file" id="h-btn-{{>changesetId}}" onClick="hideFile('{{>changesetId}}', '{{>fileId}}')"> &lt; Hide file </button>
         </div>
@@ -275,9 +286,12 @@
     </div>
 </script>
 
+<script id="lineCommentTemplate" type="text/x-jsrender">
+    <p>{{>author}} wrote: {{>text}}</p>
+</script>
+
 <script id="snippetTemplate" type="text/x-jsrender">
-    <h3>Comment to line: {{>lineNumber}}</h3>
-    <h3>{{>text}}</h3>
+    <div id="div-comments-{{>fileId}}-{{>snippetId}}"></div>
     <div id="snippet-{{>fileId}}-{{>snippetId}}"></div>
 </script>
 

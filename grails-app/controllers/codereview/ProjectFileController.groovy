@@ -35,11 +35,38 @@ class ProjectFileController {
     def getLineCommentsWithSnippetsToFile(Long id) {
         def projectFile = ProjectFile.findById(id)
         def comments = LineComment.findAllByProjectFile(projectFile)
+        if (!comments.isEmpty()) {
+        def snippetsGroup  = []
+        def i = 0
+        def j = 0
+        def commentsWithSnippets = comments.sort { it.lineNumber }
+        def lastLineNumber = comments[0].lineNumber
+        comments.each{
+           if(it.lineNumber == lastLineNumber) {
+               if (snippetsGroup[i] == null) {
+                   snippetsGroup[i] = []
+               }
+               snippetsGroup[i][j++] = it
 
-        def commentsWithSnippets = comments.collect {
-            [comment: it, snippet: getSnippet(it), filetype: projectFile.fileType]
+           }
+           else {
+               lastLineNumber = it.lineNumber
+               i++
+               snippetsGroup[i] = []
+               j = 0
+               snippetsGroup[i][j++] = it
+           }
         }
-        render commentsWithSnippets as JSON
+
+        def commentGroupsWithSnippets = snippetsGroup.collect {
+            def snippet = getSnippet(it[0])
+            [commentGroup: it, snippet: snippet, filetype: projectFile.fileType]
+        }
+            render commentGroupsWithSnippets as JSON
+        }
+        else {
+            render ""
+        }
     }
 
     def getSnippet(LineComment comment) {

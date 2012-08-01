@@ -27,14 +27,14 @@
             var text = $('#add-comment').val();
             var lineNumber = $('#line-number').val();
             var fileId = $('#file-id').val();
-
+            var author =  $('#author').val();
             if(text == "" || lineNumber == "") {
                 return false
             }
 
             var url = "${createLink(controller:'LineComment', action:'addComment')}";
 
-            $.post(url, {  text: text, lineNumber: lineNumber, fileId: fileId });
+            $.post(url, {  text: text, lineNumber: lineNumber, fileId: fileId, author: author });
 
         }
     </script>
@@ -46,6 +46,7 @@
                                                  id="add-comment" placeholder="Add comment..." style="height:200px"></textarea>
     <input id="line-number" type="text" class="input-small" placeholder="Line number"/></input>
     <input id="file-id" type="text" class="input-small" placeholder="File id"/></input>
+    <input id="author" type="text" class="input-small" placeholder="name"/></input>
     <br />
     <button type="button"  class="btn" id="btn" onClick="addLineComment()">Add comment</button>
     <button type="button" class="btn" id="c-btn" onClick="cancelLineComment()">Cancel</button>
