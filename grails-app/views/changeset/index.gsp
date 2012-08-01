@@ -69,7 +69,7 @@
             $.getJSON(fileUrl, function (data) {
                 for (i = 0; i < data.length; i++) {
                     var comments = {
-                        author:data[i].author,
+                        author:data[i].author,                                                                    136b9595d4cb156c95e077966a96bc2cdd51150a
                         date:data[i].dateCreated,
                         content:data[i].text
                     }
