@@ -97,11 +97,11 @@
             fileContentUrl += fileId;
             var fileContent;
             $.getJSON(fileContentUrl, function(file) {
-                $("#content-files-" + changesetId).html("<pre class='codeViewer'/>")
+                $("#content-files-" + changesetId).html("<pre class='codeViewer'/>");
                 $("#content-files-" + changesetId + " .codeViewer")
                     .text(file.content)
                     .addClass("language-" + file.filetype)
-                    .syntaxHighlight()
+                    .syntaxHighlight();
             });
             $("#content-files-" + changesetId).show(100);
             $('#content-files-span-' +changesetId).show(100);
@@ -197,9 +197,19 @@
                             var snippet = $("#snippetTemplate").render({
                                 text:snippetData[j].comment.text,
                                 snippet:snippetData[j].snippet,
-                                lineNumber:snippetData[j].comment.lineNumber
+                                lineNumber:snippetData[j].comment.lineNumber,
+                                fileId: snippetData[j].comment.projectFile.id,
+                                snippetId: snippetData[j].comment.id
                             });
                             $('#accordion-inner-div-' +snippetData[j].comment.projectFile.id).append(snippet);
+
+                           $("#snippet-" + snippetData[j].comment.projectFile.id + "-" + snippetData[j].comment.id).html("<pre class='codeViewer'/></pre>");
+                            $("#snippet-" + snippetData[j].comment.projectFile.id + "-" + snippetData[j].comment.id + " .codeViewer")
+                                    .text(snippetData[j].snippet)
+                                    .addClass("firstline[10")
+                                    .addClass("language-" + snippetData[j].filetype)
+                                    .syntaxHighlight();
+
 
                         }
                             $(".hide-file").hide();
@@ -259,7 +269,7 @@
         <div class="accordion-inner" >
             <div id="accordion-inner-div-{{>fileId}}"></div>
             <button type="button" class="btn pull-right show-file" id="sh-btn-{{>changesetId}}" onClick="showFile('{{>changesetId}}', '{{>fileId}}')">Show file &gt;</button>
-            <button type="button" class="btn pull-right hide-file" id="h-btn-{{>changesetId}}" onClick="hideFile('{{>changesetId}}', '{{>fileId}}')">Hide file &lt;</button>
+            <button type="button" class="btn pull-right hide-file" id="h-btn-{{>changesetId}}" onClick="hideFile('{{>changesetId}}', '{{>fileId}}')"> &lt; Hide file </button>
         </div>
     </div>
     </div>
@@ -268,7 +278,7 @@
 <script id="snippetTemplate" type="text/x-jsrender">
     <h3>Comment to line: {{>lineNumber}}</h3>
     <h3>{{>text}}</h3>
-    <pre>{{>snippet}}</pre>
+    <div id="snippet-{{>fileId}}-{{>snippetId}}"></div>
 </script>
 
 

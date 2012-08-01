@@ -37,7 +37,7 @@ class ProjectFileController {
         def comments = LineComment.findAllByProjectFile(projectFile)
 
         def commentsWithSnippets = comments.collect {
-            [comment: it, snippet: getSnippet(it)]
+            [comment: it, snippet: getSnippet(it), filetype: projectFile.fileType]
         }
         render commentsWithSnippets as JSON
     }
