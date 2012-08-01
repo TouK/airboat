@@ -69,7 +69,7 @@
             $.getJSON(fileUrl, function (data) {
                 for (i = 0; i < data.length; i++) {
                     var comments = {
-                        author:data[i].author,                                                                    136b9595d4cb156c95e077966a96bc2cdd51150a
+                        author:data[i].author,
                         date:data[i].dateCreated,
                         content:data[i].text
                     }
@@ -259,7 +259,7 @@
         <div class="accordion-inner" >
             <div id="accordion-inner-div-{{>fileId}}"></div>
             <button type="button" class="btn pull-right show-file" id="sh-btn-{{>changesetId}}" onClick="showFile('{{>changesetId}}', '{{>fileId}}')">Show file &gt;</button>
-            <button type="button" class="btn pull-right hide-file" id="h-btn-{{>changesetId}}" onClick="hideFile('{{>changesetId}}', '{{>fileId}}')">Hide file (arrow);</button>
+            <button type="button" class="btn pull-right hide-file" id="h-btn-{{>changesetId}}" onClick="hideFile('{{>changesetId}}', '{{>fileId}}')">Hide file &lt;</button>
         </div>
     </div>
     </div>
