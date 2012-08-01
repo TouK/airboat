@@ -11,6 +11,15 @@ class ScmAccessService {
 
     GitRepositoryService gitRepositoryService
 
+    //FIXME this is Git-specific
+    static String getEmail(String gitCommiterId) {
+        if (gitCommiterId.contains("@")) {
+            return gitCommiterId[gitCommiterId.indexOf("<") + 1 .. gitCommiterId.indexOf(">") - 1]
+        } else {
+            return null;
+        }
+    }
+
     void checkoutProject(String scmUrl) {
         gitRepositoryService.checkoutProject(scmUrl)
     }
@@ -30,7 +39,13 @@ class ScmAccessService {
     @VisibleForTesting void saveChangeset(Changeset changesetToSave) {
         def commiter = Commiter.findOrCreateWhere(cvsCommiterId: changesetToSave.commiter.cvsCommiterId)
         commiter.addToChangesets(changesetToSave)
-        commiter.save(failOnError: true)
+        def user = User.findByEmail(getEmail(commiter.cvsCommiterId))
+        if (user != null) {
+            user.addToCommitters(commiter)
+            user.save(failOnError: true)
+        } else {
+            commiter.save(failOnError: true)
+        }
     }
 
     Set<Changeset> fetchAllChangesets(String gitScmUrl){

@@ -81,7 +81,14 @@
 
 <body>
 
-    <div id="content" class="container"></div>
+    <h1>
+        <sec:ifNotLoggedIn>Hello, unknown wanderer!</sec:ifNotLoggedIn>
+        <sec:ifLoggedIn>Hello, <sec:username/>!</sec:ifLoggedIn>
+    </h1>
+
+    <div id="content" class="container">
+
+    </div>
 
     <!-- function to handle click for more info in new layer for chosen changeset -->
     <script type="text/javascript">

@@ -9,7 +9,6 @@ import spock.lang.Unroll
 @TestFor(UserComment)
 class UserCommentConstraintsSpec extends Specification {
 
-
     @Unroll("Field '#field' of class UserComment should have constraint '#constraint' violated by value '#violatingValue'")
     def "UserComment should have well defined constraints:" () {
 

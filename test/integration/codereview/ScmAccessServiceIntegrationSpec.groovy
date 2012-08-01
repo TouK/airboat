@@ -4,10 +4,12 @@ import testFixture.Fixture
 import org.apache.maven.scm.ChangeSet
 import grails.plugin.spock.IntegrationSpec
 import org.springframework.dao.InvalidDataAccessApiUsageException
+import grails.plugins.springsecurity.SpringSecurityService
 
 class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
-    ScmAccessService scmAccessService
+    def scmAccessService
+    def springSecurityService
 
     def setup() {
         scmAccessService = new ScmAccessService()
@@ -86,6 +88,25 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         committerFromDb.id == previouslySavedCommitter.id
         committerFromDb.changesets.size() == 2
         committerFromDb.changesets.contains(Changeset.findByIdentifier(commitId))
+    }
+
+    def "should associate Changeset with corresponding user"() {
+        given:
+        def email = "agj@touk.pl"
+        def user = new User(email, "dupa.8")
+        user.springSecurityService = springSecurityService
+        user.save()
+        def cvsCommitterId = "Artur Gajowy <${email}>"
+
+        when:
+        def changeset = new Changeset("hash23", "refactoring", new Date())
+        def committer = new Commiter(cvsCommitterId)
+        committer.addToChangesets(changeset)
+        scmAccessService.saveChangeset(changeset)
+
+        then:
+        def associatedCommiters = User.findByEmail(email).committers
+        associatedCommiters*.cvsCommiterId == [cvsCommitterId]
     }
 
     //learning tests. TODO move to another class
