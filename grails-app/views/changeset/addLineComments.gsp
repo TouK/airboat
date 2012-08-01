@@ -21,7 +21,7 @@
     <script src="${createLink(uri: '/js/bootstrap-collapse.js')}" type="text/javascript"></script>
 
     <script type="text/javascript">
-        function addLineComment() {
+        function addLineComment(fileIdentifier) {
 
 
             var text = $('#add-comment').val();

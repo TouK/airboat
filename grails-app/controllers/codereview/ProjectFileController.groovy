@@ -65,7 +65,7 @@ class ProjectFileController {
             render commentGroupsWithSnippets as JSON
         }
         else {
-            render ""
+            render "[ ]"
         }
     }
 

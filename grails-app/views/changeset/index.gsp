@@ -51,6 +51,25 @@
                 hideAddCommentButtons(changesetId);
 
         }
+
+        function addLineComment(fileIdentifier) {
+
+
+            var text = $('#add-line-comment-' +fileIdentifier).val();
+            var lineNumber = $('#line-number-' +fileIdentifier).val();
+
+            var author =  $('#author-' +fileIdentifier).val();
+            if(text == "" || lineNumber == "") {
+                return false
+            }
+
+            var url = "${createLink(controller:'LineComment', action:'addComment')}";
+
+            $.post(url, {  text: text, lineNumber: lineNumber, fileId: fileIdentifier, author: author });
+
+        }
+
+
         function hideAddCommentButtons(changesetId) {
             $('#btn-' +changesetId).hide();
             $('#c-btn-' +changesetId).hide();
@@ -106,8 +125,15 @@
             $("#content-files-" + changesetId).show(100);
             $('#content-files-span-' +changesetId).show(100);
 
+            appendAddLineCommentToFileForm(changesetId, fileId);
+
             $(".show-file").hide();
             $(".hide-file").show();
+        }
+        function appendAddLineCommentToFileForm(changesetId, fileId) {
+            $("#content-files-comment-" + changesetId).html("");
+           var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId });
+            $("#content-files-comment-" + changesetId).append(commentForm);
         }
         function hideFile(changesetId, fileId)  {
             $("#content-files-" + changesetId).hide();
@@ -198,15 +224,15 @@
 
                                 snippet:snippetData[j].snippet,
                                 fileId: snippetData[j].commentGroup[0].projectFile.id,
-                                snippetId: snippetData[j].commentGroup[0].id
+                                snippetId: snippetData[j].commentGroup[0].lineNumber
 
                             });
 
 
                             $('#accordion-inner-div-snippet-' +snippetData[j].commentGroup[0].projectFile.id).append(snippet);
 
-                           $("#snippet-" + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].id).html("<pre class='codeViewer'/></pre>");
-                            $("#snippet-" + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].id + " .codeViewer")
+                           $("#snippet-" + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].lineNumber).html("<pre class='codeViewer'/></pre>");
+                            $("#snippet-" + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].lineNumber + " .codeViewer")
                                     .text(snippetData[j].snippet)
                                     .addClass("linenums:"+snippetData[j].commentGroup[0].lineNumber)
                                     .addClass("language-" + snippetData[j].filetype)
@@ -218,7 +244,7 @@
                                     author:snippetData[j].commentGroup[z].author
                                 });
 
-                                $('#div-comments-' +snippetData[j].commentGroup[0].projectFile.id +"-" + snippetData[j].commentGroup[0].id).append(comment);
+                                $('#div-comments-' +snippetData[j].commentGroup[0].projectFile.id +"-" + snippetData[j].commentGroup[0].lineNumber).append(comment);
                             }
                         }
 
@@ -296,6 +322,18 @@
 </script>
 
 
+<script id="addLineCommentFormTemplate" type="text/x-jsrender">
+<form class="add_comment .form-inline"><textarea onfocus=" $('#btn-{{>fileId}}').show(100); $('#c-btn-{{>fileId}}').show(100); this.style.height='100px'; this.style.width='400px'; "
+                                                 id="add-line-comment-{{>fileId}}" placeholder="Add comment..." style="height:40px"></textarea>
+    <input id="line-number-{{>fileId}}" type="text" class="input-small" placeholder="Line number"/></input>
+
+    <input id="author-{{>fileId}}" type="text" class="input-small" placeholder="name"/></input>
+    <br />
+    <button type="button"  class="btn" id="btn-{{>fileId}}" onClick="addLineComment('{{>fileId}}')">Add comment</button>
+    <button type="button" class="btn" id="c-btn-{{>fileId}}" onClick="cancelLineComment()">Cancel</button>
+</form>
+
+</script>
 
 <script id="commentFormTemplate" type="text/x-jsrender">
     <form class="add_comment .form-inline"><textarea onfocus=" $('#btn-' +'{{>identifier}}').show(100); $('#c-btn-' +'{{>identifier}}').show(100); this.style.height='100px'; this.style.width='400px'; "
@@ -364,6 +402,7 @@
                 <div class="span11 well" id="content-files-span-{{>identifier}}">
                 <div class="files-right">
                     <div id="content-files-{{>identifier}}" > </div>
+                    <div id="content-files-comment-{{>identifier}}"></div>
                     </div>
                     </div>
             </div>
