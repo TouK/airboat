@@ -21,8 +21,13 @@ class ChangesetController {
         redirect(views: '/index', params: params)
     }
 
-    def getLastChangesets = {
-        render Changeset.list(max: 21, sort: 'date', order: 'desc') as JSON
+    def getLastChangesets = {    //TODO: refactor me, please
+        if(params.id == null){render Changeset.list(max: 21, sort: 'date', order: 'desc') as JSON}
+        else{
+        def project = Project.findByName(params.id) //TODO examine number of queries and try to make it 1.
+        def projectQuery = Changeset.findAllByProject(project, [max: 21, sort: 'date', order: 'desc'])
+        render  projectQuery   as JSON
+        }
     }
 
 
@@ -40,8 +45,10 @@ class ChangesetController {
     }
 
     def getNextFewChangesetsOlderThan = {
+        def project = Project.findByName(params.id)  //change params
+
         def nextFewChangesets = Changeset.where {
-            date < property(date).of { identifier == params.id }
+             date < property(date).of { identifier == params.lastChangesetId}
         }.list(max: 10, sort: 'date', order: 'desc')
         render nextFewChangesets as JSON
     }

@@ -122,6 +122,15 @@
 <script type="text/javascript">$.SyntaxHighlighter.init({'stripEmptyStartFinishLines': false});</script>
 
 
+<div class="well">
+    <a class="btn" onclick="showProject('codereview')">CodeReview</a>
+    <a class="btn" onclick="showProject('cyclone')">Cyclone</a>
+    <a class="btn" onclick="showProject('TPSA')">TPSA</a>
+
+</div>
+
+
+
 
 <div id="content" class="container-fluid"></div>
 
@@ -167,6 +176,18 @@
     <!-- generates list of changesets -->
     <script type="text/javascript">
 
+        var projectName
+
+    function showProject(projectName){
+        projectName = projectName
+        $(document).ready(function () {
+            $('#content').html("");
+            $.getJSON('${createLink(uri:'/changeset/getLastChangesets/')}'+ projectName, appendChangesets);
+        });
+
+        $(".collapse").collapse();
+    }
+
 
         $(document).ready(function () {
             $('#content').html("");
@@ -184,13 +205,15 @@
         function onScrollThroughBottomAttempt() {
             if (!changesetsLoading) {
                 changesetsLoading = true;
-                $.getJSON('${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}' + lastChangesetId, appendChangesets)
+                $.getJSON('${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}' + '?' +$.param({projectName:projectName,lastChangesetId:lastChangesetId}), appendChangesets)
             }
         }
 
 
         var lastChangesetId;
         var changesetsLoading;
+
+
 
 
         function appendChangesets(changesets) {
