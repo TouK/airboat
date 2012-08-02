@@ -42,6 +42,7 @@
             var url = "${createLink(controller:'UserComment', action:'addComment')}";
 
             $.post(url, { username:username, changesetId:changesetId, text:text });
+
             changeAddCommentDivToDefault(changesetId);
             hideAddCommentButtons(changesetId);
         }
@@ -52,13 +53,13 @@
 
         }
 
-        function addLineComment(fileIdentifier) {
+        function addLineComment(fileIdentifier, changesetId) {
 
             var text = $('#add-line-comment-' +fileIdentifier).val();
             var lineNumber = $('#line-number-' +fileIdentifier).val();
 
             var author =  $('#author-' +fileIdentifier).val();
-            if(text == "" || lineNumber == "") {
+            if(text == "" || lineNumber == "" || author =="") {
                 return false
             }
 
@@ -66,6 +67,14 @@
 
             $.post(url, {  text: text, lineNumber: lineNumber, fileId: fileIdentifier, author: author });
 
+            $('#add-line-comment-' + fileIdentifier).val("");
+            $('#author-' + fileIdentifier).val("");
+            $('#line-number-' +fileIdentifier).val("");
+            $('#add-line-comment-' + fileIdentifier).width("200px");
+            $('#add-line-comment-' + fileIdentifier).height("20px");
+
+            appendAccordion(changesetId);
+            $('#collapse-' +changesetId +fileIdentifier).collapse("show");
         }
 
 
@@ -131,7 +140,7 @@
         }
         function appendAddLineCommentToFileForm(changesetId, fileId) {
             $("#content-files-comment-" + changesetId).html("");
-           var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId });
+           var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetId });
             $("#content-files-comment-" + changesetId).append(commentForm);
         }
         function hideFile(changesetId, fileId)  {
@@ -193,6 +202,7 @@
             appendAccordion(changeset.identifier);
             $('#accordion-' +changeset.identifier).hide();
             $('#content-files-span-' +changeset.identifier).hide();
+            $(".hide-file").hide();
 
         }
 
@@ -207,12 +217,13 @@
                         name:data[i].name,
                         changesetId: changesetId,
                         fileId:data[i].id,
-                        collapseId:(changesetId + i)
+                        collapseId:(changesetId + data[i].id)
                     });
                     $('#accordion-' +changesetId).append(accordionRow);
                     appendSnippetToFileInAccordion(data[i].id)
                 }
             });
+
 
         }
         function appendSnippetToFileInAccordion(fileId)   {
@@ -237,15 +248,17 @@
                                 .syntaxHighlight();
 
                         for(z = 0; z < snippetData[j].commentGroup.length; z++) {
-                            var comment = $("#lineCommentTemplate").render({
-                                text:snippetData[j].commentGroup[z].text,
-                                author:snippetData[j].commentGroup[z].author
+                            var comment = $("#comment-template").render({
+                                content:snippetData[j].commentGroup[z].text,
+                                author:snippetData[j].commentGroup[z].author,
+                                date:snippetData[j].commentGroup[z].dateCreated
+
                             });
 
                             $('#div-comments-' +snippetData[j].commentGroup[0].projectFile.id +"-" + snippetData[j].commentGroup[0].lineNumber).append(comment);
                         }
                     }
-                    $(".hide-file").hide();
+
                 }
             });
         }
@@ -288,7 +301,7 @@
 
     </div>
     <div id="collapse-{{>collapseId}}" class="accordion-body collapse">
-        <div class="accordion-inner" >
+        <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
 
             <div id="accordion-inner-div-snippet-{{>fileId}}"></div>
             <button type="button" class="btn pull-right show-file" id="sh-btn-{{>changesetId}}" onClick="showFile('{{>changesetId}}', '{{>fileId}}')">Show file &gt;</button>
@@ -315,7 +328,7 @@
 
     <input id="author-{{>fileId}}" type="text" class="input-small" placeholder="name"/></input>
     <br />
-    <button type="button"  class="btn" id="btn-{{>fileId}}" onClick="addLineComment('{{>fileId}}')">Add comment</button>
+    <button type="button"  class="btn" id="btn-{{>fileId}}" onClick="addLineComment('{{>fileId}}', '{{>changesetId}}')">Add comment</button>
     <button type="button" class="btn" id="c-btn-{{>fileId}}" onClick="cancelLineComment()">Cancel</button>
 </form>
 
