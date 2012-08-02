@@ -22,7 +22,7 @@ class ScmAccessService {
 
     void checkoutProject(String scmUrl) {
         gitRepositoryService.checkoutProject(scmUrl)
-    }
+    }                                                  //TODO remove "with files" from methods names
 
     void updateProject(String scmUrl) {
         gitRepositoryService.updateProject(scmUrl)
@@ -38,10 +38,15 @@ class ScmAccessService {
     //TODO examine if save does validate()
     @VisibleForTesting void saveChangeset(Changeset changesetToSave) {
         def commiter = Commiter.findOrCreateWhere(cvsCommiterId: changesetToSave.commiter.cvsCommiterId)
-        commiter.addToChangesets(changesetToSave)
         def user = User.findByEmail(getEmail(commiter.cvsCommiterId))
+
         if (user != null) {
             user.addToCommitters(commiter)
+        }
+
+        commiter.addToChangesets(changesetToSave)
+
+        if (user != null) {
             user.save(failOnError: true)
         } else {
             commiter.save(failOnError: true)

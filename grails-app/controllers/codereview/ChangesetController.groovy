@@ -43,5 +43,8 @@ class ChangesetController {
         }.list(max: 10, sort: 'date', order: 'desc')
         render nextFewChangesets as JSON
     }
+    def addLineComments = {
+        [params: params]
+    }
 }
 
