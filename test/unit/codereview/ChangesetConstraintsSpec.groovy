@@ -32,13 +32,4 @@ class ChangesetConstraintsSpec extends Specification {
             'author'        | 'nullable'    | null
             'date'          | 'nullable'    | null
     }
-
-    def "Changeset author does not have to have an email"() {
-        when:
-            def changeset = new Changeset("hash23", "Email-less Author", "", new Date())
-
-        then:
-            changeset.email == null
-            changeset.validate() == true
-    }
 }

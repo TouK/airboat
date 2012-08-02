@@ -6,7 +6,7 @@ import spock.lang.Specification
 import grails.converters.JSON
 
 @TestFor(ChangesetController)
-@Mock([Changeset, ProjectFile])
+@Mock([Changeset, ProjectFile, Project])
 class ChangesetControllerSpec extends Specification {
 
     def setup() {
@@ -34,7 +34,7 @@ class ChangesetControllerSpec extends Specification {
             controller.initialCheckOut()
 
         then:
-            1 * controller.scmAccessService.checkoutProject(_)
+            0 * controller.scmAccessService.checkoutProject(_)
             response.redirectedUrl == "/changeset/index"
     }
 
@@ -42,9 +42,11 @@ class ChangesetControllerSpec extends Specification {
 
         given:
             def latestChangesetId = "hash25"
-            new Changeset(latestChangesetId, "kpt", "", new Date(3)).save()
-            new Changeset("hash24", "kpt", "", new Date(2)).save()
-            new Changeset("hash23", "agj", "", new Date(1)).save()
+            def testProject = new Project("testProject","testUrl")
+            testProject.addToChangesets(new Changeset(latestChangesetId, "kpt", "", new Date(3)))
+            testProject.addToChangesets(new Changeset("hash24", "kpt", "", new Date(2)))
+            testProject.addToChangesets(new Changeset("hash23", "agj", "", new Date(1)))
+            testProject.save()
 
         when:
             controller.params.id = latestChangesetId
@@ -52,20 +54,24 @@ class ChangesetControllerSpec extends Specification {
 
         then:
             def responseChangesets = JSON.parse(response.contentAsString)
+            responseChangesets != null
             responseChangesets[0].identifier == "hash24"
             responseChangesets[1].identifier == "hash23"
     }
     def "getLastChangesets should return table of jasonized objects" () {
 
         given:
-        new Changeset("hash23", "agj", "", new Date()).save()
-        new Changeset("hash24", "kpt", "", new Date()).save()
+        def testProject = new Project("testProject","testUrl")
+        testProject.addToChangesets( new Changeset("hash23", "agj", "", new Date()))
+        testProject.addToChangesets( new Changeset("hash24", "kpt", "", new Date()))
+        testProject.save()
 
         when:
         controller.getLastChangesets()
         String rendered = (response.contentAsString)
 
         then:
+        rendered != null
         rendered.contains("[")
         rendered.contains("]")
         rendered.contains("{")
@@ -76,15 +82,18 @@ class ChangesetControllerSpec extends Specification {
 
         given:
         def  specificChangeset = "hash24"
-        new Changeset("hash23", "agj", "", new Date()).save()
-        new Changeset("hash24", "kpt", "", new Date()).save()
-        new Changeset("hash25", "jil", "", new Date()).save()
+        def testProject = new Project("testProject","testUrl")
+        testProject.addToChangesets(new Changeset("hash23", "agj", "", new Date()))
+        testProject.addToChangesets(new Changeset("hash24", "kpt", "", new Date()))
+        testProject.addToChangesets(new Changeset("hash25", "jil", "", new Date()))
+        testProject.save()
 
         when:
         controller.params.id = specificChangeset
         controller.getChangeset()
 
         then:
+        response != null
         response.json.size() == 1
         def  responseSpecificChangeset = response.json.first()
         responseSpecificChangeset.identifier == "hash24"
@@ -95,15 +104,17 @@ class ChangesetControllerSpec extends Specification {
 
         given:
         def  specificChangesetHash = "hash23"
+        def testProject = new Project("testProject","testUrl")
         def testChangeset = new Changeset("hash23", "agj", "", new Date())
 
         def projectFile1 = new ProjectFile("test.txt", "print something" )
         def projectFile2 = new ProjectFile("test2.txt", "print something2")
         def projectFile3 = new ProjectFile("test3.txt", "print something3" )
+        testProject.addToChangesets(testChangeset)
         testChangeset.addToProjectFiles(projectFile1)
         testChangeset.addToProjectFiles(projectFile2)
         testChangeset.addToProjectFiles(projectFile3)
-        testChangeset.save()
+        testProject.save()
 
         when:
         controller.params.id = specificChangesetHash

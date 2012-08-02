@@ -5,23 +5,24 @@ import spock.lang.Specification
 import testFixture.Fixture
 import org.apache.maven.scm.ChangeSet
 
-@Mock([Changeset, ProjectFile])
+@Mock([Project, Changeset, ProjectFile])
 class ScmAccessServiceSpec extends Specification {
 
     def "should fetch and save changesets in db"() {
         given:
+            new Project("codereview", Fixture.PROJECT_REPOSITORY_URL).save()
             def (gitScmUrl, changesetId, commitComment, changesetAuthor)  = [Fixture.PROJECT_REPOSITORY_URL, "id", "comment", "agj@touk.pl"]
-            ScmAccessService sas = new ScmAccessService()
+            ScmAccessService scmAccessService = new ScmAccessService()
 
-            def cs = new ChangeSet(new Date(), commitComment, changesetAuthor, null)
-            cs.setRevision(changesetId)
+            def changeSet = new ChangeSet(new Date(), commitComment, changesetAuthor, null)
+            changeSet.setRevision(changesetId)
             GitRepositoryService gitRepositoryService = Mock()
-            1 * gitRepositoryService.getAllChangeSets(Fixture.PROJECT_REPOSITORY_URL) >> [ cs ]
+            1 * gitRepositoryService.getAllChangeSets(Fixture.PROJECT_REPOSITORY_URL) >> [ changeSet ]
 
-            sas.gitRepositoryService = gitRepositoryService
+            scmAccessService.gitRepositoryService = gitRepositoryService
 
         when:
-            sas.fetchAllChangesetsWithFilesAndSave(gitScmUrl)
+            scmAccessService.fetchAllChangesetsWithFilesAndSave(gitScmUrl)
 
         then:
             Changeset.count() == 1
