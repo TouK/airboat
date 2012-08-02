@@ -36,54 +36,62 @@ class ProjectFileController {
         def projectFile = ProjectFile.findById(id)
         def comments = LineComment.findAllByProjectFile(projectFile)
         if (!comments.isEmpty()) {
-            def snippetsGroup  = []
-            def i = 0
-            def j = 0
-            def commentsWithSnippets = comments.sort { it.lineNumber }
-            def lastLineNumber = comments[0].lineNumber
-            comments.each{                              //group comments if they're talking about same line
-                if(it.lineNumber == lastLineNumber) {
-                    if (snippetsGroup[i] == null) {
-                        snippetsGroup[i] = []
-                    }
-                    snippetsGroup[i][j++] = it
-
-                }
-                else {
-                    lastLineNumber = it.lineNumber
-                    i++
-                    snippetsGroup[i] = []
-                    j = 0
-                    snippetsGroup[i][j++] = it
-                }
-            }
-
-            def commentGroupsWithSnippets = []
-            i = 0
-            def snippet
-            while(i < snippetsGroup.size() -1) {      //how long snippet do we need?
-
-                if (snippetsGroup[i+1][0].lineNumber -  snippetsGroup[i][0].lineNumber   == 1 ) {
-                    snippet = getSnippet(snippetsGroup[i][0], 1)
-                }
-                else if (snippetsGroup[i+1][0].lineNumber -  snippetsGroup[i][0].lineNumber   == 2) {
-                    snippet = getSnippet(snippetsGroup[i][0], 2)
-                }
-                else {
-                    snippet = getSnippet(snippetsGroup[i][0], 3)
-                }
-                commentGroupsWithSnippets[i] = [commentGroup: snippetsGroup[i], snippet: snippet, filetype: projectFile.fileType]
-                i++
-            }
-
-            snippet = getSnippet(snippetsGroup[i][0], 3)
-            commentGroupsWithSnippets[i] =  [commentGroup: snippetsGroup[i], snippet: snippet, filetype: projectFile.fileType]
-
+            def snippetsGroup  = prepareSnippetsGroupList(comments)
+            def commentGroupsWithSnippets = prepareCommentGroupsWithSnippets(snippetsGroup, projectFile.fileType)
             render commentGroupsWithSnippets as JSON
         }
         else {
             render "[ ]"
         }
+    }
+
+    def prepareSnippetsGroupList(comments) {
+        def snippetsGroup  = []
+        def i = 0
+        def j = 0
+        def commentsWithSnippets = comments.sort { it.lineNumber }
+        def lastLineNumber = comments[0].lineNumber
+        comments.each{                              //group comments if they're talking about same line
+            if(it.lineNumber == lastLineNumber) {
+                if (snippetsGroup[i] == null) {
+                    snippetsGroup[i] = []
+                }
+                snippetsGroup[i][j++] = it
+
+            }
+            else {
+                lastLineNumber = it.lineNumber
+                i++
+                snippetsGroup[i] = []
+                j = 0
+                snippetsGroup[i][j++] = it
+            }
+        }
+        return snippetsGroup
+    }
+
+    def prepareCommentGroupsWithSnippets(snippetsGroup, String fileType) {
+        def commentGroupsWithSnippets = []
+        def i = 0
+        def snippet
+        while(i < snippetsGroup.size() -1) {      //how long snippet do we need?
+
+            if (snippetsGroup[i+1][0].lineNumber -  snippetsGroup[i][0].lineNumber   == 1 ) {
+                snippet = getSnippet(snippetsGroup[i][0], 1)
+            }
+            else if (snippetsGroup[i+1][0].lineNumber -  snippetsGroup[i][0].lineNumber   == 2) {
+                snippet = getSnippet(snippetsGroup[i][0], 2)
+            }
+            else {
+                snippet = getSnippet(snippetsGroup[i][0], 3)
+            }
+            commentGroupsWithSnippets[i] = [commentGroup: snippetsGroup[i], snippet: snippet, filetype: fileType]
+            i++
+        }
+
+        snippet = getSnippet(snippetsGroup[i][0], 3)
+        commentGroupsWithSnippets[i] =  [commentGroup: snippetsGroup[i], snippet: snippet, filetype: fileType]
+        return commentGroupsWithSnippets
     }
 
     def getSnippet(LineComment comment, howManyLines) {
