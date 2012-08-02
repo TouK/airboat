@@ -24,13 +24,12 @@ class InfrastructureServiceSpec extends Specification {
     }
 
     //TODO later on name will be generated
-    def "directory name for a project should be constant"() {
-        given:
-
-        when:
-            def name = new InfrastructureService().getDirectoryNameForTheProject("abc")
-
-        then:
-            name == "projekt"
-    }
+    //FIXME change this test to test getDirectoryNameForTheProject
+//    def "directory name for a project should be constant"() {
+//        when:
+//            def name = new InfrastructureService().getDirectoryNameForTheProject("abc")
+//
+//        then:
+//            name == "projekt"
+//    }
 }

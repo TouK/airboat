@@ -22,6 +22,7 @@ class BootStrap {
 
         new Project("codereview", Fixture.PROJECT_REPOSITORY_URL).save(flush: true)
         new Project("cyclone", Fixture.PROJECT_CYCLONE_REPOSITORY_URL).save(flush: true)
+        new Project("TPSA", Fixture.PROJECT_TPSA_REPOSITORY_URL).save(flush: true)
 
 
     }
