@@ -142,8 +142,9 @@
 
             appendAddLineCommentToFileForm(changesetId, fileId);
 
-            $(".show-file").hide();
-            $(".hide-file").show();
+
+            $("#h-btn-" + changesetId + fileId).show();
+            $("#sh-btn-" + changesetId + fileId).hide();
         }
         function appendAddLineCommentToFileForm(changesetId, fileId) {
             $("#content-files-comment-" + changesetId).html("");
@@ -154,6 +155,8 @@
             $("#content-files-" + changesetId).hide();
             $(".show-file").show();
             $(".hide-file").hide();
+            $("#h-btn-" + changesetId + fileId).hide();
+            $("#sh-btn-" + changesetId + fileId).show();
             $('#content-files-span-' +changesetId).hide();
         }
     </script>
@@ -209,7 +212,7 @@
             appendAccordion(changeset.identifier);
             $('#accordion-' +changeset.identifier).hide();
             $('#content-files-span-' +changeset.identifier).hide();
-            $(".hide-file").hide();
+
 
         }
 
@@ -228,7 +231,9 @@
                     });
                     $('#accordion-' +changesetId).append(accordionRow);
                     appendSnippetToFileInAccordion(data[i].id)
+                    $("#h-btn-" + changesetId + data[i].id).hide();
                 }
+
             });
 
 
