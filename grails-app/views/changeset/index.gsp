@@ -130,6 +130,7 @@
 
     <script type="text/javascript">
 
+        var previousExpandedForFilesChangesetId;
         function showFile(changesetId, fileId) {
 
             var fileContentUrl = '${createLink(uri:'/projectFile/getFileWithContent/')}';
@@ -155,12 +156,16 @@
             $("#content-files-" + changesetId).show(100);
             $('#content-files-span-' +changesetId).show(100);
 
-            //appendAddLineCommentToFileForm(changesetId, fileId);
-
+            if( previousExpandedForFilesChangesetId != null) {
+                $('#content-files-' + previousExpandedForFilesChangesetId + ' .linenums li').each(function (i, element, ignored) {
+                    $(element).popover("hide");
+                });
+            }
 
             $("#h-btn-" + changesetId + fileId).show();
             $("#sh-btn-" + changesetId + fileId).hide();
 
+            previousExpandedForFilesChangesetId = changesetId;
 
         }
         function appendAddLineCommentToFileForm(changesetId, fileId) {
