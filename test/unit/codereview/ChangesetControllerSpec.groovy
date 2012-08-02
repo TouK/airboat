@@ -6,7 +6,7 @@ import spock.lang.Specification
 import grails.converters.JSON
 
 @TestFor(ChangesetController)
-@Mock([Commiter, Changeset, ProjectFile])
+@Mock([Project, Commiter, Changeset, ProjectFile])
 class ChangesetControllerSpec extends Specification {
 
     def setup() {
@@ -14,20 +14,27 @@ class ChangesetControllerSpec extends Specification {
     }
 
     def "getLastChangesets should return JSON"() {
-
         given:
-            new Commiter("Artur Gajowy <agj@touk.pl>")
-                .addToChangesets(new Changeset("hash23", "coding", new Date()))
-                .addToChangesets(new Changeset("hash24", "coding", new Date()))
-                .save()
-            def changesets = Changeset.list(max: 20, sort: "date", order: "desc")
+            def changesets = [
+                    new Changeset("hash23", "coding", new Date()),
+                    new Changeset("hash24", "coding", new Date())
+            ]
+        
+            def committer = new Commiter("Artur Gajowy <agj@touk.pl>")
+            committer.changesets = changesets
+
+            def project = new Project("testProject", "testUrl")
+            project.changesets = changesets
+        
+            committer.save()
+            project.save()
 
         when:
             controller.getLastChangesets()
 
         then:
-            changesets.size() == response.json.size()
-            response.getContentType().startsWith("application/json")
+        response.getContentType().startsWith("application/json")
+        response.json.size() == changesets.size()
     }
 
     def "initial checkout should delegate to service and display index afterwards"() {
@@ -43,12 +50,10 @@ class ChangesetControllerSpec extends Specification {
     def "should return few next changesets older than one with given revision id as JSON"() {
 
         given:
-            def latestChangesetId = "hash25"
-            new Commiter("Artur Gajowy <agj@touk.pl>")
-                .addToChangesets(new Changeset(latestChangesetId, "coding", new Date(3)))
-                .addToChangesets(new Changeset("hash24", "coding", new Date(2)))
-                .addToChangesets(new Changeset("hash23", "coding", new Date(1)))
-                .save()
+//            def latestChangesetId = "hash25"
+//            new Changeset(latestChangesetId, "kpt", "", new Date(3)).save()
+//            new Changeset("hash24", "kpt", "", new Date(2)).save()
+//            new Changeset("hash23", "agj", "", new Date(1)).save()
 
         when:
             controller.params.id = latestChangesetId
@@ -59,16 +64,30 @@ class ChangesetControllerSpec extends Specification {
             responseChangesets[0].identifier == "hash24"
             responseChangesets[1].identifier == "hash23"
     }
+    def "getLastChangesets should return table of jasonized objects" () {
+
+        given:
+//        new Changeset("hash23", "agj", "", new Date()).save()
+//        new Changeset("hash24", "kpt", "", new Date()).save()
+
+        when:
+        controller.getLastChangesets()
+        String rendered = (response.contentAsString)
+
+        then:
+        rendered.contains("[")
+        rendered.contains("]")
+        rendered.contains("{")
+        rendered.contains("}")
+    }
 
     def "getChangeset should return one specific changeset "() {
 
         given:
-        def  specificChangeset = "hash24"
-        new Commiter("Artur Gajowy <agj@touk.pl>")
-                .addToChangesets(new Changeset("hash25", "coding", new Date(3)))
-                .addToChangesets(new Changeset(specificChangeset, "coding", new Date(2)))
-                .addToChangesets(new Changeset("hash23", "coding", new Date(1)))
-                .save()
+//        def  specificChangeset = "hash24"
+//        new Changeset("hash23", "agj", "", new Date()).save()
+//        new Changeset("hash24", "kpt", "", new Date()).save()
+//        new Changeset("hash25", "jil", "", new Date()).save()
 
         when:
         controller.params.id = specificChangeset
@@ -82,13 +101,13 @@ class ChangesetControllerSpec extends Specification {
 
     def "getFileNamesForChangeset should return file names from changeset "() {
         given:
-        def changesetHash = "hash23"
-        def commiter = new Commiter("Artur Gajowy <agj@touk.pl>")
-        def changeset = new Changeset(changesetHash, "coding", new Date())
-        def projectFile = new ProjectFile("test.txt", "file contents")
-        commiter.addToChangesets(changeset)
-        changeset.addToProjectFiles(projectFile)
-        commiter.save()
+//        def changesetHash = "hash23"
+//        def commiter = new Commiter("Artur Gajowy <agj@touk.pl>")
+//        def changeset = new Changeset(changesetHash, "coding", new Date())
+//        def projectFile = new ProjectFile("test.txt", "file contents")
+//        commiter.addToChangesets(changeset)
+//        changeset.addToProjectFiles(projectFile)
+//        commiter.save()
 
         when:
         controller.params.id = changesetHash

@@ -3,8 +3,9 @@ package codereview
 import spock.lang.Specification
 
 import grails.test.mixin.Mock
+import testFixture.Fixture
 
-@Mock([Commiter, Changeset])
+@Mock([Commiter, Project, Changeset])
 class ProjectUpdateJobSpec extends Specification {
 
     ScmAccessService scmAccessServiceMock
@@ -16,30 +17,20 @@ class ProjectUpdateJobSpec extends Specification {
     void "shouldn't delete all old changesets during updating"() {
 
         given:
-            new Commiter("agj").addToChangesets(new Changeset("hash23", "coding", new Date())).save()
+            def project = new Project("testProject", "testUrl")
+            def committer = new Commiter("agj")
+            def changeset = new Changeset("hash23", "coding", new Date())
+            
+            project.addToChangesets(changeset)
+            committer.addToChangesets(changeset)
+                    
+            project.save()
+            committer.save()
             def job = new ProjectUpdateJob()
             job.scmAccessService = scmAccessServiceMock
 
         when:
-            job.update()
-
-        then:
-            Changeset.count() != 0
-    }
-
-    void "should import changesets during updating and not delete any of newley imported ones"() {
-
-        given:
-            def job = new ProjectUpdateJob()
-            job.scmAccessService = scmAccessServiceMock
-            1 * job.scmAccessService.importAllChangesets(_) >> {
-                new Commiter("agj")
-                    .addToChangesets(new Changeset("hash23", "coding", new Date()))
-                    .save()
-            }
-
-        when:
-            job.update()
+            job.update(Fixture.PROJECT_REPOSITORY_URL)
 
         then:
             Changeset.count() != 0

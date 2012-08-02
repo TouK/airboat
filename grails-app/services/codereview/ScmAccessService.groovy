@@ -32,6 +32,7 @@ class ScmAccessService {
         fetchAllChangesets(scmUrl).each {
             saveChangeset(it) //TODO examine if "fetchAllChangesets(scmUrl).each(saveChangeset)" is somehow possible
         }
+       project.save(failOnError: true)
     }
 
     //TODO examine if global failOnError is possible
@@ -72,7 +73,7 @@ class ScmAccessService {
         commiter.addToChangesets(changeset)
 
         scmApiChangeSet.getFiles().each { file ->
-            def projectFile = new ProjectFile(name: file.getName(), content: gitRepositoryService.returnFileContent())
+            def projectFile = new ProjectFile(file.getName(), gitRepositoryService.returnFileContent())
             changeset.addToProjectFiles(projectFile)
         }
 

@@ -1,7 +1,6 @@
 package codereview
 
 import testFixture.Constants
-import org.springframework.transaction.annotation.Transactional
 
 class ProjectUpdateJob {
 
@@ -14,17 +13,19 @@ class ProjectUpdateJob {
     }
 
     def execute() {
-        update()
+        Project.all.each {
+            update(it.url)
+        }
     }
 
     //FIXME this import is incremental only thanks to exceptions stopping it in the middle. Ugly.
     //Probably it's incremental nature should be reflected by signatures of methods used here.
     def update() {
         ProjectFile.withTransaction({
-            log.info('Starting project update')
-            scmAccessService.updateProject(Constants.PROJECT_REPOSITORY_URL)
-            scmAccessService.importAllChangesets(Constants.PROJECT_REPOSITORY_URL)
-            log.info('Done project update')
+            log.info("Starting project update for project ${projectRepositoryUrl}")
+            scmAccessService.updateProject(projectRepositoryUrl)
+            scmAccessService.importAllChangesets(projectRepositoryUrl)
+            log.info("Done project update for project ${projectRepositoryUrl}")
         })
     }
 }

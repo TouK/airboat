@@ -8,15 +8,16 @@ import grails.converters.JSON
 import spock.lang.Ignore
 
 @TestFor(UserCommentController)
-@Mock([Commiter, Changeset, UserComment])
+@Mock([Commiter, Changeset, UserComment, Project])
 class UserCommentControllerSpec extends Specification {
 
     def "should return comments to changeset when given right changeset id"() {
         given:
-        new Commiter('agj').addToChangesets(
-                new Changeset("hash23", "zmiany", new Date()).addToUserComments(
-                        new UserComment(text: "fajno", author: "jil@touk.pl"))
-        ).save()
+        def changeset = new Changeset("hash23", "zmiany", new Date()).addToUserComments(
+                new UserComment(text: "fajno", author: "jil@touk.pl")
+        )
+        new Commiter('agj').addToChangesets(changeset).save()
+        new Project("testProject", "testUrl").addToChangesets(changeset).save()
 
         when:
         params.id = "hash23"
@@ -29,6 +30,7 @@ class UserCommentControllerSpec extends Specification {
 
     def "should return last comments, sorted by dateCreated, descending"() {
         given:
+        def project = new Project("testProject", "testUrl") 
         def commiter = new Commiter("agj")
         def changeset = new Changeset("hash23", "zmiany", new Date())
         def comments = [
@@ -37,27 +39,30 @@ class UserCommentControllerSpec extends Specification {
                 new UserComment("Jil", "No way!")
         ]
 
+        project.addToChangesets(changeset)
         commiter.addToChangesets(changeset)
         comments.each() {
             changeset.addToUserComments(it)
         }
-
-        commiter.save()
+        
+        project.save()
+        changeset.save()
 
         when:
         controller.getLastComments()
-        String rendered = (response.contentAsString)
-
+        
         then:
-        comments.size() == JSON.parse(rendered).size()
-        JSON.parse(rendered)[0].toString().contains('"id":3,"author":"Jil"')
-        JSON.parse(rendered)[1].toString().contains('"id":2,"author":"Troll"')
-        JSON.parse(rendered)[2].toString().contains('"id":1,"author":"Jil"')
+        String rendered = response.json
+        rendered.size() == comments.size()
+        rendered[0].toString().contains('"id":3,"author":"Jil"')
+        rendered[1].toString().contains('"id":2,"author":"Troll"')
+        rendered[2].toString().contains('"id":1,"author":"Jil"')
     }
 
 
     def "should add comment correctly to db"() {
         given:
+        def project = new Project("testProject", "testUrl")
         def commiter = new Commiter("agj")
         def changesetId = "hash23"
         def changeset = new Changeset(changesetId, "zmiany", new Date())
@@ -69,11 +74,13 @@ class UserCommentControllerSpec extends Specification {
                 new UserComment("Jil", "No way!")
         ]
 
+        project.addToChangesets(changeset)
         commiter.addToChangesets(changeset)
         comments.each() {
             changeset.addToUserComments(it)
         }
 
+        project.save()
         commiter.save()
 
         when:

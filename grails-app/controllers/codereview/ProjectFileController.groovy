@@ -21,7 +21,7 @@ class ProjectFileController {
      */
     def getFileWithContent(Long id) {
         def projectFile = ProjectFile.findById(id)
-        def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(Fixture.PROJECT_REPOSITORY_URL)
+        def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(projectFile.changeset.project.url)   //TODO something about ProjectFile and Changeset relationship
         def path = projectRootDirectory.getAbsolutePath()
         projectFile.content = projectFileAccessService.fetchFileContentFromPath(path, projectFile.name)
 
@@ -70,7 +70,7 @@ class ProjectFileController {
     }
 
     def getSnippet(LineComment comment) {
-        def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(Fixture.PROJECT_REPOSITORY_URL)
+        def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(comment.projectFile.changeset.project.url)
         def path = projectRootDirectory.getAbsolutePath()
         def fileContent =  projectFileAccessService.fetchFileContentFromPath(path, comment.projectFile.name)
         return getLinesAround(fileContent, comment.lineNumber, 3)

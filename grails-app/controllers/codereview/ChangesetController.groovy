@@ -14,8 +14,10 @@ class ChangesetController {
      * TODO helper method for development phase
      */
     def initialCheckOut() {
-        log.info('Checking out project.')
-        scmAccessService.checkoutProject(Fixture.PROJECT_REPOSITORY_URL)
+        Project.all.each {
+            log.info("Checking out project ${it.url}.")
+            scmAccessService.checkoutProject(it.url)
+        }
         redirect(views: '/index', params: params)
     }
 

@@ -14,9 +14,9 @@ class UserCommentDateLearningSpec extends Specification {
 
     def "dateCreated find by Dynamic Finder should be != null"() {
         given:
-        def commiter = new Commiter("agj@touk.pl")
-        def testChangeset = new Changeset("hash23", "zmiany", new Date())
-        def testUserComment = new UserComment("kpt", "text")
+//        def commiter = new Commiter("agj@touk.pl")
+//        def testChangeset = new Changeset("hash23", "zmiany", new Date())
+//        def testUserComment = new UserComment("kpt", "text")
 
         commiter.addToChangesets(testChangeset)
         testChangeset.addToUserComments(testUserComment)
@@ -29,9 +29,9 @@ class UserCommentDateLearningSpec extends Specification {
 
     def "dateCreated find normally should be != null"() {
         given:
-        def commiter = new Commiter("agj@touk.pl")
-        def testChangeset = new Changeset("hash23", "zmiany", new Date())
-        def testUserComment = new UserComment("kpt", "text")
+//        def commiter = new Commiter("agj@touk.pl")
+//        def testChangeset = new Changeset("hash23", "zmiany", new Date())
+//        def testUserComment = new UserComment("kpt", "text")
 
         commiter.addToChangesets(testChangeset)
         testChangeset.addToUserComments(testUserComment)

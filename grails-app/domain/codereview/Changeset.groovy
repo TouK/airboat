@@ -7,7 +7,10 @@ class Changeset {
     Date date
 
     static hasMany = [projectFiles: ProjectFile, userComments: UserComment]
-    static belongsTo = [commiter: Commiter]
+    static belongsTo = [
+        project: Project,
+        commiter: Commiter
+    ]
 
     Changeset(String identifier, String commitComment, Date date) {
         this.identifier = identifier
