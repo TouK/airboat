@@ -52,6 +52,13 @@
                 hideAddCommentButtons(changesetId);
 
         }
+        function cancelLineComment(fileIdentifier) {
+            $('#add-line-comment-' + fileIdentifier).val("");
+            $('#author-' + fileIdentifier).val("");
+            $('#line-number-' +fileIdentifier).val("");
+            $('#add-line-comment-' + fileIdentifier).width("200px");
+            $('#add-line-comment-' + fileIdentifier).height("20px");
+        }
 
         function addLineComment(fileIdentifier, changesetId) {
 
@@ -304,8 +311,8 @@
         <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
 
             <div id="accordion-inner-div-snippet-{{>fileId}}"></div>
-            <button type="button" class="btn pull-right show-file" id="sh-btn-{{>changesetId}}" onClick="showFile('{{>changesetId}}', '{{>fileId}}')">Show file &gt;</button>
-            <button type="button" class="btn pull-right hide-file" id="h-btn-{{>changesetId}}" onClick="hideFile('{{>changesetId}}', '{{>fileId}}')"> &lt; Hide file </button>
+            <button type="button" class="btn pull-right " id="sh-btn-{{>collapseId}}" onClick="showFile('{{>changesetId}}', '{{>fileId}}')">Show file &gt;</button>
+            <button type="button" class="btn pull-right " id="h-btn-{{>collapseId}}" onClick="hideFile('{{>changesetId}}', '{{>fileId}}')"> &lt; Hide file </button>
         </div>
     </div>
     </div>
@@ -329,7 +336,7 @@
     <input id="author-{{>fileId}}" type="text" class="input-small" placeholder="name"/></input>
     <br />
     <button type="button"  class="btn" id="btn-{{>fileId}}" onClick="addLineComment('{{>fileId}}', '{{>changesetId}}')">Add comment</button>
-    <button type="button" class="btn" id="c-btn-{{>fileId}}" onClick="cancelLineComment()">Cancel</button>
+    <button type="button" class="btn" id="c-btn-{{>fileId}}" onClick="cancelLineComment('{{>fileId}}')">Cancel</button>
 </form>
 
 </script>
