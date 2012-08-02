@@ -41,13 +41,12 @@ class ProjectFileController {
         def j = 0
         def commentsWithSnippets = comments.sort { it.lineNumber }
         def lastLineNumber = comments[0].lineNumber
-        comments.each{
+        comments.each{                              //group comments if they're talking about same line
            if(it.lineNumber == lastLineNumber) {
                if (snippetsGroup[i] == null) {
                    snippetsGroup[i] = []
                }
                snippetsGroup[i][j++] = it
-
            }
            else {
                lastLineNumber = it.lineNumber
@@ -58,10 +57,27 @@ class ProjectFileController {
            }
         }
 
-        def commentGroupsWithSnippets = snippetsGroup.collect {
-            def snippet = getSnippet(it[0])
-            [commentGroup: it, snippet: snippet, filetype: projectFile.fileType]
-        }
+        def commentGroupsWithSnippets = []
+            i = 0
+            def snippet
+            while(i < snippetsGroup.size() -1) {      //how long snippet do we need?
+
+            if (snippetsGroup[i+1][0].lineNumber -  snippetsGroup[i][0].lineNumber   == 1 ) {
+                 snippet = getSnippet(snippetsGroup[i][0], 1)
+            }
+            else if (snippetsGroup[i+1][0].lineNumber -  snippetsGroup[i][0].lineNumber   == 2) {
+                snippet = getSnippet(snippetsGroup[i][0], 2)
+            }
+            else {
+                 snippet = getSnippet(snippetsGroup[i][0], 3)
+            }
+            commentGroupsWithSnippets[i] = [commentGroup: snippetsGroup[i], snippet: snippet, filetype: projectFile.fileType]
+            i++
+            }
+
+            snippet = getSnippet(snippetsGroup[i][0], 3)
+            commentGroupsWithSnippets[i] =  [commentGroup: snippetsGroup[i], snippet: snippet, filetype: projectFile.fileType]
+
             render commentGroupsWithSnippets as JSON
         }
         else {
@@ -69,26 +85,28 @@ class ProjectFileController {
         }
     }
 
-    def getSnippet(LineComment comment) {
+    def getSnippet(LineComment comment, howManyLines) {
         def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(Fixture.PROJECT_REPOSITORY_URL)
         def path = projectRootDirectory.getAbsolutePath()
         def fileContent =  projectFileAccessService.fetchFileContentFromPath(path, comment.projectFile.name)
-        return getLinesAround(fileContent, comment.lineNumber, 3)
+        return getLinesAround(fileContent, comment.lineNumber, howManyLines)
     }
 
     def getLinesAround(String text, Integer at, Integer howMany){
         def splitted = text.split("\n")
-        def from = at - (howMany -1)/2
-        def to  = at + (howMany)/2
+        def from = at
+        def to  = at + howMany-1
         if (from < 0) {
-            from = 0
-            to = from + howMany
+            return null
 
         }
-        if (to >= splitted.size()) {
-            to = splitted.size() - 1
-            from = to - howMany
-            if (from < 0) {from = 0 }
+        if (to >= splitted.size()){
+            if ( at < splitted.size()) {
+                 to  = at
+            }
+            else {
+                return null
+            }
         }
         return splitted[from.toInteger()..to.toInteger()].join("\n")
     }
