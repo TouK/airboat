@@ -3,6 +3,7 @@ package codereview
 import spock.lang.Specification
 
 import grails.test.mixin.Mock
+import testFixture.Constants
 
 @Mock(Changeset)
 class ProjectUpdateJobSpec extends Specification {
@@ -21,7 +22,7 @@ class ProjectUpdateJobSpec extends Specification {
             job.scmAccessService = scmAccessServiceMock
 
         when:
-            job.update()
+            job.update(Constants.PROJECT_REPOSITORY_URL)
 
         then:
             Changeset.count() != 0
@@ -35,7 +36,7 @@ class ProjectUpdateJobSpec extends Specification {
             1 * job.scmAccessService.fetchAllChangesetsWithFilesAndSave(_) >> { new Changeset("hash23", "agj", "", new Date()).save() }
 
         when:
-            job.update()
+            job.update(Constants.PROJECT_REPOSITORY_URL)
 
         then:
             Changeset.count() != 0

@@ -1,5 +1,7 @@
 import codereview.Changeset
 import grails.converters.JSON
+import codereview.Project
+import testFixture.Fixture
 
 class BootStrap {
 
@@ -17,7 +19,14 @@ class BootStrap {
             return returnMap
         }
 
+
+        new Project("codereview", Fixture.PROJECT_REPOSITORY_URL).save(flush: true)
+        new Project("cyclone", Fixture.PROJECT_CYCLONE_REPOSITORY_URL).save(flush: true)
+
+
     }
+
+
 
     def destroy = {
     }

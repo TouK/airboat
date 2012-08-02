@@ -48,7 +48,7 @@ class InfrastructureService {
      * @return
      */
     String getDirectoryNameForTheProject(String scmUrl) {
-        "projekt"
+        Project.findByUrl(scmUrl).name
     }
 
 

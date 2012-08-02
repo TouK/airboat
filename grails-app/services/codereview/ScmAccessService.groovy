@@ -19,11 +19,11 @@ class ScmAccessService {
     }
 
     void fetchAllChangesetsWithFilesAndSave(String scmUrl) {
+        def project = Project.findByUrl(scmUrl)
         fetchAllChangesetsWithFiles(scmUrl).each {
-            if(it.validate()) {
-                it.save(failOnError: true)
-            }
+            project.addToChangesets(it)
         }
+       project.save(failOnError: true)
     }
 
     Changeset[] fetchAllChangesetsWithFiles(String gitScmUrl){
@@ -36,7 +36,7 @@ class ScmAccessService {
     }
 
 
-    def createChangesetsWithFiles(List<org.apache.maven.scm.ChangeSet> scmChanges) {
+    def createChangesetsWithFiles(List<ChangeSet> scmChanges) {
 
         scmChanges.collect { ChangeSet it ->
 
@@ -45,6 +45,7 @@ class ScmAccessService {
             }
 
             Changeset changeset = new Changeset(it.revision, it.author, it.comment, it.date)
+
             files.each {
                 changeset.addToProjectFiles(it)
             }

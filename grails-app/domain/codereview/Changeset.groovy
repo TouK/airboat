@@ -8,6 +8,8 @@ class Changeset {
     Date date
 
     static hasMany = [projectFiles: ProjectFile, userComments: UserComment]
+    static belongsTo = [project: Project]
+
 
     Changeset(String identifier, String author, String commitComment, Date date) {
         this.identifier = identifier
@@ -33,6 +35,6 @@ class Changeset {
         author blank: false
         identifier blank: false, unique: true
         email nullable: true, blank:true
-        commitComment blank: true
+        commitComment blank: true , maxSize: 4096
     }
 }
