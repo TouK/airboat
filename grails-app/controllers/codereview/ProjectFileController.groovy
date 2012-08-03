@@ -20,7 +20,7 @@ class ProjectFileController {
         def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(projectFile.changeset.project.url)
         projectFile.content = projectFileAccessService.getFileContent(projectFile, projectRootDirectory)
 
-        render([content: projectFile.content, filetype: projectFile.fileType] as JSON)
+        render([content: projectFile.content, filetype: projectFile.fileType, name: projectFile.name] as JSON)
     }
 
     def getLineCommentsWithSnippetsToFile(Long id) {

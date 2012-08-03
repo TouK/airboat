@@ -19,7 +19,7 @@ class LineCommentController {
         if (projectFile == null ) {
             throw new IllegalArgumentException("No file with such id was found")
         }
-        if (lineNumber.toInteger() >= content.split("\n").size() || lineNumber.toInteger() < 0){
+        if (lineNumber.toInteger() > content.split("\n").size() || lineNumber.toInteger() < 0){
            throw new IllegalArgumentException("Line number is invalid")
         }
 

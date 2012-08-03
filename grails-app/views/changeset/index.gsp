@@ -150,7 +150,8 @@
 
                     });
                     var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetId, lineNumber:i });
-                    $(element).popover({content: commentForm, placement: "left", trigger: "manual"});
+                    var popoverTitle =  $("#popoverTitleTemplate").render({fileName: file.name, fileId:fileId, changesetId:changesetId, lineNumber:i});
+                    $(element).popover({content: commentForm, placement: "left", trigger: "manual", title: popoverTitle });
                 });
             });
             $("#content-files-" + changesetId).show(100);
@@ -168,11 +169,7 @@
             previousExpandedForFilesChangesetId = changesetId;
 
         }
-        function appendAddLineCommentToFileForm(changesetId, fileId) {
-            $("#content-files-comment-" + changesetId).html("");
-           var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetId });
-            $("#content-files-comment-" + changesetId).append(commentForm);
-        }
+
         function hideFile(changesetId, fileId)  {
             $("#content-files-" + changesetId).hide();
             $(".show-file").show();
@@ -350,8 +347,12 @@
     </div>
 </script>
 
-<script id="lineCommentTemplate" type="text/x-jsrender">
-    <p>{{>author}} wrote: {{>text}}</p>
+<script id="popoverTitleTemplate" type="text/x-jsrender">
+    <div class="row-fluid">
+        <div class="span11 well-small">{{>fileName}}</div>
+
+    <div class="span1"><button type="button" class="btn" onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">X</button>  </div>
+        </div>
 </script>
 
 <script id="snippetTemplate" type="text/x-jsrender">
