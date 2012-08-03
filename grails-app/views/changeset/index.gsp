@@ -126,15 +126,15 @@
 <div class="well">
     <a class="btn" onclick="showProject('codereview')">CodeReview</a>
     <a class="btn" onclick="showProject('cyclone')">Cyclone</a>
-    <a class="btn" onclick="showProject('TPSA')">TPSA</a>
     <a class="btn" onclick="showProject('')">AllProjects</a>
-
 </div>
 
 
 
 
 <div id="content" class="container-fluid"></div>
+
+
 
     <script type="text/javascript">
 

@@ -4,11 +4,20 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import grails.converters.JSON
+import testFixture.Fixture
 
 
 @TestFor(LineCommentController)
 @Mock([Changeset, UserComment, ProjectFile, LineComment, Project])
 class LineCommentControllerSpec extends Specification {
+
+    def setup() {
+        def testMsg = "should return comments to project file when given right project file i"
+        controller.infrastructureService = Mock(InfrastructureService)
+        controller.projectFileAccessService = Mock(ProjectFileAccessService)
+        controller.projectFileAccessService.getFileContent(_, _) >>
+                " +" + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n" + testMsg  + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n"+ testMsg+ "\n"
+    }
 
     def "should return comments to project file when given right project file id"() {
 
@@ -17,7 +26,7 @@ class LineCommentControllerSpec extends Specification {
 
     def "should return last comments"() {
         given:
-        def testProject = new Project("testProject","testUrl")
+        def testProject = new Project("codereview",Fixture.PROJECT_REPOSITORY_URL)
         def changeset = new Changeset("hash23", "agj", "zmiany", new Date())
         def projectFile = new ProjectFile("info.txt", "read manuals!")
         testProject.addToChangesets(changeset)
@@ -45,7 +54,7 @@ class LineCommentControllerSpec extends Specification {
 
     def "should add comment correctly to db"() {
         given:
-        def testProject = new Project("testProject","testUrl")
+        def testProject = new Project("codereview",Fixture.PROJECT_REPOSITORY_URL)
         def changeset = new Changeset("hash23", "agj", "zmiany", new Date())
         def projectFile = new ProjectFile("info.txt", "read manuals!")
         testProject.addToChangesets(changeset)

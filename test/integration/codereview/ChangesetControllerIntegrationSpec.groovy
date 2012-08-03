@@ -31,8 +31,8 @@ class ChangesetControllerIntegrationSpec extends ControllerSpec {
         then:
         def responseChangesets = controller.response.json
         responseChangesets != null
-        responseChangesets[0].identifier == "hash24"
-        responseChangesets[1].identifier == "hash23"
+        responseChangesets[0].identifier == "hash23"
+        responseChangesets[1].identifier == "hash24"
     }
 
 
