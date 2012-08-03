@@ -126,6 +126,7 @@
     <a class="btn" onclick="showProject('codereview')">CodeReview</a>
     <a class="btn" onclick="showProject('cyclone')">Cyclone</a>
     <a class="btn" onclick="showProject('TPSA')">TPSA</a>
+    <a class="btn" onclick="showProject('')">AllProjects</a>
 
 </div>
 
@@ -178,11 +179,11 @@
 
         var projectName
 
-    function showProject(projectName){
-        projectName = projectName
+    function showProject(projectId){
+        projectName = projectId
         $(document).ready(function () {
             $('#content').html("");
-            $.getJSON('${createLink(uri:'/changeset/getLastChangesets/')}'+ projectName, appendChangesets);
+            $.getJSON('${createLink(uri:'/changeset/getLastChangesets/')}'+ projectName , appendChangesets);
         });
 
         $(".collapse").collapse();
@@ -205,7 +206,7 @@
         function onScrollThroughBottomAttempt() {
             if (!changesetsLoading) {
                 changesetsLoading = true;
-                $.getJSON('${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}' + '?' +$.param({projectName:projectName,lastChangesetId:lastChangesetId}), appendChangesets)
+                $.getJSON('${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}' + '?' + $.param({projectName: projectName, changesetId: lastChangesetId}), appendChangesets)
             }
         }
 

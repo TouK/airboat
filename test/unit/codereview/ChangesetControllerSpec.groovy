@@ -4,6 +4,7 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import grails.converters.JSON
+import testFixture.Fixture
 
 @TestFor(ChangesetController)
 @Mock([Changeset, ProjectFile, Project])
@@ -11,16 +12,20 @@ class ChangesetControllerSpec extends Specification {
 
     def setup() {
         controller.scmAccessService = Mock(ScmAccessService)
-    }
+        }
 
     def "getLastChangesets should return JSON"() {
 
         given:
-            new Changeset("hash23", "agj", "", new Date()).save()
-            new Changeset("hash24", "kpt", "", new Date()).save()
+            def testProjectName = "codereview"
+            def testProject = new Project(testProjectName,Fixture.PROJECT_REPOSITORY_URL)
+            testProject.addToChangesets(new Changeset("hash23", "agj", "", new Date()))
+            testProject.addToChangesets(new Changeset("hash24", "kpt", "", new Date()))
+            testProject.save()
             def changesets = Changeset.list(max: 20, sort: "date", order: "desc")
 
         when:
+            controller.params.projectName = testProjectName
             controller.getLastChangesets()
 
         then:
@@ -38,26 +43,6 @@ class ChangesetControllerSpec extends Specification {
             response.redirectedUrl == "/changeset/index"
     }
 
-    def "should return few next changesets older than one with given revision id as JSON"() {
-
-        given:
-            def latestChangesetId = "hash25"
-            def testProject = new Project("testProject","testUrl")
-            testProject.addToChangesets(new Changeset(latestChangesetId, "kpt", "", new Date(3)))
-            testProject.addToChangesets(new Changeset("hash24", "kpt", "", new Date(2)))
-            testProject.addToChangesets(new Changeset("hash23", "agj", "", new Date(1)))
-            testProject.save()
-
-        when:
-            controller.params.id = latestChangesetId
-            controller.getNextFewChangesetsOlderThan()
-
-        then:
-            def responseChangesets = JSON.parse(response.contentAsString)
-            responseChangesets != null
-            responseChangesets[0].identifier == "hash24"
-            responseChangesets[1].identifier == "hash23"
-    }
     def "getLastChangesets should return table of jasonized objects" () {
 
         given:
