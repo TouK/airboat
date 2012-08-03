@@ -66,11 +66,9 @@
         }
 
         function addLineComment(fileIdentifier, changesetId, lineNumber) {
-
             var text = $('#add-line-comment-' +fileIdentifier).val();
-            //var lineNumber = $('#line-number-' +fileIdentifier).val();
-
             var author =  $('#author-' +fileIdentifier).val();
+
             if(text == "" || lineNumber == "" || author =="") {
                 return false
             }
@@ -83,8 +81,8 @@
             $('#author-' + fileIdentifier).val("");
             $('#line-number-' +fileIdentifier).val("");
 
-            appendAccordion(changesetId);
-            $('#collapse-' +changesetId +fileIdentifier).collapse("show");
+            appendAccordion(changesetId, fileIdentifier);
+
         }
 
 
@@ -232,14 +230,14 @@
             $('#comments-' + changeset.identifier).hide();
             appendCommentForm(changeset.identifier);
             $('#less-button-' +changeset.identifier).hide();
-            appendAccordion(changeset.identifier);
+            appendAccordion(changeset.identifier, null);
             $('#accordion-' +changeset.identifier).hide();
             $('#content-files-span-' +changeset.identifier).hide();
 
 
         }
 
-        function appendAccordion(changesetId) {
+        function appendAccordion(changesetId, fileIdentifier) {
             var fileUrl = '${createLink(uri:'/changeset/getFileNamesForChangeset/')}';
             fileUrl = fileUrl.concat(changesetId);
             $('#accordion-' +changesetId).html("");
@@ -255,9 +253,13 @@
                     $('#accordion-' +changesetId).append(accordionRow);
                     appendSnippetToFileInAccordion(data[i].id)
                     $("#h-btn-" + changesetId + data[i].id).hide();
-                }
 
+                }
+                if(fileIdentifier != null) {
+                    $('#collapse-' +changesetId +fileIdentifier).collapse("show");
+                }
             });
+
 
 
         }
@@ -330,7 +332,7 @@
     <div class="accordion-group" >
 
     <div class="accordion-heading">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
+        <a class="accordion-toggle" id="collapsable-{{>collapseId}}" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
             {{>name}}
         </a>
 
@@ -350,9 +352,8 @@
 <script id="popoverTitleTemplate" type="text/x-jsrender">
     <div class="row-fluid">
         <div class="span11 well-small">{{>fileName}}</div>
-
-    <div class="span1"><button type="button" class="btn" onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">X</button>  </div>
-        </div>
+        <div class="span1"><button type="button" class="btn" onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">X</button>  </div>
+    </div>
 </script>
 
 <script id="snippetTemplate" type="text/x-jsrender">
@@ -362,10 +363,8 @@
 
 
 <script id="addLineCommentFormTemplate" type="text/x-jsrender">
-<form class="add_comment .form-inline"><textarea
-                                                 id="add-line-comment-{{>fileId}}" placeholder="Add comment..." style="height:80px"></textarea>
-
-
+<form class="add_comment .form-inline">
+    <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..." style="height:80px"></textarea>
     <input id="author-{{>fileId}}" type="text" class="input-small" placeholder="name"/></input>
     <br />
     <button type="button"  class="btn" id="btn-{{>fileId}}" onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
