@@ -23,7 +23,7 @@ class ScmAccessService {
         fetchAllChangesetsWithFiles(scmUrl).each {
             project.addToChangesets(it)
         }
-       project.save(failOnError: true)
+        project.save(failOnError: true)
     }
 
     Changeset[] fetchAllChangesetsWithFiles(String gitScmUrl){
