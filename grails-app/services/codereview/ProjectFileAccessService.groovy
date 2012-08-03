@@ -14,4 +14,8 @@ class ProjectFileAccessService {
         return content
     }
 
+    def getFileContent(ProjectFile projectFile, projectRootDirectory) {
+        def path = projectRootDirectory.getAbsolutePath()
+        return fetchFileContentFromPath(path, projectFile.name)
+    }
 }
