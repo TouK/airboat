@@ -82,7 +82,7 @@
             $('#line-number-' +fileIdentifier).val("");
 
             appendAccordion(changesetId, fileIdentifier);
-
+            $('#content-files-' + changesetId + ' .linenums li').popover("hide");
         }
 
 
@@ -150,6 +150,7 @@
                     changesetId: changesetId,
                     fileId: fileId
                 });
+
                 $("#content-files-title-" + changesetId).html(title);
 
                 $("#content-files-" + changesetId).html("<pre class='codeViewer'/>");
@@ -165,8 +166,14 @@
 
                     });
                     var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetId, lineNumber:i });
+                    var popoverTitle = $("#popoverTitleTemplate").render({
+                        fileName: divideNameWithSlashesInTwo(file.name),
+                        changesetId: changesetId,
+                        fileId: fileId,
+                        lineNumber: i
+                    });
 
-                    $(element).popover({content: commentForm, placement: "left", trigger: "manual" });
+                    $(element).popover({content: commentForm, title: popoverTitle, placement: "left", trigger: "manual" });
                 });
             });
             $("#content-files-" + changesetId).show(100);
@@ -400,6 +407,11 @@
         </div>
 </script>
 
+<script id="popoverTitleTemplate" type="text/x-jsrender">
+    <div class="row-fluid">
+            <button type="button" class="btn pull-right " onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')"><i class="icon-remove"> </i></button>
+    </div>
+</script>
 
 <script id="snippetTemplate" type="text/x-jsrender">
     <div id="div-comments-{{>fileId}}-{{>snippetId}}"></div>
@@ -413,7 +425,7 @@
     <input id="author-{{>fileId}}" type="text" class="input-small" placeholder="name"/></input>
     <br />
     <button type="button"  class="btn" id="btn-{{>fileId}}" onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
-    <button type="button" class="btn" id="c-btn-{{>fileId}}" onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Cancel</button>
+
 </form>
 
 </script>
