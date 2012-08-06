@@ -145,6 +145,13 @@
             fileContentUrl += fileId;
             var fileContent;
             $.getJSON(fileContentUrl, function(file) {
+                var title = $("#fileTitleTemplate").render({
+                    fileName: divideNameWithSlashesInTwo(file.name),
+                    changesetId: changesetId,
+                    fileId: fileId
+                });
+                $("#content-files-title-" + changesetId).html(title);
+
                 $("#content-files-" + changesetId).html("<pre class='codeViewer'/>");
                 $("#content-files-" + changesetId + " .codeViewer")
                     .text(file.content)
@@ -158,13 +165,13 @@
 
                     });
                     var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetId, lineNumber:i });
-                    var popoverTitle =  $("#popoverTitleTemplate").render({fileName: file.name, fileId:fileId, changesetId:changesetId, lineNumber:i});
-                    $(element).popover({content: commentForm, placement: "left", trigger: "manual", title: popoverTitle });
+
+                    $(element).popover({content: commentForm, placement: "left", trigger: "manual" });
                 });
             });
             $("#content-files-" + changesetId).show(100);
             $('#content-files-span-' +changesetId).show(100);
-
+            $("#content-files-title-" + changesetId).show();
             if( previousExpandedForFilesChangesetId != null) {
                 $('#content-files-' + previousExpandedForFilesChangesetId + ' .linenums li').each(function (i, element, ignored) {
                     $(element).popover("hide");
@@ -189,6 +196,7 @@
             $('#content-files-' + changesetId + ' .linenums li').each(function (i, element, ignored) {
                 $(element).popover("hide");
             });
+            $("#content-files-title-" + changesetId).hide();
         }
     </script>
 
@@ -323,7 +331,20 @@
                 }
             });
         }
-
+        function divideNameWithSlashesInTwo(name) {
+           var splitted, newName = "";
+            splitted = name.split("/");
+            var i;
+            for(i = 0; i < splitted.length/2 ; i++) {
+                newName += splitted[i] + "/";
+            }
+            newName += " ";
+            for( i = Math.ceil(splitted.length/2) ; i < splitted.length - 1 ; i++) {
+                newName += splitted[i] + "/" ;
+            }
+            newName += splitted[i] ;
+            return newName;
+        }
         function showMoreAboutChangeset(identifier)  {
             $("#more-button-" +identifier).hide();
             $('#less-button-' +identifier).show(100);
@@ -373,12 +394,20 @@
     </div>
 </script>
 
-<script id="popoverTitleTemplate" type="text/x-jsrender">
+<script id="fileTitleTemplate" type="text/x-jsrender">
     <div class="row-fluid">
-        <div class="span11 well-small">{{>fileName}}</div>
-        <div class="span1"><button type="button" class="btn" onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">X</button>  </div>
-    </div>
+        <div class="span well-small">
+        <div class="span9 ">
+    <h1>{{>fileName}}</h1>
+            </div>
+        <div class="span2">
+    <button type="button" class="btn pull-right " onClick="hideFile('{{>changesetId}}', '{{>fileId}}')"> <i class="icon-remove"></i></button>
+            </div>
+
+        </div>
+        </div>
 </script>
+
 
 <script id="snippetTemplate" type="text/x-jsrender">
     <div id="div-comments-{{>fileId}}-{{>snippetId}}"></div>
@@ -461,10 +490,11 @@
         </div>
 
             <div class="span8">
+                <div id="content-files-title-{{>identifier}}"></div>
                 <div class="span11 well" id="content-files-span-{{>identifier}}">
                 <div class="files-right">
                     <div id="content-files-{{>identifier}}" > </div>
-                    <div id="content-files-comment-{{>identifier}}"></div>
+
                     </div>
                     </div>
             </div>
