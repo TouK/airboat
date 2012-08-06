@@ -451,7 +451,8 @@
 
                 <div class="row-fluid">
                     <div class="span7">
-                        <span class="label">{{>author}}</span>
+                        <span class="label">{{>author}}</span> </br>
+                        <span class="label">{{>projectName}}</span>
                     </div>
                     <div class="span2">
                         <span class="label label-info">{{>date}}</span>

@@ -27,6 +27,11 @@ class Changeset {
         }
     }
 
+    String getProjectName(){
+        project.name
+    }
+
+
     Integer commentsCount() {
         return UserComment.findAllByChangeset(this).size()
     }
