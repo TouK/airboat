@@ -20,8 +20,8 @@
     <script src="${createLink(uri: '/js/bootstrap-collapse.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-tooltip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-popover.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/js/jquery.syntaxhighlighter.js')}" type="text/javascript"></script>
 
-    <script type="text/javascript" src="${createLink(uri: '/js/jquery.syntaxhighlighter.min.js')}"></script>
 
 
     <script type="text/javascript">
@@ -50,10 +50,10 @@
         }
 
         function cancelComment(changesetId) {
-            changeAddCommentDivToDefault(changesetId);
-            hideAddCommentButtons(changesetId);
+                changeAddCommentDivToDefault(changesetId);
+                hideAddCommentButtons(changesetId);
+
         }
-        
         function cancelLineComment(fileIdentifier, changesetId, lineNumber) {
             $('#add-line-comment-' + fileIdentifier).val("");
             $('#author-' + fileIdentifier).val("");
@@ -61,6 +61,8 @@
             $('#content-files-' + changesetId + ' .linenums li').each(function (i, element, ignored) {
                 $(element).popover("hide");
             });
+
+
         }
 
         function addLineComment(fileIdentifier, changesetId, lineNumber) {
@@ -113,6 +115,8 @@
                 }
             });
         }
+
+
     </script>
 
 </head>
@@ -121,14 +125,23 @@
 
 <script type="text/javascript">$.SyntaxHighlighter.init({'stripEmptyStartFinishLines': false});</script>
 
-    <div class="well">
-        <a class="btn" onclick="showProject('codereview')">CodeReview</a>
-        <a class="btn" onclick="showProject('cyclone')">Cyclone</a>
-        <a class="btn" onclick="showProject('')">AllProjects</a>
-    </div>
-    <div id="content" class="container-fluid"></div>
+
+<div class="well">
+    <a class="btn" onclick="showProject('codereview')">CodeReview</a>
+    <a class="btn" onclick="showProject('cyclone')">Cyclone</a>
+    <a class="btn" onclick="showProject('')">AllProjects</a>
+    <a class="btn pull-right" href="https://docs.google.com/spreadsheet/ccc?key=0AqcWoYECBA_SdElrejNuNVUzNEt3LTJZQnVCQ3RILWc#gid=0">Feedback</a>
+</div>
+
+
+
+
+<div id="content" class="container-fluid"></div>
+
+
 
     <script type="text/javascript">
+
         var previousExpandedForFilesChangesetId;
         function showFile(changesetId, fileId) {
 
@@ -166,21 +179,25 @@
 
                     $(element).popover({content: commentForm, title: popoverTitle, placement: "left", trigger: "manual" });
                 });
-            });
-            $("#content-files-" + changesetId).show(100);
-            $('#content-files-span-' +changesetId).show(100);
-            $("#content-files-title-" + changesetId).show(100);
-            if( previousExpandedForFilesChangesetId != null) {
-                $('#content-files-' + previousExpandedForFilesChangesetId + ' .linenums li').each(function (i, element, ignored) {
-                    $(element).popover("hide");
-                });
-            }
 
 
             $("#sh-btn-" + changesetId + fileId).hide();
 
-            previousExpandedForFilesChangesetId = changesetId;
+                $("#content-files-" + changesetId).show();
+                $('#content-files-span-' +changesetId).show();
+                $("#content-files-title-" + changesetId).show();
+                if( previousExpandedForFilesChangesetId != null) {
+                    $('#content-files-' + previousExpandedForFilesChangesetId + ' .linenums li').each(function (i, element, ignored) {
+                        $(element).popover("hide");
+                    });
+                }
 
+                $("#h-btn-" + changesetId + fileId).show();
+                $("#sh-btn-" + changesetId + fileId).hide();
+
+            });
+
+            previousExpandedForFilesChangesetId = changesetId;
         }
 
         function hideFile(changesetId, fileId)  {
@@ -294,7 +311,9 @@
 
             }).done(function () {
                         if(fileIdentifier != null) {
-
+                            $('#collapse-' + changesetId + fileIdentifier).hide(100);
+                            $('#collapse-' + changesetId + fileIdentifier).show(100);
+                            $('#collapse-' + changesetId + fileIdentifier).collapse("show");
                         }
                     }
             );
@@ -375,8 +394,6 @@
             newName += splitted.slice( Math.ceil(splitted.length/2), splitted.length).join("/");
             return newName;
         }
-
-
         function showMoreAboutChangeset(identifier)  {
             $("#more-button-" +identifier).hide();
             $('#less-button-' +identifier).show(100);
@@ -406,18 +423,18 @@
 
 
 <script id="accordionFileTemplate" type="text/x-jsrender">
-    <div class="accordion-group" id="accordion-group-{{>collapseId}}">
+    <div class="accordion-group" >
 
     <div class="accordion-heading">
         <div class="row-fluid">
             <div class="span8">
-                <a class="accordion-toggle"  data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
+                <a class="accordion-toggle" id="collapsable-{{>collapseId}}" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
                     {{>name}}
                 </a>
             </div>
             {{if howManyComments != 0}}
             <div class="row-fluid span2" >
-                 <button class="btn btn disabled" style="margin:2px 5px 0px 5px"><i class="icon-comment"></i>   {{>howManyComments}}  </button>
+                <button class="btn btn disabled" style="margin:2px 5px 0px 5px"><i class="icon-comment"></i>   {{>howManyComments}}  </button>
             </div>
             {{/if}}
         </div>

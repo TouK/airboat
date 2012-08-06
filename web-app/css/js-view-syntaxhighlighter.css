@@ -51,7 +51,7 @@
 	font-family: "Consolas", "Monaco", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important;
 	font-weight: normal !important;
 	font-style: normal !important;
-	font-size: 1em !important;
+	font-size: 0.8em !important;
 }
 
 .syntaxhighlighter
@@ -148,13 +148,13 @@
 	position: absolute !important;
 	right: 0px !important;
 	top: 0px !important;
-	font-size: 1px !important;
+	font-size: 0.8em  !important;
 	padding: 8px 8px 8px 0 !important; /* in px because images don't scale with ems */
 }
 
 .syntaxhighlighter.collapsed .toolbar
 {
-	font-size: 80% !important;
+	font-size: 0.8em  !important;
 	padding: .2em 0 .5em .5em !important;
 	position: static !important;
 }
