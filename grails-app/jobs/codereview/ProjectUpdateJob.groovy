@@ -20,8 +20,8 @@ class ProjectUpdateJob {
 
     //FIXME this import is incremental only thanks to exceptions stopping it in the middle. Ugly.
     //Probably it's incremental nature should be reflected by signatures of methods used here.
-    def update() {
-        ProjectFile.withTransaction({
+    def update(String projectRepositoryUrl) {
+        Project.withTransaction({
             log.info("Starting project update for project ${projectRepositoryUrl}")
             scmAccessService.updateProject(projectRepositoryUrl)
             scmAccessService.importAllChangesets(projectRepositoryUrl)

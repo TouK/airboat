@@ -10,7 +10,7 @@ class ProjectFileAccessServiceSpec extends Specification{
     def "when given project and file name and file doesn't exist should return info about it"() {
         given:
         def fileName = "idontexist.txt"
-        def projectPath = Fixture.DEFAULT_PROJECT_LOCATION_IN_DEVELOPMENT_ENVIRONMENT
+        def projectPath = "."
         ProjectFileAccessService projectFileAccessService  = new ProjectFileAccessService()
         def content
 
@@ -25,7 +25,7 @@ class ProjectFileAccessServiceSpec extends Specification{
     def "should return file content if file exists"() {
         given:
         def fileName = Fixture.PATH_TO_FILE_PRESENT_IN_FIRST_COMMIT
-        def projectPath = Fixture.DEFAULT_PROJECT_LOCATION_IN_DEVELOPMENT_ENVIRONMENT
+        def projectPath = "."
         ProjectFileAccessService projectFileAccessService  = new ProjectFileAccessService()
 
         when:

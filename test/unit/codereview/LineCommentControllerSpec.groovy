@@ -4,21 +4,23 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import grails.converters.JSON
+import grails.buildtestdata.mixin.Build
+import spock.lang.Ignore
 
 
 @TestFor(LineCommentController)
 @Mock([Changeset, UserComment, ProjectFile, LineComment, Project])
 class LineCommentControllerSpec extends Specification {
 
+    @Ignore
     def "should return comments to project file when given right project file id"() {
-
 
     }
 
     def "should return last comments"() {
         given:
         def testProject = new Project("testProject","testUrl")
-        def changeset = new Changeset("hash23", "agj", "zmiany", new Date())
+        def changeset = new Changeset("hash23", "zmiany", new Date())
         def projectFile = new ProjectFile("info.txt", "read manuals!")
         testProject.addToChangesets(changeset)
         changeset.addToProjectFiles(projectFile)
@@ -46,7 +48,7 @@ class LineCommentControllerSpec extends Specification {
     def "should add comment correctly to db"() {
         given:
         def testProject = new Project("testProject","testUrl")
-        def changeset = new Changeset("hash23", "agj", "zmiany", new Date())
+        def changeset = new Changeset("hash23", "zmiany", new Date())
         def projectFile = new ProjectFile("info.txt", "read manuals!")
         testProject.addToChangesets(changeset)
         changeset.addToProjectFiles(projectFile)

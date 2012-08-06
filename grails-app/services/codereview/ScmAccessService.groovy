@@ -28,30 +28,29 @@ class ScmAccessService {
         gitRepositoryService.updateProject(scmUrl)
     }
 
-    void importAllChangesets(String scmUrl) {
-        fetchAllChangesets(scmUrl).each {
-            saveChangeset(it) //TODO examine if "fetchAllChangesets(scmUrl).each(saveChangeset)" is somehow possible
-        }
-       project.save(failOnError: true)
-    }
-
     //TODO examine if global failOnError is possible
-    //TODO examine if save does validate()
-    @VisibleForTesting void saveChangeset(Changeset changesetToSave) {
-        def commiter = Commiter.findOrCreateWhere(cvsCommiterId: changesetToSave.commiter.cvsCommiterId)
-        def user = User.findByEmail(getEmail(commiter.cvsCommiterId))
+    //TODO examine if "fetchAllChangesets(scmUrl).each(saveChangeset)" is somehow possible
+    void importAllChangesets(String projectScmUrl) {
+        def project = Project.findByUrl(projectScmUrl)
 
-        if (user != null) {
-            user.addToCommitters(commiter)
+        fetchAllChangesets(projectScmUrl).each { Changeset changesetToSave ->
+            def commiter = Commiter.findOrCreateWhere(cvsCommiterId: changesetToSave.commiter.cvsCommiterId)
+            def email = getEmail(commiter.cvsCommiterId)
+            def user = email ? User.findByEmail(email) : null
+
+            commiter.addToChangesets(changesetToSave)
+            if (user != null) {
+                user.addToCommitters(commiter)
+            }
+            project.addToChangesets(changesetToSave)
+
+            commiter.save(failOnError: true, flush: true)
+            if (user != null) {
+                user.save(failOnError: true, flush: true)
+            }
         }
 
-        commiter.addToChangesets(changesetToSave)
-
-        if (user != null) {
-            user.save(failOnError: true)
-        } else {
-            commiter.save(failOnError: true)
-        }
+        project.save(failOnError: true, flush: true)
     }
 
     Set<Changeset> fetchAllChangesets(String gitScmUrl){

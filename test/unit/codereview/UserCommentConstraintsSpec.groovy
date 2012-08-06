@@ -4,6 +4,7 @@ package codereview
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import spock.lang.Unroll
+import spock.lang.Ignore
 
 
 @TestFor(UserComment)
@@ -31,5 +32,10 @@ class UserCommentConstraintsSpec extends Specification {
 
     }
     //TODO write a more compound validation test where objects are valid in general and only tested field is incorrect
+
+    @Ignore //FIXME implement
+    def "should belongTo User"() {
+
+    }
 }
 

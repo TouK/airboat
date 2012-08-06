@@ -5,7 +5,7 @@ import spock.lang.Specification
 import testFixture.Fixture
 import org.apache.maven.scm.ChangeSet
 
-@Mock([Project, Changeset, ProjectFile])
+@Mock([Project, Changeset, ProjectFile, Commiter, User])
 class ScmAccessServiceSpec extends Specification {
 
     def "should fetch and save changesets in db"() {
@@ -22,11 +22,11 @@ class ScmAccessServiceSpec extends Specification {
             scmAccessService.gitRepositoryService = gitRepositoryService
 
         when:
-            scmAccessService.fetchAllChangesetsWithFilesAndSave(gitScmUrl)
+            scmAccessService.importAllChangesets(gitScmUrl)
 
         then:
             Changeset.count() == 1
-            Changeset.findAllByIdentifierAndAuthor(changesetId, changesetAuthor).size() == 1
+            Changeset.findAllByIdentifierAndCommitComment(changesetId, commitComment).size() == 1
     }
 
     //TODO this testing is incomplete, because service has got many methods and they're aren't tested anywhere - More tests!
