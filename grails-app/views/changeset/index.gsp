@@ -75,14 +75,16 @@
 
             var url = "${createLink(controller:'LineComment', action:'addComment')}";
 
-            $.post(url, {  text: text, lineNumber: lineNumber, fileId: fileIdentifier, author: author });
+            $.post(url, {  text: text, lineNumber: lineNumber, fileId: fileIdentifier, author: author })
+                    .done( function() {
 
             $('#add-line-comment-' + fileIdentifier).val("");
             $('#author-' + fileIdentifier).val("");
-            $('#line-number-' +fileIdentifier).val("");
+
 
             appendAccordion(changesetId, fileIdentifier);
             $('#content-files-' + changesetId + ' .linenums li').popover("hide");
+            });
         }
 
 
@@ -185,7 +187,7 @@
                 });
             }
 
-            $("#h-btn-" + changesetId + fileId).show();
+
             $("#sh-btn-" + changesetId + fileId).hide();
 
             previousExpandedForFilesChangesetId = changesetId;
@@ -194,9 +196,7 @@
 
         function hideFile(changesetId, fileId)  {
             $("#content-files-" + changesetId).hide();
-            $(".show-file").show();
-            $(".hide-file").hide();
-            $("#h-btn-" + changesetId + fileId).hide();
+
             $("#sh-btn-" + changesetId + fileId).show();
             $('#content-files-span-' +changesetId).hide();
             $('#content-files-' + changesetId + ' .linenums li').popover("hide");
@@ -279,25 +279,36 @@
         function appendAccordion(changesetId, fileIdentifier) {
             var fileUrl = '${createLink(uri:'/changeset/getFileNamesForChangeset/')}';
             fileUrl = fileUrl.concat(changesetId);
+
             $('#accordion-' +changesetId).html("");
 
             $.getJSON(fileUrl, function (data) {
+
                 for (i = 0; i < data.length; i++) {
                     var accordionRow = $("#accordionFileTemplate").render({
                         name: divideNameWithSlashesInTwo(data[i].name),
                         changesetId: changesetId,
                         fileId:data[i].id,
-                        collapseId:(changesetId + data[i].id)
+                        collapseId:(changesetId + data[i].id),
+                        howManyComments: data[i].lineComments.length
                     });
+
+
                     $('#accordion-' +changesetId).append(accordionRow);
                     appendSnippetToFileInAccordion(data[i].id)
                     $("#h-btn-" + changesetId + data[i].id).hide();
 
+
                 }
-                if(fileIdentifier != null) {
-                    $('#collapse-' +changesetId +fileIdentifier).collapse("show");
-                }
-            });
+
+            }).done(function () {
+                        if(fileIdentifier != null) {
+                            $('#collapse-' + changesetId + fileIdentifier).hide(100);
+                            $('#collapse-' + changesetId + fileIdentifier).show(100);
+                            $('#collapse-' + changesetId + fileIdentifier).collapse("show");
+                        }
+                    }
+            );
 
 
 
@@ -378,14 +389,20 @@
     <div class="accordion-group" >
 
     <div class="accordion-heading">
-        <a class="accordion-toggle" id="collapsable-{{>collapseId}}" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
-            {{>name}}
-        </a>
-
+        <div class="row-fluid">
+            <div class="span8">
+                <a class="accordion-toggle" id="collapsable-{{>collapseId}}" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
+                    {{>name}}
+                </a>
+            </div>
+            <div class="span4">
+                {{>howManyComments}} comments
+            </div>
+        </div>
     </div>
     <div id="collapse-{{>collapseId}}" class="accordion-body collapse">
         <button type="button" class="btn pull-right " id="sh-btn-{{>collapseId}}" onClick="showFile('{{>changesetId}}', '{{>fileId}}')">Show file &gt;</button>
-        <button type="button" class="btn pull-right " id="h-btn-{{>collapseId}}" onClick="hideFile('{{>changesetId}}', '{{>fileId}}')"> &lt; Hide file </button>
+
         <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
 
             <div id="accordion-inner-div-snippet-{{>fileId}}"></div>
