@@ -277,7 +277,7 @@
             $.getJSON(fileUrl, function (data) {
                 for (i = 0; i < data.length; i++) {
                     var accordionRow = $("#accordionFileTemplate").render({
-                        name:data[i].name,
+                        name: divideNameWithSlashesInTwo(data[i].name),
                         changesetId: changesetId,
                         fileId:data[i].id,
                         collapseId:(changesetId + data[i].id)
@@ -332,17 +332,11 @@
             });
         }
         function divideNameWithSlashesInTwo(name) {
-           var splitted, newName = "";
+           var splitted, newName;
             splitted = name.split("/");
-            var i;
-            for(i = 0; i < splitted.length/2 ; i++) {
-                newName += splitted[i] + "/";
-            }
-            newName += " ";
-            for( i = Math.ceil(splitted.length/2) ; i < splitted.length - 1 ; i++) {
-                newName += splitted[i] + "/" ;
-            }
-            newName += splitted[i] ;
+            newName = splitted.slice(0, Math.ceil(splitted.length/2)).join("/");
+            newName += "/ ";
+            newName += splitted.slice( Math.ceil(splitted.length/2), splitted.length).join("/");
             return newName;
         }
         function showMoreAboutChangeset(identifier)  {
