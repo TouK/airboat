@@ -1,7 +1,5 @@
 package codereview
 
-import testFixture.Constants
-
 class ProjectUpdateJob {
 
     ScmAccessService scmAccessService

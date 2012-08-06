@@ -30,7 +30,7 @@ class ProjectUpdateJobSpec extends Specification {
             job.scmAccessService = scmAccessServiceMock
 
         when:
-            job.update(Fixture.PROJECT_REPOSITORY_URL)
+            job.update(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
 
         then:
             Changeset.count() != 0

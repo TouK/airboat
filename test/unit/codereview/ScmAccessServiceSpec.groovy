@@ -4,25 +4,27 @@ import grails.test.mixin.Mock
 import spock.lang.Specification
 import testFixture.Fixture
 import org.apache.maven.scm.ChangeSet
+import grails.buildtestdata.mixin.Build
 
+
+
+@Build(Project)
 @Mock([Project, Changeset, ProjectFile, Commiter, User])
 class ScmAccessServiceSpec extends Specification {
 
     def "should fetch and save changesets in db"() {
         given:
-            new Project("codereview", Fixture.PROJECT_REPOSITORY_URL).save()
-            def (gitScmUrl, changesetId, commitComment, changesetAuthor)  = [Fixture.PROJECT_REPOSITORY_URL, "id", "comment", "agj@touk.pl"]
-            ScmAccessService scmAccessService = new ScmAccessService()
-
-            def changeSet = new ChangeSet(new Date(), commitComment, changesetAuthor, null)
+            Project project = Project.build()
+            def (changesetId, commitComment) = ["hash23", "commitin"]
+            ChangeSet changeSet = new ChangeSet(new Date(), commitComment, "Artur Gajowy <agj@touk.pl>", [])
             changeSet.setRevision(changesetId)
-            GitRepositoryService gitRepositoryService = Mock()
-            1 * gitRepositoryService.getAllChangeSets(Fixture.PROJECT_REPOSITORY_URL) >> [ changeSet ]
 
-            scmAccessService.gitRepositoryService = gitRepositoryService
+            ScmAccessService scmAccessService = new ScmAccessService()
+            scmAccessService.gitRepositoryService = Mock(GitRepositoryService)
+            1 * scmAccessService.gitRepositoryService.getAllChangeSets(project.url) >> [ changeSet ]
 
         when:
-            scmAccessService.importAllChangesets(gitScmUrl)
+            scmAccessService.importAllChangesets(project.url)
 
         then:
             Changeset.count() == 1

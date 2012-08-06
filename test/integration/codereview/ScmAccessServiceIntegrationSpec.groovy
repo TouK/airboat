@@ -3,7 +3,9 @@ package codereview
 import org.apache.maven.scm.ChangeSet
 import grails.plugin.spock.IntegrationSpec
 import org.springframework.dao.InvalidDataAccessApiUsageException
-import spock.lang.IgnoreRest
+import grails.buildtestdata.mixin.Build
+import org.codehaus.groovy.grails.commons.ApplicationHolder
+import org.codehaus.groovy.grails.commons.GrailsClass
 
 class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
@@ -23,13 +25,16 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
     private void verifyDbIsClean() {
         Project.withNewSession {
-            [Changeset, User, Commiter, Project,
-                    LineComment, ProjectFile, UserComment, Role, UserRole].each {
+            domainClasses().each {
                 if (it.count() != 0) {
                     throw new IllegalStateException("Db is not clean - ${it}.count() is ${it.count()}")
                 }
             }
         }
+    }
+
+    private List<Class<?>> domainClasses() {
+        ApplicationHolder.application.domainClasses*.clazz
     }
 
     private void purgeDb() {

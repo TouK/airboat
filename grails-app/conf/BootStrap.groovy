@@ -4,6 +4,7 @@ import codereview.Project
 import testFixture.Fixture
 
 import static codereview.ScmAccessService.getEmail
+import codereview.Constants
 
 class BootStrap {
 
@@ -33,9 +34,9 @@ class BootStrap {
     }
 
     private void createAndSaveConfiguredProjects() {
-        new Project("codereview", Fixture.PROJECT_REPOSITORY_URL).save(flush: true)
-        new Project("cyclone", Fixture.PROJECT_CYCLONE_REPOSITORY_URL).save(flush: true)
-        new Project("TPSA", Fixture.PROJECT_TPSA_REPOSITORY_URL).save(flush: true)
+        new Project("codereview", Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL).save(flush: true)
+        new Project("cyclone", Constants.PROJECT_CYCLONE_REPOSITORY_URL).save(flush: true)
+        new Project("TPSA", Constants.PROJECT_TPSA_REPOSITORY_URL).save(flush: true)
     }
 
     def destroy = {

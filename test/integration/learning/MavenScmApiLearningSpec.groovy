@@ -15,7 +15,7 @@ class MavenScmApiLearningSpec extends Specification {
 
         given:
             ScmFileSet allFilesInProject = new ScmFileSet(Files.createTempDir(), "*.*")
-            def gitProviderRepository = new GitScmProviderRepository(Fixture.PROJECT_REPOSITORY_URL)
+            def gitProviderRepository = new GitScmProviderRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
             def gitRepository = new ScmRepository("git", gitProviderRepository)
             def git = new GitExeScmProvider()
 
