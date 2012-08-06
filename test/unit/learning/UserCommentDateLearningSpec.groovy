@@ -6,38 +6,20 @@ import grails.test.mixin.TestFor
 import codereview.UserCommentController
 import codereview.UserComment
 import codereview.Changeset
-import codereview.Project
+import codereview.Commiter
+import grails.buildtestdata.mixin.Build
 
 @TestFor(UserCommentController)
-@Mock([Changeset, UserComment, Project])
+@Mock([Commiter, Changeset, UserComment])
+@Build(UserComment)
 class UserCommentDateLearningSpec extends Specification {
 
-    def "dateCreated find by Dynamic Finder  should be != null"() {
+    def "dateCreated find by Dynamic Finder should be != null"() {
         given:
-        def testProject = new Project("testProject","testUrl")
-        def testUserComment =  new  UserComment("kpt","text")
-        testProject.addToChangesets(new Changeset("hash23", "agj", "zmiany", new Date())
-                .addToUserComments(testUserComment))
-        testProject.save()
-
+        def commentAuthor = "kpt"
+        def comment = UserComment.build(author: commentAuthor)
 
         expect:
-        UserComment.findByAuthorAndText("kpt","text").dateCreated != null
-
+        UserComment.findByAuthorAndText(commentAuthor, comment.text).dateCreated != null
     }
-    def "dateCreated find  normally way  should be != null"() {
-
-        given:
-        def testProject = new Project("testProject","testUrl")
-        def testUserComment =  new  UserComment("kpt","text")
-        def testChangeset =  new Changeset("hash23", "agj", "zmiany", new Date())
-                .addToUserComments(testUserComment)
-        testProject.addToChangesets(testChangeset)
-        testProject.save()
-
-
-        expect:
-        testChangeset.userComments.author[0] == "kpt"
-    }
-
 }

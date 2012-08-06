@@ -1,7 +1,7 @@
 package codereview
 
 import grails.test.mixin.*
-import testFixture.Constants
+
 import spock.lang.Specification
 
 //FIXME add tests

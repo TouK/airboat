@@ -10,26 +10,25 @@ class ChangesetConstraintsSpec extends Specification {
     static String alreadyUsedIdentifier = "alreadyUsedIdentifier"
 
     def setup() {
-        mockForConstraintsTests(Changeset, [new Changeset(alreadyUsedIdentifier, "agj", "", new Date())])
+        mockForConstraintsTests(Changeset, [new Changeset(alreadyUsedIdentifier, "coding", new Date())])
     }
 
     @Unroll("Field '#field' of class Changeset should have constraint '#constraint' violated by value '#violatingValue'")
     def "Changeset should have well defined constraints:" () {
 
         when:
-            def changeset = new Changeset("$field": violatingValue)
+        def changeset = new Changeset("$field": violatingValue)
 
         then:
-            changeset.validate() == false
-            changeset.errors[field].toString() == constraint
+        changeset.validate() == false
+        changeset.errors[field].toString() == constraint
 
         where:
-            field           | constraint    | violatingValue
-            'identifier'    | 'blank'       | ""
-            'identifier'    | 'unique'      | alreadyUsedIdentifier
-            'author'        | 'blank'       | ""
-            'identifier'    | 'nullable'    | null
-            'author'        | 'nullable'    | null
-            'date'          | 'nullable'    | null
+        field           | constraint    | violatingValue
+        'identifier'    | 'blank'       | ""
+        'identifier'    | 'unique'      | alreadyUsedIdentifier
+        'identifier'    | 'nullable'    | null
+        'commitComment' | 'nullable'    | null
+        'date'          | 'nullable'    | null
     }
 }

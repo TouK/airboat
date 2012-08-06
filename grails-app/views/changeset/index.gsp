@@ -50,10 +50,10 @@
         }
 
         function cancelComment(changesetId) {
-                changeAddCommentDivToDefault(changesetId);
-                hideAddCommentButtons(changesetId);
-
+            changeAddCommentDivToDefault(changesetId);
+            hideAddCommentButtons(changesetId);
         }
+        
         function cancelLineComment(fileIdentifier, changesetId, lineNumber) {
             $('#add-line-comment-' + fileIdentifier).val("");
             $('#author-' + fileIdentifier).val("");
@@ -61,8 +61,6 @@
             $('#content-files-' + changesetId + ' .linenums li').each(function (i, element, ignored) {
                 $(element).popover("hide");
             });
-
-
         }
 
         function addLineComment(fileIdentifier, changesetId, lineNumber) {
@@ -82,7 +80,6 @@
             $('#line-number-' +fileIdentifier).val("");
 
             appendAccordion(changesetId, fileIdentifier);
-
         }
 
 
@@ -112,31 +109,29 @@
                 }
             });
         }
-
-
     </script>
 
 </head>
 
 <body>
 
-<script type="text/javascript">$.SyntaxHighlighter.init({'stripEmptyStartFinishLines': false});</script>
+    <h1>
+        <sec:ifNotLoggedIn>Hello, unknown wanderer!</sec:ifNotLoggedIn>
+        <sec:ifLoggedIn>Hello, <sec:username/>!</sec:ifLoggedIn>
+    </h1>
+
+    <div class="well">
+        <a class="btn" onclick="showProject('codereview')">CodeReview</a>
+        <a class="btn" onclick="showProject('cyclone')">Cyclone</a>
+        <a class="btn" onclick="showProject('')">AllProjects</a>
+    </div>
+
+    <div id="content" class="container-fluid"></div>
+
+    <script type="text/javascript">$.SyntaxHighlighter.init({'stripEmptyStartFinishLines': false});</script>
 
 
-<div class="well">
-    <a class="btn" onclick="showProject('codereview')">CodeReview</a>
-    <a class="btn" onclick="showProject('cyclone')">Cyclone</a>
-    <a class="btn" onclick="showProject('')">AllProjects</a>
-</div>
-
-
-
-
-<div id="content" class="container-fluid"></div>
-
-
-
-    <script type="text/javascript">
+<script type="text/javascript">
 
         var previousExpandedForFilesChangesetId;
         function showFile(changesetId, fileId) {

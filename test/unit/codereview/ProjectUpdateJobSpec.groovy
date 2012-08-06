@@ -3,9 +3,9 @@ package codereview
 import spock.lang.Specification
 
 import grails.test.mixin.Mock
-import testFixture.Constants
+import testFixture.Fixture
 
-@Mock([Changeset, Project])
+@Mock([Commiter, Project, Changeset])
 class ProjectUpdateJobSpec extends Specification {
 
     ScmAccessService scmAccessServiceMock
@@ -17,31 +17,22 @@ class ProjectUpdateJobSpec extends Specification {
     void "shouldn't delete all old changesets during updating"() {
 
         given:
-            def testProject = new Project("testProject","testUrl")
-            testProject.addToChangesets(  new Changeset("hash23", "agj", "", new Date()))
-            testProject.save()
-            def job = new ProjectUpdateJob()
-            job.scmAccessService = scmAccessServiceMock
+        def project = new Project("testProject", "testUrl")
+        def committer = new Commiter("agj")
+        def changeset = new Changeset("hash23", "coding", new Date())
+
+        project.addToChangesets(changeset)
+        committer.addToChangesets(changeset)
+
+        project.save()
+        committer.save()
+        def job = new ProjectUpdateJob()
+        job.scmAccessService = scmAccessServiceMock
 
         when:
-            job.update(Constants.PROJECT_REPOSITORY_URL)
+        job.update(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
 
         then:
-            Changeset.count() != 0
-    }
-
-    void "should import changesets during updating and not delete any of newley imported ones"() {
-
-        given:
-            def testProject = new Project("testProject","testUrl")
-            def job = new ProjectUpdateJob()
-            job.scmAccessService = scmAccessServiceMock
-            1 * job.scmAccessService.fetchAllChangesetsWithFilesAndSave(_) >> {testProject.addToChangesets(new Changeset("hash23", "agj", "", new Date())).save() }
-
-        when:
-            job.update(Constants.PROJECT_REPOSITORY_URL)
-
-        then:
-            Changeset.count() != 0
+        Changeset.count() != 0
     }
 }

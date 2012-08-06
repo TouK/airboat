@@ -4,29 +4,31 @@ import grails.test.mixin.Mock
 import spock.lang.Specification
 import testFixture.Fixture
 import org.apache.maven.scm.ChangeSet
+import grails.buildtestdata.mixin.Build
 
-@Mock([Project, Changeset, ProjectFile])
+
+
+@Build(Project)
+@Mock([Project, Changeset, ProjectFile, Commiter, User])
 class ScmAccessServiceSpec extends Specification {
 
     def "should fetch and save changesets in db"() {
         given:
-            new Project("codereview", Fixture.PROJECT_REPOSITORY_URL).save()
-            def (gitScmUrl, changesetId, commitComment, changesetAuthor)  = [Fixture.PROJECT_REPOSITORY_URL, "id", "comment", "agj@touk.pl"]
-            ScmAccessService scmAccessService = new ScmAccessService()
+        Project project = Project.build()
+        def (changesetId, commitComment) = ["hash23", "commitin"]
+        ChangeSet changeSet = new ChangeSet(new Date(), commitComment, "Artur Gajowy <agj@touk.pl>", [])
+        changeSet.setRevision(changesetId)
 
-            def changeSet = new ChangeSet(new Date(), commitComment, changesetAuthor, null)
-            changeSet.setRevision(changesetId)
-            GitRepositoryService gitRepositoryService = Mock()
-            1 * gitRepositoryService.getAllChangeSets(Fixture.PROJECT_REPOSITORY_URL) >> [ changeSet ]
-
-            scmAccessService.gitRepositoryService = gitRepositoryService
+        ScmAccessService scmAccessService = new ScmAccessService()
+        scmAccessService.gitRepositoryService = Mock(GitRepositoryService)
+        1 * scmAccessService.gitRepositoryService.getAllChangeSets(project.url) >> [ changeSet ]
 
         when:
-            scmAccessService.fetchAllChangesetsWithFilesAndSave(gitScmUrl)
+        scmAccessService.importAllChangesets(project.url)
 
         then:
-            Changeset.count() == 1
-            Changeset.findAllByIdentifierAndAuthor(changesetId, changesetAuthor).size() == 1
+        Changeset.count() == 1
+        Changeset.findAllByIdentifierAndCommitComment(changesetId, commitComment).size() == 1
     }
 
     //TODO this testing is incomplete, because service has got many methods and they're aren't tested anywhere - More tests!
