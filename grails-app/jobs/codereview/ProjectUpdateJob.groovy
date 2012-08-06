@@ -1,7 +1,5 @@
 package codereview
 
-import testFixture.Constants
-
 class ProjectUpdateJob {
 
     ScmAccessService scmAccessService
@@ -21,7 +19,7 @@ class ProjectUpdateJob {
     def update(String projectRepositoryUrl) {
         log.info("Starting project update for project ${projectRepositoryUrl}")
         scmAccessService.updateProject(projectRepositoryUrl)
-       scmAccessService.fetchAllChangesetsWithFilesAndSave(projectRepositoryUrl)
+       scmAccessService.fetchAllChangesetsAndSave(projectRepositoryUrl)
         log.info("Done project update for project ${projectRepositoryUrl}")
     }
 }

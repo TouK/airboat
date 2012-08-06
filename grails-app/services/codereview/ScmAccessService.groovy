@@ -12,31 +12,31 @@ class ScmAccessService {
 
     void checkoutProject(String scmUrl) {
         gitRepositoryService.checkoutProject(scmUrl)
-    }                                                  //TODO remove "with files" from methods names
+    }
 
     void updateProject(String scmUrl) {
         gitRepositoryService.updateProject(scmUrl)
     }
 
-    void fetchAllChangesetsWithFilesAndSave(String scmUrl) {
+    void fetchAllChangesetsAndSave(String scmUrl) {
         def project = Project.findByUrl(scmUrl)
-        fetchAllChangesetsWithFiles(scmUrl).each {
+        fetchAllChangesets(scmUrl).each {
             project.addToChangesets(it)
         }
         project.save(failOnError: true)
     }
 
-    Changeset[] fetchAllChangesetsWithFiles(String gitScmUrl){
+    Changeset[] fetchAllChangesets(String gitScmUrl){
         List<org.apache.maven.scm.ChangeSet> scmChanges = gitRepositoryService.getAllChangeSets(gitScmUrl)
         if (scmChanges != null) {
-            createChangesetsWithFiles(scmChanges)
+            createChangesets(scmChanges)
         } else {
             return []
         }
     }
 
 
-    def createChangesetsWithFiles(List<ChangeSet> scmChanges) {
+    def createChangesets(List<ChangeSet> scmChanges) {
 
         scmChanges.collect { ChangeSet it ->
 

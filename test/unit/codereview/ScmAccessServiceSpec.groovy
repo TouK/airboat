@@ -22,7 +22,7 @@ class ScmAccessServiceSpec extends Specification {
             scmAccessService.gitRepositoryService = gitRepositoryService
 
         when:
-            scmAccessService.fetchAllChangesetsWithFilesAndSave(gitScmUrl)
+            scmAccessService.fetchAllChangesetsAndSave(gitScmUrl)
 
         then:
             Changeset.count() == 1
