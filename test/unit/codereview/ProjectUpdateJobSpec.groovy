@@ -36,7 +36,7 @@ class ProjectUpdateJobSpec extends Specification {
             def testProject = new Project("testProject","testUrl")
             def job = new ProjectUpdateJob()
             job.scmAccessService = scmAccessServiceMock
-            1 * job.scmAccessService.fetchAllChangesetsWithFilesAndSave(_) >> {testProject.addToChangesets(new Changeset("hash23", "agj", "", new Date())).save() }
+            1 * job.scmAccessService.fetchAllChangesetsAndSave(_) >> {testProject.addToChangesets(new Changeset("hash23", "agj", "", new Date())).save() }
 
         when:
             job.update(Constants.PROJECT_REPOSITORY_URL)
