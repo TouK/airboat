@@ -293,10 +293,9 @@
                         howManyComments: data[i].lineComments.length
                     });
 
-
                     $('#accordion-' +changesetId).append(accordionRow);
                     appendSnippetToFileInAccordion(data[i].id)
-                    $("#h-btn-" + changesetId + data[i].id).hide();
+
 
 
                 }
