@@ -390,15 +390,13 @@
 
 <script id="fileTitleTemplate" type="text/x-jsrender">
     <div class="row-fluid">
-        <div class="span well-small">
-        <div class="span9 ">
+
+        <div class="span11 ">
     <h1>{{>fileName}}</h1>
             </div>
-        <div class="span2">
-    <button type="button" class="btn pull-right " onClick="hideFile('{{>changesetId}}', '{{>fileId}}')"> <i class="icon-remove"></i></button>
+        <div class="span1">
+    <button type="button" class="btn pull-right " onClick="hideFile('{{>changesetId}}', '{{>fileId}}')"><i class="icon-remove"> </i></button>
             </div>
-
-        </div>
         </div>
 </script>
 
@@ -484,8 +482,10 @@
         </div>
 
             <div class="span8">
-                <div id="content-files-title-{{>identifier}}"></div>
+
                 <div class="span11 well" id="content-files-span-{{>identifier}}">
+                    <div id="content-files-title-{{>identifier}}"></div>
+                    <br />
                 <div class="files-right">
                     <div id="content-files-{{>identifier}}" > </div>
 
