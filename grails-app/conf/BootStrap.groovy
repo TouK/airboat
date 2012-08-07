@@ -11,16 +11,16 @@ class BootStrap {
     //FIXME add a bootstrap test, errors here are too frequent...
     def init = { servletContext ->
 
-        JSON.registerObjectMarshaller(Changeset) {
+        JSON.registerObjectMarshaller(Changeset) { Changeset changeset ->
             def returnMap = [:]
-            returnMap['identifier'] = it.identifier
-            returnMap['author'] = it.commiter.cvsCommiterId
-            returnMap['date'] = it.date
-            returnMap['email'] = getEmail(it.commiter.cvsCommiterId) //FIXME use changeset.committer.user.email or equivalent ASAP
-            returnMap['commitComment'] = it.commitComment
-            returnMap['id'] = it.id
-            returnMap['commentsCount'] = it.commentsCount()
-            returnMap['projectName']  = it.getProjectName()
+            returnMap['identifier'] = changeset.identifier
+            returnMap['author'] = changeset.commiter.cvsCommiterId
+            returnMap['date'] = changeset.date
+            returnMap['email'] = getEmail(changeset.commiter.cvsCommiterId) //FIXME use changeset.committer.user.email or equivalent ASAP
+            returnMap['commitComment'] = changeset.commitComment
+            returnMap['id'] = changeset.id
+            returnMap['commentsCount'] = changeset.commentsCount()
+            returnMap['projectName']  = changeset.project.name
             return returnMap
         }
 

@@ -5,10 +5,6 @@ import grails.test.mixin.support.*
 import spock.lang.Specification
 import testFixture.Fixture
 
-/**
- * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
- */
-@TestMixin(GrailsUnitTestMixin)
 @Mock(Project)
 class InfrastructureServiceSpec extends Specification {
 
@@ -17,7 +13,7 @@ class InfrastructureServiceSpec extends Specification {
             def name = new InfrastructureService().getBaseDirectoryName()
 
         then:
-            name == "/tmp/codereview-work"
+            name == "/tmp/codereview-work" //FIXME os-dependent, environment-dependent
     }
 
     def "getDirectoryNameForTheProject() should return project name"() {

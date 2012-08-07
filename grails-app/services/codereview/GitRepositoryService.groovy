@@ -56,5 +56,16 @@ class GitRepositoryService {
     private ScmFileSet prepareScmFileset(String gitScmUrl) {
         new ScmFileSet(infrastructureService.getProjectWorkingDirectory(gitScmUrl), "*.*")
     }
+
+    //FIXME get rid of this
+     def returnFileContent() {
+         """Lubie buraki, bo sa fajne i smaczne
+         function genialne() {
+         var doprawdy_fantastyczne;
+         doprawdy_fantastyczne = "nomnomnom!" ;
+         print doprawdy_fantastyczne;
+         }
+         """
+    }
 }
 
