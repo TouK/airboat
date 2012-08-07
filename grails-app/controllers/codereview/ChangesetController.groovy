@@ -1,6 +1,9 @@
 package codereview
 
 import grails.converters.JSON
+
+import static com.google.common.base.Strings.isNullOrEmpty
+
 class ChangesetController {
 
     ScmAccessService scmAccessService
@@ -45,7 +48,7 @@ class ChangesetController {
 
     def getNextFewChangesetsOlderThan(String changesetId, String projectName) {
         def nextFewChangesets
-        if (projectName == null) {
+        if (isNullOrEmpty(projectName)) {
             nextFewChangesets = getNextFewChangesetsFromAllProjects(changesetId)
         } else {
             nextFewChangesets = getNextFewChangesetsFromProject(projectName, changesetId)

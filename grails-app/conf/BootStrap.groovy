@@ -35,7 +35,7 @@ class BootStrap {
     }
 
     private void createAndSaveConfiguredProjects() {
-        new Project("codereview", Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL).save(flush: true)
+        new Project("codereview", Constants.PROJECT_CODEREVIEW_REPOSITORY_URL).save(flush: true)
         new Project("cyclone", Constants.PROJECT_CYCLONE_REPOSITORY_URL).save(flush: true)
     }
 
