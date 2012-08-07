@@ -28,8 +28,11 @@ class UserConstraintsSpec extends Specification {
         where:
         field      | error           | violatingValue
         'username' | 'blank'         | ""
+        'email'    | 'blank'         | ""
         'username' | 'email.invalid' | "obviusly @ not . an . email"
+        'email'    | 'email.invalid' | "obviusly @ not . an . email"
         'username' | 'unique'        | existingUserEmail
+        'email'    | 'unique'        | existingUserEmail
         'password' | 'blank'         | ""
         'email'    | 'nullable'      | null
         'password' | 'nullable'      | null
