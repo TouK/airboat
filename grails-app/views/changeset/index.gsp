@@ -59,27 +59,21 @@
         }
 
         function addLineComment(fileIdentifier, changesetId, lineNumber) {
-            var text = $('#add-line-comment-' +fileIdentifier).val();
-            var author =  $('#author-' +fileIdentifier).val();
+            var text = $('#add-line-comment-' + fileIdentifier).val();
 
-            if(text == "" || lineNumber == "" || author =="") {
-                return false
-            }
-
-            var url = "${createLink(controller:'LineComment', action:'addComment')}";
-
-            $.post(url, {  text: text, lineNumber: lineNumber, fileId: fileIdentifier, author: author })
-                    .done( function() {
-
-            $('#add-line-comment-' + fileIdentifier).val("");
-            $('#author-' + fileIdentifier).val("");
-
-
-            updateAccordion(changesetId, fileIdentifier);
-            $('#content-files-' + changesetId + ' .linenums li').popover("hide");
-            });
+            $.post("${createLink(controller:'LineComment', action:'addComment')}",
+                { text:text, lineNumber:lineNumber, fileId:fileIdentifier }
+            ).done(function () {
+                    updateAccordion(changesetId, fileIdentifier);
+                    hideAndClearLineCommentFrom(changesetId, fileIdentifier);
+            })
         }
 
+        function hideAndClearLineCommentFrom(changesetId, fileIdentifier) {
+            $('#content-files-' + changesetId + ' .linenums li').popover("hide");
+            $('#add-line-comment-' + fileIdentifier).val("");
+            $('#author-' + fileIdentifier).val("");
+        }
 
         function hideAddCommentButtons(changesetId) {
             $('#btn-' +changesetId).hide();
@@ -489,25 +483,26 @@
     <div id="snippet-{{>fileId}}-{{>snippetId}}"></div>
 </script>
 
-
+<!-- FIXME reuse comment form template for both types of comments -->
 <script id="addLineCommentFormTemplate" type="text/x-jsrender">
+
 <form class="add_comment .form-inline">
     <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..." style="height:80px"></textarea>
-    <input id="author-{{>fileId}}" type="text" class="input-small" placeholder="name"/></input>
     <br />
-    <button type="button"  class="btn" id="btn-{{>fileId}}" onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
-
+    <button type="button"  class="btn btn-primary" id="btn-{{>fileId}}" onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
 </form>
 
 </script>
 
 <script id="commentFormTemplate" type="text/x-jsrender">
+
     <form class="add_comment .form-inline"><textarea onfocus=" $('#btn-' +'{{>identifier}}').show(100); $('#c-btn-' +'{{>identifier}}').show(100); this.style.height='100px'; this.style.width='400px'; "
                                                      id="add-comment-{{>identifier}}" placeholder="Add comment..." class="slideable"></textarea>
         <br />
         <button type="button" class="btn btn-primary" id="btn-{{>identifier}}" onClick="addComment('{{>identifier}}')">Add comment</button>
         <button type="button" class="btn btn-danger" id="c-btn-{{>identifier}}" onClick="cancelComment('{{>identifier}}')">Cancel</button>
     </form>
+
 </script>
 
 <script id="changesetTemplate" type="text/x-jsrender">
