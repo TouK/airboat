@@ -73,13 +73,18 @@
 
             var url = "${createLink(controller:'LineComment', action:'addComment')}";
 
-            $.post(url, {  text: text, lineNumber: lineNumber, fileId: fileIdentifier, author: author });
-
-            $('#add-line-comment-' + fileIdentifier).val("");
-            $('#author-' + fileIdentifier).val("");
-            $('#line-number-' +fileIdentifier).val("");
-
-            appendAccordion(changesetId, fileIdentifier);
+            $.post(url, {
+                text: text,
+                lineNumber: lineNumber,
+                fileId: fileIdentifier,
+                author: author 
+            }).done(function() {
+                $('#add-line-comment-' + fileIdentifier).val("");
+                $('#author-' + fileIdentifier).val("");
+    
+                appendAccordion(changesetId, fileIdentifier);
+                $('#content-files-' + changesetId + ' .linenums li').popover("hide");
+            });
         }
 
 
@@ -125,11 +130,9 @@
         <a class="btn" onclick="showProject('cyclone')">Cyclone</a>
         <a class="btn" onclick="showProject('')">AllProjects</a>
     </div>
-
     <div id="content" class="container-fluid"></div>
 
     <script type="text/javascript">$.SyntaxHighlighter.init({'stripEmptyStartFinishLines': false});</script>
-
 
 <script type="text/javascript">
 
@@ -160,8 +163,14 @@
 
                     });
                     var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetId, lineNumber:i });
+                    var popoverTitle = $("#popoverTitleTemplate").render({
+                        fileName: divideNameWithSlashesInTwo(file.name),
+                        changesetId: changesetId,
+                        fileId: fileId,
+                        lineNumber: i
+                    });
 
-                    $(element).popover({content: commentForm, placement: "left", trigger: "manual" });
+                    $(element).popover({content: commentForm, title: popoverTitle, placement: "left", trigger: "manual" });
                 });
             });
             $("#content-files-" + changesetId).show(100);
@@ -173,7 +182,7 @@
                 });
             }
 
-            $("#h-btn-" + changesetId + fileId).show();
+
             $("#sh-btn-" + changesetId + fileId).hide();
 
             previousExpandedForFilesChangesetId = changesetId;
@@ -182,9 +191,7 @@
 
         function hideFile(changesetId, fileId)  {
             $("#content-files-" + changesetId).hide();
-            $(".show-file").show();
-            $(".hide-file").hide();
-            $("#h-btn-" + changesetId + fileId).hide();
+
             $("#sh-btn-" + changesetId + fileId).show();
             $('#content-files-span-' +changesetId).hide();
             $('#content-files-' + changesetId + ' .linenums li').popover("hide");
@@ -267,25 +274,35 @@
         function appendAccordion(changesetId, fileIdentifier) {
             var fileUrl = '${createLink(uri:'/changeset/getFileNamesForChangeset/')}';
             fileUrl = fileUrl.concat(changesetId);
+
             $('#accordion-' +changesetId).html("");
 
             $.getJSON(fileUrl, function (data) {
+
                 for (i = 0; i < data.length; i++) {
                     var accordionRow = $("#accordionFileTemplate").render({
                         name: divideNameWithSlashesInTwo(data[i].name),
                         changesetId: changesetId,
                         fileId:data[i].id,
-                        collapseId:(changesetId + data[i].id)
+                        collapseId:(changesetId + data[i].id),
+                        howManyComments: data[i].lineComments.length
                     });
+
                     $('#accordion-' +changesetId).append(accordionRow);
                     appendSnippetToFileInAccordion(data[i].id)
-                    $("#h-btn-" + changesetId + data[i].id).hide();
+
+
 
                 }
-                if(fileIdentifier != null) {
-                    $('#collapse-' +changesetId +fileIdentifier).collapse("show");
-                }
-            });
+
+            }).done(function () {
+                        if(fileIdentifier != null) {
+                            $('#collapse-' + changesetId + fileIdentifier).hide(100);
+                            $('#collapse-' + changesetId + fileIdentifier).show(100);
+                            $('#collapse-' + changesetId + fileIdentifier).collapse("show");
+                        }
+                    }
+            );
 
 
 
@@ -366,14 +383,20 @@
     <div class="accordion-group" >
 
     <div class="accordion-heading">
-        <a class="accordion-toggle" id="collapsable-{{>collapseId}}" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
-            {{>name}}
-        </a>
-
+        <div class="row-fluid">
+            <div class="span8">
+                <a class="accordion-toggle" id="collapsable-{{>collapseId}}" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
+                    {{>name}}
+                </a>
+            </div>
+            <div class="span4">
+                {{>howManyComments}} comments
+            </div>
+        </div>
     </div>
     <div id="collapse-{{>collapseId}}" class="accordion-body collapse">
         <button type="button" class="btn pull-right " id="sh-btn-{{>collapseId}}" onClick="showFile('{{>changesetId}}', '{{>fileId}}')">Show file &gt;</button>
-        <button type="button" class="btn pull-right " id="h-btn-{{>collapseId}}" onClick="hideFile('{{>changesetId}}', '{{>fileId}}')"> &lt; Hide file </button>
+
         <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
 
             <div id="accordion-inner-div-snippet-{{>fileId}}"></div>
@@ -395,6 +418,11 @@
         </div>
 </script>
 
+<script id="popoverTitleTemplate" type="text/x-jsrender">
+    <div class="row-fluid">
+            <button type="button" class="btn pull-right " onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')"><i class="icon-remove"> </i></button>
+    </div>
+</script>
 
 <script id="snippetTemplate" type="text/x-jsrender">
     <div id="div-comments-{{>fileId}}-{{>snippetId}}"></div>
@@ -408,7 +436,7 @@
     <input id="author-{{>fileId}}" type="text" class="input-small" placeholder="name"/></input>
     <br />
     <button type="button"  class="btn" id="btn-{{>fileId}}" onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
-    <button type="button" class="btn" id="c-btn-{{>fileId}}" onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Cancel</button>
+
 </form>
 
 </script>
@@ -434,7 +462,8 @@
 
                 <div class="row-fluid">
                     <div class="span7">
-                        <span class="label">{{>author}}</span>
+                        <span class="label">{{>author}}</span> </br>
+                        <span class="label">{{>projectName}}</span>
                     </div>
                     <div class="span2">
                         <span class="label label-info">{{>date}}</span>

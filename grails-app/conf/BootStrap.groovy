@@ -20,6 +20,7 @@ class BootStrap {
             returnMap['commitComment'] = it.commitComment
             returnMap['id'] = it.id
             returnMap['commentsCount'] = it.commentsCount()
+            returnMap['projectName']  = it.getProjectName()
             return returnMap
         }
 

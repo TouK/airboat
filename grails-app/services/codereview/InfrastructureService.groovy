@@ -17,7 +17,7 @@ class InfrastructureService {
         if (customBaseDirectoryName != null) {
             return customBaseDirectoryName;
         } else {
-            return System.getProperty("java.io.tmpdir");
+            return System.getProperty("java.io.tmpdir") + File.separator + 'codereview-work';
         }
     }
 
@@ -40,16 +40,7 @@ class InfrastructureService {
         }
     }
 
-
-
-    /**
-     * TODO implement later on
-     * @param scmUrl
-     * @return
-     */
     String getDirectoryNameForTheProject(String scmUrl) {
         Project.findByUrl(scmUrl).name
     }
-
-
 }

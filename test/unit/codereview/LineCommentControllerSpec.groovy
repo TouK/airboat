@@ -16,7 +16,7 @@ class LineCommentControllerSpec extends Specification {
         def testMsg = "should return comments to project file when given right project file i"
         controller.infrastructureService = Mock(InfrastructureService)
         controller.projectFileAccessService = Mock(ProjectFileAccessService)
-        controller.projectFileAccessService.getFileContent(_, _) >>
+        controller.projectFileAccessService.getFileContent(_, _) >>        //TODO: refactor this
                 " +" + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n" + testMsg  + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n" + testMsg+ "\n"+ testMsg+ "\n"
     }
     

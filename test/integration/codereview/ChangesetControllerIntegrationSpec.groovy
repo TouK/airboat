@@ -20,37 +20,37 @@ class ChangesetControllerIntegrationSpec extends ControllerIntegrationSpec {
 
     def "should return few next changesets older than one with given revision id as JSON"() {
         given:
-            String latestChangesetId = '3'
-            Changeset.build(identifier: latestChangesetId, date: new Date(3))
-            Changeset.build(identifier: '2', date: new Date(2))
-            Changeset.build(identifier: '1', date: new Date(1))
+        String latestChangesetId = '3'
+        Changeset.build(identifier: latestChangesetId, date: new Date(3))
+        Changeset.build(identifier: '2', date: new Date(2))
+        Changeset.build(identifier: '1', date: new Date(1))
 
         when:
-            controller.getNextFewChangesetsOlderThan(latestChangesetId, null)
+        controller.getNextFewChangesetsOlderThan(latestChangesetId, null)
 
         then:
-            def responseChangesets = controller.response.json
-            responseChangesets.size() == 2
-            responseChangesets[0].identifier == 2 as String
-            responseChangesets[1].identifier == 1 as String
+        def responseChangesets = controller.response.json
+        responseChangesets.size() == 2
+        responseChangesets[0].identifier == 2 as String
+        responseChangesets[1].identifier == 1 as String
     }
 
     def "getNextFewChangesetsOlderThan() should return few next changesets older one with given revision id as JSON"() {
         given:
-            String latestChangesetId = '3'
-            Project project = Project.build(name: 'foo')
-            Changeset.build(project: project, identifier: latestChangesetId, date: new Date(3))
-            Changeset.build(project: project, identifier: '2', date: new Date(2))
-            Changeset.build(project: Project.build(name: 'bar'), identifier: '1', date: new Date(1))
-            Changeset.build(project: project, identifier: '0', date: new Date(0))
+        String latestChangesetId = '3'
+        Project project = Project.build(name: 'foo')
+        Changeset.build(project: project, identifier: latestChangesetId, date: new Date(3))
+        Changeset.build(project: project, identifier: '2', date: new Date(2))
+        Changeset.build(project: Project.build(name: 'bar'), identifier: '1', date: new Date(1))
+        Changeset.build(project: project, identifier: '0', date: new Date(0))
 
         when:
-            controller.getNextFewChangesetsOlderThan(latestChangesetId, project.name)
+        controller.getNextFewChangesetsOlderThan(latestChangesetId, project.name)
 
         then:
-            def responseChangesets = controller.response.json
-            responseChangesets.size() == 2
-            responseChangesets[0].identifier == '2'
-            responseChangesets[1].identifier == '0'
+        def responseChangesets = controller.response.json
+        responseChangesets.size() == 2
+        responseChangesets[0].identifier == '2'
+        responseChangesets[1].identifier == '0'
     }
 }

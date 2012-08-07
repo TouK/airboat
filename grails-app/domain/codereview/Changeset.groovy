@@ -24,6 +24,6 @@ class Changeset {
 
     static constraints = {
         identifier blank: false, unique: true
-        commitComment blank: true
+        commitComment blank: true , maxSize: 4096
     }
 }

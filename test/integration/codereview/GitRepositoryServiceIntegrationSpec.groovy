@@ -26,7 +26,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
         then:
         changelog.size() >= Fixture.LOWER_BOUND_FOR_NUMBER_OF_COMMITS
         changelog.findAll { ChangeSet changeSet -> (
-                changeSet.date == Fixture.FIRST_COMMIT_DATE
+        changeSet.date == Fixture.FIRST_COMMIT_DATE
                 && changeSet.author == Fixture.FIRST_COMMIT_AUTHOR
                 && changeSet.comment == Fixture.FIRST_COMMIT_COMMENT
         )}.size() == 1
