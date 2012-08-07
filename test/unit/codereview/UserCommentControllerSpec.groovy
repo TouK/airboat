@@ -13,6 +13,16 @@ import grails.plugins.springsecurity.SpringSecurityService
 @Build([UserComment, User])
 class UserCommentControllerSpec extends Specification {
 
+    SpringSecurityService springSecurityService
+    User loggedInUser
+
+    def setup() {
+        springSecurityService = Mock()
+        controller.metaClass.getAuthenticatedUser = {
+            loggedInUser
+        }
+    }
+
     def "should return comments to changeset when given right changeset id"() {
         given:
         UserComment comment = UserComment.build(text: "Very well indeed.")
@@ -25,19 +35,18 @@ class UserCommentControllerSpec extends Specification {
         response.json[0].text == comment.text
     }
 
-    def "should add comment"() {
+    def "should add comment when there is a logged in user"() {
         given:
-        SpringSecurityService springSecurityService = Mock()
-        User user = User.build(username: "agj@touk.pl", springSecurityService: springSecurityService)
         Changeset changeset = Changeset.build()
+        loggedInUser = User.build(username: "logged.in@codereview.com", springSecurityService: springSecurityService)
         def text = "Very well."
 
         when:
-        controller.addComment(user.username, changeset.identifier, text)
+        controller.addComment(changeset.identifier, text)
 
         then:
         UserComment.findByText(text) != null
-        UserComment.findByTextAndAuthor(text, user.username) != null
+        UserComment.findByTextAndAuthor(text, loggedInUser.username) != null
         UserComment.findByChangeset(changeset) != null
     }
 

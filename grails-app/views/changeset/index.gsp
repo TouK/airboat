@@ -27,21 +27,16 @@
         function addComment(changesetId) {
 
             var text = $('#add-comment-' + changesetId).val();
-            var username = $('#username-' + changesetId).val();
-
-            var comment = {
-                author:username,
-                content:text,
-                date:new Date()
-            }
-            if(text == "" || username == "") {
+            if(text == "") {
                 return false
             }
 
-            $('#comments-' + changesetId).append($("#comment-template").render(comment));
-            var url = "${createLink(controller:'UserComment', action:'addComment')}";
-
-            $.post(url, { username:username, changesetId:changesetId, text:text });
+            $.post("${createLink(controller:'UserComment', action:'addComment')}",
+                    { changesetId:changesetId, text:text },
+                    function (comment) {
+                        $('#comments-' + changesetId).append($("#comment-template").render(comment));
+                    },
+                    "json");
 
             changeAddCommentDivToDefault(changesetId);
             hideAddCommentButtons(changesetId);
@@ -103,12 +98,8 @@
             fileUrl += id;
             $.getJSON(fileUrl, function (data) {
                 for (i = 0; i < data.length; i++) {
-                    var comments = {
-                        author:data[i].author,
-                        date:data[i].dateCreated,
-                        content:data[i].text
-                    }
-                    $('#comments-' + id).append($("#comment-template").render(comments));
+                    var comment = $("#comment-template").render(data[i]);
+                    $('#comments-' + id).append(comment);
                 }
             });
         }
@@ -119,6 +110,11 @@
 </head>
 
 <body>
+
+<h1>
+    <sec:ifNotLoggedIn>Hello, unknown wanderer!</sec:ifNotLoggedIn>
+    <sec:ifLoggedIn>Hello, <sec:username/>!</sec:ifLoggedIn>
+</h1>
 
 <script type="text/javascript">$.SyntaxHighlighter.init({'stripEmptyStartFinishLines': false});</script>
 
@@ -214,17 +210,17 @@
     <!-- generates list of changesets -->
     <script type="text/javascript">
 
-        var projectName
+        var projectName = ''
 
-    function showProject(projectId){
-        projectName = projectId
-        $(document).ready(function () {
-            $('#content').html("");
-            $.getJSON('${createLink(uri:'/changeset/getLastChangesets/')}'+ projectName , appendChangesets);
-        });
+        function showProject(projectId){
+            projectName = projectId
+            $(document).ready(function () {
+                $('#content').html("");
+                $.getJSON('${createLink(uri:'/changeset/getLastChangesets/')}' + '?' + $.param({projectName: projectName}), appendChangesets);
+            });
 
-        $(".collapse").collapse();
-    }
+            $(".collapse").collapse();
+        }
 
 
         $(document).ready(function () {
@@ -333,13 +329,7 @@
                                 .syntaxHighlight();
 
                         for(z = 0; z < snippetData[j].commentGroup.length; z++) {
-                            var comment = $("#comment-template").render({
-                                content:snippetData[j].commentGroup[z].text,
-                                author:snippetData[j].commentGroup[z].author,
-                                date:snippetData[j].commentGroup[z].dateCreated
-
-                            });
-
+                            var comment = $("#comment-template").render(snippetData[j].commentGroup[z]);
                             $('#div-comments-' +snippetData[j].commentGroup[0].projectFile.id +"-" + snippetData[j].commentGroup[0].lineNumber).append(comment);
                         }
                     }
@@ -452,10 +442,9 @@
 <script id="commentFormTemplate" type="text/x-jsrender">
     <form class="add_comment .form-inline"><textarea onfocus=" $('#btn-' +'{{>identifier}}').show(100); $('#c-btn-' +'{{>identifier}}').show(100); this.style.height='100px'; this.style.width='400px'; "
                                                      id="add-comment-{{>identifier}}" placeholder="Add comment..." class="slideable"></textarea>
-        <input id="username-{{>identifier}}" type="text" class="input-small" placeholder="Your name"/></input>
         <br />
-        <button type="button"  class="btn" id="btn-{{>identifier}}" onClick="addComment('{{>identifier}}')">Add comment</button>
-        <button type="button" class="btn" id="c-btn-{{>identifier}}" onClick="cancelComment('{{>identifier}}')">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btn-{{>identifier}}" onClick="addComment('{{>identifier}}')">Add comment</button>
+        <button type="button" class="btn btn-danger" id="c-btn-{{>identifier}}" onClick="cancelComment('{{>identifier}}')">Cancel</button>
     </form>
 </script>
 
@@ -532,9 +521,9 @@
         <div class="alert">
             <img src=" ${createLink(uri: '/images/favicon.ico')}"/>    <!-- TODO: it should be a gravatar! -->
             <span class="label">{{>author}}</span>
-            <span class="label label-info">{{>date}}</span>
+            <span class="label label-info">{{>dateCreated}}</span>
             <hr/>
-            <div class="comment-content">{{>content}}</div>
+            <div class="comment-content">{{>text}}</div>
         </div>
 
     </script>

@@ -1,6 +1,9 @@
 package codereview
 
 import grails.converters.JSON
+import grails.plugins.springsecurity.Secured
+
+import static com.google.common.base.Preconditions.checkArgument
 
 class UserCommentController {
 
@@ -8,13 +11,17 @@ class UserCommentController {
     }
 
     //TODO think which option is better: artificial or natural (compound!) keys for changesets
-    def addComment(String username, String changesetId, String text) {
+    @Secured("isAuthenticated()")
+    def addComment(String changesetId, String text) {
         def changeset = Changeset.findByIdentifier(changesetId)
-        def comment = new UserComment(text: text, author: username)
-        changeset?.addToUserComments(comment)
-        comment.save()
+        checkArgument(changeset != null, "Unknown changeset: ${changesetId}")
 
-        render "I did it! Saved."
+        String username = getAuthenticatedUser().username //FIXME make comment belongsTo User
+        def comment = new UserComment(author: username, text: text)
+        changeset.addToUserComments(comment)
+        comment.save(failOnError: true)
+
+        render comment as JSON
     }
 
 
