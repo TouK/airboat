@@ -26,7 +26,7 @@ class ChangesetControllerIntegrationSpec extends ControllerIntegrationSpec {
         Changeset.build(identifier: '1', date: new Date(1))
 
         when:
-        controller.getNextFewChangesetsOlderThan(latestChangesetId, null)
+        controller.getNextFewChangesetsOlderThan(latestChangesetId,null)
 
         then:
         def responseChangesets = controller.response.json
