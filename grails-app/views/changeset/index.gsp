@@ -1,5 +1,5 @@
 <!doctype html>
-<html xmlns="http://www.w3.org/1999/html">
+<html>
 <head>
 
     <g:javascript library="jquery"/>
@@ -50,10 +50,10 @@
         }
 
         function cancelComment(changesetId) {
-                changeAddCommentDivToDefault(changesetId);
-                hideAddCommentButtons(changesetId);
-
+            changeAddCommentDivToDefault(changesetId);
+            hideAddCommentButtons(changesetId);
         }
+        
         function cancelLineComment(fileIdentifier, changesetId, lineNumber) {
             $('#add-line-comment-' + fileIdentifier).val("");
             $('#author-' + fileIdentifier).val("");
@@ -61,8 +61,6 @@
             $('#content-files-' + changesetId + ' .linenums li').each(function (i, element, ignored) {
                 $(element).popover("hide");
             });
-
-
         }
 
         function addLineComment(fileIdentifier, changesetId, lineNumber) {
@@ -115,32 +113,25 @@
                 }
             });
         }
-
-
     </script>
 
 </head>
 
 <body>
 
-<script type="text/javascript">$.SyntaxHighlighter.init({'stripEmptyStartFinishLines': false});</script>
+    <h1>
+        <sec:ifNotLoggedIn>Hello, unknown wanderer!</sec:ifNotLoggedIn>
+        <sec:ifLoggedIn>Hello, <sec:username/>!</sec:ifLoggedIn>
+    </h1>
 
-
-<div class="well">
-    <a class="btn" onclick="showProject('codereview')">CodeReview</a>
-    <a class="btn" onclick="showProject('cyclone')">Cyclone</a>
-    <a class="btn" onclick="showProject('')">AllProjects</a>
-</div>
-
-
-
-
-<div id="content" class="container-fluid"></div>
-
-
+    <div class="well">
+        <a class="btn" onclick="showProject('codereview')">CodeReview</a>
+        <a class="btn" onclick="showProject('cyclone')">Cyclone</a>
+        <a class="btn" onclick="showProject('')">AllProjects</a>
+    </div>
+    <div id="content" class="container-fluid"></div>
 
     <script type="text/javascript">
-
         var previousExpandedForFilesChangesetId;
         function showFile(changesetId, fileId) {
 
@@ -422,7 +413,7 @@
 
     <div class="accordion-heading">
         <div class="row-fluid">
-            <div class="row-fluid span10">
+            <div class="span8">
                 <a class="accordion-toggle" id="collapsable-{{>collapseId}}" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
                     {{>name}}
                 </a>

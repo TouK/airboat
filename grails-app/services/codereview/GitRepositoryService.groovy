@@ -38,7 +38,7 @@ class GitRepositoryService {
         return scmFileSet.basedir.exists()
     }
 
-    List<ChangeSet> getAllChangeSets(String gitScmUrl)   {
+    Set<ChangeSet> getAllChangeSets(String gitScmUrl)   {
         ScmFileSet allFilesInProject = prepareScmFileset(gitScmUrl)
         ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
 
@@ -46,7 +46,7 @@ class GitRepositoryService {
         scmProvider.addListener(new Log4jScmLogger())
         def changeLogScmResult = scmProvider.changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, "master")
 
-        changeLogScmResult.getChangeLog()?.getChangeSets()
+        changeLogScmResult.getChangeLog()?.getChangeSets() as Set<ChangeSet>
     }
 
     private ScmRepository createScmRepositoryObject(String gitScmUrl) {
@@ -57,6 +57,7 @@ class GitRepositoryService {
         new ScmFileSet(infrastructureService.getProjectWorkingDirectory(gitScmUrl), "*.*")
     }
 
+    //FIXME get rid of this
      def returnFileContent() {
          """Lubie buraki, bo sa fajne i smaczne
          function genialne() {
@@ -65,6 +66,6 @@ class GitRepositoryService {
          print doprawdy_fantastyczne;
          }
          """
-     }
+    }
 }
 

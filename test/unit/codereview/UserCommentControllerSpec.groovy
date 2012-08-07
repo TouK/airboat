@@ -4,72 +4,50 @@ package codereview
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
-import grails.converters.JSON
 import spock.lang.Ignore
+import grails.buildtestdata.mixin.Build
+import grails.plugins.springsecurity.SpringSecurityService
 
 @TestFor(UserCommentController)
-@Mock([Changeset, UserComment, Project])
+@Mock([Commiter, Changeset, UserComment, User, Project])
+@Build([UserComment, User])
 class UserCommentControllerSpec extends Specification {
 
     def "should return comments to changeset when given right changeset id"() {
         given:
-        def testProject = new Project("testProject","testUrl")
-        testProject.addToChangesets(new Changeset("hash23", "agj", "zmiany", new Date())
-            .addToUserComments(new UserComment(text: "fajno", author: "jil@touk.pl")))
-        testProject.save()
+        UserComment comment = UserComment.build(text: "Very well indeed.")
 
         when:
-        params.id = "hash23"
-        controller.returnCommentsToChangeset()
+        controller.returnCommentsToChangeset(comment.changeset.identifier)
 
         then:
-        response != null
         response.json.size() == 1
-        response.json[0].text == "fajno"
-
+        response.json[0].text == comment.text
     }
 
-    def "should return last comments, sorted by dateCreated, descending"() {
-       given:
-       def testProject = new Project("testProject","testUrl")
-       def changeset = new Changeset("hash23", "agj", "zmiany", new Date())
-       def comments = [new UserComment("Jil", "oooohhhh"),new UserComment("Troll", "oooohhhh?"), new UserComment("Jil", "No way!") ].each() {
-           changeset.addToUserComments(it)
-       }
-        testProject.addToChangesets(changeset)
-        testProject.save()
-
-       when:
-       controller.getLastComments()
-       String rendered = (response.contentAsString)
-
-       then:
-       rendered != null
-       comments.size() == JSON.parse(rendered).size()
-       JSON.parse(rendered)[0].toString().contains('"id":3,"author":"Jil"')
-       JSON.parse(rendered)[1].toString().contains('"id":2,"author":"Troll"')
-       JSON.parse(rendered)[2].toString().contains('"id":1,"author":"Jil"')
-    }
-
-
-    def "should add comment correctly to db"() {
+    def "should add comment"() {
         given:
-        def testProject = new Project("testProject","testUrl")
-        def changeset = new Changeset("hash23", "agj", "zmiany", new Date())
-        testProject.addToChangesets(changeset)
-        testProject.save()
-        String username = "troll"
-        String text = "hey"
-        String changesetId = "hash23"
+        SpringSecurityService springSecurityService = Mock()
+        User user = User.build(username: "agj@touk.pl", springSecurityService: springSecurityService)
+        Changeset changeset = Changeset.build()
+        def text = "Very well."
 
         when:
-        controller.addComment(username, text, changesetId)
+        controller.addComment(user.username, changeset.identifier, text)
 
         then:
         UserComment.findByText(text) != null
-        UserComment.findByTextAndAuthor(text, username) != null
+        UserComment.findByTextAndAuthor(text, user.username) != null
         UserComment.findByChangeset(changeset) != null
     }
 
+    @Ignore //FIXME implement
+    def "should throw exception for unknown user"() {
 
+    }
+
+    @Ignore //FIXME implement
+    def "should throw excpetion for unknown changeset"() {
+
+    }
 }

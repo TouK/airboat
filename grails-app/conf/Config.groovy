@@ -64,6 +64,11 @@ grails.exceptionresolver.params.exclude = ['password']
 // enable query caching by default
 grails.hibernate.cache.queries = true
 
+//Spring Security plugin configuration:
+grails.plugins.springsecurity.userLookup.userDomainClassName = 'codereview.User'
+grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'codereview.UserRole'
+grails.plugins.springsecurity.authority.className = 'codereview.Role'
+
 // set per-environment serverURL stem for creating absolute links
 environments {
     development {
@@ -80,17 +85,17 @@ log4j = {
 
     appenders {
 
-       def catalinaBase = System.properties.getProperty('catalina.base')
-       if (!catalinaBase) catalinaBase = '.'
-       def logDirectory = "${catalinaBase}/logs"
+        def catalinaBase = System.properties.getProperty('catalina.base')
+        if (!catalinaBase) catalinaBase = '.'
+        def logDirectory = "${catalinaBase}/logs"
 
-       console name:'stdout', layout:pattern(conversionPattern: '%p %c{2} %m%n')
+        console name: 'stdout', layout: pattern(conversionPattern: '%d{HH:mm:ss} %p %c{2} %m%n')
 
-       rollingFile name: 'rollingFileError', layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c{2} >>%m%n'),
+        rollingFile name: 'rollingFileError', layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c{2} >>%m%n'),
                 threshold: Level.ERROR, maxFileSize: 102400, file: "${logDirectory}/CodereviewError.log".toString()
-       rollingFile name: 'rollingFileDebug', layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c{2} >>%m%n'),
+        rollingFile name: 'rollingFileDebug', layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c{2} >>%m%n'),
                 threshold: Level.DEBUG, maxFileSize: 102400, file: "${logDirectory}/CodereviewDebug.log".toString()
-       rollingFile name:'stacktrace',layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c{2} >>%m%n'),
+        rollingFile name: 'stacktrace', layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c{2} >>%m%n'),
                 threshold: Level.ERROR, maxFileSize: 102400, file: "${logDirectory}/CodereviewStackTrace.log".toString()
 
         root {
@@ -98,19 +103,19 @@ log4j = {
         }
     }
 
-    debug  'codereview'
+    debug 'codereview'
 
-    error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
-           'org.codehaus.groovy.grails.web.pages', //  GSP
-           'org.codehaus.groovy.grails.web.sitemesh', //  layouts
-           'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-           'org.codehaus.groovy.grails.web.mapping', // URL mapping
-           'org.codehaus.groovy.grails.commons', // core / classloading
-           'org.codehaus.groovy.grails.plugins', // plugins
-           //'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
-           'org.springframework'
-           //'org.hibernate',
-           //'net.sf.ehcache.hibernate'
+    error 'org.codehaus.groovy.grails.web.servlet',  //  controllers
+            'org.codehaus.groovy.grails.web.pages', //  GSP
+            'org.codehaus.groovy.grails.web.sitemesh', //  layouts
+            'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+            'org.codehaus.groovy.grails.web.mapping', // URL mapping
+            'org.codehaus.groovy.grails.commons', // core / classloading
+            'org.codehaus.groovy.grails.plugins', // plugins
+            //'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
+            'org.springframework'
+            //'org.hibernate',
+            //'net.sf.ehcache.hibernate'
 }
 
 coverage {
