@@ -119,10 +119,7 @@
 
 <body>
 
-    <h1>
-        <sec:ifNotLoggedIn>Hello, unknown wanderer!</sec:ifNotLoggedIn>
-        <sec:ifLoggedIn>Hello, <sec:username/>!</sec:ifLoggedIn>
-    </h1>
+<script type="text/javascript">$.SyntaxHighlighter.init({'stripEmptyStartFinishLines': false});</script>
 
     <div class="well">
         <a class="btn" onclick="showProject('codereview')">CodeReview</a>
@@ -172,7 +169,7 @@
             });
             $("#content-files-" + changesetId).show(100);
             $('#content-files-span-' +changesetId).show(100);
-            $("#content-files-title-" + changesetId).show();
+            $("#content-files-title-" + changesetId).show(100);
             if( previousExpandedForFilesChangesetId != null) {
                 $('#content-files-' + previousExpandedForFilesChangesetId + ' .linenums li').each(function (i, element, ignored) {
                     $(element).popover("hide");
@@ -414,7 +411,7 @@
     <div class="accordion-heading">
         <div class="row-fluid">
             <div class="span8">
-                <a class="accordion-toggle" id="collapsable-{{>collapseId}}" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
+                <a class="accordion-toggle"  data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
                     {{>name}}
                 </a>
             </div>
@@ -440,7 +437,7 @@
         <div class="accordion-heading">
             <div class="row-fluid">
                 <div class="row-fluid span10">
-                    <a class="accordion-toggle" id="collapsable-{{>collapseId}}" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
+                    <a class="accordion-toggle"  data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
                         {{>name}}
                     </a>
                 </div>
