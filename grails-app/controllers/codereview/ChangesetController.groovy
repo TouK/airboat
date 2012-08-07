@@ -43,13 +43,12 @@ class ChangesetController {
         render changesetList as JSON
     }
 
-    def getNextFewChangesetsOlderThan = {
+    def getNextFewChangesetsOlderThan(String changesetId, String projectName) {
         def nextFewChangesets
-        if(params.projectName != ""){
-            nextFewChangesets = getNextFewChangesetsFromProject(nextFewChangesets,params.projectName,params.changesetId)
-        }
-        else{
-            nextFewChangesets = getNextFewChangesetsFromAllProjects(nextFewChangesets,params.changesetId)
+        if (projectName == null) {
+            nextFewChangesets = getNextFewChangesetsFromAllProjects(changesetId)
+        } else {
+            nextFewChangesets = getNextFewChangesetsFromProject(projectName, changesetId)
         }
         render nextFewChangesets as JSON
     }
@@ -65,15 +64,14 @@ class ChangesetController {
         projectQuery
     }
 
-    private List<Changeset> getNextFewChangesetsFromAllProjects(List<Changeset> nextFewChangesets, String changesetId) {
-        nextFewChangesets = Changeset.where {
+    private List<Changeset> getNextFewChangesetsFromAllProjects(String changesetId) {
+        Changeset.where {
             date < property(date).of { identifier == changesetId }
         }.list(max: 10, sort: 'date', order: 'desc')
-        nextFewChangesets
     }
 
-    private List<Changeset> getNextFewChangesetsFromProject(List<Changeset> nextFewChangesets, String projectName, String changesetId) {
-        nextFewChangesets = Changeset.findAll(
+    private List<Changeset> getNextFewChangesetsFromProject(String projectName, String changesetId) {
+        Changeset.findAll(
                 "from Changeset as changeset \
                     where changeset.project.name = :projectName \
                     and date < (select c.date from Changeset as c where c.identifier = :changesetId) \
@@ -81,7 +79,6 @@ class ChangesetController {
                 [projectName: projectName, changesetId: changesetId],
                 [sort: 'date', order: 'desc', max: 10]
         )
-        nextFewChangesets
     }
 }
 

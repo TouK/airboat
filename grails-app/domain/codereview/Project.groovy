@@ -1,5 +1,7 @@
 package codereview
 
+
+//FIXME add constraints tests
 class Project {
 
     String name
@@ -13,5 +15,7 @@ class Project {
     static hasMany = [changesets: Changeset]
 
     static constraints = {
+        name unique: true
+        url unique: true
     }
 }

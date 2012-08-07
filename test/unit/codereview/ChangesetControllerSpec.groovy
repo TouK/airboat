@@ -41,23 +41,6 @@ class ChangesetControllerSpec extends Specification {
         response.redirectedUrl == "/changeset/index"
     }
 
-    def "should return few next changesets older than one with given revision id as JSON"() {
-        given:
-        def latestChangesetId = 3
-        Changeset.build(identifier: latestChangesetId, date: new Date(3))
-        Changeset.build(identifier: 2, date: new Date(2))
-        Changeset.build(identifier: 1, date: new Date(1))
-
-        when:
-        controller.params.id = latestChangesetId
-        controller.getNextFewChangesetsOlderThan()
-
-        then:
-        def responseChangesets = response.json
-        responseChangesets[0].identifier == 2 as String
-        responseChangesets[1].identifier == 1 as String
-    }
-
     def "getChangeset should return one specific changeset "() {
         given:
         def  specificChangesetId = "hash24"

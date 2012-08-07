@@ -6,21 +6,27 @@ import grails.plugin.spock.IntegrationSpec
 import org.apache.maven.scm.ChangeSet
 import grails.buildtestdata.mixin.Build
 
+import static codereview.ScmAccessServiceIntegrationSpec.verifyDbIsClean
+import static codereview.ScmAccessServiceIntegrationSpec.purgeDb
+import spock.lang.Ignore
+
 class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
     def gitRepositoryService
     def scmAccessService
 
     def "should fetch changesets from project's repository"() {
+        given:
+        Project project = Project.build(url: Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
+        gitRepositoryService.checkoutProject(project.url)
+
         when:
-        Project.build(url: Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-        gitRepositoryService.checkoutProject(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-        def changelog = gitRepositoryService.getAllChangeSets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
+        def changelog = gitRepositoryService.getAllChangeSets(project.url)
 
         then:
         changelog.size() >= Fixture.LOWER_BOUND_FOR_NUMBER_OF_COMMITS
         changelog.findAll { ChangeSet changeSet -> (
-        changeSet.date == Fixture.FIRST_COMMIT_DATE
+                changeSet.date == Fixture.FIRST_COMMIT_DATE
                 && changeSet.author == Fixture.FIRST_COMMIT_AUTHOR
                 && changeSet.comment == Fixture.FIRST_COMMIT_COMMENT
         )}.size() == 1
@@ -29,21 +35,21 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     //TODO add test for fetchFullChangelog when in case project was not been checked out
 
     def "should create changesets with added files" () {
+        given:
+        Project project = Project.build(url: Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
+        gitRepositoryService.checkoutProject(project.url)
+
         when:
-        Project.build(url: Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-        def changes = gitRepositoryService.getAllChangeSets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-        def changesetsWithFiles = scmAccessService.convertToChangesets(changes)
+        def changes = gitRepositoryService.getAllChangeSets(project.url)
 
         then:
-        changesetsWithFiles !=  null
-        changesetsWithFiles.size() == changes.size()
-        changesetsWithFiles.each {
-            assert(!it.projectFiles.isEmpty())
-            assert(it.projectFiles.iterator().next().name != null)
-            assert(it.projectFiles.iterator().next().name != "")
+        changes?.isEmpty() == false
+        changes.each {
+            assert !it.getFiles().isEmpty()
         }
     }
 
+    @Ignore //FIXME implement test
     def "Should do initial check out" () {
 
     }

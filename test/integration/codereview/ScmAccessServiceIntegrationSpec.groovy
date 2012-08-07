@@ -23,7 +23,7 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         verifyDbIsClean()
     }
 
-    private void verifyDbIsClean() {
+    static void verifyDbIsClean() {
         Project.withNewSession {
             domainClasses().each {
                 if (it.count() != 0) {
@@ -33,11 +33,11 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         }
     }
 
-    private List<Class<?>> domainClasses() {
+    private static List<Class<?>> domainClasses() {
         ApplicationHolder.application.domainClasses*.clazz
     }
 
-    private void purgeDb() {
+    static void purgeDb() {
         Project.withNewSession {
             Project.all.each { Project project ->
                 project.delete(flush: true)
@@ -54,12 +54,17 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
     def "should fetch and save changesets in db"() {
         given:
-        Project project = Project.build()
+        Project project
         def (changesetId, commitComment, changesetAuthor) = ["id", "comment", "agj@touk.pl"]
+        Project.withNewSession {
+            project = Project.build()
+        }
         prepareGitScmService(commitComment, changesetAuthor, changesetId, project.url)
 
         when:
-        scmAccessService.importAllChangesets(project.url)
+        Project.withNewSession {
+            scmAccessService.importAllChangesets(project.url)
+        }
 
         then:
         Changeset.count() == 1

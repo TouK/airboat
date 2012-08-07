@@ -103,9 +103,7 @@ log4j = {
         }
     }
 
-    debug 'codereview',
-          '''org.springframework.t
-ransaction'''
+    debug 'codereview'
 
     error 'org.codehaus.groovy.grails.web.servlet',  //  controllers
             'org.codehaus.groovy.grails.web.pages', //  GSP
@@ -118,9 +116,6 @@ ransaction'''
             'org.springframework'
             //'org.hibernate',
             //'net.sf.ehcache.hibernate'
-
-    trace 'org.hibernate.SQL',
-           'org.hibernate.type'
 }
 
 coverage {

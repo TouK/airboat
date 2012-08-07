@@ -56,11 +56,5 @@ class GitRepositoryService {
     private ScmFileSet prepareScmFileset(String gitScmUrl) {
         new ScmFileSet(infrastructureService.getProjectWorkingDirectory(gitScmUrl), "*.*")
     }
-
-     def returnFileContent() {
-         """
-
-         """
-     }
 }
 
