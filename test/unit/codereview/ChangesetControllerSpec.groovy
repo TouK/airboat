@@ -6,8 +6,7 @@ import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 @TestFor(ChangesetController)
-@Mock([Project, Commiter, Changeset, ProjectFile])
-@Build([Changeset, ProjectFile])
+@Build([ProjectFile])
 class ChangesetControllerSpec extends Specification {
 
     def setup() {
