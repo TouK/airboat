@@ -21,7 +21,7 @@
     <script src="${createLink(uri: '/js/bootstrap-tooltip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-popover.js')}" type="text/javascript"></script>
 
-    <script type="text/javascript" src="${createLink(uri: '/js/jquery.syntaxhighlighter.min.js')}"></script>
+    <script type="text/javascript" src="${createLink(uri: '/js/jquery.syntaxhighlighter.js')}"></script>
     <script type="text/javascript" src="js/jquery.zclip.js"></script>
 
     <script type="text/javascript">
