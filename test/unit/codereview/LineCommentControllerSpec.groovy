@@ -1,23 +1,20 @@
 package codereview
 
 import grails.buildtestdata.mixin.Build
-import grails.plugins.springsecurity.SpringSecurityService
+
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Ignore
 import spock.lang.Specification
+import mixins.SpringSecurityControllerMethodsMock
 
 @TestFor(LineCommentController)
 @Mock([Changeset, UserComment, ProjectFile, LineComment, Project])
 @Build(User)
 class LineCommentControllerSpec extends Specification {
 
-    User loggedInUser
-
     def setup() {
-        controller.metaClass.getAuthenticatedUser = {
-            loggedInUser
-        }
+        controller.metaClass.mixin(SpringSecurityControllerMethodsMock)
         controller.infrastructureService = Mock(InfrastructureService)
         controller.projectFileAccessService = Mock(ProjectFileAccessService)
         controller.projectFileAccessService.getFileContent(_, _) >> nLinesOfSampleText(n: 12)
@@ -34,7 +31,7 @@ class LineCommentControllerSpec extends Specification {
 
     def "should add comment correctly to db"() {
         given:
-        loggedInUser = User.build(username: "logged.in@codereview.com")
+        controller.authenticatedUser = User.build(username: "logged.in@codereview.com")
 
         def testProject = new Project("testProject", "testUrl")
         def changeset = new Changeset("hash23", "zmiany", new Date())

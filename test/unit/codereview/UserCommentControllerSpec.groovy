@@ -1,23 +1,20 @@
 package codereview
 
 import grails.buildtestdata.mixin.Build
-import grails.plugins.springsecurity.SpringSecurityService
+
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Ignore
 import spock.lang.Specification
+import mixins.SpringSecurityControllerMethodsMock
 
 @TestFor(UserCommentController)
 @Mock([Commiter, Changeset, UserComment, User, Project])
 @Build([UserComment, User])
 class UserCommentControllerSpec extends Specification {
 
-    User loggedInUser
-
-    def setup() { //TODO extract this (and duplicates) to a superclass or some form of a mixin
-        controller.metaClass.getAuthenticatedUser = {
-            loggedInUser
-        }
+    def setup() {
+        controller.metaClass.mixin(SpringSecurityControllerMethodsMock)
     }
 
     def "should return comments to changeset when given right changeset id"() {
@@ -34,8 +31,9 @@ class UserCommentControllerSpec extends Specification {
 
     def "should add comment when there is a logged in user"() {
         given:
+        def loggedInUser = User.build(username: "logged.in@codereview.com")
+        controller.authenticatedUser = loggedInUser
         Changeset changeset = Changeset.build()
-        loggedInUser = User.build(username: "logged.in@codereview.com")
         def text = "Very well."
 
         when:

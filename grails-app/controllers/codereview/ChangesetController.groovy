@@ -47,9 +47,9 @@ class ChangesetController {
         render changesetProperties as JSON
     }
 
-    @VisibleForTesting boolean belongsToCurrentUser(Changeset changeset) {
-        def currentUser = getAuthenticatedUser()
-        currentUser != null && currentUser == changeset.commiter?.user
+    @VisibleForTesting
+    boolean belongsToCurrentUser(Changeset changeset) {
+        authenticatedUser != null && authenticatedUser == changeset.commiter?.user
     }
 
     def getFileNamesForChangeset = {
