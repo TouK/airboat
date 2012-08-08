@@ -9,7 +9,7 @@
 
     <script src="${createLink(uri: '/js/jquery-latest.min.js')}" type="text/javascript"></script>
 
-    <link href="${createLink(uri: '/css/js-view-presentation.css')}" rel="stylesheet" type="text/css"/>
+   <link href="${createLink(uri: '/css/js-view-presentation.css')}" rel="stylesheet" type="text/css"/>
     <!--TODO examine if neccessary after plugging in syntaxhighlighter -->
     <link href="${createLink(uri: '/css/js-view-syntaxhighlighter.css')}" rel="stylesheet" type="text/css"/>
     <script src="${createLink(uri: '/js/jsrender.js')}" type="text/javascript"></script>
@@ -210,9 +210,7 @@
 
     });
 
-    $(".collapse").collapse();
-
-    $(window).scroll(function () {
+     $(window).scroll(function () {
         if ($(window).scrollTop() == $(document).height() - $(window).height()) {
             onScrollThroughBottomAttempt()
         }
@@ -411,9 +409,7 @@
             </div>
         </div>
 
-        <div id="collapse-inner-{{>collapseId}}" class="accordion-body collapse">
-            <button type="button" class="btn pull-right " id="sh-btn-{{>collapseId}}"
-                    onClick="showFile('{{>changesetId}}', '{{>fileId}}')">Show file &gt;</button>
+           <div id="collapse-inner-{{>collapseId}}" class="accordion-body collapse">
 
             <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
                 <div id="accordion-inner-div-snippet-{{>fileId}}"></div>
@@ -422,7 +418,7 @@
     </div>
 
     <script type="text/javascript">
-        $('#collapse-{{>collapseId}}').on('shown', function () {
+        $('#collapse-inner-{{>collapseId}}').on('shown', function () {
         showFile('{{>changesetId}}', '{{>fileId}}');
         });
     </script>
@@ -448,8 +444,6 @@
     </div>
 
     <div id="collapse-inner-{{>collapseId}}" class="accordion-body collapse in">
-        <button type="button" class="btn pull-right " id="sh-btn-{{>collapseId}}"
-                onClick="showFile('{{>changesetId}}', '{{>fileId}}')">Show file &gt;</button>
 
         <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
 
@@ -458,6 +452,11 @@
         </div>
     </div>
 
+    <script type="text/javascript">
+        $('#collapse-inner-{{>collapseId}}').on('shown', function () {
+        showFile('{{>changesetId}}', '{{>fileId}}');
+        });
+    </script>
 </script>
 
 <script id="fileTitleTemplate" type="text/x-jsrender">
