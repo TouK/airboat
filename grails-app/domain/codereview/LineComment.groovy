@@ -3,7 +3,7 @@ package codereview
 class LineComment {
     Integer lineNumber
     String text
-    Date dateCreated
+    Date dateCreated //TODO check if this field is added without this declaration
     String author
     static belongsTo = [projectFile: ProjectFile]
 
@@ -13,6 +13,7 @@ class LineComment {
         this.author = author
 
     }
+
     static constraints = {
         text maxSize: 4096
     }

@@ -1,6 +1,6 @@
 package codereview
+
 import grails.converters.JSON
-import testFixture.Fixture
 
 //FIXME add tests
 class ProjectFileController {
@@ -8,6 +8,7 @@ class ProjectFileController {
     def projectFileAccessService
     def infrastructureService
     def snippetWithCommentsService
+
     def index() { }
 
     def showLastProjectFiles() {
@@ -33,7 +34,7 @@ class ProjectFileController {
         if (!comments.isEmpty()) {
             def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(projectFile.changeset.project.url)
             def fileContent = projectFileAccessService.getFileContent(projectFile, projectRootDirectory)
-            def snippetsGroup  = snippetWithCommentsService.prepareSnippetsGroupList(comments)
+            def snippetsGroup = snippetWithCommentsService.prepareSnippetsGroupList(comments)
             def commentGroupsWithSnippets = snippetWithCommentsService.prepareCommentGroupsWithSnippets(snippetsGroup, projectFile.fileType, fileContent)
             render commentGroupsWithSnippets as JSON
         }

@@ -1,14 +1,9 @@
 package codereview
 
-import testFixture.Fixture
-
 import grails.plugin.spock.IntegrationSpec
 import org.apache.maven.scm.ChangeSet
-import grails.buildtestdata.mixin.Build
-
-import static codereview.ScmAccessServiceIntegrationSpec.verifyDbIsClean
-import static codereview.ScmAccessServiceIntegrationSpec.purgeDb
 import spock.lang.Ignore
+import testFixture.Fixture
 
 class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
@@ -25,16 +20,18 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         changelog.size() >= Fixture.LOWER_BOUND_FOR_NUMBER_OF_COMMITS
-        changelog.findAll { ChangeSet changeSet -> (
-        changeSet.date == Fixture.FIRST_COMMIT_DATE
-                && changeSet.author == Fixture.FIRST_COMMIT_AUTHOR
-                && changeSet.comment == Fixture.FIRST_COMMIT_COMMENT
-        )}.size() == 1
+        changelog.findAll { ChangeSet changeSet ->
+            (
+            changeSet.date == Fixture.FIRST_COMMIT_DATE
+                    && changeSet.author == Fixture.FIRST_COMMIT_AUTHOR
+                    && changeSet.comment == Fixture.FIRST_COMMIT_COMMENT
+            )
+        }.size() == 1
     }
 
     //TODO add test for fetchFullChangelog when in case project was not been checked out
 
-    def "should create changesets with added files" () {
+    def "should create changesets with added files"() {
         given:
         Project project = Project.build(url: Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
         gitRepositoryService.checkoutProject(project.url)
@@ -50,7 +47,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     }
 
     @Ignore //FIXME implement test
-    def "Should do initial check out" () {
+    def "Should do initial check out"() {
 
     }
 

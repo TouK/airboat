@@ -1,7 +1,7 @@
 package codereview
 
-import org.apache.maven.scm.ChangeSet
 import com.google.common.annotations.VisibleForTesting
+import org.apache.maven.scm.ChangeSet
 
 /**
  * Deleguje operacje na projekcie w SCM do odpowiedniej implementacji w zależności od rodzaju repozutorium kodu.
@@ -14,7 +14,7 @@ class ScmAccessService {
     //FIXME this is Git-specific
     static String getEmail(String gitCommiterId) {
         if (gitCommiterId.contains("@")) {
-            return gitCommiterId[gitCommiterId.indexOf("<") + 1 .. gitCommiterId.indexOf(">") - 1]
+            return gitCommiterId[gitCommiterId.indexOf("<") + 1..gitCommiterId.indexOf(">") - 1]
         } else {
             return null;
         }
@@ -53,7 +53,7 @@ class ScmAccessService {
         project.save(failOnError: true, flush: true)
     }
 
-    Set<Changeset> fetchAllChangesets(String gitScmUrl){
+    Set<Changeset> fetchAllChangesets(String gitScmUrl) {
         Set<org.apache.maven.scm.ChangeSet> scmChanges = gitRepositoryService.getAllChangeSets(gitScmUrl)
         convertToChangesets(scmChanges)
     }
@@ -66,7 +66,8 @@ class ScmAccessService {
         }
     }
 
-    @VisibleForTesting Changeset convertToChangeset(ChangeSet scmApiChangeSet) {
+    @VisibleForTesting
+    Changeset convertToChangeset(ChangeSet scmApiChangeSet) {
         Commiter commiter = new Commiter(scmApiChangeSet.getAuthor())
         Changeset changeset = new Changeset(scmApiChangeSet.revision, scmApiChangeSet.comment, scmApiChangeSet.date)
         commiter.addToChangesets(changeset)

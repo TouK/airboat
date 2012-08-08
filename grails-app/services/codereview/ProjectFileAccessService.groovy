@@ -6,10 +6,10 @@ class ProjectFileAccessService {
 
         def file = new File(projectDir, fileName)
         def content
-        if(file.exists())
+        if (file.exists())
             content = file.getText()
         else
-            content  = "File doesn't exist" //FIXME not like that, return null (!?) or throw an exception
+            content = "File doesn't exist" //FIXME not like that, return null (!?) or throw an exception
 
         return content
     }

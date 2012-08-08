@@ -24,10 +24,10 @@ class ChangesetController {
 
     def getLastChangesets = {
         def query
-        if(params.id == null){
+        if (params.id == null) {
             query = Changeset.list(max: 21, sort: 'date', order: 'desc')
         }
-        else{
+        else {
             query = getLastChagesetsFromProject(params.id)
         }
         render query as JSON

@@ -1,7 +1,7 @@
 package codereview
 
-import spock.lang.Specification
 import spock.lang.Ignore
+import spock.lang.Specification
 
 class CreateUserCommandConstraintsSpec extends Specification {
 

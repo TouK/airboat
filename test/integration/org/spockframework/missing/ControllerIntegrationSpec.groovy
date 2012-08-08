@@ -3,8 +3,8 @@ package org.spockframework.missing
 import grails.plugin.spock.ControllerSpec
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.codehaus.groovy.grails.test.support.GrailsTestAutowirer
-import org.codehaus.groovy.grails.test.support.GrailsTestTransactionInterceptor
 import org.codehaus.groovy.grails.test.support.GrailsTestRequestEnvironmentInterceptor
+import org.codehaus.groovy.grails.test.support.GrailsTestTransactionInterceptor
 
 public abstract class ControllerIntegrationSpec extends ControllerSpec {
 

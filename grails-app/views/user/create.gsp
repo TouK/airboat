@@ -46,6 +46,7 @@
                     </div>
                 </div>
             </fieldset>
+
             <div class="form-actions">
                 <g:submitButton name="create" class="btn btn-primary" value="Register"/>
             </div>

@@ -1,12 +1,9 @@
 package codereview
 
-import grails.test.mixin.Mock
-import spock.lang.Specification
-import testFixture.Fixture
-import org.apache.maven.scm.ChangeSet
 import grails.buildtestdata.mixin.Build
-
-
+import grails.test.mixin.Mock
+import org.apache.maven.scm.ChangeSet
+import spock.lang.Specification
 
 @Build(Project)
 @Mock([Project, Changeset, ProjectFile, Commiter, User])
@@ -21,7 +18,7 @@ class ScmAccessServiceSpec extends Specification {
 
         ScmAccessService scmAccessService = new ScmAccessService()
         scmAccessService.gitRepositoryService = Mock(GitRepositoryService)
-        1 * scmAccessService.gitRepositoryService.getAllChangeSets(project.url) >> [ changeSet ]
+        1 * scmAccessService.gitRepositoryService.getAllChangeSets(project.url) >> [changeSet]
 
         when:
         scmAccessService.importAllChangesets(project.url)

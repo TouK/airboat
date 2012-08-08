@@ -1,12 +1,11 @@
 package codereview
 
-
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
-import spock.lang.Specification
-import spock.lang.Ignore
 import grails.buildtestdata.mixin.Build
 import grails.plugins.springsecurity.SpringSecurityService
+import grails.test.mixin.Mock
+import grails.test.mixin.TestFor
+import spock.lang.Ignore
+import spock.lang.Specification
 
 @TestFor(UserCommentController)
 @Mock([Commiter, Changeset, UserComment, User, Project])

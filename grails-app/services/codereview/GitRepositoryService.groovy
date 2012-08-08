@@ -1,12 +1,10 @@
 package codereview
 
+import org.apache.maven.scm.ChangeSet
 import org.apache.maven.scm.ScmFileSet
+import org.apache.maven.scm.provider.git.gitexe.GitExeScmProvider
 import org.apache.maven.scm.provider.git.repository.GitScmProviderRepository
 import org.apache.maven.scm.repository.ScmRepository
-import org.apache.maven.scm.provider.git.gitexe.GitExeScmProvider
-import org.apache.maven.scm.ChangeSet
-import org.apache.maven.scm.ScmFile
-import org.apache.maven.scm.command.diff.DiffScmResult
 
 /**
  * Zabronione uzywanie klas domenowych w tej klasie.
@@ -38,7 +36,7 @@ class GitRepositoryService {
         return scmFileSet.basedir.exists()
     }
 
-    Set<ChangeSet> getAllChangeSets(String gitScmUrl)   {
+    Set<ChangeSet> getAllChangeSets(String gitScmUrl) {
         ScmFileSet allFilesInProject = prepareScmFileset(gitScmUrl)
         ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
 
@@ -58,8 +56,8 @@ class GitRepositoryService {
     }
 
     //FIXME get rid of this
-     def returnFileContent() {
-         """Lubie buraki, bo sa fajne i smaczne
+    def returnFileContent() {
+        """Lubie buraki, bo sa fajne i smaczne
          function genialne() {
          var doprawdy_fantastyczne;
          doprawdy_fantastyczne = "nomnomnom!" ;

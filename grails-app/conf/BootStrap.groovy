@@ -1,10 +1,9 @@
 import codereview.Changeset
-import grails.converters.JSON
+import codereview.Constants
 import codereview.Project
-import testFixture.Fixture
+import grails.converters.JSON
 
 import static codereview.ScmAccessService.getEmail
-import codereview.Constants
 
 class BootStrap {
 
@@ -20,7 +19,7 @@ class BootStrap {
             returnMap['commitComment'] = changeset.commitComment
             returnMap['id'] = changeset.id
             returnMap['commentsCount'] = changeset.commentsCount()
-            returnMap['projectName']  = changeset.project.name
+            returnMap['projectName'] = changeset.project.name
             return returnMap
         }
 

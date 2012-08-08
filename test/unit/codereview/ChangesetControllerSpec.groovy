@@ -1,11 +1,9 @@
 package codereview
 
+import grails.buildtestdata.mixin.Build
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
-import grails.converters.JSON
-
-import grails.buildtestdata.mixin.Build
 
 @TestFor(ChangesetController)
 @Mock([Project, Commiter, Changeset, ProjectFile])
@@ -18,7 +16,7 @@ class ChangesetControllerSpec extends Specification {
 
     def "getLastChangesets should return JSON"() {
         given:
-        def changesets = (1 .. 3).collect { Changeset.build(identifier: it) }
+        def changesets = (1..3).collect { Changeset.build() }
 
         when:
         controller.getLastChangesets()
@@ -31,7 +29,7 @@ class ChangesetControllerSpec extends Specification {
     def "initial checkout should delegate to service and display index afterwards"() {
         def numberOfProjects = 3
         given:
-        (1 .. numberOfProjects).each { Project.build() }
+        (1..numberOfProjects).each { Project.build() }
 
         when:
         controller.initialCheckOut()
@@ -43,7 +41,7 @@ class ChangesetControllerSpec extends Specification {
 
     def "getChangeset should return one specific changeset "() {
         given:
-        def  specificChangesetId = "hash24"
+        def specificChangesetId = "hash24"
         Changeset.build(identifier: specificChangesetId)
         Changeset.build()
         Changeset.build()
@@ -54,7 +52,7 @@ class ChangesetControllerSpec extends Specification {
 
         then:
         response.json.size() == 1
-        def  responseSpecificChangeset = response.json.first()
+        def responseSpecificChangeset = response.json.first()
         responseSpecificChangeset.identifier == "hash24"
     }
 

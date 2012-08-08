@@ -1,8 +1,7 @@
 package codereview
 
-import spock.lang.Specification
-
 import grails.test.mixin.Mock
+import spock.lang.Specification
 import testFixture.Fixture
 
 @Mock([Commiter, Project, Changeset])

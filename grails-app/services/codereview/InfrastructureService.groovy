@@ -22,7 +22,7 @@ class InfrastructureService {
     }
 
     File createWorkingDirectory(File baseDirectory, String scmUrl) {
-        if(!baseDirectory.exists()) {
+        if (!baseDirectory.exists()) {
             log.warn("Directory " + baseDirectory + " does not exist. Creating one.")
             baseDirectory.mkdir()
         }

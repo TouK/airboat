@@ -1,17 +1,15 @@
 package codereview
 
-import grails.test.mixin.*
-
+import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 //FIXME add tests
 @TestFor(ProjectControllerSpec)
 class ProjectControllerSpec extends Specification {
 
-    def "add test"(){
+    def "add test"() {
         //implement test
     }
-
 
 
 }

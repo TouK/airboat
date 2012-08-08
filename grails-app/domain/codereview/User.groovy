@@ -2,14 +2,14 @@ package codereview
 
 class User {
 
-	transient springSecurityService
+    transient springSecurityService
 
     String username
-	String password
-	boolean enabled
-	boolean accountExpired
-	boolean accountLocked
-	boolean passwordExpired
+    String password
+    boolean enabled
+    boolean accountExpired
+    boolean accountLocked
+    boolean passwordExpired
 
     static hasMany = [committers: Commiter]
 
@@ -18,11 +18,11 @@ class User {
         username blank: false, email: true, unique: true
         email blank: false, email: true, unique: true
         password blank: false
-	}
+    }
 
-	static mapping = {
+    static mapping = {
         password column: '`password`'
-	}
+    }
 
     User(String username, String password) {
         this.username = username
@@ -37,21 +37,21 @@ class User {
         username = email
     }
 
-	Set<Role> getAuthorities() {
-		UserRole.findAllByUser(this).collect { it.role } as Set
-	}
+    Set<Role> getAuthorities() {
+        UserRole.findAllByUser(this).collect { it.role } as Set
+    }
 
-	def beforeInsert() {
-		encodePassword()
-	}
+    def beforeInsert() {
+        encodePassword()
+    }
 
-	def beforeUpdate() {
-		if (isDirty('password')) {
-			encodePassword()
-		}
-	}
+    def beforeUpdate() {
+        if (isDirty('password')) {
+            encodePassword()
+        }
+    }
 
-	protected void encodePassword() {
-		password = springSecurityService.encodePassword(password)
-	}
+    protected void encodePassword() {
+        password = springSecurityService.encodePassword(password)
+    }
 }

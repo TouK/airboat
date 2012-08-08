@@ -1,8 +1,7 @@
 package codereview
 
-import org.apache.maven.scm.log.ScmLogger
-
 import org.apache.log4j.Logger
+import org.apache.maven.scm.log.ScmLogger
 
 class Log4jScmLogger implements ScmLogger {
 
@@ -15,7 +14,7 @@ class Log4jScmLogger implements ScmLogger {
 
     @Override
     void debug(String content) {
-       log.debug(content)
+        log.debug(content)
     }
 
     @Override

@@ -1,6 +1,5 @@
 package codereview
 
-
 //FIXME add constraints tests
 class Project {
 

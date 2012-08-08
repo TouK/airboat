@@ -1,17 +1,17 @@
 package codereview
 
 import grails.test.mixin.Mock
+import spock.lang.Ignore
 import spock.lang.Specification
 import testFixture.Fixture
-import spock.lang.Ignore
 
 @Mock([Changeset, ProjectFile])
-class ProjectFileAccessServiceSpec extends Specification{
+class ProjectFileAccessServiceSpec extends Specification {
     def "when given project and file name and file doesn't exist should return info about it"() {
         given:
         def fileName = "idontexist.txt"
         def projectPath = "."
-        ProjectFileAccessService projectFileAccessService  = new ProjectFileAccessService()
+        ProjectFileAccessService projectFileAccessService = new ProjectFileAccessService()
         def content
 
         when:
@@ -26,7 +26,7 @@ class ProjectFileAccessServiceSpec extends Specification{
         given:
         def fileName = Fixture.PATH_TO_FILE_PRESENT_IN_FIRST_COMMIT
         def projectPath = "."
-        ProjectFileAccessService projectFileAccessService  = new ProjectFileAccessService()
+        ProjectFileAccessService projectFileAccessService = new ProjectFileAccessService()
 
         when:
         def content = projectFileAccessService.fetchFileContentFromPath(projectPath, fileName)

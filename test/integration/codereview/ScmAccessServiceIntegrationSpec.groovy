@@ -1,11 +1,9 @@
 package codereview
 
-import org.apache.maven.scm.ChangeSet
 import grails.plugin.spock.IntegrationSpec
-import org.springframework.dao.InvalidDataAccessApiUsageException
-import grails.buildtestdata.mixin.Build
+import org.apache.maven.scm.ChangeSet
 import org.codehaus.groovy.grails.commons.ApplicationHolder
-import org.codehaus.groovy.grails.commons.GrailsClass
+import org.springframework.dao.InvalidDataAccessApiUsageException
 
 class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 

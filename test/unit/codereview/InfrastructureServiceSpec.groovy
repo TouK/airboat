@@ -1,7 +1,6 @@
 package codereview
 
-import grails.test.mixin.*
-import grails.test.mixin.support.*
+import grails.test.mixin.Mock
 import spock.lang.Specification
 import testFixture.Fixture
 
@@ -10,10 +9,10 @@ class InfrastructureServiceSpec extends Specification {
 
     def "temporary dir path should be returned for base directory name"() {
         when:
-            def name = new InfrastructureService().getBaseDirectoryName()
+        def name = new InfrastructureService().getBaseDirectoryName()
 
         then:
-            name == "/tmp/codereview-work" //FIXME os-dependent, environment-dependent
+        name == "/tmp/codereview-work" //FIXME os-dependent, environment-dependent
     }
 
     def "getDirectoryNameForTheProject() should return project name"() {

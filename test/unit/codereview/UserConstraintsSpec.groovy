@@ -1,9 +1,9 @@
 package codereview
 
+import grails.plugins.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import spock.lang.Unroll
-import grails.plugins.springsecurity.SpringSecurityService
 
 @TestFor(User)
 class UserConstraintsSpec extends Specification {

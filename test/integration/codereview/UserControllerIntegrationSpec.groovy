@@ -1,9 +1,5 @@
 package codereview
 
-import grails.plugins.springsecurity.SpringSecurityService
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
-import spock.lang.Specification
 import grails.plugin.spock.IntegrationSpec
 
 class UserControllerIntegrationSpec extends IntegrationSpec {

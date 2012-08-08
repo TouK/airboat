@@ -9,14 +9,14 @@ class SpockLearningSpec extends Specification {
         def thing = "bar"
         def otherThing = "foo"
         given:
-            mocked.getThings() >> [thing, otherThing]
+        mocked.getThings() >> [thing, otherThing]
 
         when:
-            def result = mocked.getThings()
+        def result = mocked.getThings()
 
         then:
-            result == [thing, otherThing]
-            result.size() == 2
+        result == [thing, otherThing]
+        result.size() == 2
     }
 
     def "methods without spock labels (given, when, then, expect, etc) won't be run"() {
