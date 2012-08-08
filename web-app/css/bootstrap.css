@@ -406,7 +406,7 @@ a:hover {
 
 .container-fluid {
   padding-right: 20px;
-  padding-left: 20px;
+  padding-left: 0px;
   *zoom: 1;
 }
 
@@ -3147,7 +3147,7 @@ input[type="submit"].btn.btn-mini {
 .alert {
   padding: 8px 35px 8px 14px;
   margin-bottom: 18px;
-  color: #c09853;
+  color: grey;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
   background-color: #fcf8e3;
   border: 1px solid #fbeed5;

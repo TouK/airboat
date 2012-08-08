@@ -475,11 +475,6 @@
 </script>
 
 <script id="popoverTitleTemplate" type="text/x-jsrender">
-    <div class="row-fluid">
-        <button type="button" class="btn pull-right "
-                onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')"><i
-                class="icon-remove"></i></button>
-    </div>
 </script>
 
 <script id="snippetTemplate" type="text/x-jsrender">
@@ -492,10 +487,13 @@
 <script id="addLineCommentFormTemplate" type="text/x-jsrender">
 
     <form class="add_comment .form-inline">
-        <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..." style="height:80px"></textarea>
-        <br/>
-        <button type="button" class="btn btn-primary" id="btn-{{>fileId}}"
+        <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..." style="height:80px;width:282px;"></textarea>
+          <div class="btn-group pull-right">
+           <button type="button" class="btn btn-primary" id="btn-{{>fileId}}"
                 onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
+           <button type="button" class="btn btn-primary"
+                      onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Cancel</button>
+         </div>
     </form>
 
 </script>
@@ -503,13 +501,14 @@
 <script id="commentFormTemplate" type="text/x-jsrender">
 
     <form class="add_comment .form-inline"><textarea
-            onfocus=" $('#btn-' +'{{>identifier}}').show(100); $('#c-btn-' +'{{>identifier}}').show(100); this.style.height='100px'; this.style.width='400px'; "
+            onfocus=" $('#btn-' +'{{>identifier}}').show(100); $('#c-btn-' +'{{>identifier}}').show(100); this.style.height='100px'; this.style.width='424px'; "
             id="add-comment-{{>identifier}}" placeholder="Add comment..." class="slideable"></textarea>
-        <br/>
-        <button type="button" class="btn btn-primary" id="btn-{{>identifier}}"
+        <div class="btn-group pull-right">
+          <button type="button" class="btn btn-primary btnWarningBackground" id="btn-{{>identifier}}"
                 onClick="addComment('{{>identifier}}')">Add comment</button>
-        <button type="button" class="btn btn-danger" id="c-btn-{{>identifier}}"
+          <button type="button" class="btn btn-primary" id="c-btn-{{>identifier}}"
                 onClick="cancelComment('{{>identifier}}')">Cancel</button>
+        </div>
     </form>
 
 </script>
