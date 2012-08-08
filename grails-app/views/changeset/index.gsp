@@ -21,7 +21,7 @@
     <script src="${createLink(uri: '/js/bootstrap-tooltip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-popover.js')}" type="text/javascript"></script>
 
-    <script type="text/javascript" src="${createLink(uri: '/js/jquery.syntaxhighlighter.js')}"></script>
+    <script type="text/javascript" src="${createLink(uri: '/js/jquery.syntaxhighlighter.min.js')}"></script>
     <script type="text/javascript" src="js/jquery.zclip.js"></script>
 
     <script type="text/javascript">
@@ -115,12 +115,15 @@
         <a class="btn" onclick="showProject('codereview')">CodeReview</a>
         <a class="btn" onclick="showProject('cyclone')">Cyclone</a>
         <a class="btn" onclick="showProject('')">AllProjects</a>
-        <a class="btn pull-right" href="https://docs.google.com/spreadsheet/ccc?key=0AqcWoYECBA_SdElrejNuNVUzNEt3LTJZQnVCQ3RILWc#gid=0">Feedback</a>
+        <a class="btn pull-right"
+           href="https://docs.google.com/spreadsheet/ccc?key=0AqcWoYECBA_SdElrejNuNVUzNEt3LTJZQnVCQ3RILWc#gid=0"
+           target="_blank">Feedback</a>
     </div>
 
     <div id="content" class="container-fluid"></div>
 
     <script type="text/javascript">
+
         var previousExpandedForFilesChangesetId;
         function showFile(changesetId, fileId) {
 
@@ -475,8 +478,7 @@
 <form class="add_comment .form-inline">
     <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..." style="height:80px"></textarea>
     <br />
-    <button type="button"  class="btn" id="btn-{{>fileId}}" onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
-
+    <button type="button"  class="btn btn-primary" id="btn-{{>fileId}}" onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
 </form>
 
 </script>
