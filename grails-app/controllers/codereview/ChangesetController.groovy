@@ -56,10 +56,6 @@ class ChangesetController {
         render nextFewChangesets as JSON
     }
 
-    def addLineComments = {
-        [params: params]
-    }
-
     private List<Changeset> getLastChagesetsFromProject(String projectName) {
         def projectQuery
         def project = Project.findByName(projectName) //TODO examine number of queries and try to make it 1.

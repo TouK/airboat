@@ -3,38 +3,33 @@ package codereview
 import grails.converters.JSON
 import com.sun.media.sound.InvalidDataException
 
+import grails.plugins.springsecurity.Secured
+
+import static com.google.common.base.Preconditions.checkArgument
+
 class LineCommentController {
 
     def projectFileAccessService
     def infrastructureService
 
-    def index() { }
-
-    def addComment(String text, String lineNumber, String fileId, String author) {
+    @Secured("isAuthenticated()")
+    def addComment(long fileId, int lineNumber, String text) {
 
         def projectFile = ProjectFile.findById(fileId)
         def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(projectFile.changeset.project.url)
-        def content = projectFileAccessService.getFileContent(projectFile, projectRootDirectory)
+        def fileContent = projectFileAccessService.getFileContent(projectFile, projectRootDirectory)
 
-        if (projectFile == null ) {
-            throw new IllegalArgumentException("No file with such id was found")
-        }
-        if (lineNumber.toInteger() > content.split("\n").size() || lineNumber.toInteger() < 0){
-           throw new IllegalArgumentException("Line number is invalid")
-        }
+        //TODO write own, groovy assertion methods using a closure argument to defer (often costly) message evaluation
+        checkArgument(projectFile != null, "No file with id ${fileId} was found")
+        checkArgument(
+                lineNumber > 0 && lineNumber <= fileContent.split('\n').size(),
+                "Line number ${lineNumber} is out of range for file ${projectFile.properties}"
+        )
 
-          def lineComment = new LineComment(lineNumber.toInteger(), text, author)
-            projectFile.addToLineComments(lineComment)
-            projectFile.save()
-    }
-
-    def returnCommentsToProjectFile(String id) {
-        def projectFile = ProjectFile.findById(id)
-
-        if (projectFile != null) {
-            def lineComments = LineComment.findAllByProjectFile(projectFile)
-            render lineComments as JSON
-
-        }
+        //TODO ask someone about making idea know the mixins being used here
+        def author = getAuthenticatedUser().username
+        def lineComment = new LineComment(lineNumber, text, author) //TODO make LineComment belongsTo User
+        projectFile.addToLineComments(lineComment)
+        projectFile.save()
     }
 }
