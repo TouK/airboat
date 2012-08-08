@@ -20,8 +20,8 @@
     <script src="${createLink(uri: '/js/bootstrap-collapse.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-tooltip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-popover.js')}" type="text/javascript"></script>
-    <script src="${createLink(uri: '/js/jquery.syntaxhighlighter.js')}" type="text/javascript"></script>
 
+    <script type="text/javascript" src="${createLink(uri: '/js/jquery.syntaxhighlighter.min.js')}"></script>
     <script type="text/javascript" src="js/jquery.zclip.js"></script>
 
     <script type="text/javascript">
@@ -52,10 +52,7 @@
         function cancelLineComment(fileIdentifier, changesetId, lineNumber) {
             $('#add-line-comment-' + fileIdentifier).val("");
             $('#author-' + fileIdentifier).val("");
-
-            $('#content-files-' + changesetId + ' .linenums li').each(function (i, element, ignored) {
-                $(element).popover("hide");
-            });
+            hidePopovers(changesetId);
         }
 
         function addLineComment(fileIdentifier, changesetId, lineNumber) {
@@ -74,6 +71,10 @@
             $('#add-line-comment-' + fileIdentifier).val("");
             $('#author-' + fileIdentifier).val("");
         }
+
+        function hidePopovers(changesetId) {
+            $('#content-files-' + changesetId + ' .linenums li').popover("hide");
+        } 
 
         function hideAddCommentButtons(changesetId) {
             $('#btn-' +changesetId).hide();
@@ -120,7 +121,6 @@
     <div id="content" class="container-fluid"></div>
 
     <script type="text/javascript">
-
         var previousExpandedForFilesChangesetId;
         function showFile(changesetId, fileId) {
 
@@ -163,9 +163,7 @@
             $('#content-files-span-' +changesetId).show(100);
             $("#content-files-title-" + changesetId).show(100);
             if( previousExpandedForFilesChangesetId != null) {
-                $('#content-files-' + previousExpandedForFilesChangesetId + ' .linenums li').each(function (i, element, ignored) {
-                    $(element).popover("hide");
-                });
+                hidePopovers(previousExpandedForFilesChangesetId);
             }
 
 
@@ -181,9 +179,7 @@
             $("#sh-btn-" + changesetId + fileId).show();
             $('#content-files-span-' +changesetId).hide();
             $('#content-files-' + changesetId + ' .linenums li').popover("hide");
-            $('#content-files-' + changesetId + ' .linenums li').each(function (i, element, ignored) {
-                $(element).popover("hide");
-            });
+            hidePopovers(changesetId);
             $("#content-files-title-" + changesetId).hide();
         }
     </script>
@@ -211,6 +207,8 @@
 
         });
 
+        $(".collapse").collapse();
+        
         $(window).scroll(function () {
             if ($(window).scrollTop() == $(document).height() - $(window).height()) {
                 onScrollThroughBottomAttempt()
@@ -362,9 +360,7 @@
                 else {
                     newName += splitted[i] + "/";
                 }
-
             }
-
             return newName.substr(0,newName.length -1);
         }
 
@@ -399,12 +395,12 @@
 <script id="accordionFileTemplate" type="text/x-jsrender">
     <div class="accordion-group" id="accordion-group-{{>collapseId}}">
 
-            <div class="accordion-heading">
-           <div class="row-fluid">
-                    <div class="span8">
-                        <a class="accordion-toggle" id="collapsable-{{>collapseId}}" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-{{>collapseId}}">
-            {{>name}}
-        </a>
+    <div class="accordion-heading">
+        <div class="row-fluid">
+            <div class="row-fluid span9">
+                <a class="accordion-toggle" id="collapse-{{>collapseId}}" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}" href="#collapse-inner-{{>collapseId}}">
+                    {{>name}}
+                </a>
             </div>
             {{if howManyComments != 0}}
             <div class="row-fluid span3" >
@@ -413,23 +409,14 @@
             {{/if}}
         </div>
     </div>
-
-    </div>
-    <div id="collapse-{{>collapseId}}" class="accordion-body collapse">
-     <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
-
-          <div id="accordion-inner-div-snippet-{{>fileId}}"></div>
-
+    <div id="collapse-inner-{{>collapseId}}" class="accordion-body collapse">
+        <button type="button" class="btn pull-right " id="sh-btn-{{>collapseId}}" onClick="showFile('{{>changesetId}}', '{{>fileId}}')">Show file &gt;</button>
+        <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
+            <div id="accordion-inner-div-snippet-{{>fileId}}"></div>
         </div>
     </div>
     </div>
-
-    <script type="text/javascript">
-        $('#collapse-{{>collapseId}}').on('shown', function () {
-        showFile('{{>changesetId}}', '{{>fileId}}');
-        });
-    </script>
-</script>
+</script>  
 
 
 <script id="accordionFileUpdateTemplate" type="text/x-jsrender">
@@ -488,7 +475,8 @@
 <form class="add_comment .form-inline">
     <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..." style="height:80px"></textarea>
     <br />
-    <button type="button"  class="btn btn-primary" id="btn-{{>fileId}}" onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
+    <button type="button"  class="btn" id="btn-{{>fileId}}" onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
+
 </form>
 
 </script>
@@ -520,7 +508,7 @@
                     </div>
                     <div class="span2">
                         <span class="label label-info">{{>date}}</span>
-                        <span class="label label-info">{{>shortIdentifier}}</span>
+                        <span class="label label-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
                     </div>
                 </div>
                 <div class="well-small">{{>commitComment}}</div>
