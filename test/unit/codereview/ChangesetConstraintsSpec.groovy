@@ -34,4 +34,13 @@ class ChangesetConstraintsSpec extends Specification {
         'commitComment' | 'nullable' | null
         'date'          | 'nullable' | null
     }
+
+    def "commentsCount should be zero (not null) for a Changeset without UserComment-s"() {
+        when:
+        Changeset changeset = Changeset.build()
+
+        then:
+        changeset.userComments == null
+        changeset.commentsCount == 0
+    }
 }

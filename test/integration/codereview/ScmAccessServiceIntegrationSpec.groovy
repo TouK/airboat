@@ -41,6 +41,7 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
                 project.delete(flush: true)
             }
             User.all.each { User user ->
+                user.committers*.user = null
                 user.committers = [] as Set
                 user.delete(flush: true)
             }

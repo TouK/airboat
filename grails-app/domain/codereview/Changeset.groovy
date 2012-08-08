@@ -18,8 +18,8 @@ class Changeset {
         this.commitComment = commitComment
     }
 
-    Integer commentsCount() {
-        return UserComment.findAllByChangeset(this).size()
+    int getCommentsCount() {
+        userComments ? userComments.size() : 0
     }
 
     static constraints = {

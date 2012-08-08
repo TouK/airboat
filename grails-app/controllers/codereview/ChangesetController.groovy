@@ -3,6 +3,7 @@ package codereview
 import grails.converters.JSON
 
 import static com.google.common.base.Strings.isNullOrEmpty
+import com.google.common.annotations.VisibleForTesting
 
 class ChangesetController {
 
@@ -23,14 +24,32 @@ class ChangesetController {
     }
 
     def getLastChangesets = {
-        def query
+        def changesets
         if (params.id == null) {
-            query = Changeset.list(max: 21, sort: 'date', order: 'desc')
+            changesets = Changeset.list(max: 21, sort: 'date', order: 'desc')
         }
         else {
-            query = getLastChagesetsFromProject(params.id)
+            changesets = getLastChagesetsFromProject(params.id)
         }
-        render query as JSON
+        def changesetProperties = changesets.collect { changeset ->
+            [
+                    id: changeset.id,
+                    identifier: changeset.identifier,
+                    author: changeset.commiter.cvsCommiterId,
+                    email: changeset.commiter.user?.email,
+                    date: changeset.date,
+                    commitComment: changeset.commitComment,
+                    commentsCount: changeset.commentsCount,
+                    projectName: changeset.project.name,
+                    belongsToCurrentUser: belongsToCurrentUser(changeset)
+            ]
+        }
+        render changesetProperties as JSON
+    }
+
+    @VisibleForTesting boolean belongsToCurrentUser(Changeset changeset) {
+        def currentUser = getAuthenticatedUser()
+        currentUser != null && currentUser == changeset.commiter?.user
     }
 
     def getFileNamesForChangeset = {

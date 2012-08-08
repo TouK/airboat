@@ -12,11 +12,9 @@ import spock.lang.Specification
 @Build([UserComment, User])
 class UserCommentControllerSpec extends Specification {
 
-    SpringSecurityService springSecurityService
     User loggedInUser
 
-    def setup() {
-        springSecurityService = Mock()
+    def setup() { //TODO extract this (and duplicates) to a superclass or some form of a mixin
         controller.metaClass.getAuthenticatedUser = {
             loggedInUser
         }
@@ -37,7 +35,7 @@ class UserCommentControllerSpec extends Specification {
     def "should add comment when there is a logged in user"() {
         given:
         Changeset changeset = Changeset.build()
-        loggedInUser = User.build(username: "logged.in@codereview.com", springSecurityService: springSecurityService)
+        loggedInUser = User.build(username: "logged.in@codereview.com")
         def text = "Very well."
 
         when:

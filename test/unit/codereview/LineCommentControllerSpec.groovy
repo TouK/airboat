@@ -12,11 +12,9 @@ import spock.lang.Specification
 @Build(User)
 class LineCommentControllerSpec extends Specification {
 
-    SpringSecurityService springSecurityService
     User loggedInUser
 
     def setup() {
-        springSecurityService = Mock()
         controller.metaClass.getAuthenticatedUser = {
             loggedInUser
         }
@@ -36,7 +34,7 @@ class LineCommentControllerSpec extends Specification {
 
     def "should add comment correctly to db"() {
         given:
-        loggedInUser = User.build(username: "logged.in@codereview.com", springSecurityService: springSecurityService)
+        loggedInUser = User.build(username: "logged.in@codereview.com")
 
         def testProject = new Project("testProject", "testUrl")
         def changeset = new Changeset("hash23", "zmiany", new Date())

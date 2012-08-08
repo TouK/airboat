@@ -8,8 +8,12 @@ class Commiter {
         this.cvsCommiterId = cvsCommiterId
     }
 
+    User user
+
     static hasMany = [changesets: Changeset]
+
     static constraints = {
-        cvsCommiterId blank: false
+        cvsCommiterId blank: false, unique:true
+        user nullable: true
     }
 }

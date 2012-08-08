@@ -1,25 +1,27 @@
 package codereview
 
+import grails.buildtestdata.mixin.Build
 import grails.plugins.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(User)
+@Build(User)
 class UserConstraintsSpec extends Specification {
 
     static String existingUserEmail = "already.existing@user.com"
-    static String existingUserPassword = "dupa.8"
 
     def setup() {
-        injectSecurityService(new User(existingUserEmail, existingUserPassword)).save()
+        User.build(username: existingUserEmail)
     }
+
 
     @Unroll("Field '#field' of class User should have validation error '#error' caused by value '#violatingValue'")
     def "User should have well defined constraints:"() {
 
-        when:
-        def user = injectSecurityService(new User("$field": violatingValue))
+        when: //TODO make constraints tests use build-test-data's .build() method
+        def user = new User("$field": violatingValue, springSecurityService: Mock(SpringSecurityService))
 
         then:
         user.validate() == false
@@ -38,8 +40,4 @@ class UserConstraintsSpec extends Specification {
         'password' | 'nullable'      | null
     }
 
-    User injectSecurityService(User user) {
-        user.springSecurityService = Mock(SpringSecurityService)
-        user
-    }
 }
