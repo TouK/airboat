@@ -9,6 +9,7 @@ import org.apache.maven.scm.repository.ScmRepository
 import spock.lang.Specification
 import testFixture.Fixture
 
+//FIXME these tests are bloody slow, especially over VPN. Prepare a test repository in test setup / additional build script, maybe?
 class MavenScmApiLearningSpec extends Specification {
 
     def "should get whole changelog from git"() {

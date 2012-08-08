@@ -5,6 +5,7 @@ import org.apache.maven.scm.ChangeSet
 import spock.lang.Ignore
 import testFixture.Fixture
 
+//FIXME these tests are bloody slow, especially over VPN. Prepare a test repository in test setup / additional build script, maybe?
 class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
     def gitRepositoryService
