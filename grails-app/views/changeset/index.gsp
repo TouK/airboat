@@ -23,6 +23,7 @@
 
     <script type="text/javascript" src="${createLink(uri: '/js/jquery.syntaxhighlighter.js')}"></script>
     <script type="text/javascript" src="js/jquery.zclip.js"></script>
+    <link href="${createLink(uri: '/css/comment.css')}" rel="stylesheet" type="text/css"/>
 
     <script type="text/javascript">
 
@@ -59,7 +60,7 @@
             var text = $('#add-line-comment-' + fileIdentifier).val();
 
             $.post("${createLink(controller:'LineComment', action:'addComment')}",
-                    { text:text, lineNumber:lineNumber, fileId:fileIdentifier }
+                    { text:text, lineNumber:lineNumber, fileId:fileIdentifier}
             ).done(function () {
                         updateAccordion(changesetId, fileIdentifier);
                         hideAndClearLineCommentFrom(changesetId, fileIdentifier);
@@ -549,7 +550,6 @@
 
 
                 <div class="comments" id="comments-{{>identifier}}"></div>
-                <hr/>
 
                 <div id="comment-form-{{>identifier}}">
 
@@ -590,10 +590,9 @@
     <div class="alert">
         <img src=" ${createLink(uri: '/images/favicon.ico')}"/>    <!-- TODO: it should be a gravatar! -->
         <span class="label">{{>author}}</span>
-        <span class="label label-info">{{>dateCreated}}</span>
-        <hr/>
+        <span class="label label-info pull-right">{{>dateCreated}}</span>
 
-        <div class="comment-content">{{>text}}</div>
+        <div class="comment-content" >{{>text}}</div>
     </div>
 
 </script>

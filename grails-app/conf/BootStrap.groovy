@@ -14,7 +14,7 @@ class BootStrap {
             def returnMap = [:]
             returnMap['identifier'] = changeset.identifier
             returnMap['author'] = changeset.commiter.cvsCommiterId
-            returnMap['date'] = changeset.date
+            returnMap['date'] = changeset.date.format("yyyy-MM-dd HH:mm")
             returnMap['email'] = getEmail(changeset.commiter.cvsCommiterId) //FIXME use changeset.committer.user.email or equivalent ASAP
             returnMap['commitComment'] = changeset.commitComment
             returnMap['id'] = changeset.id
