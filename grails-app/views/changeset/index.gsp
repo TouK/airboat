@@ -37,7 +37,7 @@
             $.post("${createLink(controller:'UserComment', action:'addComment')}",
                     { changesetId:changesetId, text:text },
                     function (comment) {
-                        $('#comments-' + changesetId).append($("#comment-template").render(comment));
+                        $('#comments-' + changesetId).append($("commentTemplate").render(comment));
                     },
                     "json");
 
@@ -95,7 +95,7 @@
             fileUrl += id;
             $.getJSON(fileUrl, function (data) {
                 for (i = 0; i < data.length; i++) {
-                    var comment = $("#comment-template").render(data[i]);
+                    var comment = $("#commentTemplate").render(data[i]);
                     $('#comments-' + id).append(comment);
                 }
             });
@@ -327,7 +327,7 @@
                             .syntaxHighlight();
 
                     for (z = 0; z < snippetData[j].commentGroup.length; z++) {
-                        var comment = $("#comment-template").render(snippetData[j].commentGroup[z]);
+                        var comment = $("#commentTemplate").render(snippetData[j].commentGroup[z]);
                         $('#div-comments-' + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].lineNumber).append(comment);
                     }
                 }
@@ -591,11 +591,11 @@
     </div>
 </script>
 
-<script id="comment-template" type="text/x-jsrender">
+<script id="commentTemplate" type="text/x-jsrender">
 
     <div class="alert">
         <img src=" ${createLink(uri: '/images/favicon.ico')}"/>    <!-- TODO: it should be a gravatar! -->
-        <span class="label">{{>author}}</span>
+        <span class="label {{if belongsToCurrentUser}}label-success{{/if}}">{{>author}}</span>
         <span class="label label-info pull-right">{{>dateCreated}}</span>
 
         <div class="comment-content">{{>text}}</div>

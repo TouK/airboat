@@ -4,7 +4,9 @@ import grails.test.mixin.TestFor
 import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
+import grails.buildtestdata.mixin.Build
 
+@Build(UserComment)
 @TestFor(UserComment)
 class UserCommentConstraintsSpec extends Specification {
 
@@ -13,7 +15,6 @@ class UserCommentConstraintsSpec extends Specification {
 
         when:
         def userComment = new UserComment("$field": violatingValue)
-
 
         then:
         userComment.validate() == false
@@ -31,9 +32,18 @@ class UserCommentConstraintsSpec extends Specification {
     }
     //TODO write a more compound validation test where objects are valid in general and only tested field is incorrect
 
-    @Ignore //FIXME implement
     def "should belongTo User"() {
+        expect:
+        UserComment.belongsTo.author == User
+    }
 
+    def "should add UserComment to author's changesetComments upon creation"() {
+        given:
+        User author = User.build()
+        UserComment comment = new UserComment(author, 'asdf')
+
+        expect:
+        author.changesetComments.contains(comment)
     }
 }
 

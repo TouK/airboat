@@ -17,7 +17,7 @@ class UserCommentController {
         checkArgument(changeset != null, "Unknown changeset: ${changesetId}")
 
         //FIXME make comment belongsTo User
-        def comment = new UserComment(author: authenticatedUser.username, text: text)
+        def comment = new UserComment(author: authenticatedUser, text: text)
         changeset.addToUserComments(comment)
         comment.save(failOnError: true)
 
@@ -28,6 +28,16 @@ class UserCommentController {
     def returnCommentsToChangeset(String id) {
         def changeset = Changeset.findByIdentifier(id) //TODO check that only one query is executed, refactor otherwise
         def comments = UserComment.findAllByChangeset(changeset)
-        render comments as JSON
+        def that = this
+        def commentsProperties = comments.collect { UserComment userComment ->
+            def jsonProperties = userComment.properties + [
+                    belongsToCurrentUser: userComment.author == that.authenticatedUser,
+                    author: userComment.author.username
+            ]
+            jsonProperties.keySet().retainAll('text', 'author', 'dateCreated', 'belongsToCurrentUser')
+            jsonProperties
+        }
+        render commentsProperties as JSON
     }
+
 }
