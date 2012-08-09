@@ -24,7 +24,6 @@ class UserCommentController {
         render getCommentJSONproperties(comment) as JSON
     }
 
-
     def returnCommentsToChangeset(String id) {
         def changeset = Changeset.findByIdentifier(id) //TODO check that only one query is executed, refactor otherwise
         def comments = UserComment.findAllByChangeset(changeset)
@@ -35,7 +34,8 @@ class UserCommentController {
     private def getCommentJSONproperties(UserComment userComment) {
         def commentProperties = userComment.properties + [
                 belongsToCurrentUser: userComment.author == authenticatedUser,
-                author: userComment.author.username
+                author: userComment.author.username,
+                dateCreated: comment.dateCreated.format("yyyy-MM-dd HH:mm")
         ]
         commentProperties.keySet().retainAll('text', 'author', 'dateCreated', 'belongsToCurrentUser')
         commentProperties

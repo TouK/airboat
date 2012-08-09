@@ -92,8 +92,7 @@
         function changeAddCommentDivToDefault(changesetId) {
             $('#add-comment-' + changesetId).val("");
             $('#username-' + changesetId).val("");
-            $('#add-comment-' + changesetId).width("200px");
-            $('#add-comment-' + changesetId).height("20px");
+            $('#add-comment-' + changesetId).removeClass('span12')
         }
 
         function showCommentsToChangeset(id) {
@@ -409,6 +408,15 @@
 
 </script>
 
+<script type="text/javascript">
+    function showTextareaButtons(identifier,textarea) {
+        $('#btn-' + identifier).show(100);
+        $('#c-btn-' + identifier).show(100);
+        $(textarea).addClass('span12');
+    }
+
+</script>
+
 
 <script id="accordionFileTemplate" type="text/x-jsrender">
     <div class="accordion-group" id="accordion-group-{{>collapseId}}">
@@ -522,11 +530,8 @@
 
 <script id="commentFormTemplate" type="text/x-jsrender">
 
-    <form class="add_comment">
-        %{--FIXME extract a function to be called from onfocus event--}%
-        %{--FIXME make the textarea have 'span12' class once focused. Test for repeated click textarea / click cancel button sequences--}%
-        %{--FIXME give meaningful names to identifiers in this snippet--}%
-        <textarea onfocus=" $('#btn-' +'{{>identifier}}').show(100); $('#c-btn-' +'{{>identifier}}').show(100);"
+    <form class="add_comment .form-inline">
+           <textarea onfocus="showTextareaButtons('{{>identifier}}',this)"
                   id="add-comment-{{>identifier}}" placeholder="Add comment..." class="slideable"></textarea>
 
         <div class="btn-group pull-right">

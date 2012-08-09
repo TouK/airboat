@@ -35,22 +35,6 @@ class UserCommentControllerSpec extends Specification {
         commentJSON.belongsToCurrentUser == false
     }
 
-    def "should add comment when there is a logged in user"() {
-        given:
-        def loggedInUser = User.build(username: "logged.in@codereview.com")
-        controller.authenticatedUser = loggedInUser
-        Changeset changeset = Changeset.build()
-        def text = "Very well."
-
-        when:
-        controller.addComment(changeset.identifier, text)
-
-        then:
-        UserComment.findByText(text) != null
-        UserComment.findByTextAndAuthor(text, loggedInUser) != null
-        UserComment.findByChangeset(changeset) != null
-    }
-
     @Ignore //FIXME implement
     def "should demand authorization to add comment"() {
 
