@@ -26,6 +26,14 @@
     <link href="${createLink(uri: '/css/codereview.css')}" rel="stylesheet" type="text/css"/>
 
     <script type="text/javascript">
+        $.views.helpers({
+            getGravatar:function (email) {
+                return get_gravatar(email, 50)
+            }
+        })
+    </script>
+
+    <script type="text/javascript">
 
         function addComment(changesetId) {
 
@@ -123,14 +131,6 @@
 </div>
 
 <div id="content" class="container-fluid"></div>
-
-<script type="text/javascript">
-    $.views.helpers({
-        getGravatar:function (email) {
-            return get_gravatar(email, 50)
-        }
-    })
-</script>
 
 <script type="text/javascript">
 
