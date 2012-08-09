@@ -153,6 +153,7 @@
                     $(element).popover("show");
 
                 });
+                //TODO check if creating the content of the popover (i.e. commentForm) can be deferred to popover activation
                 var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetId, lineNumber:i });
                 var popoverTitle = $("#popoverTitleTemplate").render({
                     fileName:divideNameWithSlashesInTwo(file.name),
@@ -502,9 +503,12 @@
 
 <script id="commentFormTemplate" type="text/x-jsrender">
 
-    <form class="add_comment .form-inline"><textarea
-            onfocus=" $('#btn-' +'{{>identifier}}').show(100); $('#c-btn-' +'{{>identifier}}').show(100); this.style.height='100px'; this.style.width='424px'; "
-            id="add-comment-{{>identifier}}" placeholder="Add comment..." class="slideable"></textarea>
+    <form class="add_comment">
+        %{--FIXME extract a function to be called from onfocus event--}%
+        %{--FIXME make the textarea have 'span12' class once focused. Test for repeated click textarea / click cancel button sequences--}%
+        %{--FIXME give meaningful names to identifiers in this snippet--}%
+        <textarea onfocus=" $('#btn-' +'{{>identifier}}').show(100); $('#c-btn-' +'{{>identifier}}').show(100);"
+                  id="add-comment-{{>identifier}}" placeholder="Add comment..." class="slideable"></textarea>
 
         <div class="btn-group pull-right">
             <button type="button" class="btn btn-primary btnWarningBackground" id="btn-{{>identifier}}"
