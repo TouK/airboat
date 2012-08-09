@@ -9,7 +9,7 @@
 
     <script src="${createLink(uri: '/js/jquery-latest.min.js')}" type="text/javascript"></script>
 
-   <link href="${createLink(uri: '/css/js-view-presentation.css')}" rel="stylesheet" type="text/css"/>
+    <link href="${createLink(uri: '/css/js-view-presentation.css')}" rel="stylesheet" type="text/css"/>
     <!--TODO examine if neccessary after plugging in syntaxhighlighter -->
     <link href="${createLink(uri: '/css/js-view-syntaxhighlighter.css')}" rel="stylesheet" type="text/css"/>
     <script src="${createLink(uri: '/js/jsrender.js')}" type="text/javascript"></script>
@@ -23,7 +23,7 @@
 
     <script type="text/javascript" src="${createLink(uri: '/js/jquery.syntaxhighlighter.js')}"></script>
     <script type="text/javascript" src="js/jquery.zclip.js"></script>
-    <link href="${createLink(uri: '/css/comment.css')}" rel="stylesheet" type="text/css"/>
+    <link href="${createLink(uri: '/css/codereview.css')}" rel="stylesheet" type="text/css"/>
 
     <script type="text/javascript">
 
@@ -211,7 +211,7 @@
 
     });
 
-     $(window).scroll(function () {
+    $(window).scroll(function () {
         if ($(window).scrollTop() == $(document).height() - $(window).height()) {
             onScrollThroughBottomAttempt()
         }
@@ -410,7 +410,7 @@
             </div>
         </div>
 
-           <div id="collapse-inner-{{>collapseId}}" class="accordion-body collapse">
+        <div id="collapse-inner-{{>collapseId}}" class="accordion-body collapse">
 
             <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
                 <div id="accordion-inner-div-snippet-{{>fileId}}"></div>
@@ -487,13 +487,15 @@
 <script id="addLineCommentFormTemplate" type="text/x-jsrender">
 
     <form class="add_comment .form-inline">
-        <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..." style="height:80px;width:282px;"></textarea>
-          <div class="btn-group pull-right">
-           <button type="button" class="btn btn-primary" id="btn-{{>fileId}}"
-                onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
-           <button type="button" class="btn btn-primary"
-                      onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Cancel</button>
-         </div>
+        <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..."
+                  style="height:80px;width:282px;"></textarea>
+
+        <div class="btn-group pull-right">
+            <button type="button" class="btn btn-primary" id="btn-{{>fileId}}"
+                    onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
+            <button type="button" class="btn btn-primary"
+                    onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Cancel</button>
+        </div>
     </form>
 
 </script>
@@ -503,11 +505,12 @@
     <form class="add_comment .form-inline"><textarea
             onfocus=" $('#btn-' +'{{>identifier}}').show(100); $('#c-btn-' +'{{>identifier}}').show(100); this.style.height='100px'; this.style.width='424px'; "
             id="add-comment-{{>identifier}}" placeholder="Add comment..." class="slideable"></textarea>
+
         <div class="btn-group pull-right">
-          <button type="button" class="btn btn-primary btnWarningBackground" id="btn-{{>identifier}}"
-                onClick="addComment('{{>identifier}}')">Add comment</button>
-          <button type="button" class="btn btn-primary" id="c-btn-{{>identifier}}"
-                onClick="cancelComment('{{>identifier}}')">Cancel</button>
+            <button type="button" class="btn btn-primary btnWarningBackground" id="btn-{{>identifier}}"
+                    onClick="addComment('{{>identifier}}')">Add comment</button>
+            <button type="button" class="btn btn-primary" id="c-btn-{{>identifier}}"
+                    onClick="cancelComment('{{>identifier}}')">Cancel</button>
         </div>
     </form>
 
@@ -524,7 +527,7 @@
 
                 <div class="row-fluid">
                     <div class="span7">
-                        <span class="label">{{>author}}</span> </br>
+                        <span class="label {{if belongsToCurrentUser}}label-success{{/if}}">{{>author}}</span> </br>
                         <span class="label">{{>projectName}}</span>
                     </div>
 
@@ -591,7 +594,7 @@
         <span class="label">{{>author}}</span>
         <span class="label label-info pull-right">{{>dateCreated}}</span>
 
-        <div class="comment-content" >{{>text}}</div>
+        <div class="comment-content">{{>text}}</div>
     </div>
 
 </script>
