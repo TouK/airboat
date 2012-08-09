@@ -125,6 +125,14 @@
 <div id="content" class="container-fluid"></div>
 
 <script type="text/javascript">
+    $.views.helpers({
+        getGravatar:function (email) {
+            return get_gravatar(email, 50)
+        }
+    })
+</script>
+
+<script type="text/javascript">
 
     var previousExpandedForFilesChangesetId;
     function showFile(changesetId, fileId) {
@@ -240,7 +248,7 @@
 
     function appendChangeset(changeset) {
         var shortIdentifier = changeset.identifier.substr(0, 8) + "...";
-        changeset = $.extend({emailSubstitutedWithGravatar:get_gravatar(changeset.email, 50), shortIdentifier:shortIdentifier}, changeset)
+        changeset = $.extend({shortIdentifier:shortIdentifier}, changeset)
         $('#content').append($("#changesetTemplate").render(changeset));
         showCommentsToChangeset(changeset.identifier);
         $('#comments-' + changeset.identifier).hide();
@@ -521,12 +529,11 @@
 </script>
 
 <script id="changesetTemplate" type="text/x-jsrender">
-
     <div class="row-fluid">
         <div class="span4">
             <div class="span11 well">
                 <div class="span2">
-                    <img src="{{>emailSubstitutedWithGravatar}}"/>
+                    <img src='{{>~getGravatar(email)}}'/>
                 </div>
 
                 <div class="row-fluid">
@@ -592,9 +599,8 @@
 </script>
 
 <script id="commentTemplate" type="text/x-jsrender">
-
     <div class="alert">
-        <img src=" ${createLink(uri: '/images/favicon.ico')}"/>    <!-- TODO: it should be a gravatar! -->
+        <img src="{{>~getGravatar(author)}}"/>
         <span class="label {{if belongsToCurrentUser}}label-success{{/if}}">{{>author}}</span>
         <span class="label label-info pull-right">{{>dateCreated}}</span>
 
