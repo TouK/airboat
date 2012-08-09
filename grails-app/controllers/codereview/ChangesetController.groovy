@@ -36,7 +36,7 @@ class ChangesetController {
                     id: changeset.id,
                     identifier: changeset.identifier,
                     author: changeset.commiter.cvsCommiterId,
-                    email: changeset.commiter.user?.email,
+                    email: getUserEmail(changeset),
                     date: changeset.date.format("yyyy-MM-dd HH:mm"),
                     commitComment: changeset.commitComment,
                     commentsCount: changeset.commentsCount,
@@ -45,6 +45,16 @@ class ChangesetController {
             ]
         }
         render changesetProperties as JSON
+    }
+
+    private String getUserEmail(Changeset changeset) {
+        def user = changeset.commiter.user
+        if (user == null) {
+            //TODO check if the assumption that committers not always have email holds. If not, use commiter.email
+            'no.such.email@codereview.touk.pl'
+        } else {
+            user.email
+        }
     }
 
     @VisibleForTesting
