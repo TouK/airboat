@@ -47,7 +47,7 @@ class UserCommentControllerSpec extends Specification {
 
         then:
         UserComment.findByText(text) != null
-        UserComment.findByTextAndAuthor(text, loggedInUser.username) != null
+        UserComment.findByTextAndAuthor(text, loggedInUser) != null
         UserComment.findByChangeset(changeset) != null
     }
 
@@ -75,19 +75,9 @@ class UserCommentControllerSpec extends Specification {
 
         when:
         controller.returnCommentsToChangeset(changeset.identifier)
-        def json = response.json
-        println json
 
         then:
         response.json*.belongsToCurrentUser == [true, false]
-    }
-
-    def "changeset without user should not belong to anonymous user"() {
-        given:
-        controller.authenticatedUser = null
-
-        expect:
-        controller.belongsToCurrentUser(UserComment.build()) == false
     }
 
 }

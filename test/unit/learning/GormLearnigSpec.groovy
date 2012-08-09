@@ -5,8 +5,9 @@ import spock.lang.Specification
 import codereview.User
 import codereview.Commiter
 import grails.buildtestdata.mixin.Build
+import codereview.UserComment
 
-@Build([User, Commiter])
+@Build([User, Commiter, UserComment])
 class GormLearnigSpec extends Specification {
 
     def "should set the one-side (User) in many-side (Changeset) when creating a bidirectional many-to-one relation"() {
@@ -24,5 +25,13 @@ class GormLearnigSpec extends Specification {
         commiter.user == user
         commiter.save()
         user.save()
+    }
+
+    def "should fill dateCreated field (also in unit test) upon save"() {
+        given:
+        UserComment comment = UserComment.build()
+
+        expect:
+        UserComment.findByAuthorAndText(comment.author, comment.text).dateCreated != null
     }
 }
