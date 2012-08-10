@@ -4,9 +4,11 @@ import grails.buildtestdata.mixin.Build
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import spock.lang.Ignore
+
 import spock.lang.Specification
 import mixins.SpringSecurityControllerMethodsMock
+
+import static codereview.TestHelpers.nLinesOfSampleText
 
 @TestFor(LineCommentController)
 @Mock([Changeset, UserComment, ProjectFile, LineComment, Project])
@@ -18,15 +20,6 @@ class LineCommentControllerSpec extends Specification {
         controller.infrastructureService = Mock(InfrastructureService)
         controller.projectFileAccessService = Mock(ProjectFileAccessService)
         controller.projectFileAccessService.getFileContent(_, _) >> nLinesOfSampleText(n: 12)
-    }
-
-    private String nLinesOfSampleText(Map parameters) {
-        (1..parameters.n).collect { "line ${it}" }.join('\n')
-    }
-
-    @Ignore //FIXME implement
-    def "should return comments to project file when given right project file id"() {
-
     }
 
     def "should add comment correctly to db"() {

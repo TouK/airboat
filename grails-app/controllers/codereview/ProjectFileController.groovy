@@ -29,17 +29,20 @@ class ProjectFileController {
         if (projectFile == null) {
             throw new IllegalArgumentException("No file with such id was found")
         }
-
         def comments = LineComment.findAllByProjectFile(projectFile)
+        def commentGroupsWithSnippets = getCommentsGroupsWithSnippets(projectFile, comments)
+        render([fileType: projectFile.fileType, commentGroupsWithSnippets: commentGroupsWithSnippets] as JSON)
+    }
+
+    private ArrayList<Map<String, Object>> getCommentsGroupsWithSnippets(ProjectFile projectFile, List<LineComment> comments) {
+        def commentGroupsWithSnippets = []
         if (!comments.isEmpty()) {
             def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(projectFile.changeset.project.url)
             def fileContent = projectFileAccessService.getFileContent(projectFile, projectRootDirectory)
             def snippetsGroup = snippetWithCommentsService.prepareSnippetsGroupList(comments)
-            def commentGroupsWithSnippets = snippetWithCommentsService.prepareCommentGroupsWithSnippets(snippetsGroup, projectFile.fileType, fileContent)
-            render commentGroupsWithSnippets as JSON
+            commentGroupsWithSnippets = snippetWithCommentsService.prepareCommentGroupsWithSnippets(snippetsGroup, projectFile.fileType, fileContent)
         }
-        else {
-            render "[ ]"
-        }
+        commentGroupsWithSnippets
     }
 }
+

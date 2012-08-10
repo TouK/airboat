@@ -19,34 +19,24 @@ class UserCommentControllerSpec extends Specification {
 
     def "should return comments to changeset when given right changeset id"() {
         given:
-        UserComment comment = UserComment.build(text: "Very well indeed.")
+        controller.authenticatedUser = null
+        User author = User.build()
+        UserComment comment = UserComment.build(author: author, text: "Very well indeed.")
 
         when:
         controller.returnCommentsToChangeset(comment.changeset.identifier)
 
         then:
         response.json.size() == 1
-        response.json[0].text == comment.text
-    }
-
-    def "should add comment when there is a logged in user"() {
-        given:
-        def loggedInUser = User.build(username: "logged.in@codereview.com")
-        controller.authenticatedUser = loggedInUser
-        Changeset changeset = Changeset.build()
-        def text = "Very well."
-
-        when:
-        controller.addComment(changeset.identifier, text)
-
-        then:
-        UserComment.findByText(text) != null
-        UserComment.findByTextAndAuthor(text, loggedInUser.username) != null
-        UserComment.findByChangeset(changeset) != null
+        def commentJSON = response.json.first()
+        commentJSON.keySet() == ['text', 'author', 'dateCreated', 'belongsToCurrentUser'] as Set
+        commentJSON.author == author.username
+        commentJSON.text == comment.text
+        commentJSON.belongsToCurrentUser == false
     }
 
     @Ignore //FIXME implement
-    def "should throw exception for unknown user"() {
+    def "should demand authorization to add comment"() {
 
     }
 
@@ -54,4 +44,24 @@ class UserCommentControllerSpec extends Specification {
     def "should throw excpetion for unknown changeset"() {
 
     }
+
+    def "should mark logged in user's UserComment-s as theirs"() {
+        given:
+        User loggedInUser = User.build(username: 'agj@touk.pl')
+        controller.authenticatedUser = loggedInUser
+        Changeset changeset = Changeset.build()
+        def comment = UserComment.build(changeset: changeset, author: loggedInUser)
+        UserComment.build(changeset: changeset)
+
+        expect:
+        changeset.userComments.contains(comment)
+        changeset.save()
+
+        when:
+        controller.returnCommentsToChangeset(changeset.identifier)
+
+        then:
+        response.json*.belongsToCurrentUser == [true, false]
+    }
+
 }

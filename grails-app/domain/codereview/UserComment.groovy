@@ -4,12 +4,11 @@ package codereview
 class UserComment {
     String text
     Date dateCreated
-    String author
 
-    static belongsTo = [changeset: Changeset]
+    static belongsTo = [author: User, changeset: Changeset]
 
-    UserComment(String author, String text) {
-        this.author = author
+    UserComment(User author, String text) {
+        author.addToChangesetComments(this)
         this.text = text
     }
 

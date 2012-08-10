@@ -7,23 +7,30 @@
 
     <link media="screen" rel="stylesheet" href=" ${createLink(uri: '/css/bootstrap.css')}"/>
 
-    <script src="${createLink(uri: '/js/jquery-latest.min.js')}" type="text/javascript"></script>
-
     <link href="${createLink(uri: '/css/js-view-presentation.css')}" rel="stylesheet" type="text/css"/>
     <!--TODO examine if neccessary after plugging in syntaxhighlighter -->
     <link href="${createLink(uri: '/css/js-view-syntaxhighlighter.css')}" rel="stylesheet" type="text/css"/>
+    <script src="${createLink(uri: '/js/jquery.md5.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/jsrender.js')}" type="text/javascript"></script>
 
     <link media="screen" rel="stylesheet" href=" ${createLink(uri: '/css/colorbox.css')}"/>
     <script src="${createLink(uri: '/js/jquery.colorbox-min.js')}" type="text/javascript"></script>
-    <script src="${createLink(uri: '/js/gravatar.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-collapse.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-tooltip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-popover.js')}" type="text/javascript"></script>
 
-    <script type="text/javascript" src="${createLink(uri: '/js/jquery.syntaxhighlighter.js')}"></script>
-    <script type="text/javascript" src="js/jquery.zclip.js"></script>
+    <script src="${createLink(uri: '/js/jquery.syntaxhighlighter.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/js/jquery.zclip.js')}" type="text/javascript"></script>
     <link href="${createLink(uri: '/css/codereview.css')}" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript">
+        $.views.helpers({
+            getGravatar:function (email, size) {
+                var size = size || 50;
+                return 'http://www.gravatar.com/avatar/' + $.md5(email) + '.jpg?s=' + size;
+            }
+        })
+    </script>
 
     <script type="text/javascript">
 
@@ -37,7 +44,7 @@
             $.post("${createLink(controller:'UserComment', action:'addComment')}",
                     { changesetId:changesetId, text:text },
                     function (comment) {
-                        $('#comments-' + changesetId).append($("#comment-template").render(comment));
+                        $('#comments-' + changesetId).append($('#commentTemplate').render(comment));
                     },
                     "json");
 
@@ -85,8 +92,7 @@
         function changeAddCommentDivToDefault(changesetId) {
             $('#add-comment-' + changesetId).val("");
             $('#username-' + changesetId).val("");
-            $('#add-comment-' + changesetId).width("200px");
-            $('#add-comment-' + changesetId).height("20px");
+            $('#add-comment-' + changesetId).removeClass('span12')
         }
 
         function showCommentsToChangeset(id) {
@@ -95,7 +101,7 @@
             fileUrl += id;
             $.getJSON(fileUrl, function (data) {
                 for (i = 0; i < data.length; i++) {
-                    var comment = $("#comment-template").render(data[i]);
+                    var comment = $("#commentTemplate").render(data[i]);
                     $('#comments-' + id).append(comment);
                 }
             });
@@ -154,7 +160,7 @@
 
                 });
                 //TODO check if creating the content of the popover (i.e. commentForm) can be deferred to popover activation
-                var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetId, lineNumber:i });
+                var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetId, lineNumber:i + 1 });
                 var popoverTitle = $("#popoverTitleTemplate").render({
                     fileName:divideNameWithSlashesInTwo(file.name),
                     changesetId:changesetId,
@@ -240,7 +246,7 @@
 
     function appendChangeset(changeset) {
         var shortIdentifier = changeset.identifier.substr(0, 8) + "...";
-        changeset = $.extend({emailSubstitutedWithGravatar:get_gravatar(changeset.email, 50), shortIdentifier:shortIdentifier}, changeset)
+        changeset = $.extend({shortIdentifier:shortIdentifier}, changeset)
         $('#content').append($("#changesetTemplate").render(changeset));
         showCommentsToChangeset(changeset.identifier);
         $('#comments-' + changeset.identifier).hide();
@@ -286,20 +292,21 @@
         fileUrl = fileUrl.concat(changesetId);
         var lineBoundary = 60;
 
-        $.getJSON(fileUrl, function (data) {
+        $.getJSON(fileUrl, function (projectFiles) {
 
-            for (i = 0; i < data.length; i++) {
+            for (i = 0; i < projectFiles.length; i++) {
+                var projectFile = projectFiles[i];
                 var accordionRow = $("#accordionFileUpdateTemplate").render({
-                    name:sliceName(data[i].name, lineBoundary),
+                    name:sliceName(projectFile.name, lineBoundary),
                     changesetId:changesetId,
-                    fileId:data[i].id,
-                    collapseId:(changesetId + data[i].id),
-                    howManyComments:data[i].lineComments.length
+                    fileId:projectFile.id,
+                    collapseId:(changesetId + projectFile.id),
+                    howManyComments:projectFile.lineComments.length
                 });
-                if (fileIdentifier == data[i].id) {
-                    $('#accordion-group-' + changesetId + data[i].id).html("");
-                    $('#accordion-group-' + changesetId + data[i].id).append(accordionRow);
-                    appendSnippetToFileInAccordion(data[i].id)
+                if (fileIdentifier == projectFile.id) {
+                    $('#accordion-group-' + changesetId + projectFile.id).html("");
+                    $('#accordion-group-' + changesetId + projectFile.id).append(accordionRow);
+                    appendSnippetToFileInAccordion(projectFile.id)
                 }
             }
         });
@@ -307,33 +314,45 @@
 
     function appendSnippetToFileInAccordion(fileId) {
         var snippetUrl = '${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}' + fileId;
-        $.getJSON(snippetUrl, function (snippetData) {
-            if (snippetData.length > 0) {
-                $('#accordion-inner-div-' + snippetData[0].commentGroup[0].projectFile.id).html("");
+        $.getJSON(snippetUrl, function (commentsGroupsWithSnippetsForFile) {
+            var fileType = commentsGroupsWithSnippetsForFile.fileType
+            var commentGroupsWithSnippets = commentsGroupsWithSnippetsForFile.commentGroupsWithSnippets
 
-                for (j = 0; j < snippetData.length; j++) {
-                    var snippet = $("#snippetTemplate").render({
-                        snippet:snippetData[j].snippet,
-                        fileId:snippetData[j].commentGroup[0].projectFile.id,
-                        snippetId:snippetData[j].commentGroup[0].lineNumber
-                    });
+            if (commentGroupsWithSnippets.length > 0) {
+                $('#accordion-inner-div-' + fileId).html("");
 
-                    $('#accordion-inner-div-snippet-' + snippetData[j].commentGroup[0].projectFile.id).append(snippet);
-                    $("#snippet-" + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].lineNumber).html("<pre class='codeViewer'/></pre>");
-                    $("#snippet-" + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].lineNumber + " .codeViewer")
-                            .text(snippetData[j].snippet)
-                            .addClass("linenums:" + (snippetData[j].commentGroup[0].lineNumber + 1))
-                            .addClass("language-" + snippetData[j].filetype)
-                            .syntaxHighlight();
-
-                    for (z = 0; z < snippetData[j].commentGroup.length; z++) {
-                        var comment = $("#comment-template").render(snippetData[j].commentGroup[z]);
-                        $('#div-comments-' + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].lineNumber).append(comment);
-                    }
+                for (j = 0; j < commentGroupsWithSnippets.length; j++) {
+                    renderCommentGroupWithSnippets(commentGroupsWithSnippets[j], fileId, fileType);
                 }
-
             }
         });
+    }
+
+    function renderCommentGroupWithSnippets(commentGroupWithSnippet, fileId, fileType) {
+        var lineNumber = commentGroupWithSnippet.commentGroup[0].lineNumber;
+
+        var snippet = $("#snippetTemplate").render({
+            fileId:fileId,
+            lineNumber:lineNumber
+        });
+
+        $('#accordion-inner-div-snippet-' + fileId).append(snippet);
+        $("#snippet-" + fileId + "-" + lineNumber)
+                .html("<pre class='codeViewer'/></pre>")
+                .children(".codeViewer")
+                .text(commentGroupWithSnippet.snippet)
+                .addClass("linenums:" + lineNumber)
+                .addClass("language-" + fileType)
+                .syntaxHighlight();
+
+        renderCommentGroup(commentGroupWithSnippet.commentGroup, fileId, lineNumber);
+    }
+
+    function renderCommentGroup(commentGroup, fileId, lineNumber) {
+        for (var k = 0; k < commentGroup.length; k++) {
+            var comment = $("#commentTemplate").render(commentGroup[k]);
+            $('#div-comments-' + fileId + "-" + lineNumber).append(comment);
+        }
     }
 
     function divideNameWithSlashesInTwo(name) {
@@ -385,7 +404,15 @@
         $('#comment-form-' + identifier).append($("#commentFormTemplate").render({identifier:identifier}));
         $('#comment-form-' + identifier).hide();
         hideAddCommentButtons(identifier);
+    }
 
+</script>
+
+<script type="text/javascript">
+    function showTextareaButtons(identifier,textarea) {
+        $('#btn-' + identifier).show(100);
+        $('#c-btn-' + identifier).show(100);
+        $(textarea).addClass('span12');
     }
 
 </script>
@@ -479,9 +506,9 @@
 </script>
 
 <script id="snippetTemplate" type="text/x-jsrender">
-    <div id="div-comments-{{>fileId}}-{{>snippetId}}"></div>
+    <div id="div-comments-{{>fileId}}-{{>lineNumber}}"></div>
 
-    <div id="snippet-{{>fileId}}-{{>snippetId}}"></div>
+    <div id="snippet-{{>fileId}}-{{>lineNumber}}"></div>
 </script>
 
 <!-- FIXME reuse comment form template for both types of comments -->
@@ -503,11 +530,8 @@
 
 <script id="commentFormTemplate" type="text/x-jsrender">
 
-    <form class="add_comment">
-        %{--FIXME extract a function to be called from onfocus event--}%
-        %{--FIXME make the textarea have 'span12' class once focused. Test for repeated click textarea / click cancel button sequences--}%
-        %{--FIXME give meaningful names to identifiers in this snippet--}%
-        <textarea onfocus=" $('#btn-' +'{{>identifier}}').show(100); $('#c-btn-' +'{{>identifier}}').show(100);"
+    <form class="add_comment .form-inline">
+           <textarea onfocus="showTextareaButtons('{{>identifier}}',this)"
                   id="add-comment-{{>identifier}}" placeholder="Add comment..." class="slideable"></textarea>
 
         <div class="btn-group pull-right">
@@ -521,12 +545,11 @@
 </script>
 
 <script id="changesetTemplate" type="text/x-jsrender">
-
     <div class="row-fluid">
         <div class="span4">
             <div class="span11 well">
                 <div class="span2">
-                    <img src="{{>emailSubstitutedWithGravatar}}"/>
+                    <img src='{{>~getGravatar(email)}}'/>
                 </div>
 
                 <div class="row-fluid">
@@ -584,18 +607,16 @@
 
                 <div class="files-right">
                     <div id="content-files-{{>identifier}}"></div>
-
                 </div>
             </div>
         </div>
     </div>
 </script>
 
-<script id="comment-template" type="text/x-jsrender">
-
+<script id="commentTemplate" type="text/x-jsrender">
     <div class="alert">
-        <img src=" ${createLink(uri: '/images/favicon.ico')}"/>    <!-- TODO: it should be a gravatar! -->
-        <span class="label">{{>author}}</span>
+        <img src="{{>~getGravatar(author)}}"/>
+        <span class="label {{if belongsToCurrentUser}}label-success{{/if}}">{{>author}}</span>
         <span class="label label-info pull-right">{{>dateCreated}}</span>
 
         <div class="comment-content">{{>text}}</div>

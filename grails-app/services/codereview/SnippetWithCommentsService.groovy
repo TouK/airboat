@@ -1,5 +1,7 @@
 package codereview
 
+import static com.google.common.base.Preconditions.checkArgument
+
 class SnippetWithCommentsService {
 
     def prepareSnippetsGroupList(comments) {
@@ -55,22 +57,14 @@ class SnippetWithCommentsService {
         return getLinesAround(fileContent, comment.lineNumber, howManyLines)
     }
 
-    def getLinesAround(String text, Integer at, Integer howMany) {
+    def getLinesAround(String text, Integer from, Integer count) {
+        checkArgument(from > 0, "from must be a positive integer" as Object) //TODO introduce own defensive programming helpers not needing the "as Object" cast
+        checkArgument(count > 0, "count must be a positive integer" as Object)
         def splitted = text.split("\n")
-        def from = at
-        def to = at + howMany - 1
-        if (from < 0) {
-            return null
+        def fromZeroBasedInclusive = from - 1
+        checkArgument(fromZeroBasedInclusive < splitted.size(), "from (=${from}) must be a valid line number in text (which has ${splitted.size()} lines).")
+        def toZeroBasedExclusive = Math.min(fromZeroBasedInclusive + count, splitted.size())
 
-        }
-        if (to >= splitted.size()) {
-            if (at < splitted.size()) {
-                to = at
-            }
-            else {
-                return null
-            }
-        }
-        return splitted[from.toInteger()..to.toInteger()].join("\n")
+        return splitted[fromZeroBasedInclusive..toZeroBasedExclusive - 1].join("\n")
     }
 }
