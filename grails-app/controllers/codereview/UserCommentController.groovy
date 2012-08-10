@@ -30,12 +30,12 @@ class UserCommentController {
         def comments = UserComment.findAllByChangeset(changeset)
         def that = this
         def commentsProperties = comments.collect { UserComment userComment ->
-            def jsonProperties = userComment.properties + [
+            def commentProperties = userComment.properties + [
                     belongsToCurrentUser: userComment.author == that.authenticatedUser,
                     author: userComment.author.username
             ]
-            jsonProperties.keySet().retainAll('text', 'author', 'dateCreated', 'belongsToCurrentUser')
-            jsonProperties
+            commentProperties.keySet().retainAll('text', 'author', 'dateCreated', 'belongsToCurrentUser')
+            commentProperties
         }
         render commentsProperties as JSON
     }

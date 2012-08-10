@@ -162,7 +162,7 @@
 
                 });
                 //TODO check if creating the content of the popover (i.e. commentForm) can be deferred to popover activation
-                var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetId, lineNumber:i });
+                var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetId, lineNumber:i + 1 });
                 var popoverTitle = $("#popoverTitleTemplate").render({
                     fileName:divideNameWithSlashesInTwo(file.name),
                     changesetId:changesetId,
@@ -294,20 +294,21 @@
         fileUrl = fileUrl.concat(changesetId);
         var lineBoundary = 60;
 
-        $.getJSON(fileUrl, function (data) {
+        $.getJSON(fileUrl, function (projectFiles) {
 
-            for (i = 0; i < data.length; i++) {
+            for (i = 0; i < projectFiles.length; i++) {
+                var projectFile = projectFiles[i];
                 var accordionRow = $("#accordionFileUpdateTemplate").render({
-                    name:sliceName(data[i].name, lineBoundary),
+                    name:sliceName(projectFile.name, lineBoundary),
                     changesetId:changesetId,
-                    fileId:data[i].id,
-                    collapseId:(changesetId + data[i].id),
-                    howManyComments:data[i].lineComments.length
+                    fileId:projectFile.id,
+                    collapseId:(changesetId + projectFile.id),
+                    howManyComments:projectFile.lineComments.length
                 });
-                if (fileIdentifier == data[i].id) {
-                    $('#accordion-group-' + changesetId + data[i].id).html("");
-                    $('#accordion-group-' + changesetId + data[i].id).append(accordionRow);
-                    appendSnippetToFileInAccordion(data[i].id)
+                if (fileIdentifier == projectFile.id) {
+                    $('#accordion-group-' + changesetId + projectFile.id).html("");
+                    $('#accordion-group-' + changesetId + projectFile.id).append(accordionRow);
+                    appendSnippetToFileInAccordion(projectFile.id)
                 }
             }
         });
@@ -315,33 +316,46 @@
 
     function appendSnippetToFileInAccordion(fileId) {
         var snippetUrl = '${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}' + fileId;
-        $.getJSON(snippetUrl, function (snippetData) {
-            if (snippetData.length > 0) {
-                $('#accordion-inner-div-' + snippetData[0].commentGroup[0].projectFile.id).html("");
+        $.getJSON(snippetUrl, function (commentsGroupsWithSnippetsForFile) {
+            var fileType = commentsGroupsWithSnippetsForFile.fileType
+            var commentGroupsWithSnippets = commentsGroupsWithSnippetsForFile.commentGroupsWithSnippets
 
-                for (j = 0; j < snippetData.length; j++) {
-                    var snippet = $("#snippetTemplate").render({
-                        snippet:snippetData[j].snippet,
-                        fileId:snippetData[j].commentGroup[0].projectFile.id,
-                        snippetId:snippetData[j].commentGroup[0].lineNumber
-                    });
+            if (commentGroupsWithSnippets.length > 0) {
+                $('#accordion-inner-div-' + fileId).html("");
 
-                    $('#accordion-inner-div-snippet-' + snippetData[j].commentGroup[0].projectFile.id).append(snippet);
-                    $("#snippet-" + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].lineNumber).html("<pre class='codeViewer'/></pre>");
-                    $("#snippet-" + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].lineNumber + " .codeViewer")
-                            .text(snippetData[j].snippet)
-                            .addClass("linenums:" + (snippetData[j].commentGroup[0].lineNumber + 1))
-                            .addClass("language-" + snippetData[j].filetype)
-                            .syntaxHighlight();
-
-                    for (z = 0; z < snippetData[j].commentGroup.length; z++) {
-                        var comment = $("#commentTemplate").render(snippetData[j].commentGroup[z]);
-                        $('#div-comments-' + snippetData[j].commentGroup[0].projectFile.id + "-" + snippetData[j].commentGroup[0].lineNumber).append(comment);
-                    }
+                for (j = 0; j < commentGroupsWithSnippets.length; j++) {
+                    renderCommentGroupWithSnippets(commentGroupsWithSnippets[j], fileId, fileType);
                 }
-
             }
         });
+    }
+
+    function renderCommentGroupWithSnippets(commentGroupWithSnippet, fileId, fileType) {
+        var lineNumber = commentGroupWithSnippet.commentGroup[0].lineNumber;
+
+        var snippet = $("#snippetTemplate").render({
+            fileId:fileId,
+            lineNumber:lineNumber
+        });
+
+        $('#accordion-inner-div-snippet-' + fileId).append(snippet);
+        $("#snippet-" + fileId + "-" + lineNumber)
+                .html("<pre class='codeViewer'/></pre>")
+                .children(".codeViewer")
+                .text(commentGroupWithSnippet.snippet)
+                .addClass("linenums:" + lineNumber)
+                .addClass("language-" + fileType)
+                .syntaxHighlight();
+
+        renderCommentGroup(commentGroupWithSnippet.commentGroup, fileId, lineNumber);
+        1
+    }
+
+    function renderCommentGroup(commentGroup, fileId, lineNumber) {
+        for (var k = 0; k < commentGroup.length; k++) {
+            var comment = $("#commentTemplate").render(commentGroup[k]);
+            $('#div-comments-' + fileId + "-" + lineNumber).append(comment);
+        }
     }
 
     function divideNameWithSlashesInTwo(name) {
@@ -487,9 +501,9 @@
 </script>
 
 <script id="snippetTemplate" type="text/x-jsrender">
-    <div id="div-comments-{{>fileId}}-{{>snippetId}}"></div>
+    <div id="div-comments-{{>fileId}}-{{>lineNumber}}"></div>
 
-    <div id="snippet-{{>fileId}}-{{>snippetId}}"></div>
+    <div id="snippet-{{>fileId}}-{{>lineNumber}}"></div>
 </script>
 
 <!-- FIXME reuse comment form template for both types of comments -->

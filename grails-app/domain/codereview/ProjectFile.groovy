@@ -23,6 +23,6 @@ class ProjectFile {
 
     static constraints = {
         content nullable: true, blank: true
-        name nullable: true
+        name blank: false
     }
 }
