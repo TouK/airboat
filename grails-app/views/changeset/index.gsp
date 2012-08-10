@@ -7,28 +7,27 @@
 
     <link media="screen" rel="stylesheet" href=" ${createLink(uri: '/css/bootstrap.css')}"/>
 
-    <script src="${createLink(uri: '/js/jquery-latest.min.js')}" type="text/javascript"></script>
-
     <link href="${createLink(uri: '/css/js-view-presentation.css')}" rel="stylesheet" type="text/css"/>
     <!--TODO examine if neccessary after plugging in syntaxhighlighter -->
     <link href="${createLink(uri: '/css/js-view-syntaxhighlighter.css')}" rel="stylesheet" type="text/css"/>
+    <script src="${createLink(uri: '/js/jquery.md5.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/jsrender.js')}" type="text/javascript"></script>
 
     <link media="screen" rel="stylesheet" href=" ${createLink(uri: '/css/colorbox.css')}"/>
     <script src="${createLink(uri: '/js/jquery.colorbox-min.js')}" type="text/javascript"></script>
-    <script src="${createLink(uri: '/js/gravatar.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-collapse.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-tooltip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-popover.js')}" type="text/javascript"></script>
 
-    <script type="text/javascript" src="${createLink(uri: '/js/jquery.syntaxhighlighter.js')}"></script>
-    <script type="text/javascript" src="js/jquery.zclip.js"></script>
+    <script src="${createLink(uri: '/js/jquery.syntaxhighlighter.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/js/jquery.zclip.js')}" type="text/javascript"></script>
     <link href="${createLink(uri: '/css/codereview.css')}" rel="stylesheet" type="text/css"/>
 
     <script type="text/javascript">
         $.views.helpers({
-            getGravatar:function (email) {
-                return get_gravatar(email, 50)
+            getGravatar:function (email, size) {
+                var size = size || 50;
+                return 'http://www.gravatar.com/avatar/' + $.md5(email) + '.jpg?s=' + size;
             }
         })
     </script>
@@ -45,7 +44,7 @@
             $.post("${createLink(controller:'UserComment', action:'addComment')}",
                     { changesetId:changesetId, text:text },
                     function (comment) {
-                        $('#comments-' + changesetId).append($("commentTemplate").render(comment));
+                        $('#comments-' + changesetId).append($("#commentTemplate").render(comment));
                     },
                     "json");
 
