@@ -44,7 +44,7 @@
             $.post("${createLink(controller:'UserComment', action:'addComment')}",
                     { changesetId:changesetId, text:text },
                     function (comment) {
-                        $('#comments-' + changesetId).append($("#commentTemplate").render(comment));
+                        $('#comments-' + changesetId).append($('#commentTemplate').render(comment));
                     },
                     "json");
 

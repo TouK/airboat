@@ -35,7 +35,7 @@ class UserCommentController {
         def commentProperties = userComment.properties + [
                 belongsToCurrentUser: userComment.author == authenticatedUser,
                 author: userComment.author.username,
-                dateCreated: comment.dateCreated.format("yyyy-MM-dd HH:mm")
+                dateCreated: userComment.dateCreated.format("yyyy-MM-dd HH:mm")
         ]
         commentProperties.keySet().retainAll('text', 'author', 'dateCreated', 'belongsToCurrentUser')
         commentProperties
