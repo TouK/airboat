@@ -347,7 +347,6 @@
                 .syntaxHighlight();
 
         renderCommentGroup(commentGroupWithSnippet.commentGroup, fileId, lineNumber);
-        1
     }
 
     function renderCommentGroup(commentGroup, fileId, lineNumber) {
@@ -406,7 +405,6 @@
         $('#comment-form-' + identifier).append($("#commentFormTemplate").render({identifier:identifier}));
         $('#comment-form-' + identifier).hide();
         hideAddCommentButtons(identifier);
-
     }
 
 </script>
@@ -604,7 +602,6 @@
 
                 <div class="files-right">
                     <div id="content-files-{{>identifier}}"></div>
-
                 </div>
             </div>
         </div>
