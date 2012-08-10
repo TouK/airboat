@@ -30,6 +30,13 @@ testDataConfig {
                 "Committer ${i}<committer_${i}@test.com>"
             }
         }
+
+        'codereview.LineComment'{
+            def i = 1
+            lineNumber = {-> i++}
+            text = {-> "tekst=${i++}"}
+            author = {-> "author=${i++}"}
+        }
     }
 }
 

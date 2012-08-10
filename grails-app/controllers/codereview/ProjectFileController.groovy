@@ -29,9 +29,18 @@ class ProjectFileController {
         if (projectFile == null) {
             throw new IllegalArgumentException("No file with such id was found")
         }
-        def comments = LineComment.findAllByProjectFile(projectFile)
+        def comments = getLineComments(projectFile.name, projectFile.changeset.project.name)
         def commentGroupsWithSnippets = getCommentsGroupsWithSnippets(projectFile, comments)
         render([fileType: projectFile.fileType, commentGroupsWithSnippets: commentGroupsWithSnippets] as JSON)
+    }
+
+    private List<LineComment> getLineComments(String projectFile, String project) {
+        LineComment.findAll(
+                "from LineComment as linecomment \
+                    where linecomment.projectFile.name = :projectFile \
+                    and projectFile.changeset.project.name = :project",
+                [projectFile: projectFile, project: project]
+        )
     }
 
     private ArrayList<Map<String, Object>> getCommentsGroupsWithSnippets(ProjectFile projectFile, List<LineComment> comments) {
