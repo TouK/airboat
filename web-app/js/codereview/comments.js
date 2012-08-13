@@ -9,21 +9,13 @@ function addComment(changesetId) {
         { changesetId:changesetId, text:text },
         function (comment) {
             $('#comments-' + changesetId).append($('#commentTemplate').render(comment));
+            resetCommentForm(changesetId);
         },
         "json");
-
-    changeAddCommentDivToDefault(changesetId);
-    hideAddCommentButtons(changesetId);
-}
-
-function cancelComment(changesetId) {
-    changeAddCommentDivToDefault(changesetId);
-    hideAddCommentButtons(changesetId);
 }
 
 function cancelLineComment(fileIdentifier, changesetId, lineNumber) {
     $('#add-line-comment-' + fileIdentifier).val("");
-    $('#author-' + fileIdentifier).val("");
     hidePopovers(changesetId);
 }
 
@@ -41,22 +33,21 @@ function addLineComment(fileIdentifier, changesetId, lineNumber) {
 function hideAndClearLineCommentFrom(changesetId, fileIdentifier) {
     $('#content-files-' + changesetId + ' .linenums li').popover("hide");
     $('#add-line-comment-' + fileIdentifier).val("");
-    $('#author-' + fileIdentifier).val("");
 }
 
 function hidePopovers(changesetId) {
     $('#content-files-' + changesetId + ' .linenums li').popover("hide");
 }
 
-function hideAddCommentButtons(changesetId) {
-    $('#btn-' + changesetId).hide();
-    $('#c-btn-' + changesetId).hide();
+function expandCommentForm(changesetId) {
+    $('#commentFormButtons-' + changesetId).slideDown(100);
+    $('#add-comment-' + changesetId).attr('rows', 3);
 }
 
-function changeAddCommentDivToDefault(changesetId) {
+function resetCommentForm(changesetId) {
     $('#add-comment-' + changesetId).val("");
-    $('#username-' + changesetId).val("");
-    $('#add-comment-' + changesetId).removeClass('span12')
+    $('#add-comment-' + changesetId).attr('rows', 1);
+    $('#commentFormButtons-' + changesetId).hide();
 }
 
 function showCommentsToChangeset(id) {

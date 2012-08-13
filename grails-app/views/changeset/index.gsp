@@ -27,16 +27,11 @@
     </script>
 
 
-    <link media="screen" rel="stylesheet" href=" ${createLink(uri: '/css/bootstrap.css')}"/>
+    <link href=" ${createLink(uri: '/css/bootstrap.css')}" type="text/css" rel="stylesheet" media="screen"/>
 
-    <link href="${createLink(uri: '/css/js-view-presentation.css')}" rel="stylesheet" type="text/css"/>
-    <!--TODO examine if neccessary after plugging in syntaxhighlighter -->
-    <link href="${createLink(uri: '/css/js-view-syntaxhighlighter.css')}" rel="stylesheet" type="text/css"/>
     <script src="${createLink(uri: '/js/jquery.md5.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/jsrender.js')}" type="text/javascript"></script>
 
-    <link media="screen" rel="stylesheet" href=" ${createLink(uri: '/css/colorbox.css')}"/>
-    <script src="${createLink(uri: '/js/jquery.colorbox-min.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-collapse.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-tooltip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-popover.js')}" type="text/javascript"></script>
@@ -44,7 +39,7 @@
     <script src="${createLink(uri: '/js/jquery.syntaxhighlighter.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/jquery.zclip.js')}" type="text/javascript"></script>
 
-    <link href="${createLink(uri: '/css/codereview.css')}" rel="stylesheet" type="text/css"/>
+    <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet"/>
 
     <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/files.js')}" type="text/javascript"></script>
@@ -72,8 +67,17 @@
 <div id="content" class="container-fluid"></div>
 
 <script type="text/javascript">
+
+    $.views.helpers({
+        getGravatar:function (email, size) {
+            var size = size || 50;
+            return 'http://www.gravatar.com/avatar/' + $.md5(email) + '.jpg?s=' + size;
+        }
+    })
+
+    var hashAbbreviationLength = 8;
+
     $().ready(function () {
-        $('#content').html("");
         $.getJSON(uri.changeset.getLastChangesets, appendChangesets);
 
         $(window).scroll(function () {
@@ -83,12 +87,67 @@
         });
     });
 
-    $.views.helpers({
-        getGravatar:function (email, size) {
-            var size = size || 50;
-            return 'http://www.gravatar.com/avatar/' + $.md5(email) + '.jpg?s=' + size;
-        }
-    })
+</script>
+
+<script id="changesetTemplate" type="text/x-jsrender">
+    <div class="row-fluid">
+        <div class="span4">
+            <div class="span11 well">
+                <div class="span2">
+                    <img src='{{>~getGravatar(email)}}'/>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span7">
+                        <span class="label {{if belongsToCurrentUser}}label-success{{/if}}">{{>author}}</span> </br>
+                        <span class="label">{{>projectName}}</span>
+                    </div>
+
+                    <div class="span2">
+                        <span class="label label-info">{{>date}}</span>
+                        <span class="label label-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
+                    </div>
+                </div>
+
+                <div class="well-small">{{>commitComment}}</div>
+
+                <div class="changeset-content"></div>
+
+                <div id="more-button-{{>identifier}}">
+                    <a class="btn btn-primary btn-big" onclick="showChangesetDetails('{{>identifier}}')">
+                        More...
+                    </a>
+                </div>
+
+                <div id="changesetDetails-{{>identifier}}" style="display:none;">
+                    <div class="accordion" id="accordion-{{>identifier}}"></div>
+
+                    <div class="comments" id="comments-{{>identifier}}"></div>
+
+                    <div id="comment-form-{{>identifier}}">
+
+                    </div>
+
+                    <div id="less-button-{{>identifier}}">
+                        <a class="btn btn-primary btn-big" onclick="showLessAboutChangeset('{{>identifier}}')">
+                            Less...
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="span8">
+            <div class="span11 well" id="content-files-span-{{>identifier}}" style="display: none;">
+                <div id="content-files-title-{{>identifier}}"></div>
+                <br/>
+
+                <div class="files-right">
+                    <div id="content-files-{{>identifier}}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </script>
 
 <script id="accordionFileTemplate" type="text/x-jsrender">
@@ -190,7 +249,7 @@
                   style="height:80px;width:282px;"></textarea>
 
         <div class="btn-group pull-right">
-            <button type="button" class="btn btn-primary" id="btn-{{>fileId}}"
+            <button type="button" class="btn btn-primary" id="addCommentButton-{{>fileId}}"
                     onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
             <button type="button" class="btn btn-primary"
                     onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Cancel</button>
@@ -199,86 +258,19 @@
 
 </script>
 
-<script type="text/javascript">
-    function showTextareaButtons(identifier, textarea) {
-        $('#btn-' + identifier).show(100);
-        $('#c-btn-' + identifier).show(100);
-        $(textarea).addClass('span12');
-    }
-</script>
-
 <script id="commentFormTemplate" type="text/x-jsrender">
 
-    <form class="add_comment .form-inline">
-        <textarea onfocus="showTextareaButtons('{{>identifier}}',this)"
-                  id="add-comment-{{>identifier}}" placeholder="Add comment..." class="slideable"></textarea>
-
-        <div class="btn-group pull-right">
-            <button type="button" class="btn btn-primary btnWarningBackground" id="btn-{{>identifier}}"
-                    onClick="addComment('{{>identifier}}')">Add comment</button>
-            <button type="button" class="btn btn-primary" id="c-btn-{{>identifier}}"
-                    onClick="cancelComment('{{>identifier}}')">Cancel</button>
-        </div>
+    <form id="commentForm-{{>identifier}}" class="add_comment">
+        <textarea onfocus="expandCommentForm('{{>identifier}}',this)"
+                  id="add-comment-{{>identifier}}" placeholder="Add comment..."
+                  class="span12" rows="1"></textarea>
     </form>
 
-</script>
-
-<script id="changesetTemplate" type="text/x-jsrender">
-    <div class="row-fluid">
-        <div class="span4">
-            <div class="span11 well">
-                <div class="span2">
-                    <img src='{{>~getGravatar(email)}}'/>
-                </div>
-
-                <div class="row-fluid">
-                    <div class="span7">
-                        <span class="label {{if belongsToCurrentUser}}label-success{{/if}}">{{>author}}</span> </br>
-                        <span class="label">{{>projectName}}</span>
-                    </div>
-
-                    <div class="span2">
-                        <span class="label label-info">{{>date}}</span>
-                        <span class="label label-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
-                    </div>
-                </div>
-
-                <div class="well-small">{{>commitComment}}</div>
-
-                <div class="changeset-content"></div>
-
-                <div id="more-button-{{>identifier}}">
-                    <a class="btn btn-primary btn-big" onclick="showMoreAboutChangeset('{{>identifier}}')">
-                        More...
-                    </a>
-                </div>
-
-                <div class="accordion" id="accordion-{{>identifier}}"></div>
-
-                <div class="comments" id="comments-{{>identifier}}"></div>
-
-                <div id="comment-form-{{>identifier}}"></div>
-
-                <div id="less-button-{{>identifier}}">
-                    <a class="btn btn-primary btn-big" onclick="showLessAboutChangeset('{{>identifier}}')">
-                        Less...
-                    </a>
-                </div>
-
-                <div id="comment-form-buttons-{{>identifier}}"></div>
-            </div>
-        </div>
-
-        <div class="span8">
-            <div class="span11 well" id="content-files-span-{{>identifier}}">
-                <div id="content-files-title-{{>identifier}}"></div>
-                <br/>
-
-                <div class="files-right">
-                    <div id="content-files-{{>identifier}}"></div>
-                </div>
-            </div>
-        </div>
+    <div id="commentFormButtons-{{>identifier}}" class="btn-group pull-right" style="display: none;">
+        <button type="button" class="btn btn-primary btnWarningBackground" id="addCommentButton-{{>identifier}}"
+                onClick="addComment('{{>identifier}}')">Add comment</button>
+        <button type="button" class="btn btn-primary" id="cancellButton-{{>identifier}}"
+                onClick="resetCommentForm('{{>identifier}}')">Cancel</button>
     </div>
 </script>
 

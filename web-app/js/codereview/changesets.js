@@ -35,16 +35,12 @@ function appendChangesets(changesets) {
 }
 
 function appendChangeset(changeset) {
-    var shortIdentifier = changeset.identifier.substr(0, 8) + "...";
+    var shortIdentifier = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
     changeset = $.extend({shortIdentifier:shortIdentifier}, changeset)
     $('#content').append($("#changesetTemplate").render(changeset));
     showCommentsToChangeset(changeset.identifier);
-    $('#comments-' + changeset.identifier).hide();
-    appendCommentForm(changeset.identifier);
-    $('#less-button-' + changeset.identifier).hide();
+    $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render({identifier:changeset.identifier}));
     appendAccordion(changeset.identifier, null);
-    $('#accordion-' + changeset.identifier).hide();
-    $('#content-files-span-' + changeset.identifier).hide();
 
     $('#hash-' + changeset.identifier).tooltip({title:changeset.identifier + ", click to copy", trigger:"hover"});
     $('#hash-' + changeset.identifier).zclip({
@@ -172,26 +168,15 @@ function sliceName(name, lineWidth) {
     return newName.substr(0, newName.length - 1);
 }
 
-function showMoreAboutChangeset(identifier) {
+function showChangesetDetails(identifier) {
+    $('#changesetDetails-' + identifier).show(100);
     $("#more-button-" + identifier).hide();
-    $('#less-button-' + identifier).show(100);
-    $('#comments-' + identifier).show(100);
-    $('#comment-form-' + identifier).show(100);
-    $('#accordion-' + identifier).show(100);
-
 }
 
 function showLessAboutChangeset(identifier) {
-    $("#less-button-" + identifier).hide();
-    $('#more-button-' + identifier).show(100);
-    $('#comments-' + identifier).hide();
-    $('#comment-form-' + identifier).hide();
-    $('#accordion-' + identifier).hide();
+    $('#changesetDetails-' + identifier).hide(100);
+    $('#more-button-' + identifier).show();
 }
 
-function appendCommentForm(identifier) {
-    $("#comment-form-" + identifier).html('');
-    $('#comment-form-' + identifier).append($("#commentFormTemplate").render({identifier:identifier}));
-    $('#comment-form-' + identifier).hide();
-    hideAddCommentButtons(identifier);
-}
+
+

@@ -1,3 +1,7 @@
+textarea {
+    resize: none;
+}
+
 .comment-content {
     padding: 10px;
 }
@@ -11,5 +15,5 @@
 }
 
 .past {
-    background-color: #FFC
+    background-color: #FFC;
 }
