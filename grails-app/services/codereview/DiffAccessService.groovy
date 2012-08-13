@@ -25,10 +25,14 @@ class DiffAccessService {
 
     Repository getRepositoryFromWorkingDirectory(String gitWorkingDirectory) {
         File gitDir = new File(gitWorkingDirectory)
+
+
+        if (!gitDir.exists()) {
+            throw new IllegalArgumentException("Can't find git working directory and access revision.")
+        }
         RepositoryBuilder repositoryBuilder = new RepositoryBuilder()
-        Repository repository = repositoryBuilder.setWorkTree(gitDir) // --git-dir if supplied, no-op if null
+        Repository repository = repositoryBuilder.setGitDir(gitDir) // --git-dir if supplied, no-op if null
                 .readEnvironment() // scan environment GIT_* variables
-                .findGitDir() // scan up the file system tree
                 .build()
         return repository
     }
@@ -47,7 +51,11 @@ class DiffAccessService {
     }
 
     String getDiffToProjectFile(ProjectFile projectFile, String projectWorkingDirectory) {
-        String gitWorkingDirectory = projectWorkingDirectory +"/.git" //something like that, hopefully
+        String gitWorkingDirectory = projectWorkingDirectory
+        if(!projectWorkingDirectory.contains("/.git"))  {
+         gitWorkingDirectory += "/.git"
+        }
+
         String changesetDiff = getDiffComparingToPreviousCommit(projectFile.changeset.identifier, gitWorkingDirectory)
         return extractDiffForFileFromGitDiffCommandOutput(changesetDiff, projectFile.name)
     }

@@ -8,6 +8,7 @@ class ProjectFileController {
     def projectFileAccessService
     def infrastructureService
     def snippetWithCommentsService
+    def diffAccessService
 
     def index() { }
 
@@ -44,5 +45,19 @@ class ProjectFileController {
         }
         commentGroupsWithSnippets
     }
+
+    def getDiff(Long id) {
+        def projectFile = ProjectFile.findById(id)
+        def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(projectFile.changeset.project.url).absolutePath
+
+        File dir = new File(projectRootDirectory, "/.git")
+        if (dir.exists()) {
+            def diff = diffAccessService.getDiffToProjectFile(projectFile, projectRootDirectory )
+            render([diff: diff.split("\n").collect() { [line: it]}, fileId: projectFile.id, rawDiff: diff, fileType: projectFile.fileType] as JSON)
+        }
+
+        else render("No diff available, wrong working directory!")
+    }
+
 }
 

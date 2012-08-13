@@ -17,12 +17,14 @@ grails.project.dependency.resolution = {
         grailsHome()
         grailsCentral()
         mavenCentral()
+        mavenRepo "http://download.eclipse.org/jgit/maven"
     }
 
     dependencies {
         compile "org.apache.maven.scm:maven-scm-api:1.7"
         compile "org.apache.maven.scm:maven-scm-provider-gitexe:1.7"
         compile "com.google.guava:guava:12.0"
+        compile "org.eclipse.jgit:org.eclipse.jgit:2.0.0.201206130900-r"
     }
 
     plugins {

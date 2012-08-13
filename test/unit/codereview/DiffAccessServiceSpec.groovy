@@ -28,12 +28,13 @@ class DiffAccessServiceSpec extends Specification{
     String firstCodereviewHash
     String secondCodereviewHash
     String pathToGitWorkingDirectory
-
+    String pathToGitWorkingDirectory2
     def setup() {
         diffAccessService = new DiffAccessService()
         firstCodereviewHash =  "ac464172cd45551eac74f4e5b19234ac4c77e3d7"
         secondCodereviewHash = "7c7b0e3401dbfe52a4d51c44f92bc930a8b34f56"
         pathToGitWorkingDirectory ="./.git"
+        pathToGitWorkingDirectory2 = "."
     }
 
     def "should extract diff for file which name we've passed" () {
@@ -91,7 +92,7 @@ class DiffAccessServiceSpec extends Specification{
         when:
         def changeset = Changeset.build(identifier: secondCodereviewHash )
         def projectFile = ProjectFile.build(changeset: changeset, name: "grails-app/views/changeset/index.gsp")
-        String fileDiff = diffAccessService.getDiffToProjectFile(projectFile, pathToGitWorkingDirectory )
+        String fileDiff = diffAccessService.getDiffToProjectFile(projectFile, pathToGitWorkingDirectory2 )
 
         then:
         fileDiff != null
@@ -109,8 +110,7 @@ class DiffAccessServiceSpec extends Specification{
 
 
         then:
-        fileDiff != null
-        fileDiff != "" //sic! TODO It looks like jgit when given wrong dir uses default or something like that, check it out
+        thrown(IllegalArgumentException)
 
     }
 
@@ -118,7 +118,7 @@ class DiffAccessServiceSpec extends Specification{
         when:
         def changeset = Changeset.build(identifier: secondCodereviewHash )
         def projectFile = ProjectFile.build(changeset: changeset, name: "grails-app/nothing")
-        String fileDiff = diffAccessService.getDiffToProjectFile(projectFile, pathToGitWorkingDirectory )
+        String fileDiff = diffAccessService.getDiffToProjectFile(projectFile, pathToGitWorkingDirectory2 )
 
 
         then:
