@@ -5,6 +5,28 @@
     <g:javascript library="jquery"/>
     <r:layoutResources/>
 
+    <script type="text/javascript">
+        var uri = { //TODO de-duplicate
+            changeset:{
+                getLastChangesets:"${createLink(uri:'/changeset/getLastChangesets/')}",
+                getNextFewChangesetsOlderThan:"${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}",
+                getFileNamesForChangeset:"${createLink(uri:'/changeset/getFileNamesForChangeset/')}"
+            },
+            userComment:{
+                addComment:"${createLink(uri: '/userComment/addComment')}",
+                returnCommentsToChangeset:"${createLink(uri:'/userComment/returnCommentsToChangeset/')}"
+            },
+            lineComment:{
+                addComment:"${createLink(uri: '/lineComment/addComment')}"
+            },
+            projectFile:{
+                getFileWithContent:"${createLink(uri:'/projectFile/getFileWithContent/')}",
+                getLineCommentsWithSnippetsToFile:"${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}"
+            }
+        }
+    </script>
+
+
     <link media="screen" rel="stylesheet" href=" ${createLink(uri: '/css/bootstrap.css')}"/>
 
     <link href="${createLink(uri: '/css/js-view-presentation.css')}" rel="stylesheet" type="text/css"/>
@@ -32,81 +54,9 @@
         })
     </script>
 
-    <script type="text/javascript">
-
-        function addComment(changesetId) {
-
-            var text = $('#add-comment-' + changesetId).val();
-            if (text == "") {
-                return false
-            }
-
-            $.post("${createLink(controller:'UserComment', action:'addComment')}",
-                    { changesetId:changesetId, text:text },
-                    function (comment) {
-                        $('#comments-' + changesetId).append($('#commentTemplate').render(comment));
-                    },
-                    "json");
-
-            changeAddCommentDivToDefault(changesetId);
-            hideAddCommentButtons(changesetId);
-        }
-
-        function cancelComment(changesetId) {
-            changeAddCommentDivToDefault(changesetId);
-            hideAddCommentButtons(changesetId);
-        }
-
-        function cancelLineComment(fileIdentifier, changesetId, lineNumber) {
-            $('#add-line-comment-' + fileIdentifier).val("");
-            $('#author-' + fileIdentifier).val("");
-            hidePopovers(changesetId);
-        }
-
-        function addLineComment(fileIdentifier, changesetId, lineNumber) {
-            var text = $('#add-line-comment-' + fileIdentifier).val();
-
-            $.post("${createLink(controller:'LineComment', action:'addComment')}",
-                    { text:text, lineNumber:lineNumber, fileId:fileIdentifier}
-            ).done(function () {
-                        updateAccordion(changesetId, fileIdentifier);
-                        hideAndClearLineCommentFrom(changesetId, fileIdentifier);
-                    })
-        }
-
-        function hideAndClearLineCommentFrom(changesetId, fileIdentifier) {
-            $('#content-files-' + changesetId + ' .linenums li').popover("hide");
-            $('#add-line-comment-' + fileIdentifier).val("");
-            $('#author-' + fileIdentifier).val("");
-        }
-
-        function hidePopovers(changesetId) {
-            $('#content-files-' + changesetId + ' .linenums li').popover("hide");
-        }
-
-        function hideAddCommentButtons(changesetId) {
-            $('#btn-' + changesetId).hide();
-            $('#c-btn-' + changesetId).hide();
-        }
-
-        function changeAddCommentDivToDefault(changesetId) {
-            $('#add-comment-' + changesetId).val("");
-            $('#username-' + changesetId).val("");
-            $('#add-comment-' + changesetId).removeClass('span12')
-        }
-
-        function showCommentsToChangeset(id) {
-            $('#comments-' + id).html("");
-            var fileUrl = '${createLink(uri:'/userComment/returnCommentsToChangeset/')}';
-            fileUrl += id;
-            $.getJSON(fileUrl, function (data) {
-                for (i = 0; i < data.length; i++) {
-                    var comment = $("#commentTemplate").render(data[i]);
-                    $('#comments-' + id).append(comment);
-                }
-            });
-        }
-    </script>
+    <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/js/codereview/files.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/js/codereview/changesets.js')}" type="text/javascript"></script>
 
 </head>
 
@@ -132,291 +82,18 @@
 
 <script type="text/javascript">
 
-    var previousExpandedForFilesChangesetId;
-    function showFile(changesetId, fileId) {
-
-        var fileContentUrl = '${createLink(uri:'/projectFile/getFileWithContent/')}';
-        fileContentUrl += fileId;
-        var fileContent;
-        $.getJSON(fileContentUrl, function (file) {
-            var title = $("#fileTitleTemplate").render({
-                fileName:divideNameWithSlashesInTwo(file.name),
-                changesetId:changesetId,
-                fileId:fileId
-            });
-
-            $("#content-files-title-" + changesetId).html(title);
-
-            $("#content-files-" + changesetId).html("<pre class='codeViewer'/>");
-            $("#content-files-" + changesetId + " .codeViewer")
-                    .text(file.content)
-                    .addClass("language-" + file.filetype)
-                    .syntaxHighlight();
-
-            $('#content-files-' + changesetId + ' .linenums li').each(function (i, element, ignored) {
-                $(element).click(function () {
-                    $('#content-files-' + changesetId + ' .linenums li').popover("hide");
-                    $(element).popover("show");
-
-                });
-                //TODO check if creating the content of the popover (i.e. commentForm) can be deferred to popover activation
-                var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetId, lineNumber:i + 1 });
-                var popoverTitle = $("#popoverTitleTemplate").render({
-                    fileName:divideNameWithSlashesInTwo(file.name),
-                    changesetId:changesetId,
-                    fileId:fileId,
-                    lineNumber:i
-                });
-
-                $(element).popover({content:commentForm, title:popoverTitle, placement:"left", trigger:"manual" });
-            });
-        });
-        $("#content-files-" + changesetId).show(100);
-        $('#content-files-span-' + changesetId).show(100);
-        $("#content-files-title-" + changesetId).show(100);
-        if (previousExpandedForFilesChangesetId != null) {
-            hidePopovers(previousExpandedForFilesChangesetId);
-        }
-
-
-        $("#sh-btn-" + changesetId + fileId).hide();
-
-        previousExpandedForFilesChangesetId = changesetId;
-
-    }
-
-    function hideFile(changesetId, fileId) {
-        $("#content-files-" + changesetId).hide();
-
-        $("#sh-btn-" + changesetId + fileId).show();
-        $('#content-files-span-' + changesetId).hide();
-        $('#content-files-' + changesetId + ' .linenums li').popover("hide");
-        hidePopovers(changesetId);
-        $("#content-files-title-" + changesetId).hide();
-    }
-</script>
-
-
-<!-- generates list of changesets -->
-<script type="text/javascript">
-
-    var projectName = ''
-
-    function showProject(projectId) {
-        projectName = projectId
-        $(document).ready(function () {
-            $('#content').html("");
-            $.getJSON('${createLink(uri:'/changeset/getLastChangesets/')}' + '?' + $.param({projectName:projectName}), appendChangesets);
-        });
-
-        $(".collapse").collapse();
-    }
-
-    $(document).ready(function () {
+    $().ready(function () {
         $('#content').html("");
-        $.getJSON('${createLink(uri:'/changeset/getLastChangesets')}', appendChangesets);
+        $.getJSON(uri.changeset.getLastChangesets, appendChangesets);
 
+        $(window).scroll(function () {
+            if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+                onScrollThroughBottomAttempt()
+            }
+        });
     });
 
-    $(window).scroll(function () {
-        if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-            onScrollThroughBottomAttempt()
-        }
-    });
-
-    function onScrollThroughBottomAttempt() {
-        if (!changesetsLoading) {
-            changesetsLoading = true;
-            $.getJSON('${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}' + '?' + $.param({projectName:projectName, changesetId:lastChangesetId}), appendChangesets)
-        }
-    }
-
-    var lastChangesetId;
-    var changesetsLoading;
-
-    function appendChangesets(changesets) {
-        if (changesets.length > 0) {
-            lastChangesetId = $(changesets).last()[0].identifier //TODO find a better way
-            for (i = 0; i < changesets.length; i++) {
-                appendChangeset(changesets[i]);
-            }
-        }
-        changesetsLoading = false;
-    }
-
-    function appendChangeset(changeset) {
-        var shortIdentifier = changeset.identifier.substr(0, 8) + "...";
-        changeset = $.extend({shortIdentifier:shortIdentifier}, changeset)
-        $('#content').append($("#changesetTemplate").render(changeset));
-        showCommentsToChangeset(changeset.identifier);
-        $('#comments-' + changeset.identifier).hide();
-        appendCommentForm(changeset.identifier);
-        $('#less-button-' + changeset.identifier).hide();
-        appendAccordion(changeset.identifier, null);
-        $('#accordion-' + changeset.identifier).hide();
-        $('#content-files-span-' + changeset.identifier).hide();
-
-        $('#hash-' + changeset.identifier).tooltip({title:changeset.identifier + ", click to copy", trigger:"hover"});
-        $('#hash-' + changeset.identifier).zclip({
-            path:'js/ZeroClipboard.swf',
-            copy:changeset.identifier
-        });
-    }
-
-    function appendAccordion(changesetId, fileIdentifier) {
-        var fileUrl = '${createLink(uri:'/changeset/getFileNamesForChangeset/')}';
-        fileUrl = fileUrl.concat(changesetId);
-        var lineBoundary = 60;
-
-        $('#accordion-' + changesetId).html("");
-
-        $.getJSON(fileUrl, function (data) {
-
-            for (i = 0; i < data.length; i++) {
-                var accordionRow = $("#accordionFileTemplate").render({
-                    name:sliceName(data[i].name, lineBoundary),
-                    changesetId:changesetId,
-                    fileId:data[i].id,
-                    collapseId:(changesetId + data[i].id),
-                    howManyComments:data[i].lineComments.length
-                });
-
-                $('#accordion-' + changesetId).append(accordionRow);
-                appendSnippetToFileInAccordion(data[i].id)
-            }
-        });
-    }
-
-    function updateAccordion(changesetId, fileIdentifier) {
-        var fileUrl = '${createLink(uri:'/changeset/getFileNamesForChangeset/')}';
-        fileUrl = fileUrl.concat(changesetId);
-        var lineBoundary = 60;
-
-        $.getJSON(fileUrl, function (projectFiles) {
-
-            for (i = 0; i < projectFiles.length; i++) {
-                var projectFile = projectFiles[i];
-                var accordionRow = $("#accordionFileUpdateTemplate").render({
-                    name:sliceName(projectFile.name, lineBoundary),
-                    changesetId:changesetId,
-                    fileId:projectFile.id,
-                    collapseId:(changesetId + projectFile.id),
-                    howManyComments:projectFile.lineComments.length
-                });
-                if (fileIdentifier == projectFile.id) {
-                    $('#accordion-group-' + changesetId + projectFile.id).html("");
-                    $('#accordion-group-' + changesetId + projectFile.id).append(accordionRow);
-                    appendSnippetToFileInAccordion(projectFile.id)
-                }
-            }
-        });
-    }
-
-    function appendSnippetToFileInAccordion(fileId) {
-        var snippetUrl = '${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}' + fileId;
-        $.getJSON(snippetUrl, function (commentsGroupsWithSnippetsForFile) {
-            var fileType = commentsGroupsWithSnippetsForFile.fileType
-            var commentGroupsWithSnippets = commentsGroupsWithSnippetsForFile.commentGroupsWithSnippets
-
-            if (commentGroupsWithSnippets.length > 0) {
-                $('#accordion-inner-div-' + fileId).html("");
-
-                for (j = 0; j < commentGroupsWithSnippets.length; j++) {
-                    renderCommentGroupWithSnippets(commentGroupsWithSnippets[j], fileId, fileType);
-                }
-            }
-        });
-    }
-
-    function renderCommentGroupWithSnippets(commentGroupWithSnippet, fileId, fileType) {
-        var lineNumber = commentGroupWithSnippet.commentGroup[0].lineNumber;
-
-        var snippet = $("#snippetTemplate").render({
-            fileId:fileId,
-            lineNumber:lineNumber
-        });
-
-        $('#accordion-inner-div-snippet-' + fileId).append(snippet);
-        $("#snippet-" + fileId + "-" + lineNumber)
-                .html("<pre class='codeViewer'/></pre>")
-                .children(".codeViewer")
-                .text(commentGroupWithSnippet.snippet)
-                .addClass("linenums:" + lineNumber)
-                .addClass("language-" + fileType)
-                .syntaxHighlight();
-
-        renderCommentGroup(commentGroupWithSnippet.commentGroup, fileId, lineNumber);
-    }
-
-    function renderCommentGroup(commentGroup, fileId, lineNumber) {
-        for (var k = 0; k < commentGroup.length; k++) {
-            var comment = $("#commentTemplate").render(commentGroup[k]);
-            $('#div-comments-' + fileId + "-" + lineNumber).append(comment);
-        }
-    }
-
-    function divideNameWithSlashesInTwo(name) {
-        var splitted, newName;
-        splitted = name.split("/");
-        newName = splitted.slice(0, Math.ceil(splitted.length / 2)).join("/");
-        newName += "/ ";
-        newName += splitted.slice(Math.ceil(splitted.length / 2), splitted.length).join("/");
-        return newName;
-    }
-
-    function sliceName(name, lineWidth) {
-        var newName = "";
-        var boundary = lineWidth;
-        var splitted = name.split("/");
-        var i;
-        for (i = 0; i < splitted.length; i++) {
-            if (newName.length + splitted[i].length >= boundary) {
-                boundary += lineWidth;
-                newName += " ";
-                newName += splitted[i] + "/";
-            }
-            else {
-                newName += splitted[i] + "/";
-            }
-        }
-        return newName.substr(0, newName.length - 1);
-    }
-
-    function showMoreAboutChangeset(identifier) {
-        $("#more-button-" + identifier).hide();
-        $('#less-button-' + identifier).show(100);
-        $('#comments-' + identifier).show(100);
-        $('#comment-form-' + identifier).show(100);
-        $('#accordion-' + identifier).show(100);
-
-    }
-
-    function showLessAboutChangeset(identifier) {
-        $("#less-button-" + identifier).hide();
-        $('#more-button-' + identifier).show(100);
-        $('#comments-' + identifier).hide();
-        $('#comment-form-' + identifier).hide();
-        $('#accordion-' + identifier).hide();
-    }
-
-    function appendCommentForm(identifier) {
-        $("#comment-form-" + identifier).html('');
-        $('#comment-form-' + identifier).append($("#commentFormTemplate").render({identifier:identifier}));
-        $('#comment-form-' + identifier).hide();
-        hideAddCommentButtons(identifier);
-    }
-
 </script>
-
-<script type="text/javascript">
-    function showTextareaButtons(identifier,textarea) {
-        $('#btn-' + identifier).show(100);
-        $('#c-btn-' + identifier).show(100);
-        $(textarea).addClass('span12');
-    }
-
-</script>
-
 
 <script id="accordionFileTemplate" type="text/x-jsrender">
     <div class="accordion-group" id="accordion-group-{{>collapseId}}">
@@ -528,10 +205,18 @@
 
 </script>
 
+<script type="text/javascript">
+    function showTextareaButtons(identifier, textarea) {
+        $('#btn-' + identifier).show(100);
+        $('#c-btn-' + identifier).show(100);
+        $(textarea).addClass('span12');
+    }
+</script>
+
 <script id="commentFormTemplate" type="text/x-jsrender">
 
     <form class="add_comment .form-inline">
-           <textarea onfocus="showTextareaButtons('{{>identifier}}',this)"
+        <textarea onfocus="showTextareaButtons('{{>identifier}}',this)"
                   id="add-comment-{{>identifier}}" placeholder="Add comment..." class="slideable"></textarea>
 
         <div class="btn-group pull-right">
