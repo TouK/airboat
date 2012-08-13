@@ -14,7 +14,7 @@ class ChangesetControllerSpec extends Specification {
         controller.scmAccessService = Mock(ScmAccessService)
     }
 
-    def "getLastChangesets should return JSON"() {
+    def 'getLastChangesets should return JSON'() {
         given:
         def changesets = (1..3).collect { Changeset.build() }
 
@@ -22,11 +22,11 @@ class ChangesetControllerSpec extends Specification {
         controller.getLastChangesets()
 
         then:
-        response.getContentType().startsWith("application/json")
+        response.getContentType().startsWith('application/json')
         response.json.size() == changesets.size()
     }
 
-    def "initial checkout should delegate to service and display index afterwards"() {
+    def 'initial checkout should delegate to service and display index afterwards'() {
         def numberOfProjects = 3
         given:
         (1..numberOfProjects).each { Project.build() }
@@ -36,12 +36,12 @@ class ChangesetControllerSpec extends Specification {
 
         then:
         numberOfProjects * controller.scmAccessService.checkoutProject(_)
-        response.redirectedUrl == "/changeset/index"
+        response.redirectedUrl == '/changeset/index'
     }
 
-    def "getChangeset should return one specific changeset "() {
+    def 'getChangeset should return one specific changeset '() {
         given:
-        def specificChangesetId = "hash24"
+        def specificChangesetId = 'hash24'
         Changeset.build(identifier: specificChangesetId)
         Changeset.build()
         Changeset.build()
@@ -53,13 +53,13 @@ class ChangesetControllerSpec extends Specification {
         then:
         response.json.size() == 1
         def responseSpecificChangeset = response.json.first()
-        responseSpecificChangeset.identifier == "hash24"
+        responseSpecificChangeset.identifier == 'hash24'
     }
 
-    def "getFileNamesForChangeset should return file names from changeset "() {
+    def 'getFileNamesForChangeset should return file names from changeset '() {
         given:
         Changeset changeset = Changeset.build()
-        ProjectFile projectFile = ProjectFile.build(changeset: changeset, name: "kickass!")
+        ProjectFile projectFile = ProjectFile.build(changeset: changeset, name: 'kickass!')
 
         when:
         controller.params.id = changeset.identifier
@@ -84,7 +84,7 @@ class ChangesetControllerSpec extends Specification {
         response.json*.belongsToCurrentUser == [false, true]
     }
 
-    def "changeset without user should not belong to anonymous user"() {
+    def 'changeset without user should not belong to anonymous user'() {
         given:
         controller.authenticatedUser = null
 

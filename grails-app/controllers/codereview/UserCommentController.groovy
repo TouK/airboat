@@ -11,7 +11,7 @@ class UserCommentController {
     }
 
     //TODO think which option is better: artificial or natural (compound!) keys for changesets
-    @Secured("isAuthenticated()")
+    @Secured('isAuthenticated()')
     def addComment(String changesetId, String text) {
         def changeset = Changeset.findByIdentifier(changesetId)
         checkArgument(changeset != null, "Unknown changeset: ${changesetId}")
@@ -35,7 +35,7 @@ class UserCommentController {
         def commentProperties = userComment.properties + [
                 belongsToCurrentUser: userComment.author == authenticatedUser,
                 author: userComment.author.username,
-                dateCreated: userComment.dateCreated.format("yyyy-MM-dd HH:mm")
+                dateCreated: userComment.dateCreated.format('yyyy-MM-dd HH:mm')
         ]
         commentProperties.keySet().retainAll('text', 'author', 'dateCreated', 'belongsToCurrentUser')
         commentProperties

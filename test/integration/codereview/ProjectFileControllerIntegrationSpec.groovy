@@ -4,7 +4,7 @@ import org.spockframework.missing.ControllerIntegrationSpec
 
 class ProjectFileControllerIntegrationSpec extends ControllerIntegrationSpec {
 
-    def "should return comments"() {
+    def 'should return comments'() {
         given:
         def fileName = 'groovy.groovy'
         Project project = Project.build()
@@ -18,7 +18,7 @@ class ProjectFileControllerIntegrationSpec extends ControllerIntegrationSpec {
         LineComment secondLinecomment = LineComment.build(projectFile: secondProjectfile, text: 'second comment')
 
         when:
-        def comments =  controller.getLineComments(firstProjectfile)
+        def comments = controller.getLineComments(firstProjectfile)
 
         then:
         comments*.text == [firstLinecomment, secondLinecomment]*.text

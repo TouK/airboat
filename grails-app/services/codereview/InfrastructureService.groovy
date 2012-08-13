@@ -13,17 +13,17 @@ class InfrastructureService {
     }
 
     String getBaseDirectoryName() {
-        def customBaseDirectoryName = System.getProperty("codereview.workingDirectory")
+        def customBaseDirectoryName = System.getProperty('codereview.workingDirectory')
         if (customBaseDirectoryName != null) {
             return customBaseDirectoryName;
         } else {
-            return System.getProperty("java.io.tmpdir") + File.separator + 'codereview-work';
+            return System.getProperty('java.io.tmpdir') + File.separator + 'codereview-work';
         }
     }
 
     File createWorkingDirectory(File baseDirectory, String scmUrl) {
         if (!baseDirectory.exists()) {
-            log.warn("Directory " + baseDirectory + " does not exist. Creating one.")
+            log.warn('Directory ' + baseDirectory + ' does not exist. Creating one.')
             baseDirectory.mkdir()
         }
 
@@ -32,11 +32,11 @@ class InfrastructureService {
             return dir;
         }
 
-        log.info("Directory " + dir + " does not exist. Creating one.")
+        log.info('Directory ' + dir + ' does not exist. Creating one.')
         if (dir.mkdir()) {
             return dir;
         } else {
-            throw new IllegalStateException("Failed to create directory: " + dir);
+            throw new IllegalStateException('Failed to create directory: ' + dir);
         }
     }
 

@@ -12,17 +12,17 @@ import testFixture.Fixture
 //FIXME these tests are bloody slow, especially over VPN. Prepare a test repository in test setup / additional build script, maybe?
 class MavenScmApiLearningSpec extends Specification {
 
-    def "should get whole changelog from git"() {
+    def 'should get whole changelog from git'() {
 
         given:
-        ScmFileSet allFilesInProject = new ScmFileSet(Files.createTempDir(), "*.*")
+        ScmFileSet allFilesInProject = new ScmFileSet(Files.createTempDir(), '*.*')
         def gitProviderRepository = new GitScmProviderRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-        def gitRepository = new ScmRepository("git", gitProviderRepository)
+        def gitRepository = new ScmRepository('git', gitProviderRepository)
         def git = new GitExeScmProvider()
 
         when:
         git.checkOut(gitRepository, allFilesInProject)
-        def changeLogScmResult = git.changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, "master")
+        def changeLogScmResult = git.changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, 'master')
 
         then:
         def changelog = changeLogScmResult.getChangeLog().getChangeSets()

@@ -17,11 +17,11 @@ class UserCommentControllerSpec extends Specification {
         controller.metaClass.mixin(SpringSecurityControllerMethodsMock)
     }
 
-    def "should return comments to changeset when given right changeset id"() {
+    def 'should return comments to changeset when given right changeset id'() {
         given:
         controller.authenticatedUser = null
         User author = User.build()
-        UserComment comment = UserComment.build(author: author, text: "Very well indeed.")
+        UserComment comment = UserComment.build(author: author, text: 'Very well indeed.')
 
         when:
         controller.returnCommentsToChangeset(comment.changeset.identifier)
@@ -36,12 +36,12 @@ class UserCommentControllerSpec extends Specification {
     }
 
     @Ignore //FIXME implement
-    def "should demand authorization to add comment"() {
+    def 'should demand authorization to add comment'() {
 
     }
 
     @Ignore //FIXME implement
-    def "should throw excpetion for unknown changeset"() {
+    def 'should throw excpetion for unknown changeset'() {
 
     }
 

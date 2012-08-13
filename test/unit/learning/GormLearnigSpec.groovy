@@ -10,7 +10,7 @@ import codereview.UserComment
 @Build([User, Commiter, UserComment])
 class GormLearnigSpec extends Specification {
 
-    def "should set the one-side (User) in many-side (Changeset) when creating a bidirectional many-to-one relation"() {
+    def 'should set the one-side (User) in many-side (Changeset) when creating a bidirectional many-to-one relation'() {
         given:
         User user = User.build()
         Commiter commiter = Commiter.build()
@@ -27,7 +27,7 @@ class GormLearnigSpec extends Specification {
         user.save()
     }
 
-    def "should fill dateCreated field (also in unit test) upon save"() {
+    def 'should fill dateCreated field (also in unit test) upon save'() {
         given:
         UserComment comment = UserComment.build()
 

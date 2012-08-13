@@ -58,13 +58,13 @@ class SnippetWithCommentsService {
     }
 
     def getLinesAround(String text, Integer from, Integer count) {
-        checkArgument(from > 0, "from must be a positive integer" as Object) //TODO introduce own defensive programming helpers not needing the "as Object" cast
-        checkArgument(count > 0, "count must be a positive integer" as Object)
-        def splitted = text.split("\n")
+        checkArgument(from > 0, 'from must be a positive integer' as Object) //TODO introduce own defensive programming helpers not needing the "as Object" cast
+        checkArgument(count > 0, 'count must be a positive integer' as Object)
+        def splitted = text.split('\n')
         def fromZeroBasedInclusive = from - 1
         checkArgument(fromZeroBasedInclusive < splitted.size(), "from (=${from}) must be a valid line number in text (which has ${splitted.size()} lines).")
         def toZeroBasedExclusive = Math.min(fromZeroBasedInclusive + count, splitted.size())
 
-        return splitted[fromZeroBasedInclusive..toZeroBasedExclusive - 1].join("\n")
+        return splitted[fromZeroBasedInclusive..toZeroBasedExclusive - 1].join('\n')
     }
 }

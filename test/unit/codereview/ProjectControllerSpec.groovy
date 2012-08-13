@@ -7,7 +7,7 @@ import spock.lang.Specification
 @TestFor(ProjectControllerSpec)
 class ProjectControllerSpec extends Specification {
 
-    def "add test"() {
+    def 'add test'() {
         //implement test
     }
 

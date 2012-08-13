@@ -9,7 +9,7 @@ import org.apache.log4j.Level
 //                             "file:${userHome}/.grails/${appName}-config.groovy"]
 
 // if (System.properties["${appName}.config.location"]) {
-//    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
+//    grails.config.locations << 'file:' + System.properties["${appName}.config.location"]
 // }
 
 
@@ -37,10 +37,10 @@ grails.mime.types = [html: ['text/html', 'application/xhtml+xml'],
 grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*']
 
 // The default codec used to encode data with ${}
-grails.views.default.codec = "none" // none, html, base64
-grails.views.gsp.encoding = "UTF-8"
+grails.views.default.codec = 'none' // none, html, base64
+grails.views.gsp.encoding = 'UTF-8'
 
-grails.converters.encoding = "UTF-8"
+grails.converters.encoding = 'UTF-8'
 grails.converters.json.pretty.print = true
 
 // enable Sitemesh preprocessing of GSP pages
@@ -75,7 +75,7 @@ environments {
     }
     production {
         grails.logging.jul.usebridge = false
-        // TODO: grails.serverURL = "http://www.changeme.com"
+        // TODO: grails.serverURL = 'http://www.changeme.com'
     }
 }
 

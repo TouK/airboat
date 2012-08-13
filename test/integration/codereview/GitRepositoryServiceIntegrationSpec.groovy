@@ -32,7 +32,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
     //TODO add test for fetchFullChangelog when in case project was not been checked out
 
-    def "should create changesets with added files"() {
+    def 'should create changesets with added files'() {
         given:
         Project project = Project.build(url: Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
         gitRepositoryService.checkoutProject(project.url)
@@ -48,7 +48,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     }
 
     @Ignore //FIXME implement test
-    def "Should do initial check out"() {
+    def 'Should do initial check out'() {
 
     }
 

@@ -9,11 +9,11 @@ import spock.lang.Specification
 @Mock([Project, Changeset, ProjectFile, Commiter, User])
 class ScmAccessServiceSpec extends Specification {
 
-    def "should fetch and save changesets in db"() {
+    def 'should fetch and save changesets in db'() {
         given:
         Project project = Project.build()
-        def (changesetId, commitComment) = ["hash23", "commitin"]
-        ChangeSet changeSet = new ChangeSet(new Date(), commitComment, "Artur Gajowy <agj@touk.pl>", [])
+        def (changesetId, commitComment) = ['hash23', 'commitin']
+        ChangeSet changeSet = new ChangeSet(new Date(), commitComment, 'Artur Gajowy <agj@touk.pl>', [])
         changeSet.setRevision(changesetId)
 
         ScmAccessService scmAccessService = new ScmAccessService()

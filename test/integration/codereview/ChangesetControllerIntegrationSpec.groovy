@@ -11,7 +11,7 @@ class ChangesetControllerIntegrationSpec extends ControllerIntegrationSpec {
         JSON.registerObjectMarshaller(Changeset, { Changeset changeset -> [id: changeset.id, identifier: changeset.identifier] })
     }
 
-    def "should return few next changesets older than one with given revision id as JSON"() {
+    def 'should return few next changesets older than one with given revision id as JSON'() {
         given:
         String latestChangesetId = '3'
         Changeset.build(identifier: latestChangesetId, date: new Date(3))
@@ -28,7 +28,7 @@ class ChangesetControllerIntegrationSpec extends ControllerIntegrationSpec {
         responseChangesets[1].identifier == 1 as String
     }
 
-    def "getNextFewChangesetsOlderThan() should return few next changesets older one with given revision id as JSON"() {
+    def 'getNextFewChangesetsOlderThan() should return few next changesets older one with given revision id as JSON'() {
         given:
         String latestChangesetId = '3'
         Project project = Project.build(name: 'foo')

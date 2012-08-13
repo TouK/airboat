@@ -27,7 +27,7 @@ class ProjectFileController {
     def getLineCommentsWithSnippetsToFile(Long id) {
         def projectFile = ProjectFile.findById(id)
         if (projectFile == null) {
-            throw new IllegalArgumentException("No file with such id was found")
+            throw new IllegalArgumentException('No file with such id was found')
         }
         def comments = getLineComments(projectFile)
         def commentGroupsWithSnippets = getCommentsGroupsWithSnippets(projectFile, comments)
@@ -50,18 +50,18 @@ class ProjectFileController {
             def properties = comment.properties + [
                     fromRevision: getRevisionType(projectFile.changeset, comment.projectFile.changeset)
             ]
-            properties.keySet().retainAll("id", "author", "dateCreated", "lineNumber", "projectFile", "text", "fromRevision")
+            properties.keySet().retainAll('id', 'author', 'dateCreated', 'lineNumber', 'projectFile', 'text', 'fromRevision')
             properties
         }
     }
 
     String getRevisionType(Changeset currentCommentChangesetDate, Changeset commentChangeset) {
         if (currentCommentChangesetDate.date < commentChangeset.date) {
-            "future"
+            'future'
         } else if (currentCommentChangesetDate.date == commentChangeset.date) {
-            "current"
+            'current'
         } else {
-            "past"
+            'past'
         }
     }
 

@@ -28,7 +28,7 @@ class GitRepositoryService {
             scmProvider.addListener(new Log4jScmLogger())
             scmProvider.update(gitRepository, allFilesInProject)
         } else {
-            log.warn("Project directory does not exist yet. Please, checkout project first.")
+            log.warn('Project directory does not exist yet. Please, checkout project first.')
         }
     }
 
@@ -42,17 +42,17 @@ class GitRepositoryService {
 
         def scmProvider = new GitExeScmProvider()
         scmProvider.addListener(new Log4jScmLogger())
-        def changeLogScmResult = scmProvider.changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, "master")
+        def changeLogScmResult = scmProvider.changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, 'master')
 
         changeLogScmResult.getChangeLog()?.getChangeSets() as Set<ChangeSet>
     }
 
     private ScmRepository createScmRepositoryObject(String gitScmUrl) {
-        new ScmRepository("git", new GitScmProviderRepository(gitScmUrl))
+        new ScmRepository('git', new GitScmProviderRepository(gitScmUrl))
     }
 
     private ScmFileSet prepareScmFileset(String gitScmUrl) {
-        new ScmFileSet(infrastructureService.getProjectWorkingDirectory(gitScmUrl), "*.*")
+        new ScmFileSet(infrastructureService.getProjectWorkingDirectory(gitScmUrl), '*.*')
     }
 
     //FIXME get rid of this
