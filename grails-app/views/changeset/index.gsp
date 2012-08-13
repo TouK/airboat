@@ -614,7 +614,7 @@
 </script>
 
 <script id="commentTemplate" type="text/x-jsrender">
-    <div class="alert">
+    <div class="alert {{>fromRevision}}">
         <img src="{{>~getGravatar(author)}}"/>
         <span class="label {{if belongsToCurrentUser}}label-success{{/if}}">{{>author}}</span>
         <span class="label label-info pull-right">{{>dateCreated}}</span>

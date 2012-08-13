@@ -18,9 +18,9 @@ class ProjectFileControllerIntegrationSpec extends ControllerIntegrationSpec {
         LineComment secondLinecomment = LineComment.build(projectFile: secondProjectfile, text: 'second comment')
 
         when:
-        def comments =  controller.getLineComments(firstProjectfile.name, project.name)
+        def comments =  controller.getLineComments(firstProjectfile)
 
         then:
-        comments == [firstLinecomment, secondLinecomment]
+        comments*.text == [firstLinecomment, secondLinecomment]*.text
     }
 }
