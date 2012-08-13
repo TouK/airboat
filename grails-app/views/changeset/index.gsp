@@ -43,21 +43,12 @@
 
     <script src="${createLink(uri: '/js/jquery.syntaxhighlighter.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/jquery.zclip.js')}" type="text/javascript"></script>
-    <link href="${createLink(uri: '/css/codereview.css')}" rel="stylesheet" type="text/css"/>
 
-    <script type="text/javascript">
-        $.views.helpers({
-            getGravatar:function (email, size) {
-                var size = size || 50;
-                return 'http://www.gravatar.com/avatar/' + $.md5(email) + '.jpg?s=' + size;
-            }
-        })
-    </script>
+    <link href="${createLink(uri: '/css/codereview.css')}" rel="stylesheet" type="text/css"/>
 
     <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/files.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/changesets.js')}" type="text/javascript"></script>
-
 </head>
 
 <body>
@@ -81,7 +72,6 @@
 <div id="content" class="container-fluid"></div>
 
 <script type="text/javascript">
-
     $().ready(function () {
         $('#content').html("");
         $.getJSON(uri.changeset.getLastChangesets, appendChangesets);
@@ -93,6 +83,12 @@
         });
     });
 
+    $.views.helpers({
+        getGravatar:function (email, size) {
+            var size = size || 50;
+            return 'http://www.gravatar.com/avatar/' + $.md5(email) + '.jpg?s=' + size;
+        }
+    })
 </script>
 
 <script id="accordionFileTemplate" type="text/x-jsrender">
@@ -150,11 +146,8 @@
     </div>
 
     <div id="collapse-inner-{{>collapseId}}" class="accordion-body collapse in">
-
         <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
-
             <div id="accordion-inner-div-snippet-{{>fileId}}"></div>
-
         </div>
     </div>
 
@@ -168,13 +161,14 @@
 <script id="fileTitleTemplate" type="text/x-jsrender">
     <div class="row-fluid">
 
-        <div class="span11 ">
+        <div class="span11">
             <h1>{{>fileName}}</h1>
         </div>
 
         <div class="span1">
-            <button type="button" class="btn pull-right " onClick="hideFile('{{>changesetId}}', '{{>fileId}}')"><i
-                    class="icon-remove"></i></button>
+            <button type="button" class="btn pull-right " onClick="hideFile('{{>changesetId}}', '{{>fileId}}')">
+                <i class="icon-remove"></i>
+            </button>
         </div>
     </div>
 </script>
@@ -251,7 +245,6 @@
 
                 <div class="well-small">{{>commitComment}}</div>
 
-
                 <div class="changeset-content"></div>
 
                 <div id="more-button-{{>identifier}}">
@@ -262,12 +255,9 @@
 
                 <div class="accordion" id="accordion-{{>identifier}}"></div>
 
-
                 <div class="comments" id="comments-{{>identifier}}"></div>
 
-                <div id="comment-form-{{>identifier}}">
-
-                </div>
+                <div id="comment-form-{{>identifier}}"></div>
 
                 <div id="less-button-{{>identifier}}">
                     <a class="btn btn-primary btn-big" onclick="showLessAboutChangeset('{{>identifier}}')">
@@ -275,17 +265,11 @@
                     </a>
                 </div>
 
-
-                <div id="comment-form-buttons-{{>identifier}}">
-
-                </div>
-
+                <div id="comment-form-buttons-{{>identifier}}"></div>
             </div>
-
         </div>
 
         <div class="span8">
-
             <div class="span11 well" id="content-files-span-{{>identifier}}">
                 <div id="content-files-title-{{>identifier}}"></div>
                 <br/>
