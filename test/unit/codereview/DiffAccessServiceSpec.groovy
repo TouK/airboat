@@ -16,7 +16,7 @@ import org.eclipse.jgit.lib.RepositoryBuilder
 import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.treewalk.CanonicalTreeParser
 import org.eclipse.jgit.lib.ObjectReader
-import testFixture.Fixture
+import testFixture.JgitFixture
 import org.junit.Test
 
 @Build([ProjectFile, Changeset])
@@ -29,6 +29,7 @@ class DiffAccessServiceSpec extends Specification{
     String secondCodereviewHash
     String pathToGitWorkingDirectory
     String pathToGitWorkingDirectory2
+
     def setup() {
         diffAccessService = new DiffAccessService()
         firstCodereviewHash =  "ac464172cd45551eac74f4e5b19234ac4c77e3d7"
@@ -40,7 +41,7 @@ class DiffAccessServiceSpec extends Specification{
     def "should extract diff for file which name we've passed" () {
         when:
         String fileName = "/grails-app/controllers/codereview/ChangesetController.groovy"
-        String correctGitDiffOutput = Fixture.CORRECT_GIT_DIF_OUTPUT
+        String correctGitDiffOutput = JgitFixture.CORRECT_GIT_DIF_OUTPUT
         def fileDiff = diffAccessService.extractDiffForFileFromGitDiffCommandOutput(correctGitDiffOutput, fileName)
         then:
         fileDiff != null
@@ -106,7 +107,7 @@ class DiffAccessServiceSpec extends Specification{
         def wrongDirectoryPath = "../../wrong"
         def changeset = Changeset.build(identifier: secondCodereviewHash )
         def projectFile = ProjectFile.build(changeset: changeset, name: "grails-app/views/changeset/index.gsp")
-        String fileDiff = diffAccessService.getDiffToProjectFile(projectFile, wrongDirectoryPath )
+        diffAccessService.getDiffToProjectFile(projectFile, wrongDirectoryPath )
 
 
         then:

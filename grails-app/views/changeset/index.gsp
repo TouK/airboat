@@ -188,19 +188,16 @@
 
     function appendDiff(changesetId, fileId) {
 
-        var diffUrl =  '${createLink(uri:'/projectFile/getDiff/')}'+ fileId
+        var diffUrl =  '${createLink(uri:'/projectFile/getDiff/')}'+ fileId;
 
         $.getJSON(diffUrl, function (projectDiff) {
-            var diff = $("#diffTemplate").render({
-                changesetId: changesetId
-           });
-            $("#diff-"+changesetId).html(diff);
+            var diff = $("#diffTemplate").render({changesetId: changesetId});
+            $("#diff-" + changesetId).html(diff);
 
             $.SyntaxHighlighter.init({lineNumbers: false});
 
-
-            $("#diff-box-"+changesetId).html("<pre class='codeViewer'/>");
-            $("#diff-box-"+changesetId + " .codeViewer")
+            $("#diff-box-" + changesetId).html("<pre class='codeViewer'/>");
+            $("#diff-box-" + changesetId + " .codeViewer")
                     .html(colorizeDiff(projectDiff.rawDiff))
                     .addClass("language-" + projectDiff.fileType)
                     .syntaxHighlight();
@@ -210,7 +207,7 @@
 
     }
     function colorizeDiff(text) {
-        var lines = text.split("\n");
+        var lines = escapeHTML(text).split("\n");
         for(i = 0; i< lines.length ; i++) {
             if(lines[i][0] == '+') {
             lines[i] = '<span style="background-color:rgba(73,203,30,0.69)">' + lines[i] +"</span>";
@@ -221,12 +218,15 @@
             else
                 lines[i] = '<span>' + lines[i] + '</span>'
         }
-
         return lines.join("\n");
     }
+
+    function escapeHTML(text) {
+        return $('<div/>').text(text).html();
+    }
+
     function showDiff(changesetId) {
         $("#diff-box-" + changesetId).show(100);
-
         $("#button-hiding-diff-"+changesetId).show(100);
         $("#button-showing-diff-"+changesetId).hide();
     }
@@ -470,11 +470,11 @@
 </script>
 
 <script id="diffTemplate" type="text/x-jsrender">
+
     <div class="row-fluid">
         <div class="span11 well-small">
             <button type="button" class="btn btn-primary" onClick="showDiff('{{>changesetId}}')" id="button-showing-diff-{{>changesetId}}">Show diff</button>
             <button type="button" class="btn btn-primary" onClick="hideDiff('{{>changesetId}}')" style="display:none"  id="button-hiding-diff-{{>changesetId}}">Hide diff</button>
-
         </div>
     </div>
 
@@ -670,8 +670,8 @@
             <div class="span11 well" id="content-files-span-{{>identifier}}">
                 <div id="content-files-title-{{>identifier}}"></div>
                 <br/>
-                <div id="diff-experimental-{{>identifier}}"></div>
-                <div id="diff-{{>identifier}}">Hello, diff here!</div>
+
+                <div id="diff-{{>identifier}}"></div>
 
 
                 <div class="files-right">
