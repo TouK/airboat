@@ -33,7 +33,7 @@ class GitRepositoryService {
     }
 
     def validateScmFileset(ScmFileSet scmFileSet) {
-        return scmFileSet.basedir.exists()
+        scmFileSet.basedir.exists()
     }
 
     Set<ChangeSet> getAllChangeSets(String gitScmUrl) {
@@ -44,7 +44,7 @@ class GitRepositoryService {
         scmProvider.addListener(new Log4jScmLogger())
         def changeLogScmResult = scmProvider.changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, 'master')
 
-        changeLogScmResult.getChangeLog()?.getChangeSets() as Set<ChangeSet>
+        changeLogScmResult.changeLog?.changeSets as Set<ChangeSet>
     }
 
     private ScmRepository createScmRepositoryObject(String gitScmUrl) {

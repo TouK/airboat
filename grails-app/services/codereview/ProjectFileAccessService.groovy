@@ -6,16 +6,17 @@ class ProjectFileAccessService {
 
         def file = new File(projectDir, fileName)
         def content
-        if (file.exists())
-            content = file.getText()
-        else
+        if (file.exists()) {
+            content = file.text
+        }
+        else {
             content = "File doesn't exist" //FIXME not like that, return null (!?) or throw an exception
-
-        return content
+        }
+        content
     }
 
     def getFileContent(ProjectFile projectFile, projectRootDirectory) {
         def path = projectRootDirectory.getAbsolutePath()
-        return fetchFileContentFromPath(path, projectFile.name)
+        fetchFileContentFromPath(path, projectFile.name)
     }
 }

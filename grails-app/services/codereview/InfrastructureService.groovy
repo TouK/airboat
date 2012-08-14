@@ -4,12 +4,12 @@ package codereview
 class InfrastructureService {
 
     public File getProjectWorkingDirectory(String scmUrl) {
-        File baseDir = getBaseDirectory()
+        File baseDir = baseDirectory
         createWorkingDirectory(baseDir, scmUrl)
     }
 
     File getBaseDirectory() {
-        return new File(getBaseDirectoryName());
+        new File(baseDirectoryName);
     }
 
     String getBaseDirectoryName() {
@@ -22,22 +22,36 @@ class InfrastructureService {
     }
 
     File createWorkingDirectory(File baseDirectory, String scmUrl) {
-        if (!baseDirectory.exists()) {
-            log.warn('Directory ' + baseDirectory + ' does not exist. Creating one.')
-            baseDirectory.mkdir()
-        }
+        checkBaseDirectory(baseDirectory)
+        return checkProjectDirectory(baseDirectory, scmUrl)
+    }
 
-        File dir = new File(baseDirectory, getDirectoryNameForTheProject(scmUrl))
-        if (dir.exists()) {
-            return dir;
+    private File checkProjectDirectory(File baseDirectory, String scmUrl) {
+        File projectDirectory = new File(baseDirectory, getDirectoryNameForTheProject(scmUrl))
+        if (projectDirectory.exists()) {
+            return projectDirectory;
         }
+        return createProjectDirectory(projectDirectory)
+    }
 
-        log.info('Directory ' + dir + ' does not exist. Creating one.')
-        if (dir.mkdir()) {
-            return dir;
+    private File createProjectDirectory(File projectDirectory) {
+        log.info('Directory ' + projectDirectory + ' does not exist. Creating one.')
+        if (projectDirectory.mkdir()) {
+            return projectDirectory;
         } else {
-            throw new IllegalStateException('Failed to create directory: ' + dir);
+            throw new IllegalStateException('Failed to create directory: ' + projectDirectory);
         }
+    }
+
+    private void checkBaseDirectory(File baseDirectory) {
+        if (!baseDirectory.exists()) {
+            createBaseDirectory(baseDirectory)
+        }
+    }
+
+    private void createBaseDirectory(File baseDirectory) {
+        log.warn('Directory ' + baseDirectory + ' does not exist. Creating one.')
+        baseDirectory.mkdir()
     }
 
     String getDirectoryNameForTheProject(String scmUrl) {

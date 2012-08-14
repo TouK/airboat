@@ -14,9 +14,9 @@ class ScmAccessService {
     //FIXME this is Git-specific
     static String getEmail(String gitCommiterId) {
         if (gitCommiterId.contains('@')) {
-            return gitCommiterId[gitCommiterId.indexOf('<') + 1..gitCommiterId.indexOf('>') - 1]
+             gitCommiterId[gitCommiterId.indexOf('<') + 1..gitCommiterId.indexOf('>') - 1]
         } else {
-            return null;
+             null;
         }
     }
 
@@ -49,7 +49,6 @@ class ScmAccessService {
                 user.save(failOnError: true, flush: true)
             }
         }
-
         project.save(failOnError: true, flush: true)
     }
 
@@ -60,7 +59,7 @@ class ScmAccessService {
 
     Set<Changeset> convertToChangesets(Set<org.apache.maven.scm.ChangeSet> scmChanges) {
         if (scmChanges == null) {
-            return []
+            []
         } else {
             scmChanges.collect { convertToChangeset(it) }
         }
@@ -68,15 +67,14 @@ class ScmAccessService {
 
     @VisibleForTesting
     Changeset convertToChangeset(ChangeSet scmApiChangeSet) {
-        Commiter commiter = new Commiter(scmApiChangeSet.getAuthor())
+        Commiter commiter = new Commiter(scmApiChangeSet.author)
         Changeset changeset = new Changeset(scmApiChangeSet.revision, scmApiChangeSet.comment, scmApiChangeSet.date)
         commiter.addToChangesets(changeset)
 
-        scmApiChangeSet.getFiles().each { file ->
-            def projectFile = new ProjectFile(file.getName(), gitRepositoryService.returnFileContent())
+        scmApiChangeSet.files.each { file ->
+            def projectFile = new ProjectFile(file.name, gitRepositoryService.returnFileContent())
             changeset.addToProjectFiles(projectFile)
         }
-
-        return changeset
+        changeset
     }
 }

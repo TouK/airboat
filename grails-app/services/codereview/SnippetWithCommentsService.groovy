@@ -26,35 +26,38 @@ class SnippetWithCommentsService {
                 commentGroups[i][j++] = it
             }
         }
-        return commentGroups
+         commentGroups
     }
 
     def prepareCommentGroupsWithSnippets(commentGroups, String fileType, fileContent) {
         def commentGroupsWithSnippets = []
-        def i = 0
+        def iterator = 0
         def snippet
-        while (i < commentGroups.size() - 1) {      //how long snippet do we need?
+        def oneLine = 1
+        def twoLines = 2
+        def threeLines = 3
+        while (iterator < commentGroups.size() - 1) {      //how long snippet do we need?
 
-            if (commentGroups[i + 1][0].lineNumber - commentGroups[i][0].lineNumber == 1) {
-                snippet = getSnippet(commentGroups[i][0], 1, fileContent)
+            if (commentGroups[iterator + 1][0].lineNumber - commentGroups[iterator][0].lineNumber == 1) {
+                snippet = getSnippet(commentGroups[iterator][0], oneLine, fileContent)
             }
-            else if (commentGroups[i + 1][0].lineNumber - commentGroups[i][0].lineNumber == 2) {
-                snippet = getSnippet(commentGroups[i][0], 2, fileContent)
+            else if (commentGroups[iterator + 1][0].lineNumber - commentGroups[iterator][0].lineNumber == 2) {
+                snippet = getSnippet(commentGroups[iterator][0], twoLines, fileContent)
             }
             else {
-                snippet = getSnippet(commentGroups[i][0], 3, fileContent)
+                snippet = getSnippet(commentGroups[iterator][0], threeLines, fileContent)
             }
-            commentGroupsWithSnippets[i] = [commentGroup: commentGroups[i], snippet: snippet, filetype: fileType]
-            i++
+            commentGroupsWithSnippets[iterator] = [commentGroup: commentGroups[iterator], snippet: snippet, filetype: fileType]
+            iterator++
         }
 
-        snippet = getSnippet(commentGroups[i][0], 3, fileContent)
-        commentGroupsWithSnippets[i] = [commentGroup: commentGroups[i], snippet: snippet, filetype: fileType]
-        return commentGroupsWithSnippets
+        snippet = getSnippet(commentGroups[iterator][0], threeLines, fileContent)
+        commentGroupsWithSnippets[iterator] = [commentGroup: commentGroups[iterator], snippet: snippet, filetype: fileType]
+         commentGroupsWithSnippets
     }
 
     def getSnippet(comment, howManyLines, fileContent) {
-        return getLinesAround(fileContent, comment.lineNumber, howManyLines)
+         getLinesAround(fileContent, comment.lineNumber, howManyLines)
     }
 
     def getLinesAround(String text, Integer from, Integer count) {
@@ -65,6 +68,6 @@ class SnippetWithCommentsService {
         checkArgument(fromZeroBasedInclusive < splitted.size(), "from (=${from}) must be a valid line number in text (which has ${splitted.size()} lines).")
         def toZeroBasedExclusive = Math.min(fromZeroBasedInclusive + count, splitted.size())
 
-        return splitted[fromZeroBasedInclusive..toZeroBasedExclusive - 1].join('\n')
+         splitted[fromZeroBasedInclusive..toZeroBasedExclusive - 1].join('\n')
     }
 }
