@@ -17,6 +17,7 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser
 import org.eclipse.jgit.lib.ObjectReader
 import org.eclipse.jgit.lib.AnyObjectId
 import org.eclipse.jgit.lib.ObjectId
+import spock.lang.Ignore
 
 class JgitApiLearningSpec extends Specification {
 
@@ -34,6 +35,7 @@ class JgitApiLearningSpec extends Specification {
         repository.toString() == "Repository[/home/touk/codereview]"
     }
 
+    @Ignore
     def "What repository properties are?"() {
         when:
         def gitDir = new File("/home/touk/codereview")
@@ -48,6 +50,7 @@ class JgitApiLearningSpec extends Specification {
         repository.config.toString() == "FileBasedConfig[/home/touk/codereview/.git/config]"
     }
 
+    @Ignore
     def "How to create git object"() {
         when:
         def gitDir = new File("/home/touk/codereview/.git")
