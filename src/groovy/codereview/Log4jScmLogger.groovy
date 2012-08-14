@@ -44,7 +44,7 @@ class Log4jScmLogger implements ScmLogger {
 
     @Override
     void info(Throwable error) {
-        log.info("", error)
+        log.info('', error)
     }
 
     @Override

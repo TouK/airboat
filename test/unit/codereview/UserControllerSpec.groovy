@@ -9,13 +9,13 @@ import spock.lang.Specification
 @Build([User, Commiter])
 class UserControllerSpec extends Specification {
 
-    def "should login newly created user"() {
+    def 'should login newly created user'() {
         given:
-        def username = "agj@touk.pl"
+        def username = 'agj@touk.pl'
         controller.springSecurityService = Mock(SpringSecurityService)
 
         when:
-        String password = "dupa.8"
+        String password = 'dupa.8'
         controller.save(new CreateUserCommand(
                 email: username,
                 password: password,
@@ -28,11 +28,11 @@ class UserControllerSpec extends Specification {
 
     def "should reject 'jil@1' as a wrong email address"() {
         given:
-        def username = "jil@1"
+        def username = 'jil@1'
         controller.springSecurityService = Mock(SpringSecurityService)
 
         when:
-        String password = "dupa.8"
+        String password = 'dupa.8'
         controller.save(new CreateUserCommand(
                 email: username,
                 password: password,
@@ -49,7 +49,7 @@ class UserControllerSpec extends Specification {
         User user = User.build(springSecurityService: Mock(SpringSecurityService))
 
         when:
-        String password = "dupa.8"
+        String password = 'dupa.8'
         controller.save(new CreateUserCommand(
                 email: user.email,
                 password: password,

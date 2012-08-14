@@ -22,19 +22,19 @@ class LineCommentControllerSpec extends Specification {
         controller.projectFileAccessService.getFileContent(_, _) >> nLinesOfSampleText(n: 12)
     }
 
-    def "should add comment correctly to db"() {
+    def 'should add comment correctly to db'() {
         given:
-        controller.authenticatedUser = User.build(username: "logged.in@codereview.com")
+        controller.authenticatedUser = User.build(username: 'logged.in@codereview.com')
 
-        def testProject = new Project("testProject", "testUrl")
-        def changeset = new Changeset("hash23", "zmiany", new Date())
-        def projectFile = new ProjectFile("info.txt", "read manuals!")
+        def testProject = new Project('testProject', 'testUrl')
+        def changeset = new Changeset('hash23', 'zmiany', new Date())
+        def projectFile = new ProjectFile('info.txt', 'read manuals!')
         testProject.addToChangesets(changeset)
         changeset.addToProjectFiles(projectFile)
         testProject.save()
         def fileId = projectFile.id
         def lineNumber = 4
-        String text = "wrong indentation, boy!"
+        String text = 'wrong indentation, boy!'
 
         when:
         controller.addComment(fileId, lineNumber, text)

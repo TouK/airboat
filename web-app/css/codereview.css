@@ -1,3 +1,19 @@
+textarea {
+    resize: none;
+}
+
 .comment-content {
     padding: 10px;
+}
+
+.future {
+    background-color: #FAFEFC;
+}
+
+.current {
+    background-color: #C6CEA9;
+}
+
+.past {
+    background-color: #FFC;
 }

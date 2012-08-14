@@ -17,7 +17,7 @@ class CommitterConstraintsSpec extends Specification {
     }
 
     @Unroll("Field '#field' of class Committer should have constraint '#constraint' violated by value '#violatingValue'")
-    def "Committer should have well defined constraints:"() {
+    def 'Committer should have well defined constraints:'() {
 
         when:
         def committer = new Commiter("$field": violatingValue)
@@ -28,12 +28,12 @@ class CommitterConstraintsSpec extends Specification {
 
         where:
         field           | constraint | violatingValue
-        'cvsCommiterId' | 'blank'    | ""
+        'cvsCommiterId' | 'blank'    | ''
         'cvsCommiterId' | 'unique'   | alreadyUserdCvsCommitterId
         'cvsCommiterId' | 'nullable' | null
     }
 
-    def "should be vaild without a user"() {
+    def 'should be vaild without a user'() {
         when:
         Commiter committer = Commiter.build()
 

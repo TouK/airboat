@@ -13,8 +13,8 @@ class ScmAccessService {
 
     //FIXME this is Git-specific
     static String getEmail(String gitCommiterId) {
-        if (gitCommiterId.contains("@")) {
-            return gitCommiterId[gitCommiterId.indexOf("<") + 1..gitCommiterId.indexOf(">") - 1]
+        if (gitCommiterId.contains('@')) {
+            return gitCommiterId[gitCommiterId.indexOf('<') + 1..gitCommiterId.indexOf('>') - 1]
         } else {
             return null;
         }

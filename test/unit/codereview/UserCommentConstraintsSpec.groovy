@@ -11,7 +11,7 @@ import grails.buildtestdata.mixin.Build
 class UserCommentConstraintsSpec extends Specification {
 
     @Unroll("Field '#field' of class UserComment should have constraint '#constraint' violated by value '#violatingValue'")
-    def "UserComment should have well defined constraints:"() {
+    def 'UserComment should have well defined constraints:'() {
 
         when:
         def userComment = new UserComment("$field": violatingValue)
@@ -24,14 +24,14 @@ class UserCommentConstraintsSpec extends Specification {
 
         where:
         field    | constraint | violatingValue
-        'text'   | 'blank'    | ""
+        'text'   | 'blank'    | ''
         'text'   | 'nullable' | null
         'author' | 'nullable' | null
 
     }
     //TODO write a more compound validation test where objects are valid in general and only tested field is incorrect
 
-    def "should belongTo User"() {
+    def 'should belongTo User'() {
         expect:
         UserComment.belongsTo.author == User
     }

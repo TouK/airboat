@@ -9,8 +9,8 @@ import testFixture.Fixture
 class ProjectFileAccessServiceSpec extends Specification {
     def "when given project and file name and file doesn't exist should return info about it"() {
         given:
-        def fileName = "idontexist.txt"
-        def projectPath = "."
+        def fileName = 'idontexist.txt'
+        def projectPath = '.'
         ProjectFileAccessService projectFileAccessService = new ProjectFileAccessService()
         def content
 
@@ -22,10 +22,10 @@ class ProjectFileAccessServiceSpec extends Specification {
         content == "File doesn't exist"
     }
 
-    def "should return file content if file exists"() {
+    def 'should return file content if file exists'() {
         given:
         def fileName = Fixture.PATH_TO_FILE_PRESENT_IN_FIRST_COMMIT
-        def projectPath = "."
+        def projectPath = '.'
         ProjectFileAccessService projectFileAccessService = new ProjectFileAccessService()
 
         when:
@@ -34,11 +34,11 @@ class ProjectFileAccessServiceSpec extends Specification {
         then:
         content != null
         content != "File doesn't exist"
-        content.contains("grails.mime.file.extensions = true")
+        content.contains('grails.mime.file.extensions = true')
     }
 
     @Ignore
-    def "how should it behave if asked for not a text file"() {
+    def 'how should it behave if asked for not a text file'() {
         //  given:
         //
         //  when:

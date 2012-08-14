@@ -9,7 +9,7 @@ import spock.lang.Unroll
 @Build(Changeset)
 class ChangesetConstraintsSpec extends Specification {
 
-    static String alreadyUsedIdentifier = "alreadyUsedIdentifier"
+    static String alreadyUsedIdentifier = 'alreadyUsedIdentifier'
 
     def setup() {
         mockForConstraintsTests(Changeset)
@@ -17,7 +17,7 @@ class ChangesetConstraintsSpec extends Specification {
     }
 
     @Unroll("Field '#field' of class Changeset should have constraint '#constraint' violated by value '#violatingValue'")
-    def "Changeset should have well defined constraints:"() {
+    def 'Changeset should have well defined constraints:'() {
 
         when:
         def changeset = new Changeset("$field": violatingValue)
@@ -28,14 +28,14 @@ class ChangesetConstraintsSpec extends Specification {
 
         where:
         field           | constraint | violatingValue
-        'identifier'    | 'blank'    | ""
+        'identifier'    | 'blank'    | ''
         'identifier'    | 'unique'   | alreadyUsedIdentifier
         'identifier'    | 'nullable' | null
         'commitComment' | 'nullable' | null
         'date'          | 'nullable' | null
     }
 
-    def "commentsCount should be zero (not null) for a Changeset without UserComment-s"() {
+    def 'commentsCount should be zero (not null) for a Changeset without UserComment-s'() {
         when:
         Changeset changeset = Changeset.build()
 

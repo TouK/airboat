@@ -9,7 +9,7 @@ class LineCommentController {
     def projectFileAccessService
     def infrastructureService
 
-    @Secured("isAuthenticated()")
+    @Secured('isAuthenticated()')
     def addComment(long fileId, int lineNumber, String text) {
 
         def projectFile = ProjectFile.findById(fileId)

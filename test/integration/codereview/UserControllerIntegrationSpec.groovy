@@ -8,10 +8,10 @@ class UserControllerIntegrationSpec extends IntegrationSpec {
 
     def controller = new UserController()
 
-    def "should save and enable user"() {
+    def 'should save and enable user'() {
         given:
-        def username = "agj@touk.pl"
-        String password = "dupa.8"
+        def username = 'agj@touk.pl'
+        String password = 'dupa.8'
         controller.springSecurityService = springSecurityService //TODO examine if spring can do it for us here
 
 
@@ -27,14 +27,14 @@ class UserControllerIntegrationSpec extends IntegrationSpec {
         User.findByEmail(username).enabled == true
     }
 
-    def "should associate user with committer on user creation"() {
+    def 'should associate user with committer on user creation'() {
         given:
-        def username = "agj@touk.pl"
-        String password = "dupa.8"
+        def username = 'agj@touk.pl'
+        String password = 'dupa.8'
         new Commiter("${username}").save()
         new Commiter("Artur Gajowy <${username}>").save()
         new Commiter("Gajowy <${username}> some cvs related garbage suffix").save()
-        new Commiter("Will not be included <kpt@touk.pl>").save()
+        new Commiter('Will not be included <kpt@touk.pl>').save()
 
         when:
         controller.save(new CreateUserCommand(
