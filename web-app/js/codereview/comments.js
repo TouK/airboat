@@ -11,7 +11,8 @@ function addComment(changesetId) {
             $('#comments-' + changesetId).append($('#commentTemplate').render(comment));
             resetCommentForm(changesetId);
         },
-        "json");
+        "json"
+    );
 }
 
 function cancelLineComment(fileIdentifier, changesetId, lineNumber) {
@@ -19,15 +20,17 @@ function cancelLineComment(fileIdentifier, changesetId, lineNumber) {
     hidePopovers(changesetId);
 }
 
-function addLineComment(fileIdentifier, changesetId, lineNumber) {
-    var text = $('#add-line-comment-' + fileIdentifier).val();
+function addLineComment(projectFileId, changesetId, lineNumber) {
+    var text = $('#add-line-comment-' + projectFileId).val();
 
     $.post(uri.lineComment.addComment,
-        { text:text, lineNumber:lineNumber, fileId:fileIdentifier}
-    ).done(function () {
-            updateAccordion(changesetId, fileIdentifier);
-            hideAndClearLineCommentFrom(changesetId, fileIdentifier);
-        })
+        { text:text, lineNumber:lineNumber, fileId:projectFileId},
+        function (commentGroupsWithSnippetsForCommentedFile) {
+            updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, projectFileId);
+            hideAndClearLineCommentFrom(changesetId, projectFileId);
+        },
+        "json"
+    );
 }
 
 function hideAndClearLineCommentFrom(changesetId, fileIdentifier) {

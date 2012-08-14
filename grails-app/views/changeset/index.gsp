@@ -143,6 +143,7 @@
                 <br/>
 
                 <div id="diff-{{>identifier}}"></div>
+
                 <div class="files-right">
                     <div id="content-files-{{>identifier}}"></div>
                 </div>
@@ -178,7 +179,7 @@
     <div id='collapse-inner-{{>collapseId}}' class="accordion-body collapse"
          data-changeset_id='{{>changesetId}}' data-file_id='{{>fileId}}'>
         <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
-            <div id="accordion-inner-div-snippet-{{>fileId}}"></div>
+            <div id="fileComments-{{>fileId}}"></div>
         </div>
     </div>
 </script>
@@ -252,8 +253,10 @@
 
     <div class="row-fluid">
         <div class="span11 well-small">
-            <button type="button" class="btn btn-primary" onClick="showDiff('{{>changesetId}}')" id="button-showing-diff-{{>changesetId}}">Show diff</button>
-            <button type="button" class="btn btn-primary" onClick="hideDiff('{{>changesetId}}')" style="display:none"  id="button-hiding-diff-{{>changesetId}}">Hide diff</button>
+            <button type="button" class="btn btn-primary" onClick="showDiff('{{>changesetId}}')"
+                    id="button-showing-diff-{{>changesetId}}">Show diff</button>
+            <button type="button" class="btn btn-primary" onClick="hideDiff('{{>changesetId}}')" style="display:none"
+                    id="button-hiding-diff-{{>changesetId}}">Hide diff</button>
         </div>
     </div>
 
@@ -261,14 +264,6 @@
 
     </div>
 
-</script>
-
-
-<!--FIXME make all js-views templates have 'Template' suffix-->
-<script id="box-changeset" type="text/x-jsrender">
-    Author: {{>author}}</br>
-    Identifier:  {{>identifier}}</br>
-    Date:  {{>date}}</br>
 </script>
 
 </body>

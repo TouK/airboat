@@ -69,49 +69,30 @@ function appendAccordion(changesetId, fileIdentifier) {
     });
 }
 
-function updateAccordion(changesetId, fileIdentifier) {
-    var fileUrl = uri.changeset.getFileNamesForChangeset;
-    fileUrl = fileUrl.concat(changesetId);
-    var lineBoundary = 60;
-
-    $.getJSON(fileUrl, function (projectFiles) {
-
-        for (i = 0; i < projectFiles.length; i++) {
-            var projectFile = projectFiles[i];
-            var accordionRow = $("#accordionFileBodyTemplate").render({
-                name:sliceName(projectFile.name, lineBoundary),
-                changesetId:changesetId,
-                fileId:projectFile.id,
-                collapseId:(changesetId + projectFile.id),
-                howManyComments:projectFile.lineComments.length
-            });
-            if (fileIdentifier == projectFile.id) {
-//                $('#accordion-group-' + changesetId + projectFile.id).html(""); //left out for review purposes
-//                $('#accordion-group-' + changesetId + projectFile.id).append(accordionRow);
-                $('#accordion-group-' + changesetId + projectFile.id)
-                    .html(accordionRow)
-                    .children('#collapse-inner-' + changesetId + projectFile.id)
-                    .addClass("in");
-                appendSnippetToFileInAccordion(projectFile.id)
-            }
-        }
-    });
+function updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, projectFileId) {
+    renderCommentGroupsWithSnippets(projectFileId, commentGroupsWithSnippetsForCommentedFile)
+    $('#collapse-inner-' + changesetId + projectFileId).removeAttr('style');
 }
 
-function appendSnippetToFileInAccordion(fileId) {
-    var snippetUrl = uri.projectFile.getLineCommentsWithSnippetsToFile + fileId;
-    $.getJSON(snippetUrl, function (commentsGroupsWithSnippetsForFile) {
-        var fileType = commentsGroupsWithSnippetsForFile.fileType
-        var commentGroupsWithSnippets = commentsGroupsWithSnippetsForFile.commentGroupsWithSnippets
-
-        if (commentGroupsWithSnippets.length > 0) {
-            $('#accordion-inner-div-' + fileId).html("");
-
-            for (j = 0; j < commentGroupsWithSnippets.length; j++) {
-                renderCommentGroupWithSnippets(commentGroupsWithSnippets[j], fileId, fileType);
-            }
+function appendSnippetToFileInAccordion(projectFileId) {
+    $.getJSON(uri.projectFile.getLineCommentsWithSnippetsToFile + projectFileId,
+        function (commentGroupsWithSnippetsForFile) {
+            renderCommentGroupsWithSnippets(projectFileId, commentGroupsWithSnippetsForFile)
         }
-    });
+    );
+}
+
+function renderCommentGroupsWithSnippets(fileId, commentGroupsWithSnippetsForFile) {
+    var fileType = commentGroupsWithSnippetsForFile.fileType
+    var commentGroupsWithSnippets = commentGroupsWithSnippetsForFile.commentGroupsWithSnippets
+
+    if (commentGroupsWithSnippets.length > 0) {
+        $('#fileComments-' + fileId).html("");
+
+        for (j = 0; j < commentGroupsWithSnippets.length; j++) {
+            renderCommentGroupWithSnippets(commentGroupsWithSnippets[j], fileId, fileType);
+        }
+    }
 }
 
 function renderCommentGroupWithSnippets(commentGroupWithSnippet, fileId, fileType) {
@@ -122,7 +103,7 @@ function renderCommentGroupWithSnippets(commentGroupWithSnippet, fileId, fileTyp
         lineNumber:lineNumber
     });
 
-    $('#accordion-inner-div-snippet-' + fileId).append(snippet);
+    $('#fileComments-' + fileId).append(snippet);
     $("#snippet-" + fileId + "-" + lineNumber)
         .html("<pre class='codeViewer'/></pre>")
         .children(".codeViewer")

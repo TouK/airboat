@@ -66,6 +66,7 @@ class ProjectFileController {
         }
     }
 
+    //FIXME modify type
     private ArrayList<Map<String, Object>> getCommentsGroupsWithSnippets(ProjectFile projectFile, List<LineComment> comments) {
         def commentGroupsWithSnippets = []
         if (!comments.isEmpty()) {
@@ -83,7 +84,7 @@ class ProjectFileController {
 
         File dir = new File(projectRootDirectory, "/.git")
         if (dir.exists()) {
-            def diff = diffAccessService.getDiffToProjectFile(projectFile, projectRootDirectory )
+            def diff = diffAccessService.getDiffToProjectFile(projectFile, projectRootDirectory)
             render([diff: diff.split("\n").collect() { [line: it]}, fileId: projectFile.id, rawDiff: diff, fileType: projectFile.fileType] as JSON)
         }
 

@@ -3,6 +3,7 @@ package codereview
 import grails.plugins.springsecurity.Secured
 
 import static com.google.common.base.Preconditions.checkArgument
+import grails.converters.JSON
 
 class LineCommentController {
 
@@ -27,5 +28,7 @@ class LineCommentController {
         def lineComment = new LineComment(lineNumber, text, authenticatedUser.username) //TODO make LineComment belongsTo User
         projectFile.addToLineComments(lineComment)
         projectFile.save()
+
+        redirect(controller: 'projectFile', action: 'getLineCommentsWithSnippetsToFile', params: [id: projectFile.id])
     }
 }
