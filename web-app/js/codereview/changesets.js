@@ -2,12 +2,8 @@ var projectName = ''
 
 function showProject(projectId) {
     projectName = projectId
-    $(document).ready(function () {
-        $('#content').html("");
-        $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:projectName}), appendChangesets);
-    });
-
-    $(".collapse").collapse();
+    $('#content').html("");
+    $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:projectName}), appendChangesets)
 }
 
 function onScrollThroughBottomAttempt() {
@@ -50,16 +46,12 @@ function appendChangeset(changeset) {
 }
 
 function appendAccordion(changesetId, fileIdentifier) {
-    var fileUrl = uri.changeset.getFileNamesForChangeset;
-    fileUrl = fileUrl.concat(changesetId);
-    var lineBoundary = 60;
-
     $('#accordion-' + changesetId).html("");
 
-    $.getJSON(fileUrl, function (data) {
+    $.getJSON(uri.changeset.getFileNamesForChangeset + changesetId, function (data) {
 
         for (i = 0; i < data.length; i++) {
-            var accordionRow = $("#accordionFileTemplate").render({
+            var accordionRow = $("#accordionFilesTemplate").render({
                 name:sliceName(data[i].name, lineBoundary),
                 changesetId:changesetId,
                 fileId:data[i].id,
@@ -70,6 +62,10 @@ function appendAccordion(changesetId, fileIdentifier) {
             $('#accordion-' + changesetId).append(accordionRow);
             appendSnippetToFileInAccordion(data[i].id)
         }
+
+        $('#accordion-' + changesetId + ' .accordion-body.collapse').on('shown', function () {
+            showFile(this.dataset.changeset_id, this.dataset.file_id);
+        })
     });
 }
 
@@ -82,7 +78,7 @@ function updateAccordion(changesetId, fileIdentifier) {
 
         for (i = 0; i < projectFiles.length; i++) {
             var projectFile = projectFiles[i];
-            var accordionRow = $("#accordionFileUpdateTemplate").render({
+            var accordionRow = $("#accordionFileBodyTemplate").render({
                 name:sliceName(projectFile.name, lineBoundary),
                 changesetId:changesetId,
                 fileId:projectFile.id,
@@ -90,8 +86,12 @@ function updateAccordion(changesetId, fileIdentifier) {
                 howManyComments:projectFile.lineComments.length
             });
             if (fileIdentifier == projectFile.id) {
-                $('#accordion-group-' + changesetId + projectFile.id).html("");
-                $('#accordion-group-' + changesetId + projectFile.id).append(accordionRow);
+//                $('#accordion-group-' + changesetId + projectFile.id).html(""); //left out for review purposes
+//                $('#accordion-group-' + changesetId + projectFile.id).append(accordionRow);
+                $('#accordion-group-' + changesetId + projectFile.id)
+                    .html(accordionRow)
+                    .children('#collapse-inner-' + changesetId + projectFile.id)
+                    .addClass("in");
                 appendSnippetToFileInAccordion(projectFile.id)
             }
         }

@@ -76,9 +76,10 @@
     })
 
     var hashAbbreviationLength = 8;
+    var lineBoundary = 60; //TODO rename
 
     $().ready(function () {
-        $.getJSON(uri.changeset.getLastChangesets, appendChangesets);
+        showProject('')
 
         $(window).scroll(function () {
             if ($(window).scrollTop() == $(document).height() - $(window).height()) {
@@ -86,8 +87,6 @@
             }
         });
     });
-
-    
 </script>
 
 <script id="changesetTemplate" type="text/x-jsrender">
@@ -152,43 +151,13 @@
     </div>
 </script>
 
-<script id="accordionFileTemplate" type="text/x-jsrender">
+<script id="accordionFilesTemplate" type="text/x-jsrender">
     <div class="accordion-group" id="accordion-group-{{>collapseId}}">
-
-        <div class="accordion-heading">
-            <div class="row-fluid">
-                <div class="row-fluid span9">
-                    <a class="accordion-toggle" id="collapse-{{>collapseId}}" data-toggle="collapse"
-                       data-parent="#accordion-{{>changesetId}}" href="#collapse-inner-{{>collapseId}}">
-                        {{>name}}
-                    </a>
-                </div>
-                {{if howManyComments != 0}}
-                <div class="row-fluid span3">
-                    <button class="btn btn disabled pull-right" style="margin:2px 5px 0px 5px"><i
-                            class="icon-comment"></i>   {{>howManyComments}}</button>
-                </div>
-                {{/if}}
-            </div>
-        </div>
-
-        <div id="collapse-inner-{{>collapseId}}" class="accordion-body collapse">
-
-            <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
-                <div id="accordion-inner-div-snippet-{{>fileId}}"></div>
-            </div>
-        </div>
+        {{for [#data] tmpl='#accordionFileBodyTemplate'}}{{/for}}
     </div>
-
-    <script type="text/javascript">
-        $('#collapse-inner-{{>collapseId}}').on('shown', function () {
-        showFile('{{>changesetId}}', '{{>fileId}}');
-        });
-    </script>
 </script>
 
-
-<script id="accordionFileUpdateTemplate" type="text/x-jsrender">
+<script id="accordionFileBodyTemplate" type="text/x-jsrender">
     <div class="accordion-heading">
         <div class="row-fluid">
             <div class="row-fluid span9">
@@ -206,17 +175,12 @@
         </div>
     </div>
 
-    <div id="collapse-inner-{{>collapseId}}" class="accordion-body collapse in">
+    <div id='collapse-inner-{{>collapseId}}' class="accordion-body collapse"
+         data-changeset_id='{{>changesetId}}' data-file_id='{{>fileId}}'>
         <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
             <div id="accordion-inner-div-snippet-{{>fileId}}"></div>
         </div>
     </div>
-
-    <script type="text/javascript">
-        $('#collapse-inner-{{>collapseId}}').on('shown', function () {
-        showFile('{{>changesetId}}', '{{>fileId}}');
-        });
-    </script>
 </script>
 
 <script id="fileTitleTemplate" type="text/x-jsrender">
