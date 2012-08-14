@@ -13,4 +13,5 @@ class Fixture {
     static final String PROJECT_CODEREVIEW_NAME = 'codereview'
     static final String PROJECT_CODEREVIEW_REPOSITORY_URL = Constants.PROJECT_CODEREVIEW_REPOSITORY_URL
     static final String PATH_TO_FILE_PRESENT_IN_FIRST_COMMIT = 'grails-app/conf/Config.groovy'
+
 }
