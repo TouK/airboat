@@ -23,28 +23,16 @@ class ChangesetController {
         redirect(views: '/index', params: params)
     }
 
+    //FIXME add tests, include input parameters
     def getLastChangesets = {
         def changesets
-        if (params.id == null) {
+        if (isNullOrEmpty(params.projectName)) {
             changesets = Changeset.list(max: 21, sort: 'date', order: 'desc')
+        } else {
+            changesets = getLastChagesetsFromProject(params.projectName)
         }
-        else {
-            changesets = getLastChagesetsFromProject(params.id)
-        }
-        def changesetProperties = changesets.collect { changeset ->
-            [
-                    id: changeset.id,
-                    identifier: changeset.identifier,
-                    author: changeset.commiter.cvsCommiterId,
-                    email: getUserEmail(changeset),
-                    date: changeset.date.format('yyyy-MM-dd HH:mm'),
-                    commitComment: changeset.commitComment,
-                    commentsCount: changeset.commentsCount,
-                    projectName: changeset.project.name,
-                    belongsToCurrentUser: belongsToCurrentUser(changeset)
-            ]
-        }
-        render changesetProperties as JSON
+        def changesetsProperties = changesets.collect this.&convertToChangesetProperties
+        render changesetsProperties as JSON
     }
 
     private String getUserEmail(Changeset changeset) {
@@ -82,7 +70,22 @@ class ChangesetController {
         } else {
             nextFewChangesets = getNextFewChangesetsFromProject(projectName, changesetId)
         }
-        render nextFewChangesets as JSON
+        def changesetsProperties = nextFewChangesets.collect this.&convertToChangesetProperties
+        render changesetsProperties as JSON
+    }
+
+    private def convertToChangesetProperties(Changeset changeset) {
+        [
+                id: changeset.id,
+                identifier: changeset.identifier,
+                author: changeset.commiter.cvsCommiterId,
+                email: getUserEmail(changeset),
+                date: changeset.date.format('yyyy-MM-dd HH:mm'),
+                commitComment: changeset.commitComment,
+                commentsCount: changeset.commentsCount,
+                projectName: changeset.project.name,
+                belongsToCurrentUser: belongsToCurrentUser(changeset)
+        ]
     }
 
     private List<Changeset> getLastChagesetsFromProject(String projectName) {
