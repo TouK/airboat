@@ -90,6 +90,7 @@
 </script>
 
 <script id="changesetTemplate" type="text/x-jsrender">
+
     <div class="row-fluid">
         <div class="span4">
             <div class="span11 well">
@@ -159,6 +160,7 @@
 </script>
 
 <script id="accordionFileBodyTemplate" type="text/x-jsrender">
+
     <div class="accordion-heading">
         <div class="row-fluid">
             <div class="row-fluid span9">
@@ -185,8 +187,8 @@
 </script>
 
 <script id="fileTitleTemplate" type="text/x-jsrender">
-    <div class="row-fluid">
 
+    <div class="row-fluid">
         <div class="span11">
             <h1>{{>fileName}}</h1>
         </div>
@@ -219,7 +221,6 @@
                     onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Cancel</button>
         </div>
     </form>
-
 </script>
 
 <script id="commentFormTemplate" type="text/x-jsrender">
@@ -239,6 +240,7 @@
 </script>
 
 <script id="commentTemplate" type="text/x-jsrender">
+
     <div class="alert {{>fromRevision}}">
         <img src="{{>~getGravatar(author)}}"/>
         <span class="label {{if belongsToCurrentUser}}label-success{{/if}}">{{>author}}</span>
@@ -246,7 +248,6 @@
 
         <div class="comment-content">{{>text}}</div>
     </div>
-
 </script>
 
 <script id="diffTemplate" type="text/x-jsrender">
@@ -261,9 +262,7 @@
     </div>
 
     <div id="diff-box-{{>changesetId}}" style="display:none">
-
     </div>
-
 </script>
 
 </body>

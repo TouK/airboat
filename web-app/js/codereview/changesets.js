@@ -41,7 +41,9 @@ function appendChangeset(changeset) {
     $('#hash-' + changeset.identifier).tooltip({title:changeset.identifier + ", click to copy", trigger:"hover"});
     $('#hash-' + changeset.identifier).zclip({
         path:'js/ZeroClipboard.swf',
-        copy:changeset.identifier
+        copy:changeset.identifier,
+        afterCopy:function () {
+        }
     });
 }
 
