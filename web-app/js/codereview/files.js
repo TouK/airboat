@@ -49,7 +49,6 @@ function showFile(changesetId, fileId) {
 
     $("#sh-btn-" + changesetId + fileId).hide();
     appendDiff(changesetId, fileId);
-    showDiff(changesetId);
     previousExpandedForFilesChangesetId = changesetId;
 
 }
