@@ -29,34 +29,23 @@ function showFile(changesetId, fileId) {
             });
             //TODO check if creating the content of the popover (i.e. commentForm) can be deferred to popover activation
             var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetId, lineNumber:i + 1 });
-            var popoverTitle = $("#popoverTitleTemplate").render({
-                fileName:divideNameWithSlashesInTwo(file.name),
-                changesetId:changesetId,
-                fileId:fileId,
-                lineNumber:i
-            });
 
-            $(element).popover({content:commentForm, title:popoverTitle, placement:"left", trigger:"manual" });
+            $(element).popover({content:commentForm, placement:"left", trigger:"manual" });
         });
     });
-    $("#content-files-" + changesetId).show(100);
-    $('#content-files-span-' + changesetId).show(100);
-    $("#content-files-title-" + changesetId).show(100);
+    $("#content-files-" + changesetId).show();
+    $('#content-files-span-' + changesetId).show();
+    $("#content-files-title-" + changesetId).show();
     if (previousExpandedForFilesChangesetId != null) {
         hidePopovers(previousExpandedForFilesChangesetId);
     }
 
-
-    $("#sh-btn-" + changesetId + fileId).hide();
     appendDiff(changesetId, fileId);
     previousExpandedForFilesChangesetId = changesetId;
-
 }
 
 function hideFile(changesetId, fileId) {
     $("#content-files-" + changesetId).hide();
-
-    $("#sh-btn-" + changesetId + fileId).show();
     $('#content-files-span-' + changesetId).hide();
     $('#content-files-' + changesetId + ' .linenums li').popover("hide");
     hidePopovers(changesetId);

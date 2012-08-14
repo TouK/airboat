@@ -234,9 +234,6 @@
     </div>
 </script>
 
-<script id="popoverTitleTemplate" type="text/x-jsrender">
-</script>
-
 <script id="snippetTemplate" type="text/x-jsrender">
     <div id="div-comments-{{>fileId}}-{{>lineNumber}}"></div>
 
