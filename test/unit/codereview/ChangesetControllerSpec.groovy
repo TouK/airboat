@@ -16,9 +16,12 @@ class ChangesetControllerSpec extends Specification {
 
     def 'getLastChangesets should return JSON'() {
         given:
-        def changesets = (1..3).collect { Changeset.build() }
+        Project project = Project.build()
+        def changesets = (1..3).collect { Changeset.build(project: project) }
+
 
         when:
+        controller.params.projectName = project.name
         controller.getLastChangesets()
 
         then:
