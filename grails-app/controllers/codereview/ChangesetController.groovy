@@ -23,7 +23,6 @@ class ChangesetController {
         redirect(views: '/index', params: params)
     }
 
-    //FIXME add tests, include input parameters
     def getLastChangesets = {
         def changesets
         if (isNullOrEmpty(params.projectName)) {
