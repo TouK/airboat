@@ -38,6 +38,9 @@
 
     <script src="${createLink(uri: '/libs/jquery.syntaxhighlighter/jquery.syntaxhighlighter.js')}"
             type="text/javascript"></script>
+    <link href=" ${createLink(uri: '/css/jquery.syntaxhighlighter-fontOverride.css')}"
+          type="text/css" rel="stylesheet" media="screen"/>
+
     <script src="${createLink(uri: '/js/jquery.zclip.js')}" type="text/javascript"></script>
 
     <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet"/>

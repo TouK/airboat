@@ -1,0 +1,11 @@
+.prettyprint ol.linenums {
+    font-size: 10px !important;
+}
+
+.prettyprint li>* {
+    font-size: 12px !important;
+}
+
+.prettyprint {
+    font-size: 12px !important;
+}
