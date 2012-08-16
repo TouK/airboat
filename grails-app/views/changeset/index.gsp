@@ -36,7 +36,8 @@
     <script src="${createLink(uri: '/js/bootstrap-tooltip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/bootstrap-popover.js')}" type="text/javascript"></script>
 
-    <script src="${createLink(uri: '/js/jquery.syntaxhighlighter.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/jquery.syntaxhighlighter/jquery.syntaxhighlighter.js')}"
+            type="text/javascript"></script>
     <script src="${createLink(uri: '/js/jquery.zclip.js')}" type="text/javascript"></script>
 
     <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet"/>
@@ -53,7 +54,13 @@
     <sec:ifLoggedIn>Hello, <sec:username/>!</sec:ifLoggedIn>
 </h1>
 
-<script type="text/javascript">$.SyntaxHighlighter.init({'stripEmptyStartFinishLines':false});</script>
+<script type="text/javascript">
+    $.SyntaxHighlighter.init({
+        stripEmptyStartFinishLines:false,
+        baseUrl:'${createLink(uri: '/libs/jquery.syntaxhighlighter')}',
+        prettifyBaseUrl:'${createLink(uri: '/libs/prettify')}'
+    });
+</script>
 
 <div class="well">
     <a class="btn" onclick="showProject('codereview')">CodeReview</a>
