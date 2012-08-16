@@ -2,6 +2,8 @@ package codereview
 
 class ProjectUpdateJob {
 
+    def concurrent = false
+
     ScmAccessService scmAccessService
 
     private static final long REPEAT_INTERVAL_MILLISECONDS = 30 * 1000L
