@@ -49,9 +49,11 @@ class ProjectFileController {
         )
         def commentsProperties = comments.collect { LineComment comment ->
             def properties = comment.properties + [
-                    fromRevision: getRevisionType(projectFile.changeset, comment.projectFile.changeset)
+                    fromRevision: getRevisionType(projectFile.changeset, comment.projectFile.changeset),
+                    belongsToCurrentUser: comment.author == authenticatedUser,
+                    author: comment.author.email
             ]
-            properties.keySet().retainAll('id', 'author', 'dateCreated', 'lineNumber', 'projectFile', 'text', 'fromRevision')
+            properties.keySet().retainAll('id', 'author', 'dateCreated', 'lineNumber', 'projectFile', 'text', 'fromRevision', 'belongsToCurrentUser')
             properties
         }
     }

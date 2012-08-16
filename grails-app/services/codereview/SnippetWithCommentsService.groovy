@@ -26,7 +26,7 @@ class SnippetWithCommentsService {
                 commentGroups[i][j++] = it
             }
         }
-         commentGroups
+        commentGroups
     }
 
     def prepareCommentGroupsWithSnippets(commentGroups, String fileType, fileContent) {
@@ -53,11 +53,11 @@ class SnippetWithCommentsService {
 
         snippet = getSnippet(commentGroups[iterator][0], threeLines, fileContent)
         commentGroupsWithSnippets[iterator] = [commentGroup: commentGroups[iterator], snippet: snippet, filetype: fileType]
-         commentGroupsWithSnippets
+        commentGroupsWithSnippets
     }
 
     def getSnippet(comment, howManyLines, fileContent) {
-         getLinesAround(fileContent, comment.lineNumber, howManyLines)
+        getLinesAround(fileContent, comment.lineNumber, howManyLines)
     }
 
     def getLinesAround(String text, Integer from, Integer count) {
@@ -68,6 +68,6 @@ class SnippetWithCommentsService {
         checkArgument(fromZeroBasedInclusive < splitted.size(), "from (=${from}) must be a valid line number in text (which has ${splitted.size()} lines).")
         def toZeroBasedExclusive = Math.min(fromZeroBasedInclusive + count, splitted.size())
 
-         splitted[fromZeroBasedInclusive..toZeroBasedExclusive - 1].join('\n')
+        splitted[fromZeroBasedInclusive..toZeroBasedExclusive - 1].join('\n')
     }
 }

@@ -20,7 +20,7 @@ class UserCommentControllerSpec extends Specification {
     def 'should return comments to changeset when given right changeset id'() {
         given:
         controller.authenticatedUser = null
-        User author = User.build()
+        User author = UnitTestBuilders.buildUserWithIsDirtyMock()
         UserComment comment = UserComment.build(author: author, text: 'Very well indeed.')
 
         when:
@@ -47,11 +47,11 @@ class UserCommentControllerSpec extends Specification {
 
     def "should mark logged in user's UserComment-s as theirs"() {
         given:
-        User loggedInUser = User.build(username: 'agj@touk.pl')
+        User loggedInUser = UnitTestBuilders.buildUserWithIsDirtyMock(username: 'agj@touk.pl')
         controller.authenticatedUser = loggedInUser
         Changeset changeset = Changeset.build()
         def comment = UserComment.build(changeset: changeset, author: loggedInUser)
-        UserComment.build(changeset: changeset)
+        UserComment.build(changeset: changeset, author: UnitTestBuilders.buildUserWithIsDirtyMock())
 
         expect:
         changeset.userComments.contains(comment)

@@ -2,9 +2,8 @@
 <!doctype html>
 <html>
 <head>
+    <meta name="layout" content="main"/>
     <title>Register</title>
-
-    <link media="screen" rel="stylesheet" href=" ${createLink(uri: '/css/bootstrap.css')}"/>
 </head>
 
 <body>

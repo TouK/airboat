@@ -4,14 +4,12 @@ class LineComment {
     Integer lineNumber
     String text
     Date dateCreated //TODO check if this field is added without this declaration
-    String author
-    static belongsTo = [projectFile: ProjectFile]
+    static belongsTo = [author: User, projectFile: ProjectFile]
 
-    LineComment(Integer lineNumber, String text, String author) {
+    LineComment(User author, Integer lineNumber, String text) {
         this.lineNumber = lineNumber
         this.text = text
-        this.author = author
-
+        author.addToLineComments(this)
     }
 
     static constraints = {

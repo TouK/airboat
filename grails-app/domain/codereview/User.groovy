@@ -11,7 +11,7 @@ class User {
     boolean accountLocked
     boolean passwordExpired
 
-    static hasMany = [committers: Commiter, changesetComments: UserComment]
+    static hasMany = [committers: Commiter, changesetComments: UserComment, lineComments: LineComment]
 
 
     static constraints = {

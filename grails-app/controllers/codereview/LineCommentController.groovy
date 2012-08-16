@@ -25,7 +25,7 @@ class LineCommentController {
         )
 
         //TODO ask someone about making idea know the mixins being used here
-        def lineComment = new LineComment(lineNumber, text, authenticatedUser.username) //TODO make LineComment belongsTo User
+        def lineComment = new LineComment(authenticatedUser, lineNumber, text)
         projectFile.addToLineComments(lineComment)
         projectFile.save()
 

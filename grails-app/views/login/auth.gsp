@@ -1,9 +1,8 @@
 <!doctype html>
 <html>
 <head>
+    <meta name="layout" content="main"/>
     <title><g:message code="springSecurity.login.title"/></title>
-
-    <link media="screen" rel="stylesheet" href=" ${createLink(uri: '/css/bootstrap.css')}"/>
 </head>
 
 <body>

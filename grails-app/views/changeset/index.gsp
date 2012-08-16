@@ -1,46 +1,13 @@
 <!doctype html>
 <html>
 <head>
+    <meta name="layout" content="main"/>
 
-    <g:javascript library="jquery"/>
-    <r:layoutResources/>
-
-    <script type="text/javascript">
-        var uri = { //TODO de-duplicate
-            changeset:{
-                getLastChangesets:"${createLink(uri:'/changeset/getLastChangesets/')}",
-                getNextFewChangesetsOlderThan:"${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}",
-                getFileNamesForChangeset:"${createLink(uri:'/changeset/getFileNamesForChangeset/')}"
-            },
-            userComment:{
-                addComment:"${createLink(uri: '/userComment/addComment')}",
-                returnCommentsToChangeset:"${createLink(uri:'/userComment/returnCommentsToChangeset/')}"
-            },
-            lineComment:{
-                addComment:"${createLink(uri: '/lineComment/addComment')}"
-            },
-            projectFile:{
-                getFileWithContent:"${createLink(uri:'/projectFile/getFileWithContent/')}",
-                getLineCommentsWithSnippetsToFile:"${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}"
-            },
-
-            libs:{
-                zclip:{
-                    swf:"${createLink(uri: '/libs/jquery.zclip/ZeroClipboard.swf')}"
-                }
-            }
-        }
-    </script>
-
-    <script src="${createLink(uri: '/libs/jquery.md5.js')}" type="text/javascript"></script>
-    <script src="${createLink(uri: '/libs/jsrender.js')}" type="text/javascript"></script>
-
-    <link href=" ${createLink(uri: '/libs/bootstrap/bootstrap.css')}" type="text/css" rel="stylesheet" media="screen"/>
-    <link href=" ${createLink(uri: '/libs/bootstrap/bootstrap-responsive.css')}" type="text/css" rel="stylesheet"
-          media="screen"/>
     <script src="${createLink(uri: '/libs/bootstrap/bootstrap-collapse.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/bootstrap/bootstrap-tooltip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/bootstrap/bootstrap-popover.js')}" type="text/javascript"></script>
+
+    <script src="${createLink(uri: '/libs/jquery.md5.js')}" type="text/javascript"></script>
 
     <script src="${createLink(uri: '/libs/jquery.syntaxhighlighter/jquery.syntaxhighlighter.js')}"
             type="text/javascript"></script>
