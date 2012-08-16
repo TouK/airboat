@@ -58,6 +58,36 @@
 
 <body>
 
+<div class="navbar logonavbar">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="#">
+                CodeReview
+            </a>
+            <img src="${createLink(uri: '/images/cereal_guy.png')}" height="80" class="pull-left" style="padding: 5px;">
+            <span class="pull-left"></span>
+            <ul class="nav">
+                <li>
+                    <a href="#" onclick="showProject('codereview')">CodeReview</a>
+                </li>
+                <li>
+                    <a href="#" onclick="showProject('cyclone')">Cyclone</a>
+                </li>
+                <li>
+                    <a href="#" onclick="showProject('')">All</a>
+                </li>
+            </ul>
+            <ul class="nav pull-right">
+                <li>
+                    <a href="https://docs.google.com/spreadsheet/ccc?key=0AqcWoYECBA_SdElrejNuNVUzNEt3LTJZQnVCQ3RILWc#gid=0"
+                       target="_blank">Feedback</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
 <h1>
     <sec:ifNotLoggedIn>Hello, unknown wanderer!</sec:ifNotLoggedIn>
     <sec:ifLoggedIn>Hello, <sec:username/>!</sec:ifLoggedIn>
@@ -70,15 +100,6 @@
         prettifyBaseUrl:'${createLink(uri: '/libs/prettify')}'
     });
 </script>
-
-<div class="well">
-    <a class="btn" onclick="showProject('codereview')">CodeReview</a>
-    <a class="btn" onclick="showProject('cyclone')">Cyclone</a>
-    <a class="btn" onclick="showProject('')">AllProjects</a>
-    <a class="btn pull-right"
-       href="https://docs.google.com/spreadsheet/ccc?key=0AqcWoYECBA_SdElrejNuNVUzNEt3LTJZQnVCQ3RILWc#gid=0"
-       target="_blank">Feedback</a>
-</div>
 
 <div id="content" class="container-fluid"></div>
 
