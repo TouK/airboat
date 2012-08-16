@@ -30,3 +30,11 @@ textarea {
     line-height: 72px;
     color: white;
 }
+
+.padding {
+    margin: 19px;
+}
+
+.margin-right {
+    margin: 0 19px 0 0;
+}

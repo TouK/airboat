@@ -68,7 +68,7 @@
     });
 </script>
 
-<div id="content" class="container-fluid"></div>
+<div id="content" class="padding"></div>
 
 <script type="text/javascript">
 
@@ -95,63 +95,55 @@
 
 <script id="changesetTemplate" type="text/x-jsrender">
 
-    <div class="row-fluid">
-        <div class="span4">
-            <div class="span11 well">
-                <div class="span2">
+    <div class='row-fluid'>
+        <div class="span5 well">
+            <div class="row-fluid">
+                <div class="pull-left margin-right">
                     <img src='{{>~getGravatar(email)}}'/>
                 </div>
 
-                <div class="row-fluid">
-                    <div class="span7">
-                        <span class="label {{if belongsToCurrentUser}}label-success{{/if}}">{{>author}}</span> </br>
-                        <span class="label">{{>projectName}}</span>
-                    </div>
-
-                    <div class="span2">
-                        <span class="label label-info">{{>date}}</span>
-                        <span class="label label-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
-                    </div>
+                <div class="pull-left">
+                    <span class="badge {{if belongsToCurrentUser}}badge-success{{/if}}">{{>author}}</span>
+                    <br/>
+                    <span class="badge">{{>projectName}}</span>
                 </div>
 
-                <div class="well-small">{{>commitComment}}</div>
-
-                <div class="changeset-content"></div>
-
-                <div id="more-button-{{>identifier}}">
-                    <a class="btn btn-primary btn-big" onclick="showChangesetDetails('{{>identifier}}')">
-                        More...
-                    </a>
+                <div class="pull-right">
+                    <span class="pull-right badge badge-info">{{>date}}</span>
+                    <br/>
+                    <span class="pull-right badge badge-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
                 </div>
+            </div>
 
-                <div id="changesetDetails-{{>identifier}}" style="display:none;">
-                    <div class="accordion" id="accordion-{{>identifier}}"></div>
+            <div class="row-fluid well-small">{{>commitComment}}</div>
 
-                    <div class="comments" id="comments-{{>identifier}}"></div>
+            <div id="more-button-{{>identifier}}">
+                <a class="btn btn-primary btn-big" onclick="showChangesetDetails('{{>identifier}}')">
+                    More...
+                </a>
+            </div>
 
-                    <div id="comment-form-{{>identifier}}">
+            <div id="changesetDetails-{{>identifier}}" style="display:none;">
+                <div class="accordion" id="accordion-{{>identifier}}"></div>
 
-                    </div>
+                <div class="comments" id="comments-{{>identifier}}"></div>
 
-                    <div id="less-button-{{>identifier}}">
-                        <a class="btn btn-primary btn-big" onclick="showLessAboutChangeset('{{>identifier}}')">
-                            Less...
-                        </a>
-                    </div>
+                <div id="comment-form-{{>identifier}}"></div>
+
+                <div id="less-button-{{>identifier}}">
+                    <a class="btn btn-primary btn-big" onclick="showLessAboutChangeset('{{>identifier}}')">Less...</a>
                 </div>
             </div>
         </div>
 
-        <div class="span8">
-            <div class="span11 well" id="content-files-span-{{>identifier}}" style="display: none;">
-                <div id="content-files-title-{{>identifier}}"></div>
-                <br/>
+        <div class="span7 well" id="content-files-span-{{>identifier}}" style="display: none;">
+            <div id="content-files-title-{{>identifier}}"></div>
+            <br/>
 
-                <div id="diff-{{>identifier}}"></div>
+            <div id="diff-{{>identifier}}"></div>
 
-                <div class="files-right">
-                    <div id="content-files-{{>identifier}}"></div>
-                </div>
+            <div class="files-right">
+                <div id="content-files-{{>identifier}}"></div>
             </div>
         </div>
     </div>
