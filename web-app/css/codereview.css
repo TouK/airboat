@@ -21,10 +21,12 @@ textarea {
 .navbar.logonavbar .brand {
     font-size: 42px;
     line-height: 72px;
+    color: white;
 }
 
 .navbar.logonavbar .nav > li > a {
     padding: 10px 20px 12px;
     font-size: 18px;
     line-height: 72px;
+    color: white;
 }
