@@ -46,7 +46,7 @@
             </ul>
             <ul class="nav pull-right">
                 <li>
-                    <a href="https://docs.google.com/spreadsheet/ccc?key=0AqcWoYECBA_SdElrejNuNVUzNEt3LTJZQnVCQ3RILWc#gid=0"
+                    <a href="https://docs.google.com/spreadsheet/viewform?formkey=dElrejNuNVUzNEt3LTJZQnVCQ3RILWc6MQ#gid=0"
                        target="_blank">Feedback</a>
                 </li>
             </ul>
