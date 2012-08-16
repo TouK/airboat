@@ -8,7 +8,7 @@
  */
 // informal pre beta commit counter: 20
 
-this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
+this.jsviews || this.jQuery && jQuery.views || (function (global, undefined) {
 
     //========================== Top-level vars ==========================
 
@@ -34,9 +34,9 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
 
         autoTmplName = 0,
         escapeMapForHtml = {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;"
+            "&":"&amp;",
+            "<":"&lt;",
+            ">":"&gt;"
         },
         tmplAttr = "data-jsv-tmpl",
         fnDeclStr = "var j=j||" + (jQuery ? "jQuery." : "js") + "views,",
@@ -47,24 +47,24 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
 
     // jsviews object ($.views if jQuery is loaded)
         $views = {
-            jsviews: versionNumber,
-            sub: $viewsSub, // subscription, e.g. JsViews integration
-            debugMode: TRUE,
-            render: $render,
-            templates: $templates,
-            tags: $viewsTags,
-            helpers: $viewsHelpers,
-            converters: $viewsConverters,
-            delimiters: $viewsDelimiters,
-            View: View,
-            _convert: convert,
-            _err: function(e) {
+            jsviews:versionNumber,
+            sub:$viewsSub, // subscription, e.g. JsViews integration
+            debugMode:TRUE,
+            render:$render,
+            templates:$templates,
+            tags:$viewsTags,
+            helpers:$viewsHelpers,
+            converters:$viewsConverters,
+            delimiters:$viewsDelimiters,
+            View:View,
+            _convert:convert,
+            _err:function (e) {
                 return $views.debugMode ? ("Error: " + (e.message || e)) + ". " : '""';
             },
-            _tmplFn: tmplFn,
-            _tag: renderTag,
-            error: error,
-            Error: JsViewsError
+            _tmplFn:tmplFn,
+            _tag:renderTag,
+            error:error,
+            Error:JsViewsError
         };
 
     function JsViewsError(message) { // Error exception type for JsViews/JsRender
@@ -126,7 +126,7 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
                 ? $viewsHelpers
                 : {}
             )[helper];
-        return typeof helper !== "function" ? helper : function() {
+        return typeof helper !== "function" ? helper : function () {
             return helper.apply(view, arguments);
         };
     }
@@ -138,7 +138,7 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
     function convert(converter, view, tmpl, text) {
         var tmplConverter = tmpl.converters;
         tmplConverter = tmplConverter && tmplConverter[converter] || $viewsConverters[converter];
-        return tmplConverter ? tmplConverter.call(view, text) : (error("Unknown converter: {{"+ converter + ":"), text);
+        return tmplConverter ? tmplConverter.call(view, text) : (error("Unknown converter: {{" + converter + ":"), text);
     }
 
     //=================
@@ -157,7 +157,7 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
             tagFn = tmplTags && tmplTags[tag] || $viewsTags[tag];
 
         if (!tagFn) {
-            error("Unknown tag: {{"+ tag + "}}");
+            error("Unknown tag: {{" + tag + "}}");
             return "";
         }
         if (tmpl) {
@@ -191,18 +191,18 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
         // Constructor for view object in view hierarchy. (Augmented by JsViews if JsViews is loaded)
         var views,
             self = {
-                tmpl: template,
-                path: path,
-                parent: parentView,
-                data: data,
-                ctx: context,
+                tmpl:template,
+                path:path,
+                parent:parentView,
+                data:data,
+                ctx:context,
                 // If the data is an array, this is an 'Array View' with a views array for each child 'Instance View'
                 // If the data is not an array, this is an 'Instance View' with a views 'map' object for any child nested views
-                views: isArray ? [] : {},
+                views:isArray ? [] : {},
                 // _useKey is non zero if is not an 'Array View' (owning a data array). Uuse this as next key for adding to child views map
-                _useKey: isArray ? 0 : 1,
-                _hlp: getHelper,
-                _onRender: onRender
+                _useKey:isArray ? 0 : 1,
+                _hlp:getHelper,
+                _onRender:onRender
             };
 
         if (parentView) {
@@ -327,11 +327,11 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
             }
             context = mergedCtx;
             props = self.props;
-            if ( props && props.link === FALSE ) {
+            if (props && props.link === FALSE) {
                 // link=false setting on block tag
                 // We will override inherited value of link by the explicit setting link=false taken from props
                 // The child views of an unlinked view are also unlinked. So setting child back to true will not have any effect.
-                context =  context || {};
+                context = context || {};
                 context.link = FALSE;
             }
             parentView = parentView || self.view;
@@ -467,7 +467,7 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
                 }
                 params = (params
                     ? parseParams(params, bind)
-                    .replace(rBuildHash, function(all, isCtx, keyValue) {
+                    .replace(rBuildHash, function (all, isCtx, keyValue) {
                         if (isCtx) {
                             passedCtx += keyValue + ",";
                         } else {
@@ -500,6 +500,7 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
             blockTagCheck(!current && closeBlock);
             content = current[3];
         }
+
         //==== /end of nested functions ====
 
         markup = markup.replace(rEscapeQuotes, "\\$1");
@@ -517,8 +518,8 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
         // Used for compiling templates, and also by JsViews to build functions for data link expressions
         var node, i, l, code, hasTag, hasEncoder, getsValue, hasConverter, hasViewPath, tag, converter, params, hash, nestedTmpl, allowCode, content,
             tmplOptions = tmpl ? {
-                allowCode: allowCode = tmpl.allowCode,
-                debug: tmpl.debug
+                allowCode:allowCode = tmpl.allowCode,
+                debug:tmpl.debug
             } : {},
             nested = tmpl && tmpl.tmpls,
             nestedIndex = 0;
@@ -692,6 +693,7 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
                     );
             }
         }
+
         params = (params + " ").replace(rParams, parseTokens);
         return params;
     }
@@ -715,7 +717,8 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
                         && jQuery && jQuery(value)[0];
                     // If selector is valid and returns at least one element, get first element
                     // If invalid, jQuery will throw. We will stay with the original string.
-                } catch (e) { }
+                } catch (e) {
+                }
 
                 if (elem) {
                     if (!elem.type) {
@@ -757,7 +760,7 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
         }
         if (tmplOrMarkup !== undefined) {
             if (name && !parent) {
-                $render[name] = function() {
+                $render[name] = function () {
                     return tmpl.render.apply(tmpl, arguments);
                 };
             }
@@ -787,6 +790,7 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
             return tmpl;
         }
     }
+
     //==== /end of function compile ====
 
     function TmplObject(markup, options, parent, key) {
@@ -802,10 +806,10 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
 
         options = options || {};
         var tmpl = {
-            markup: markup,
-            tmpls: [],
-            links: [],
-            render: renderContent
+            markup:markup,
+            tmpls:[],
+            links:[],
+            render:renderContent
         };
 
         if (parent) {
@@ -843,7 +847,7 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
         // jQuery is not loaded.
 
         $ = global.jsviews = $views;
-        $.extend = function(target, source) {
+        $.extend = function (target, source) {
             var name;
             target = target || {};
             for (name in source) {
@@ -852,7 +856,7 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
             return target;
         };
 
-        $.isArray = Array && Array.isArray || function(obj) {
+        $.isArray = Array && Array.isArray || function (obj) {
             return Object.prototype.toString.call(obj) === "[object Array]";
         };
     }
@@ -869,11 +873,11 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
     //========================== Register tags ==========================
 
     $viewsTags({
-        "if": function() {
+        "if":function () {
             var ifTag = this,
                 view = ifTag.view;
 
-            view.onElse = function(tagInstance, args) {
+            view.onElse = function (tagInstance, args) {
                 var i = 0,
                     l = args.length;
 
@@ -892,11 +896,11 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
             };
             return view.onElse(this, arguments);
         },
-        "else": function() {
+        "else":function () {
             var view = this.view;
             return view.onElse ? view.onElse(this, arguments) : "";
         },
-        "for": function() {
+        "for":function () {
             var i,
                 self = this,
                 result = "",
@@ -912,7 +916,7 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
             }
             return result;
         },
-        "*": function(value) {
+        "*":function (value) {
             return value;
         }
     });
@@ -926,7 +930,7 @@ this.jsviews || this.jQuery && jQuery.views || (function(global, undefined) {
     //========================== Register converters ==========================
 
     $viewsConverters({
-        html: function(text) {
+        html:function (text) {
             // HTML encoding helper: Replace < > & and ' and " by corresponding entities.
             // inspired by Mike Samuel <msamuel@google.com>
             return text != undefined ? String(text).replace(htmlSpecialChar, replacerForHtml) : "";

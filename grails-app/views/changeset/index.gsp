@@ -22,26 +22,32 @@
             projectFile:{
                 getFileWithContent:"${createLink(uri:'/projectFile/getFileWithContent/')}",
                 getLineCommentsWithSnippetsToFile:"${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}"
+            },
+
+            libs:{
+                zclip:{
+                    swf:"${createLink(uri: '/libs/jquery.zclip/ZeroClipboard.swf')}"
+                }
             }
         }
     </script>
 
+    <script src="${createLink(uri: '/libs/jquery.md5.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/jsrender.js')}" type="text/javascript"></script>
 
-    <link href=" ${createLink(uri: '/css/bootstrap.css')}" type="text/css" rel="stylesheet" media="screen"/>
-
-    <script src="${createLink(uri: '/js/jquery.md5.js')}" type="text/javascript"></script>
-    <script src="${createLink(uri: '/js/jsrender.js')}" type="text/javascript"></script>
-
-    <script src="${createLink(uri: '/js/bootstrap-collapse.js')}" type="text/javascript"></script>
-    <script src="${createLink(uri: '/js/bootstrap-tooltip.js')}" type="text/javascript"></script>
-    <script src="${createLink(uri: '/js/bootstrap-popover.js')}" type="text/javascript"></script>
+    <link href=" ${createLink(uri: '/libs/bootstrap/bootstrap.css')}" type="text/css" rel="stylesheet" media="screen"/>
+    <link href=" ${createLink(uri: '/libs/bootstrap/bootstrap-responsive.css')}" type="text/css" rel="stylesheet"
+          media="screen"/>
+    <script src="${createLink(uri: '/libs/bootstrap/bootstrap-collapse.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/bootstrap/bootstrap-tooltip.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/bootstrap/bootstrap-popover.js')}" type="text/javascript"></script>
 
     <script src="${createLink(uri: '/libs/jquery.syntaxhighlighter/jquery.syntaxhighlighter.js')}"
             type="text/javascript"></script>
     <link href=" ${createLink(uri: '/css/jquery.syntaxhighlighter-fontOverride.css')}"
           type="text/css" rel="stylesheet" media="screen"/>
 
-    <script src="${createLink(uri: '/js/jquery.zclip.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/jquery.zclip/jquery.zclip.js')}" type="text/javascript"></script>
 
     <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet"/>
 
