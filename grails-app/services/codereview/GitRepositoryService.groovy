@@ -11,8 +11,8 @@ class GitRepositoryService {
 
     def createRepository(String scmUrl) {
         String projectName = getProjectNameFromScmUrl(scmUrl)
-        def PATH = infrastructureService.getFullPathForProjectWorkingDirectory(projectName) + "/.git"
-        File gitDir = new File(PATH)
+        def PATH = infrastructureService.getFullPathForProjectWorkingDirectory(projectName)
+        File gitDir = new File(PATH + "/.git")
         if (!gitDir.exists()) {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         Repository repository = builder.setGitDir(new File(PATH))
