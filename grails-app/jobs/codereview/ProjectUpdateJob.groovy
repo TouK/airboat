@@ -14,17 +14,22 @@ class ProjectUpdateJob {
 
     def execute() {
         Project.all.each {
-            update(it.url)
+            update(it)
         }
     }
 
-    //FIXME this import is incremental only thanks to exceptions stopping it in the middle. Ugly.
-    //Probably it's incremental nature should be reflected by signatures of methods used here.
-    def update(String projectRepositoryUrl) {
+    def update(Project project) {
+        String projectRepositoryUrl = project.url
         Project.withTransaction({
             log.info("Starting project update for project ${projectRepositoryUrl}")
             scmAccessService.updateProject(projectRepositoryUrl)
-            scmAccessService.importAllChangesets(projectRepositoryUrl)
+            if (project.hasChangesets()) {
+                String lastChangesetHash = project.changesets.sort {it.date}.last().identifier
+                scmAccessService.importNewChangesets(projectRepositoryUrl, lastChangesetHash)
+            } else {
+                scmAccessService.importAllChangesets(projectRepositoryUrl)
+            }
+
             log.info("Done project update for project ${projectRepositoryUrl}")
         })
     }

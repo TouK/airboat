@@ -14,8 +14,9 @@ class LineCommentController {
     def addComment(long fileId, int lineNumber, String text) {
 
         def projectFile = ProjectFile.findById(fileId)
+        def projectName = projectFile.changeset.project.name
         def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(projectFile.changeset.project.url)
-        def fileContent = projectFileAccessService.getFileContent(projectFile, projectRootDirectory)
+        def fileContent = projectFileAccessService.getFileContent(projectFile, projectName)
 
         //TODO write own, groovy assertion methods using a closure argument to defer (often costly) message evaluation
         checkArgument(projectFile != null, "No file with id ${fileId} was found")

@@ -1,60 +1,56 @@
 package codereview
 
-import grails.plugin.spock.IntegrationSpec
-import org.apache.maven.scm.ChangeSet
-import spock.lang.Ignore
+
 import testFixture.Fixture
+import grails.plugin.spock.IntegrationSpec
 
-//FIXME these tests are bloody slow, especially over VPN. Prepare a test repository in test setup / additional build script, maybe?
-class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
-    def gitRepositoryService
-    def scmAccessService
+class GitRepositoryServiceIntegrationSpec extends IntegrationSpec{
 
-    def "should fetch changesets from project's repository"() {
-        given:
-        Project project = Project.build(url: Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-        gitRepositoryService.checkoutProject(project.url)
+    GitRepositoryService gitRepositoryService
 
+    def "should extract project name from scmUrl" () {
         when:
-        def changelog = gitRepositoryService.getAllChangeSets(project.url)
-
+        def projectName = gitRepositoryService.getProjectNameFromScmUrl(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
+        def projectName2 = gitRepositoryService.getProjectNameFromScmUrl("git://home/projects/kaboom.git")
         then:
-        changelog.size() >= Fixture.LOWER_BOUND_FOR_NUMBER_OF_COMMITS
-        changelog.findAll { ChangeSet changeSet ->
-            (
-            changeSet.date == Fixture.FIRST_COMMIT_DATE
-                    && changeSet.author == Fixture.FIRST_COMMIT_AUTHOR
-                    && changeSet.comment == Fixture.FIRST_COMMIT_COMMENT
-            )
-        }.size() == 1
+        projectName == "codereview"
+        projectName2 == "kaboom"
     }
 
-    //TODO add test for fetchFullChangelog when in case project was not been checked out
-
-    def 'should create changesets with added files'() {
-        given:
-        Project project = Project.build(url: Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-        gitRepositoryService.checkoutProject(project.url)
-
+    def "should set repo  if it isn't set already"() {
         when:
-        def changes = gitRepositoryService.getAllChangeSets(project.url)
-
+        gitRepositoryService.createRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
         then:
-        changes?.isEmpty() == false
-        changes.each {
-            assert !it.getFiles().isEmpty()
-        }
+        true
     }
 
-    @Ignore //FIXME implement test
-    def 'Should do initial check out'() {
-
+    def "should update repo by pulling"() {
+        when:
+        def updateResult = gitRepositoryService.updateRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
+        then:
+        updateResult.success == true
     }
 
-    //TODO tests to be written:
-    //TODO test initialCheckOut and updateProject methods if they work as we expect
+    def "should get all changesets" () {
+        when:
+        def changesets = gitRepositoryService.getAllChangesets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
+        then:
+        !changesets.isEmpty()
+        changesets.size > 0
+        changesets[1].files != null
+    }
 
+    def "should get only newer changesets"() {
+        when:
+        def changesets = gitRepositoryService.getAllChangesets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
+        int index = changesets.size()/10
+        String hash = changesets[index].rev
+        def newerChangesets = gitRepositoryService.getNewChangesets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL, hash)
+        then:
+        !newerChangesets.isEmpty()
+        newerChangesets.size() < changesets.size()
+        newerChangesets.last().authorEmail
+        newerChangesets.last().fullMessage
+    }
 }
-
-

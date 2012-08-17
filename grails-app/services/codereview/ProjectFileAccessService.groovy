@@ -2,21 +2,21 @@ package codereview
 
 class ProjectFileAccessService {
 
-    String fetchFileContentFromPath(String projectDir, String fileName) {
-
-        def file = new File(projectDir, fileName)
+    String fetchFileContentFromPath(String projectName, String fileName) {
+        def infrastructureService = new InfrastructureService()
+        def PATH = infrastructureService.getFullPathForProjectWorkingDirectory(projectName) + File.separator + fileName
+        def file = new File(PATH)
         def content
-        if (file.exists()) {
-            content = file.text
-        }
-        else {
+        if (file.exists())
+            content = file.getText()
+        else
             content = "File doesn't exist" //FIXME not like that, return null (!?) or throw an exception
-        }
-        content
+
+        return content
     }
 
-    def getFileContent(ProjectFile projectFile, projectRootDirectory) {
-        def path = projectRootDirectory.getAbsolutePath()
-        fetchFileContentFromPath(path, projectFile.name)
+    def getFileContent(ProjectFile projectFile, projectName) {
+
+        return fetchFileContentFromPath(projectName, projectFile.name)
     }
 }

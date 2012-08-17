@@ -23,13 +23,13 @@ class ProjectUpdateJobSpec extends Specification {
         project.addToChangesets(changeset)
         committer.addToChangesets(changeset)
 
-        project.save()
-        committer.save()
+        project.save(failOnError: true)
+        committer.save(failOnError: true)
         def job = new ProjectUpdateJob()
         job.scmAccessService = scmAccessServiceMock
 
         when:
-        job.update(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
+        job.update(project)
 
         then:
         Changeset.count() != 0

@@ -2,7 +2,6 @@ package codereview
 
 import grails.buildtestdata.mixin.Build
 import grails.test.mixin.Mock
-import org.apache.maven.scm.ChangeSet
 import spock.lang.Specification
 import codereview.Project
 import codereview.Changeset
@@ -138,8 +137,8 @@ class DiffAccessServiceSpec extends Specification{
         String fileDiff = diffAccessService.getDiffToProjectFile(projectFile, pathToGitWorkingDirectory )
 
         then:
-        fileDiff == null
-        thrown(java.lang.NullPointerException)
+        fileDiff == ""
+        //thrown(java.lang.NullPointerException)
     }
 
 }

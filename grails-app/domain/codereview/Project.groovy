@@ -17,4 +17,8 @@ class Project {
         name unique: true
         url unique: true
     }
+
+    boolean hasChangesets() {
+        changesets && !changesets.isEmpty()
+    }
 }
