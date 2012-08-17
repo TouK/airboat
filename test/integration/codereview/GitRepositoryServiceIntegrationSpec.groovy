@@ -35,6 +35,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec{
         updateResult.success == true
     }
 
+    @Ignore
     def "should get all changesets" () {
         when:
         gitRepositoryService.createRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
@@ -45,6 +46,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec{
         changesets[1].files != null
     }
 
+    @Ignore
     def "should get only newer changesets"() {
         when:
         gitRepositoryService.createRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
