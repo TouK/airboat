@@ -32,8 +32,6 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         }
     }
 
-    //TODO change these test to be appropriate for jgit...
-
     private static List<Class<?>> domainClasses() {
         ApplicationHolder.application.domainClasses*.clazz
     }
@@ -54,7 +52,6 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         }
     }
 
-
     def 'should fetch and save changesets in db'() {
         given:
         Project project
@@ -74,10 +71,6 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         Changeset.findAllByIdentifierAndCommitComment(changesetId, commitComment).size() == 1
     }
 
-    //TODO write it for jgit
-    private void prepareJGitScmService(String commitComment, String changesetAuthor, String changesetId, String url) {
-        def jGit
-    }
     private void prepareGitScmService(String commitComment, String changesetAuthor, String changesetId, String url) {
         GitChangeset gitChangeset = new GitChangeset(commitComment, changesetAuthor, changesetId, new Date())
 
@@ -87,9 +80,6 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         scmAccessService.gitRepositoryService = gitRepositoryService
     }
 
-    //TODO this testing is incomplete, because service has got many methods and they're aren't tested anywhere - More tests!
-
-    //FIXME test for sort order of changesets
 
     def 'should convert git ChangeSet to ChangeSet and add commiter'() {
         given:
