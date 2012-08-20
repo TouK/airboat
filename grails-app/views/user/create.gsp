@@ -10,16 +10,8 @@
 <div class="container">
     <div class="span6 offset2 well well-large">
         <h1>Register</h1>
-        <g:form action="save" class="form-horizontal">
-            <g:hasErrors bean="${command}">
-                <ul class="alert-block" role="alert">
-                    <g:eachError bean="${command}" var="error">
-                        <li class="alert-error"
-                            <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message
-                                error="${error}"/></li>
-                    </g:eachError>
-                </ul>
-            </g:hasErrors>
+        <g:form name='createUserForm' action="save" class="form-horizontal">
+            <div class="errors"></div>
             <fieldset>
                 <div class="control-group">
                     <label for="emailInput" class="control-label">E-mail</label>
@@ -51,6 +43,39 @@
             </div>
 
         </g:form>
-    </div></div>
+    </div>
+</div>
+
+<script id="formErrorsTemplate" type="text/x-jsrender">
+    <ul class="alert-block" role="alert">
+        {{for #data}}
+            <li class="alert-error" {{if field}}data-field-id="{{:field}}"{{/if}}>{{:message}}</li>
+        {{/for}}
+    </ul>
+</script>
+
+<script type='text/javascript'>
+    /*TODO can't it be done easier?*/
+    (function () {
+        document.forms['createUserForm'].elements['email'].focus();
+    })();
+
+    $('#createUserForm').submit(registerViaAjax);
+
+    function registerViaAjax() {
+        $.post(this.action, $(this).serialize(), function (registration) {
+            if (registration.success) {
+                top.onLoggedIn(registration.username);
+            } else if (registration.errors) {
+                $('#createUserForm .errors')
+                        .html($('#formErrorsTemplate').render([registration.errors]))
+                        .hide().fadeIn()
+            } else {
+                alert("An error occured. Please file a bug using our feedback form.")
+            }
+        }, 'json');
+        return false;
+    }
+</script>
 </body>
 </html>

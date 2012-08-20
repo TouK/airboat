@@ -68,6 +68,9 @@ grails.plugins.springsecurity.userLookup.userDomainClassName = 'codereview.User'
 grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'codereview.UserRole'
 grails.plugins.springsecurity.authority.className = 'codereview.Role'
 
+grails.plugins.springsecurity.successHandler.defaultTargetUrl = '/login/successful'
+grails.plugins.springsecurity.successHandler.alwaysUseDefault = true
+
 // set per-environment serverURL stem for creating absolute links
 environments {
     development {

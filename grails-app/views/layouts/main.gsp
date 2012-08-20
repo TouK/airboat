@@ -23,6 +23,10 @@
                 getFileWithContent:"${createLink(uri:'/projectFile/getFileWithContent/')}",
                 getLineCommentsWithSnippetsToFile:"${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}"
             },
+            login:"${createLink(uri: '/login/auth')}",
+
+            logout:"${createLink(uri: '/logout')}",
+            register:"${createLink(uri: '/register')}",
 
             libs:{
                 zclip:{
@@ -30,11 +34,40 @@
                 }
             }
         }
+
+        var codeReview = {
+            colorboxSettings: {transition:"fade", iframe:true, width:640, height:420}
+
+            , loggedInUserName:'<sec:username/>'
+        }
+
+        //TODO move to codeReview object
+        var hashAbbreviationLength = 8;
+        var lineBoundary = 60; //TODO rename
+    </script>
+
+    <script src="${createLink(uri: '/libs/jquery-1.8.0.min.js')}" type="text/javascript"></script>
+    <link href=" ${createLink(uri: '/libs/jquery.colorbox/colorbox.css')}"
+          type="text/css" rel="stylesheet" media="screen"/>
+    <script src="${createLink(uri: '/libs/jquery.colorbox/jquery.colorbox-min.js')}" type="text/javascript"></script>
+
+    <script id="unauthorizedErrorGlobalHandler" type="text/javascript">
+        $('#unauthorizedErrorGlobalHandler').ajaxError(function (event, jqXHR) {
+            var unauthorized = 401;
+            if (jqXHR.status === unauthorized) {
+                showLoginForm();
+            }
+        });
+
+        function showLoginForm() {
+            $.colorbox($.extend(codeReview.colorboxSettings, {href:uri.login}));
+        }
     </script>
 
     %{--TODO make use of <g:javascript library="library_name"/> tag? --}%
-    <script src="${createLink(uri: '/libs/jquery-1.8.0.min.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/jsrender.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/jquery.observable.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/jquery.views.js')}" type="text/javascript"></script>
 
     <link href=" ${createLink(uri: '/libs/bootstrap/bootstrap.css')}" type="text/css" rel="stylesheet" media="screen"/>
     <link href=" ${createLink(uri: '/libs/bootstrap/bootstrap-responsive.css')}" type="text/css" rel="stylesheet"

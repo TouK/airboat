@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="main"/>
-    <title><g:message code="springSecurity.login.title"/></title>
+    <title></title>
 </head>
 
 <body>
@@ -10,11 +10,8 @@
     <div class="span6 offset2 well well-large">
         <h1><g:message code="springSecurity.login.header"/></h1>
 
-        <g:if test='${flash.message}'>
-            <div class='alert alert-block'>${flash.message}</div>
-        </g:if>
-
         <form action='${postUrl}' method='POST' id='loginForm' class='form-horizontal' autocomplete='off'>
+            <div class="errors"></div>
             <fieldset>
                 <div class="control-group">
                     <label for="emailInput" class="control-label">E-mail</label>
@@ -48,12 +45,33 @@
         </form>
     </div>
 </div>
+
+<script id="formErrorTemplate" type='text/x-jsrender'>
+    <div class='alert alert-block'>{{: #data }}</div>
+</script>
+
 <script type='text/javascript'>
-    <!--
+    /*TODO can't it be done easier?*/
     (function () {
         document.forms['loginForm'].elements['j_username'].focus();
     })();
-    // -->
+
+    $('#loginForm').submit(authAjax);
+
+    function authAjax() {
+        $.post(this.action, $(this).serialize(), function (login) {
+            if (login.success) {
+                top.onLoggedIn(login.username);
+            } else if (login.error) {
+                $('#loginForm .errors')
+                        .html($('#formErrorTemplate').render(login.error))
+                        .hide().fadeIn()
+            } else {
+                alert("An error occured. Please file a bug using our feedback form.")
+            }
+        }, 'json');
+        return false;
+    }
 </script>
 </body>
 </html>

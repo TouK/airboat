@@ -25,9 +25,26 @@ textarea {
 }
 
 .navbar.logonavbar .nav > li > a {
-    padding: 10px 20px 12px;
     font-size: 18px;
+    padding: 10px 20px 12px;
+    color: white;
+}
+
+.navbar.logonavbar .brand, .textInNavbar {
+    padding: 10px 20px 12px;
     line-height: 72px;
+}
+
+.textInNavbar {
+    font-size: 18px;
+}
+
+.navbar.logonavbar .nav > li > * {
+    line-height: 72px;
+    color: gray;
+}
+
+.navbar.logonavbar .nav a {
     color: white;
 }
 

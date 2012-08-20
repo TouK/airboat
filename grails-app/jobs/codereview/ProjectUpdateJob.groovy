@@ -21,7 +21,7 @@ class ProjectUpdateJob {
     //FIXME this import is incremental only thanks to exceptions stopping it in the middle. Ugly.
     //Probably it's incremental nature should be reflected by signatures of methods used here.
     def update(String projectRepositoryUrl) {
-        Project.withTransaction({
+        Project.withTransaction({ //TODO this withTransaction call is redundant according to quartz-plugin docs. Verify.
             log.info("Starting project update for project ${projectRepositoryUrl}")
             scmAccessService.updateProject(projectRepositoryUrl)
             scmAccessService.importAllChangesets(projectRepositoryUrl)

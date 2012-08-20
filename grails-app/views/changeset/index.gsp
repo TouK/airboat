@@ -32,19 +32,13 @@
                 CodeReview
             </a>
             <img src="${createLink(uri: '/images/cereal_guy.png')}" height="80" class="pull-left" style="padding: 5px;">
-            <span class="pull-left"></span>
             <ul class="nav">
-                <li>
-                    <a href="#" onclick="showProject('codereview')">CodeReview</a>
-                </li>
-                <li>
-                    <a href="#" onclick="showProject('cyclone')">Cyclone</a>
-                </li>
-                <li>
-                    <a href="#" onclick="showProject('')">All</a>
-                </li>
+                <li><a href="#" onclick="showProject('codereview')">CodeReview</a></li>
+                <li><a href="#" onclick="showProject('cyclone')">Cyclone</a></li>
+                <li><a href="#" onclick="showProject('')">All</a></li>
             </ul>
             <ul class="nav pull-right">
+                <li id="loginStatus"></li>
                 <li>
                     <a href="https://docs.google.com/spreadsheet/viewform?formkey=dElrejNuNVUzNEt3LTJZQnVCQ3RILWc6MQ#gid=0"
                        target="_blank">Feedback</a>
@@ -53,12 +47,6 @@
         </div>
     </div>
 </div>
-
-
-<h1>
-    <sec:ifNotLoggedIn>Hello, unknown wanderer!</sec:ifNotLoggedIn>
-    <sec:ifLoggedIn>Hello, <sec:username/>!</sec:ifLoggedIn>
-</h1>
 
 <script type="text/javascript">
     $.SyntaxHighlighter.init({
@@ -77,21 +65,49 @@
             var size = size || 50;
             return 'http://www.gravatar.com/avatar/' + $.md5(email) + '.jpg?s=' + size;
         }
-    })
-
-    var hashAbbreviationLength = 8;
-    var lineBoundary = 60; //TODO rename
+    });
 
     $().ready(function () {
-        showProject('')
+
+        $.templates({
+            loginStatusTemplate:"#loginStatusTemplate"
+        });
+
+        $.link.loginStatusTemplate('#loginStatus', codeReview);
+
+        showProject('');
 
         $(window).scroll(function () {
             if ($(window).scrollTop() == $(document).height() - $(window).height()) {
                 onScrollThroughBottomAttempt()
             }
         });
+
+        $(".colorbox").colorbox(codeReview.colorboxSettings);
     });
+
+    function onLoggedIn(username) {
+        $.colorbox.close();
+        $.observable(codeReview).setProperty('loggedInUserName', username);
+    }
 </script>
+
+<script id="loginStatusTemplate" type="text/x-jsrender">
+    <div class="textInNavbar">
+        <div data-link="visible{: loggedInUserName !== '' }">
+            %{--TODO use uri global variable when referencing a controller--}%
+            Yo <a href="user/{{:loggedInUserName}}"
+                  data-link="{:loggedInUserName} href{: 'user/' + loggedInUserName}"></a>!
+        Wanna <g:link controller='logout'>log out</g:link>?
+        </div>
+
+        <div data-link="visible{: loggedInUserName === '' }">
+            Hello, Unknown Wanderer! <g:link class='colorbox' url='login'>Login</g:link>
+            or <g:link class='colorbox' url='register'>register</g:link>, maybe?
+        </div>
+    </div>
+</script>
+
 
 <script id="changesetTemplate" type="text/x-jsrender">
 

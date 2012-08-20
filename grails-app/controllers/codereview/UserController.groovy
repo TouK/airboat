@@ -1,5 +1,7 @@
 package codereview
 
+import grails.converters.JSON
+
 class UserController {
 
     static allowedMethods = [save: 'POST']
@@ -13,7 +15,7 @@ class UserController {
     def save(CreateUserCommand command) {
         command.validate()
         if (command.hasErrors()) {
-            render(view: 'create', model: [command: command])
+            render(command.errors as JSON)
         } else {
             validateDbDependentConstraintsAndSaveUser(command)
         }
@@ -24,10 +26,10 @@ class UserController {
         if (user.validate()) {
             saveUser(user)
             springSecurityService.reauthenticate(user.username)
-            redirect(controller: 'changeset', action: 'index')
+            redirect(controller: 'login', action: 'ajaxSuccess')
         } else if (user.errors.getFieldError('email').code == 'unique') {
             command.errors['email'] = 'userExists'
-            render(view: 'create', model: [command: command])
+            render(command.errors as JSON)
         } else {
             throw new ThingThatShouldNotBeException("Unhandled validation errors in: ${user.errors.allErrors*.codes}")
         }

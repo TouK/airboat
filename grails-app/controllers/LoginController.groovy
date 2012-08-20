@@ -123,4 +123,13 @@ class LoginController {
     def ajaxDenied = {
         render([error: 'access denied'] as JSON)
     }
+
+    /**
+     * A dummy redirect-after-login target to prevent loading the whole app in an ajax request.
+     * The user should never see this method's result.
+     */
+    def successful = {
+        render("You've been logged in successfully."
+                + "However, you should never see this page. Please file a bug in our feedback form.")
+    }
 }
