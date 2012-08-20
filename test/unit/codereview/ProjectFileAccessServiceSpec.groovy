@@ -21,7 +21,7 @@ class ProjectFileAccessServiceSpec extends Specification {
         content != null
         content == "File doesn't exist"
     }
-
+    @Ignore
     def 'should return file content if file exists'() {
         given:
         def fileName = Fixture.PATH_TO_FILE_PRESENT_IN_FIRST_COMMIT

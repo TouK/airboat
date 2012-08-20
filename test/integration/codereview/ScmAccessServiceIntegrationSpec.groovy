@@ -1,9 +1,10 @@
 package codereview
 
 import grails.plugin.spock.IntegrationSpec
-import org.apache.maven.scm.ChangeSet
+
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.springframework.dao.InvalidDataAccessApiUsageException
+import spock.lang.Ignore
 
 class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
@@ -71,29 +72,28 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
     }
 
     private void prepareGitScmService(String commitComment, String changesetAuthor, String changesetId, String url) {
-        def changeSet = new ChangeSet(new Date(), commitComment, changesetAuthor, null)
-        changeSet.setRevision(changesetId)
+        GitChangeset gitChangeset = new GitChangeset(commitComment, changesetAuthor, changesetId, new Date())
+
         GitRepositoryService gitRepositoryService = Mock()
-        1 * gitRepositoryService.getAllChangeSets(url) >> [changeSet]
+        1 * gitRepositoryService.getAllChangesets(url) >> [gitChangeset]
 
         scmAccessService.gitRepositoryService = gitRepositoryService
     }
 
-    //TODO this testing is incomplete, because service has got many methods and they're aren't tested anywhere - More tests!
 
-    //FIXME test for sort order of changesets
     def 'should convert git ChangeSet to ChangeSet and add commiter'() {
         given:
-        def gitChangeSet = new ChangeSet(new Date(), 'Refactoring', 'jil <jil@touk.pl>', null)
+        GitChangeset jGitChangeset = new GitChangeset('Refactoring', "jil@touk.pl", "someday123", new Date())
 
         when:
-        def changeset = scmAccessService.convertToChangeset(gitChangeSet)
+        def changeset = scmAccessService.buildChangeset(jGitChangeset)
         def changesetCommiter = changeset.commiter
 
         then:
         changeset != null
         changesetCommiter != null
     }
+
 
     def 'should save Changeset to db and add commiter if it is not yet in db'() {
         Project project
@@ -127,6 +127,7 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         committerFromDb.changesets.contains(Changeset.findByIdentifier(changeset.identifier))
     }
 
+
     def 'should add a changeset for existing committer when saving changeset by them'() {
         given:
         String commitId = 'hash23'
@@ -151,10 +152,11 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         commiter.changesets.contains(Changeset.findByIdentifier(commitId))
     }
 
+
     def 'should associate Changeset with corresponding user'() {
         given:
         def email = 'agj@touk.pl'
-        def cvsCommitterId = "Artur Gajowy <${email}>"
+        def cvsCommitterId = email
         Project project
 
         Project.withNewSession {
@@ -173,7 +175,6 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         email == 'agj@touk.pl'
-        cvsCommitterId == "Artur Gajowy <${email}>"
         def associatedCommiters = User.findByEmail(email).committers
         associatedCommiters*.cvsCommiterId == [cvsCommitterId]
     }

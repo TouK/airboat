@@ -94,11 +94,13 @@ log4j = {
         console name: 'stdout', layout: pattern(conversionPattern: '%d{HH:mm:ss} %p %c{2} %m%n')
 
         rollingFile name: 'rollingFileError', layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c{2} >>%m%n'),
-                threshold: Level.ERROR, maxFileSize: 102400, file: "${logDirectory}/CodereviewError.log".toString()
+                threshold: Level.ERROR, maxFileSize: 20480, file: "${logDirectory}/CodereviewError.log".toString()
         rollingFile name: 'rollingFileDebug', layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c{2} >>%m%n'),
-                threshold: Level.DEBUG, maxFileSize: 102400, file: "${logDirectory}/CodereviewDebug.log".toString()
+                threshold: Level.DEBUG, maxFileSize: 20480, file: "${logDirectory}/CodereviewDebug.log".toString()
         rollingFile name: 'stacktrace', layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c{2} >>%m%n'),
-                threshold: Level.ERROR, maxFileSize: 102400, file: "${logDirectory}/CodereviewStackTrace.log".toString()
+                threshold: Level.ERROR, maxFileSize: 20480, file: "${logDirectory}/CodereviewStackTrace.log".toString()
+        rollingFile name: 'rollingFileQuartz', layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c{2} >>%m%n'),
+                threshold: Level.ERROR, maxFileSize: 20480, file: "${logDirectory}/JobExecutionException.log".toString()
 
         root {
             info()
@@ -107,7 +109,8 @@ log4j = {
 
     debug 'codereview'
 
-    error 'org.codehaus.groovy.grails.web.servlet',  //  controllers
+    error rollingFileQuartz: 'org.quartz'      //Quartz / Job
+    ['org.codehaus.groovy.grails.web.servlet',  //  controllers
             'org.codehaus.groovy.grails.web.pages', //  GSP
             'org.codehaus.groovy.grails.web.sitemesh', //  layouts
             'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
@@ -115,7 +118,7 @@ log4j = {
             'org.codehaus.groovy.grails.commons', // core / classloading
             'org.codehaus.groovy.grails.plugins', // plugins
             //'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
-            'org.springframework'
+            'org.springframework']
     //'org.hibernate',
     //'net.sf.ehcache.hibernate'
 }

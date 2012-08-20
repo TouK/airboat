@@ -12,17 +12,6 @@ class ChangesetController {
     def index() {
     }
 
-    /**
-     * TODO helper method for development phase
-     */
-    def initialCheckOut() {
-        Project.all.each {
-            log.info("Checking out project ${it.url}.")
-            scmAccessService.checkoutProject(it.url)
-        }
-        redirect(views: '/index', params: params)
-    }
-
     def getLastChangesets = {
         def changesets
         if (isNullOrEmpty(params.projectName)) {

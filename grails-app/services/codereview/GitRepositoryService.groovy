@@ -1,69 +1,87 @@
 package codereview
 
-import org.apache.maven.scm.ChangeSet
-import org.apache.maven.scm.ScmFileSet
-import org.apache.maven.scm.provider.git.gitexe.GitExeScmProvider
-import org.apache.maven.scm.provider.git.repository.GitScmProviderRepository
-import org.apache.maven.scm.repository.ScmRepository
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+import org.eclipse.jgit.lib.Repository
+import org.eclipse.jgit.api.Git
 
-/**
- * Zabronione uzywanie klas domenowych w tej klasie.
- */
 class GitRepositoryService {
 
+    def diffAccessService
     def infrastructureService
 
-    void checkoutProject(String gitScmUrl) {
-        ScmFileSet allFilesInProject = prepareScmFileset(gitScmUrl)
-        ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
-        new GitExeScmProvider().checkOut(gitRepository, allFilesInProject)
-    }
+    def createRepository(String scmUrl) {
+        String projectName = getProjectNameFromScmUrl(scmUrl)
+        def PATH = infrastructureService.getFullPathForProjectWorkingDirectory(projectName)
+        File gitDir = new File(PATH + "/.git")
+        if (!gitDir.exists()) {
+        FileRepositoryBuilder builder = new FileRepositoryBuilder();
+        Repository repository = builder.setGitDir(new File(PATH))
+                .readEnvironment() // scan environment GIT_* variables
+                .findGitDir() // scan up the file system tree
+                .build();
 
-    void updateProject(String gitScmUrl) {
-        ScmFileSet allFilesInProject = prepareScmFileset(gitScmUrl)
-        ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
-
-        if (validateScmFileset(allFilesInProject)) {
-            def scmProvider = new GitExeScmProvider()
-            scmProvider.addListener(new Log4jScmLogger())
-            scmProvider.update(gitRepository, allFilesInProject)
-        } else {
-            log.warn('Project directory does not exist yet. Please, checkout project first.')
+        Git git = new Git(repository)
+        git.cloneRepository()
+        .setBare(false)
+        .setCloneAllBranches(true)
+        .setDirectory(new File(PATH)).setURI(scmUrl)
+        .call()
         }
     }
 
-    def validateScmFileset(ScmFileSet scmFileSet) {
-        scmFileSet.basedir.exists()
+    def updateRepository(String scmUrl) {
+        String projectName = getProjectNameFromScmUrl(scmUrl)
+
+        def PATH = infrastructureService.getFullPathForProjectWorkingDirectory(projectName) + "/.git"
+        File gitDir = new File(PATH)
+        if(!gitDir.exists()) {
+            createRepository(scmUrl)
+        }
+        Repository repository = diffAccessService.getRepositoryFromWorkingDirectory(PATH)
+
+        Git git = new Git(repository)
+        assert(!repository.isBare())
+        def pullResult = git.pull().call()
+        [success: pullResult.successful, from: pullResult.fetchedFrom, fetchProperties: pullResult.fetchResult.properties,
+                mergeResult: pullResult.mergeResult.toString() ]
     }
 
-    Set<ChangeSet> getAllChangeSets(String gitScmUrl) {
-        ScmFileSet allFilesInProject = prepareScmFileset(gitScmUrl)
-        ScmRepository gitRepository = createScmRepositoryObject(gitScmUrl)
+    def getAllChangesets(String scmUrl) {
+        Git git = prepareGit(scmUrl)
+        def logOutput = git.log().call()
+        prepareGitChangesets(logOutput, git.repository.directory.absolutePath)
 
-        def scmProvider = new GitExeScmProvider()
-        scmProvider.addListener(new Log4jScmLogger())
-        def changeLogScmResult = scmProvider.changeLog(gitRepository, allFilesInProject, new Date(0), new Date(), 0, 'master')
-
-        changeLogScmResult.changeLog?.changeSets as Set<ChangeSet>
     }
 
-    private ScmRepository createScmRepositoryObject(String gitScmUrl) {
-        new ScmRepository('git', new GitScmProviderRepository(gitScmUrl))
+    String getProjectNameFromScmUrl(String scmUrl) {
+        scmUrl.split("/").last()[0..-5]
     }
 
-    private ScmFileSet prepareScmFileset(String gitScmUrl) {
-        new ScmFileSet(infrastructureService.getProjectWorkingDirectory(gitScmUrl), '*.*')
+    def prepareGitChangesets(logOutput, String PATH) {
+        def logIterator = logOutput.iterator()
+        def changesets = []
+        while(logIterator.hasNext())  {
+            def commit = logIterator.next()
+            def commitHash = commit.toString().split(" ")[1]
+            GitChangeset gitChangeset = new GitChangeset( commit.fullMessage, commit.authorIdent.emailAddress, commitHash, new Date(commit.getCommitTime() *1000L ) )
+            gitChangeset.files = diffAccessService.getChangedFilesToCommit(PATH, commitHash)
+            changesets.add(gitChangeset)
+        }
+        return changesets
     }
 
-    //FIXME get rid of this
-    def returnFileContent() {
-        """Lubie buraki, bo sa fajne i smaczne
-         function genialne() {
-         var doprawdy_fantastyczne;
-         doprawdy_fantastyczne = "nomnomnom!" ;
-         print doprawdy_fantastyczne;
-         }
-         """
+    def getNewChangesets(String scmUrl, String lastChangesetHash) {
+        Git git = prepareGit(scmUrl)
+        def lastSavedChangesetId = git.repository.resolve(lastChangesetHash)
+        def logOutput = git.log().not(lastSavedChangesetId).call()
+        prepareGitChangesets(logOutput, git.repository.directory.absolutePath)
     }
+
+    def prepareGit(String scmUrl) {
+        def projectName = getProjectNameFromScmUrl(scmUrl)
+        def PATH = infrastructureService.getFullPathForProjectWorkingDirectory(projectName)  + "/.git"
+        Repository repository = diffAccessService.getRepositoryFromWorkingDirectory(PATH)
+        new Git(repository)
+    }
+
 }
-

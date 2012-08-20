@@ -19,8 +19,7 @@ class ProjectFileController {
 
     def getFileWithContent(Long id) {
         def projectFile = ProjectFile.findById(id)
-        def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(projectFile.changeset.project.url)
-        projectFile.content = projectFileAccessService.getFileContent(projectFile, projectRootDirectory)
+        projectFile.content = projectFileAccessService.getFileContent(projectFile, projectFile.changeset.project.name)
 
         render([content: projectFile.content, filetype: projectFile.fileType, name: projectFile.name] as JSON)
     }
@@ -73,7 +72,7 @@ class ProjectFileController {
         def commentGroupsWithSnippets = []
         if (!comments.isEmpty()) {
             def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(projectFile.changeset.project.url)
-            def fileContent = projectFileAccessService.getFileContent(projectFile, projectRootDirectory)
+            def fileContent = projectFileAccessService.getFileContent(projectFile, projectFile.changeset.project.name)
             def commentsGroupedByLineNumber = snippetWithCommentsService.prepareCommentGroups(comments)
             commentGroupsWithSnippets = snippetWithCommentsService.prepareCommentGroupsWithSnippets(commentsGroupedByLineNumber, projectFile.fileType, fileContent)
         }

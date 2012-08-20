@@ -57,4 +57,7 @@ class InfrastructureService {
     String getDirectoryNameForTheProject(String scmUrl) {
         Project.findByUrl(scmUrl).name
     }
+    String getFullPathForProjectWorkingDirectory(String projectName) {
+        getBaseDirectoryName()  + File.separator + projectName
+    }
 }

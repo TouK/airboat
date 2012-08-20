@@ -4,6 +4,7 @@ import grails.buildtestdata.mixin.Build
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import mixins.SpringSecurityControllerMethodsMock
+import spock.lang.Ignore
 
 @TestFor(ChangesetController)
 @Build([ProjectFile, User, Changeset])
@@ -27,19 +28,6 @@ class ChangesetControllerSpec extends Specification {
         then:
         response.getContentType().startsWith('application/json')
         response.json.size() == changesets.size()
-    }
-
-    def 'initial checkout should delegate to service and display index afterwards'() {
-        def numberOfProjects = 3
-        given:
-        (1..numberOfProjects).each { Project.build() }
-
-        when:
-        controller.initialCheckOut()
-
-        then:
-        numberOfProjects * controller.scmAccessService.checkoutProject(_)
-        response.redirectedUrl == '/changeset/index'
     }
 
     def 'getChangeset should return one specific changeset '() {

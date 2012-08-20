@@ -3,7 +3,7 @@ import codereview.Constants
 import codereview.Project
 import grails.converters.JSON
 
-import static codereview.ScmAccessService.getEmail
+//import static codereview.ScmAccessService.getEmail
 
 class BootStrap {
 
