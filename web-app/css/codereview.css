@@ -6,6 +6,10 @@ textarea {
     padding: 10px;
 }
 
+.commitMessage {
+    white-space: pre-wrap;
+}
+
 .future {
     background-color: #FAFEFC;
 }

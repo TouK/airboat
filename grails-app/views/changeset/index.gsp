@@ -141,7 +141,7 @@
                 </div>
             </div>
 
-            <div class="row-fluid well-small">{{>commitComment}}</div>
+            <div class="row-fluid well-small commitMessage">{{>commitComment}}</div>
 
             <div id="more-button-{{>identifier}}">
                 <a class="btn btn-primary btn-big" onclick="showChangesetDetails('{{>identifier}}')">
