@@ -1,6 +1,5 @@
 package codereview
 
-//FIXME project files must have a notion of file type, which is needed e.g. when showing files in changeset (think: images)
 class ProjectFile {
 
     String content
@@ -14,7 +13,7 @@ class ProjectFile {
         this.name = name
         this.content = content
     }
-    //FIXME: add test
+
     String getFileType() {
         def extensionToFiletype = [js: 'javascript', htm: 'html']
         def extension = name[name.lastIndexOf('.') + 1..name.length() - 1]
