@@ -1,5 +1,7 @@
 package codereview
 
+import org.springframework.transaction.support.DefaultTransactionStatus
+
 class ProjectUpdateJob {
 
     def concurrent = false
@@ -13,24 +15,41 @@ class ProjectUpdateJob {
     }
 
     def execute() {
-        Project.all.each {
-            update(it)
+        time("execution of ProjectUpdateJob") {
+            Project.all.each { Project project ->
+                update(project)
+            }
         }
     }
 
     def update(Project project) {
         String projectRepositoryUrl = project.url
-        Project.withTransaction({
-            log.info("Starting project update for project ${projectRepositoryUrl}")
-            scmAccessService.updateProject(projectRepositoryUrl)
-            if (project.hasChangesets()) {
-                String lastChangesetHash = project.changesets.sort {it.date}.last().identifier
-                scmAccessService.importNewChangesets(projectRepositoryUrl, lastChangesetHash)
-            } else {
-                scmAccessService.importAllChangesets(projectRepositoryUrl)
+        Project.withTransaction({ DefaultTransactionStatus ignoredStatus ->
+            time("update of project ${project.url}") {
+                scmAccessService.updateProject(projectRepositoryUrl)
+                if (project.hasChangesets()) {
+                    String lastChangesetHash = project.changesets.sort {it.date}.last().identifier
+                    scmAccessService.importNewChangesets(projectRepositoryUrl, lastChangesetHash)
+                } else {
+                    scmAccessService.importAllChangesets(projectRepositoryUrl)
+                }
             }
-
-            log.info("Done project update for project ${projectRepositoryUrl}")
         })
+    }
+
+    def time(String actionName, Closure action) {
+        long startTime = System.nanoTime()
+        log.info("Starting ${actionName}")
+        try {
+            action()
+            log.info("Finished ${actionName}. It completed successfully after ${durationSince(startTime)}")
+        } catch (Exception e) {
+            log.warn("Finished ${actionName}. It FAILED after ${durationSince(startTime)}")
+            throw e
+        }
+    }
+
+    private String durationSince(long startTimeNanos) {
+        "${(System.nanoTime() - startTimeNanos) / 1000 / 1000 / 1000} seconds."
     }
 }

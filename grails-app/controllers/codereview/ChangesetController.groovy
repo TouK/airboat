@@ -10,6 +10,7 @@ class ChangesetController {
     ScmAccessService scmAccessService
 
     def index() {
+        render(view: 'index', model: [projects: Project.all])
     }
 
     def getLastChangesets = {

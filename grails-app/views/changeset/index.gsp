@@ -6,6 +6,7 @@
     <script src="${createLink(uri: '/libs/bootstrap/bootstrap-collapse.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/bootstrap/bootstrap-tooltip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/bootstrap/bootstrap-popover.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/bootstrap/bootstrap-dropdown.js')}" type="text/javascript"></script>
 
     <script src="${createLink(uri: '/libs/jquery.md5.js')}" type="text/javascript"></script>
 
@@ -32,11 +33,19 @@
                 CodeReview
             </a>
             <img src="${createLink(uri: '/images/cereal_guy.png')}" height="80" class="pull-left" style="padding: 5px;">
+
             <ul class="nav">
-                <li><a href="#" onclick="showProject('codereview')">CodeReview</a></li>
-                <li><a href="#" onclick="showProject('cyclone')">Cyclone</a></li>
-                <li><a href="#" onclick="showProject('')">All</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="javascript:void(0)" data-target="#" onclick="showProject('')">All projects</a></li>
+                        <g:each in="${projects}" var="project">
+                            <li><a href="javascript:void(0)" data-target="#" onclick="showProject('${project.name}')">${project.name}</a></li>
+                        </g:each>
+                    </ul>
+                </li>
             </ul>
+
             <ul class="nav pull-right">
                 <li id="loginStatus"></li>
                 <li>
@@ -84,6 +93,7 @@
         });
 
         $(".colorbox").colorbox(codeReview.colorboxSettings);
+        $('.dropdown-toggle').dropdown();
     });
 
     function onLoggedIn(username) {

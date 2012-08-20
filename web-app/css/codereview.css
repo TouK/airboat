@@ -27,7 +27,7 @@ textarea {
 .navbar.logonavbar .nav > li > a {
     font-size: 18px;
     padding: 10px 20px 12px;
-    color: white;
+    color: #EEEEEE;
 }
 
 .navbar.logonavbar .brand, .textInNavbar {
@@ -45,7 +45,20 @@ textarea {
 }
 
 .navbar.logonavbar .nav a {
+    color: #EEEEEE;
+}
+
+.navbar.logonavbar ul.dropdown-menu a {
+    color: #333;
+}
+
+.navbar.logonavbar ul.dropdown-menu a:hover {
     color: white;
+}
+
+.navbar.logonavbar .dropdown .caret {
+    margin-top: 33px;
+    margin-left: 6px;
 }
 
 .padding {

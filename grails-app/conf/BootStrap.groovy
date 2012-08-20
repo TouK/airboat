@@ -3,7 +3,8 @@ import codereview.Constants
 import codereview.Project
 import grails.converters.JSON
 
-//import static codereview.ScmAccessService.getEmail
+import static codereview.Constants.*
+import codereview.ProjectUpdateJob
 
 class BootStrap {
 
@@ -12,17 +13,29 @@ class BootStrap {
 
         environments {
             production {
-                createAndSaveConfiguredProjects()
+                createAndSaveConfiguredProjects(['cyclone', 'franek-kimono', 'cyclos', 'zephyr', 'bb-mobile', 'breeze',
+                        'cyclos-adapter', 'mobilizer', 'stratus', 'cyclone-sms'])
+                ProjectUpdateJob.triggerNow()
             }
             development {
-                createAndSaveConfiguredProjects()
+                createAndSaveConfiguredProjects(['cyclone', 'cyclos', 'franek-kimono'])
+                ProjectUpdateJob.triggerNow()
             }
         }
     }
 
-    private void createAndSaveConfiguredProjects() {
-        new Project('codereview', Constants.PROJECT_CODEREVIEW_REPOSITORY_URL).save(flush: true)
-        new Project('cyclone', Constants.PROJECT_CYCLONE_REPOSITORY_URL).save(flush: true)
+    private void createAndSaveConfiguredProjects(ArrayList<String> qriosRepositoriesToImport) {
+        def codereview = projectFromRepository(TOUK_GIT_REPOS_SERVER, 'touk', 'codereview')
+        def projects = [codereview] + qriosRepositoriesToImport.collect { projectFromQriosRepository(it) }
+        projects.each { Project it -> it.save(flush: true) }
+    }
+
+    private Project projectFromQriosRepository(String repositoryName) {
+        projectFromRepository(TOUK_GIT_REPOS_SERVER, 'qrios', repositoryName)
+    }
+
+    private Project projectFromRepository(String repositoryServer, String projectName, String repositoryName) {
+        new Project(repositoryName, "git://${repositoryServer}/${projectName}/${repositoryName}.git")
     }
 
     def destroy = {
