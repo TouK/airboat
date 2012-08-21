@@ -66,4 +66,12 @@ class ScmAccessService {
         }
         return changeset
     }
+
+    String getFileContent(ProjectFile projectFile) {
+        return gitRepositoryService.getFileContentFromChangeset(
+                projectFile.changeset.project.url,
+                projectFile.changeset.identifier,
+                projectFile.name
+        )
+    }
 }

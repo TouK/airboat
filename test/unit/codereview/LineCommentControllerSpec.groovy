@@ -18,8 +18,8 @@ class LineCommentControllerSpec extends Specification {
     def setup() {
         controller.metaClass.mixin(SpringSecurityControllerMethodsMock)
         controller.infrastructureService = Mock(InfrastructureService)
-        controller.projectFileAccessService = Mock(ProjectFileAccessService)
-        controller.projectFileAccessService.getFileContent(_, _) >> nLinesOfSampleText(n: 12)
+        controller.scmAccessService = Mock(ScmAccessService)
+        controller.scmAccessService.getFileContent(_) >> nLinesOfSampleText(n: 12)
     }
 
     def 'should add comment correctly to db'() {

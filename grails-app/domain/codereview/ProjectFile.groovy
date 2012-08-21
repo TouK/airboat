@@ -2,12 +2,10 @@ package codereview
 
 class ProjectFile {
 
-    String content
     String name
 
     static belongsTo = [changeset: Changeset]
     static hasMany = [lineComments: LineComment]
-    static transients = ['content'] //TODO this does not belong here, move it to a DTO
 
     ProjectFile(String name) {
         this.name = name
@@ -20,7 +18,6 @@ class ProjectFile {
     }
 
     static constraints = {
-        content nullable: true, blank: true
         name blank: false
     }
 }
