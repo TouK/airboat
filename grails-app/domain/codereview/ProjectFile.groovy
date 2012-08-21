@@ -7,11 +7,10 @@ class ProjectFile {
 
     static belongsTo = [changeset: Changeset]
     static hasMany = [lineComments: LineComment]
-    static transients = ['content']
+    static transients = ['content'] //TODO this does not belong here, move it to a DTO
 
-    ProjectFile(String name, String content) { //TODO check if content parameter is applicable here
+    ProjectFile(String name) {
         this.name = name
-        this.content = content
     }
 
     String getFileType() {

@@ -28,7 +28,7 @@ class LineCommentControllerSpec extends Specification {
 
         def testProject = new Project('testProject', 'testUrl')
         def changeset = new Changeset('hash23', 'zmiany', new Date())
-        def projectFile = new ProjectFile('info.txt', 'read manuals!')
+        def projectFile = new ProjectFile('info.txt')
         testProject.addToChangesets(changeset)
         changeset.addToProjectFiles(projectFile)
         testProject.save()

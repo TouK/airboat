@@ -55,6 +55,7 @@ class ProjectFileController {
             properties.keySet().retainAll('id', 'author', 'dateCreated', 'lineNumber', 'projectFile', 'text', 'fromRevision', 'belongsToCurrentUser')
             properties
         }
+        commentsProperties
     }
 
     String getRevisionType(Changeset currentCommentChangesetDate, Changeset commentChangeset) {

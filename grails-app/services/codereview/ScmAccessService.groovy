@@ -18,17 +18,17 @@ class ScmAccessService {
 
     def importAllChangesets(String projectScmUrl) {
         def project = Project.findByUrl(projectScmUrl)
-        saveImportedChangesets(fetchAllChangesetsUsingJgit(projectScmUrl), project)
+        saveChangesets(fetchAllChangesets(projectScmUrl), project)
         project.save(failOnError: true, flush: true)
     }
 
     def importNewChangesets(String projectScmUrl,String hashOfLastChangeset) {
         def project = Project.findByUrl(projectScmUrl)
-        saveImportedChangesets(fetchNewChangesetsUsingJgit(projectScmUrl, hashOfLastChangeset), project)
+        saveChangesets(fetchNewChangesetsSince(projectScmUrl, hashOfLastChangeset), project)
         project.save(failOnError: true, flush: true)
     }
 
-    def saveImportedChangesets(changesets, project) {
+    def saveChangesets(changesets, project) {
         changesets.each { Changeset changesetToSave ->
             def commiter = Commiter.findOrCreateWhere(cvsCommiterId: changesetToSave.commiter.cvsCommiterId)
             def email = commiter.cvsCommiterId
@@ -45,17 +45,15 @@ class ScmAccessService {
         }
     }
 
-    def fetchAllChangesetsUsingJgit(String projectScmUrl) {
-        def gitChangesets = gitRepositoryService.getAllChangesets(projectScmUrl)
-        convertToChangesetsUsingJgit(gitChangesets)
+    def fetchAllChangesets(String projectScmUrl) {
+        convertToChangesets(gitRepositoryService.getAllChangesets(projectScmUrl))
     }
 
-    def fetchNewChangesetsUsingJgit (String projectScmUrl, String lastChangesetHash) {
-        def gitChangesets = gitRepositoryService.getNewChangesets(projectScmUrl, lastChangesetHash)
-        convertToChangesetsUsingJgit(gitChangesets)
+    def fetchNewChangesetsSince(String projectScmUrl, String lastChangesetHash) {
+        convertToChangesets(gitRepositoryService.getNewChangesets(projectScmUrl, lastChangesetHash))
     }
 
-    def convertToChangesetsUsingJgit(gitChangesets) {
+    def convertToChangesets(gitChangesets) {
         if (gitChangesets == null) {
             return []
         } else {
@@ -63,15 +61,13 @@ class ScmAccessService {
         }
     }
 
-
     Changeset buildChangeset(GitChangeset gitChangeset) {
         Commiter commiter = new Commiter(gitChangeset.authorEmail)
         Changeset changeset = new Changeset(gitChangeset.rev, gitChangeset.fullMessage, gitChangeset.date)
         commiter.addToChangesets(changeset)
         if (gitChangeset?.files != null) {
             gitChangeset.files.each { file ->
-                def projectFile = new ProjectFile(file.name, "no content")
-                changeset.addToProjectFiles(projectFile)
+                changeset.addToProjectFiles(new ProjectFile(file.name))
             }
         }
         return changeset

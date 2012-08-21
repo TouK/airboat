@@ -16,7 +16,6 @@ class ProjectFileAccessService {
     }
 
     def getFileContent(ProjectFile projectFile, projectName) {
-
         return fetchFileContentFromPath(projectName, projectFile.name)
     }
 }
