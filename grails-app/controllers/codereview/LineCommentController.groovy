@@ -28,8 +28,13 @@ class LineCommentController {
         //TODO ask someone about making idea know the mixins being used here
         def lineComment = new LineComment(authenticatedUser, lineNumber, text)
         projectFile.addToLineComments(lineComment)
-        projectFile.save()
-
-        redirect(controller: 'projectFile', action: 'getLineCommentsWithSnippetsToFile', params: [id: projectFile.id])
+        lineComment.validate()
+        if (lineComment.hasErrors()) {
+            render(lineComment.errors as JSON)
+        }
+        else {
+            projectFile.save()
+            redirect(controller: 'projectFile', action: 'getLineCommentsWithSnippetsToFile', params: [id: projectFile.id])
+        }
     }
 }

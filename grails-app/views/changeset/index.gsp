@@ -40,7 +40,8 @@
                     <ul class="dropdown-menu">
                         <li><a href="javascript:void(0)" data-target="#" onclick="showProject('')">All projects</a></li>
                         <g:each in="${projects}" var="project">
-                            <li><a href="javascript:void(0)" data-target="#" onclick="showProject('${project.name}')">${project.name}</a></li>
+                            <li><a href="javascript:void(0)" data-target="#"
+                                   onclick="showProject('${project.name}')">${project.name}</a></li>
                         </g:each>
                     </ul>
                 </li>
@@ -284,6 +285,12 @@
     </div>
 
     <div id="diff-box-{{>changesetId}}" style="display:none">
+    </div>
+</script>
+
+<script id="longCommentTemplate" type="text/x-jsrender">
+    <div class="longComment">
+        Your comment is too long!
     </div>
 </script>
 

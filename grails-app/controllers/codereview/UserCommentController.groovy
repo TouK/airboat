@@ -15,13 +15,17 @@ class UserCommentController {
     def addComment(String changesetId, String text) {
         def changeset = Changeset.findByIdentifier(changesetId)
         checkArgument(changeset != null, "Unknown changeset: ${changesetId}")
-
         //FIXME make comment belongsTo User
-        def comment = new UserComment(author: authenticatedUser, text: text)
-        changeset.addToUserComments(comment)
-        comment.save(failOnError: true)
-
-        render getCommentJSONproperties(comment) as JSON
+        def userComment = new UserComment(author: authenticatedUser, text: text)
+        changeset.addToUserComments(userComment)
+        userComment.validate()
+        if (userComment.hasErrors()) {
+            render(userComment.errors as JSON)
+        }
+        else {
+            userComment.save(failOnError: true)
+            render getCommentJSONproperties(userComment) as JSON
+        }
     }
 
     def returnCommentsToChangeset(String id) {

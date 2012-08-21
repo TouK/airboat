@@ -15,11 +15,11 @@ textarea {
 }
 
 .current {
-    background-color: #C6CEA9;
+    background-color: #FFC;
 }
 
 .past {
-    background-color: #FFC;
+    background-color: #C6CEA9;
 }
 
 .navbar.logonavbar .brand {

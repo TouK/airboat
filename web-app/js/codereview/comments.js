@@ -8,8 +8,15 @@ function addComment(changesetId) {
     $.post(uri.userComment.addComment,
         { changesetId:changesetId, text:text },
         function (comment) {
-            $('#comments-' + changesetId).append($('#commentTemplate').render(comment));
-            resetCommentForm(changesetId);
+            if (comment.errors == null) {
+                $('#comments-' + changesetId).append($('#commentTemplate').render(comment));
+                resetCommentForm(changesetId);
+                $('.longComment').remove();
+            }
+            else {
+                $('.longComment').remove();
+                $('#commentForm-' + changesetId).append($('#longCommentTemplate').render());
+            }
         },
         "json"
     );
@@ -26,8 +33,15 @@ function addLineComment(projectFileId, changesetId, lineNumber) {
     $.post(uri.lineComment.addComment,
         { text:text, lineNumber:lineNumber, fileId:projectFileId},
         function (commentGroupsWithSnippetsForCommentedFile) {
-            updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, projectFileId);
-            hideAndClearLineCommentFrom(changesetId, projectFileId);
+            if (commentGroupsWithSnippetsForCommentedFile.errors == null) {
+                updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, projectFileId);
+                hideAndClearLineCommentFrom(changesetId, projectFileId);
+                $('.longComment').remove();
+            }
+            else {
+                $('.longComment').remove();
+                $('.add_comment').append($('#longCommentTemplate').render());
+            }
         },
         "json"
     );
