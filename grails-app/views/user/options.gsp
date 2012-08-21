@@ -23,7 +23,8 @@
         {href: baseUrl + "simplex/bootstrap-simplex.css", name: "simplex"},
         {href: baseUrl + "slate/bootstrap-slate.css", name: "slate"},
         {href: baseUrl + "spacelab/bootstrap-spacelab.css", name: "spacelab"},
-        {href: baseUrl + "united/bootstrap-united.css", name: "united"}
+        {href: baseUrl + "united/bootstrap-united.css", name: "united"},
+        {href: baseUrl + "touk/bootstrap-touk.css", name: "touk"}
     ]
 
     if($.cookies.get( 'skin' )) {
