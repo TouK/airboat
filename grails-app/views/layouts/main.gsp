@@ -39,6 +39,10 @@
             colorboxSettings: {transition:"fade", iframe:true, width:640, height:420}
 
             , loggedInUserName:'<sec:username/>'
+
+            , isAuthenticated:function(){
+                return this.loggedInUserName !== '';
+            }
         }
 
         //TODO move to codeReview object
@@ -69,9 +73,13 @@
     <script src="${createLink(uri: '/libs/jquery.observable.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/jquery.views.js')}" type="text/javascript"></script>
 
-    <link href=" ${createLink(uri: '/libs/bootstrap/bootstrap.css')}" type="text/css" rel="stylesheet" media="screen"/>
+    <link href=" ${createLink(uri: '/libs/bootstrap/themes/default/bootstrap-default.css')}" type="text/css" rel="stylesheet" media="screen" id="skin"/>
     <link href=" ${createLink(uri: '/libs/bootstrap/bootstrap-responsive.css')}" type="text/css" rel="stylesheet"
           media="screen"/>
+
+    <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet"/>
+    <link href=" ${createLink(uri: '/css/jquery.syntaxhighlighter-fontOverride.css')}"
+          type="text/css" rel="stylesheet" media="screen"/>
 
     <g:layoutHead/>
     <r:layoutResources/>

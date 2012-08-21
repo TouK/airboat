@@ -1,6 +1,7 @@
 package codereview
 
 import grails.converters.JSON
+import grails.plugins.springsecurity.Secured
 
 class UserController {
 
@@ -21,6 +22,24 @@ class UserController {
         }
     }
 
+    @Secured('isAuthenticated()')
+    def options() {
+
+    }
+
+    def fetchSkinOptions(String id) {
+        def skin = User.findByEmail(id).skin
+
+        render ([skin: skin] as JSON )
+
+    }
+
+    def setSkinOptions(String username, String skin) {
+        User user = User.findByEmail(username)
+        user.skin =  skin
+        user.save()
+        render (user as JSON)
+    }
     private void validateDbDependentConstraintsAndSaveUser(CreateUserCommand command) {
         def user = new User(command.properties)
         if (user.validate()) {

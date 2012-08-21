@@ -15,9 +15,12 @@
     <link href=" ${createLink(uri: '/css/jquery.syntaxhighlighter-fontOverride.css')}"
           type="text/css" rel="stylesheet" media="screen"/>
 
+
     <script src="${createLink(uri: '/libs/jquery.zclip/jquery.zclip.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/jquery.cookie/jquery.cookies.js')}" type="text/javascript"></script>
 
     <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet"/>
+
 
     <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/files.js')}" type="text/javascript"></script>
@@ -70,6 +73,9 @@
 
 <script type="text/javascript">
 
+
+
+
     $.views.helpers({
         getGravatar:function (email, size) {
             var size = size || 50;
@@ -78,6 +84,13 @@
     });
 
     $().ready(function () {
+        if($.cookies.get( 'skin' )) {
+            $("#skin").attr("href", $.cookies.get( 'skin').href);
+            if(!codeReview.isAuthenticated()) {
+                $.cookies.del('skin')
+                $("#skin").attr("href", "${createLink(uri: '/libs/bootstrap/themes/default/bootstrap-default.css')}");
+            }
+        }
 
         $.templates({
             loginStatusTemplate:"#loginStatusTemplate"
@@ -100,7 +113,19 @@
     function onLoggedIn(username) {
         $.colorbox.close();
         $.observable(codeReview).setProperty('loggedInUserName', username);
+        setUserPreferences(username);
     }
+
+    function setUserPreferences(username) {
+        var url = "${createLink(uri: '/user/fetchSkinOptions/')}" + username;
+        $.getJSON(url, function (skinOptions) {
+            var skinHref = "${createLink(uri: '/libs/bootstrap/themes/')}" + skinOptions.skin + "/bootstrap-" + skinOptions.skin + ".css";
+            var skinOptions = {username: username, href: skinHref };
+            $.cookies.set( 'skin', skinOptions );
+            $("#skin").attr("href", $.cookies.get( 'skin').href);
+        });
+    }
+
 </script>
 
 <script id="loginStatusTemplate" type="text/x-jsrender">
@@ -108,7 +133,7 @@
         <div data-link="visible{: loggedInUserName !== '' }">
             %{--TODO use uri global variable when referencing a controller--}%
             Yo <a href="user/{{:loggedInUserName}}"
-                  data-link="{:loggedInUserName} href{: 'user/' + loggedInUserName}"></a>!
+                  data-link="{:loggedInUserName} href{: 'user/options/'}"></a>!
         Wanna <g:link controller='logout'>log out</g:link>?
         </div>
 
@@ -235,7 +260,7 @@
 
     <form class="add_comment .form-inline">
         <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..."
-                  style="height:80px;width:282px;"></textarea>
+                  style="height:100px;width:95%;"></textarea>
 
         <div class="addLongCommentMessage"></div>
 
