@@ -6,6 +6,7 @@ class User {
 
     String username
     String password
+    String skin = "default"
     boolean enabled
     boolean accountExpired
     boolean accountLocked
