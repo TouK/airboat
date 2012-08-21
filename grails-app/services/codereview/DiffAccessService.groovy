@@ -30,9 +30,7 @@ class DiffAccessService {
             throw new IllegalArgumentException("Can't find git working directory '${gitWorkingDirectory}'")
         }
         RepositoryBuilder repositoryBuilder = new RepositoryBuilder()
-        Repository repository = repositoryBuilder.setGitDir(gitDir) // --git-dir if supplied, no-op if null
-                .readEnvironment() // scan environment GIT_* variables
-                .build()
+        Repository repository = repositoryBuilder.setGitDir(gitDir).build()
         return repository
     }
 

@@ -13,13 +13,14 @@ import org.eclipse.jgit.lib.ObjectLoader
 
 import static com.google.common.base.Preconditions.checkNotNull
 import static com.google.common.base.Preconditions.checkArgument
+import static com.google.common.base.Preconditions.checkState
 
 class GitRepositoryService {
 
     def diffAccessService
     def infrastructureService
 
-    def createRepository(String scmUrl) {
+    void createRepository(String scmUrl) {
         String projectName = getProjectNameFromScmUrl(scmUrl)
         def PATH = infrastructureService.getFullPathForProjectWorkingDirectory(projectName)
         File gitDir = new File(PATH + "/.git")
@@ -39,7 +40,7 @@ class GitRepositoryService {
         }
     }
 
-    def updateRepository(String scmUrl) {
+    void updateRepository(String scmUrl) {
         String projectName = getProjectNameFromScmUrl(scmUrl)
         def PATH = infrastructureService.getFullPathForProjectWorkingDirectory(projectName) + "/.git"
         File gitDir = new File(PATH)
@@ -51,8 +52,7 @@ class GitRepositoryService {
         Git git = new Git(repository)
         assert (!repository.isBare())
         def pullResult = git.pull().call()
-        [success: pullResult.successful, from: pullResult.fetchedFrom, fetchProperties: pullResult.fetchResult.properties,
-                mergeResult: pullResult.mergeResult.toString()]
+        checkState(pullResult.successful, "Failed to update ${scmUrl}")
     }
 
     def getAllChangesets(String scmUrl) {
