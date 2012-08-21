@@ -2,16 +2,13 @@ package codereview
 
 class ProjectFile {
 
-    String content
     String name
 
     static belongsTo = [changeset: Changeset]
     static hasMany = [lineComments: LineComment]
-    static transients = ['content']
 
-    ProjectFile(String name, String content) { //TODO check if content parameter is applicable here
+    ProjectFile(String name) {
         this.name = name
-        this.content = content
     }
 
     String getFileType() {
@@ -21,7 +18,6 @@ class ProjectFile {
     }
 
     static constraints = {
-        content nullable: true, blank: true
         name blank: false
     }
 }

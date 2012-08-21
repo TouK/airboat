@@ -7,16 +7,14 @@ import grails.converters.JSON
 
 class LineCommentController {
 
-    def projectFileAccessService
+    def scmAccessService
     def infrastructureService
 
     @Secured('isAuthenticated()')
     def addComment(long fileId, int lineNumber, String text) {
 
         def projectFile = ProjectFile.findById(fileId)
-        def projectName = projectFile.changeset.project.name
-        def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(projectFile.changeset.project.url)
-        def fileContent = projectFileAccessService.getFileContent(projectFile, projectName)
+        def fileContent = scmAccessService.getFileContent(projectFile)
 
         //TODO write own, groovy assertion methods using a closure argument to defer (often costly) message evaluation
         checkArgument(projectFile != null, "No file with id ${fileId} was found")

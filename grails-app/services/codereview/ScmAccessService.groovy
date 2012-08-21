@@ -8,62 +8,46 @@ class ScmAccessService {
 
     GitRepositoryService gitRepositoryService
 
-
     void checkoutProject(String scmUrl) {
         gitRepositoryService.createRepository(scmUrl)
     }
 
     void updateProject(String scmUrl) {
-
         gitRepositoryService.updateRepository(scmUrl)
     }
 
-    def importAllChangesets(String projectScmUrl) {
+    void importAllChangesets(String projectScmUrl) {
+        def changesets = convertToChangesets(gitRepositoryService.getAllChangesets(projectScmUrl))
+        saveChangesets(projectScmUrl, changesets)
+    }
+
+    void importNewChangesets(String projectScmUrl, String hashOfLastChangeset) {
+        def changesets = convertToChangesets(gitRepositoryService.getNewChangesets(projectScmUrl, hashOfLastChangeset))
+        saveChangesets(projectScmUrl, changesets)
+    }
+
+    private void saveChangesets(String projectScmUrl, List<Changeset> changesets) {
         def project = Project.findByUrl(projectScmUrl)
-
-        saveImportedChangesets(fetchAllChangesetsUsingJgit(projectScmUrl), project)
-
+        changesets.each { saveChangeset(it, project) }
         project.save(failOnError: true, flush: true)
     }
 
-    def importNewChangesets(String projectScmUrl,String hashOfLastChangeset) {
-        def project = Project.findByUrl(projectScmUrl)
-
-        saveImportedChangesets(fetchNewChangesetsUsingJgit(projectScmUrl, hashOfLastChangeset), project)
-
-        project.save(failOnError: true, flush: true)
-    }
-
-    def saveImportedChangesets(changesets, project) {
-        changesets.each { Changeset changesetToSave ->
-            def commiter = Commiter.findOrCreateWhere(cvsCommiterId: changesetToSave.commiter.cvsCommiterId)
-            def email = commiter.cvsCommiterId
-            def user = email ? User.findByEmail(email) : null
-            commiter.addToChangesets(changesetToSave)
-            if (user != null) {
-                user.addToCommitters(commiter)
-            }
-            project.addToChangesets(changesetToSave)
-            commiter.save(failOnError: true, flush: true)
-            if (user != null) {
-                user.save(failOnError: true, flush: true)
-            }
+    private void saveChangeset(Changeset changesetToSave, Project project) {
+        def commiter = Commiter.findOrCreateWhere(cvsCommiterId: changesetToSave.commiter.cvsCommiterId)
+        def email = commiter.cvsCommiterId
+        def user = email ? User.findByEmail(email) : null
+        commiter.addToChangesets(changesetToSave)
+        if (user != null) {
+            user.addToCommitters(commiter)
+        }
+        project.addToChangesets(changesetToSave)
+        commiter.save(failOnError: true, flush: true)
+        if (user != null) {
+            user.save(failOnError: true, flush: true)
         }
     }
 
-    def fetchAllChangesetsUsingJgit(String projectScmUrl) {
-
-        def gitChangesets = gitRepositoryService.getAllChangesets(projectScmUrl)
-        convertToChangesetsUsingJgit(gitChangesets)
-    }
-
-    def fetchNewChangesetsUsingJgit (String projectScmUrl, String lastChangesetHash) {
-
-        def gitChangesets = gitRepositoryService.getNewChangesets(projectScmUrl, lastChangesetHash)
-        convertToChangesetsUsingJgit(gitChangesets)
-    }
-
-    def convertToChangesetsUsingJgit(gitChangesets) {
+    private List<Changeset> convertToChangesets(gitChangesets) {
         if (gitChangesets == null) {
             return []
         } else {
@@ -71,17 +55,23 @@ class ScmAccessService {
         }
     }
 
-
-    Changeset buildChangeset(GitChangeset gitChangeset) {
+    private Changeset buildChangeset(GitChangeset gitChangeset) {
         Commiter commiter = new Commiter(gitChangeset.authorEmail)
         Changeset changeset = new Changeset(gitChangeset.rev, gitChangeset.fullMessage, gitChangeset.date)
         commiter.addToChangesets(changeset)
         if (gitChangeset?.files != null) {
             gitChangeset.files.each { file ->
-                def projectFile = new ProjectFile(file.name, "no content")
-                changeset.addToProjectFiles(projectFile)
+                changeset.addToProjectFiles(new ProjectFile(file.name))
             }
         }
         return changeset
+    }
+
+    String getFileContent(ProjectFile projectFile) {
+        return gitRepositoryService.getFileContentFromChangeset(
+                projectFile.changeset.project.url,
+                projectFile.changeset.identifier,
+                projectFile.name
+        )
     }
 }

@@ -5,7 +5,7 @@ import grails.converters.JSON
 //FIXME add tests
 class ProjectFileController {
 
-    def projectFileAccessService
+    def scmAccessService
     def infrastructureService
     def snippetWithCommentsService
     def diffAccessService
@@ -19,9 +19,8 @@ class ProjectFileController {
 
     def getFileWithContent(Long id) {
         def projectFile = ProjectFile.findById(id)
-        projectFile.content = projectFileAccessService.getFileContent(projectFile, projectFile.changeset.project.name)
-
-        render([content: projectFile.content, filetype: projectFile.fileType, name: projectFile.name] as JSON)
+        def fileContent = scmAccessService.getFileContent(projectFile)
+        render([content: fileContent, filetype: projectFile.fileType, name: projectFile.name] as JSON)
     }
 
     def getLineCommentsWithSnippetsToFile(Long id) {
@@ -55,6 +54,7 @@ class ProjectFileController {
             properties.keySet().retainAll('id', 'author', 'dateCreated', 'lineNumber', 'projectFile', 'text', 'fromRevision', 'belongsToCurrentUser')
             properties
         }
+        commentsProperties
     }
 
     String getRevisionType(Changeset currentCommentChangesetDate, Changeset commentChangeset) {
@@ -68,11 +68,10 @@ class ProjectFileController {
     }
 
     //FIXME modify type
-    private ArrayList<Map<String, Object>> getCommentsGroupsWithSnippets(ProjectFile projectFile, List<LineComment> comments) {
+    private List<Map<String, Object>> getCommentsGroupsWithSnippets(ProjectFile projectFile, List<LineComment> comments) {
         def commentGroupsWithSnippets = []
         if (!comments.isEmpty()) {
-            def projectRootDirectory = infrastructureService.getProjectWorkingDirectory(projectFile.changeset.project.url)
-            def fileContent = projectFileAccessService.getFileContent(projectFile, projectFile.changeset.project.name)
+            def fileContent = scmAccessService.getFileContent(projectFile)
             def commentsGroupedByLineNumber = snippetWithCommentsService.prepareCommentGroups(comments)
             commentGroupsWithSnippets = snippetWithCommentsService.prepareCommentGroupsWithSnippets(commentsGroupedByLineNumber, projectFile.fileType, fileContent)
         }
@@ -87,9 +86,9 @@ class ProjectFileController {
         if (dir.exists()) {
             def diff = diffAccessService.getDiffToProjectFile(projectFile, projectRootDirectory)
             render([diff: diff.split("\n").collect() { [line: it]}, fileId: projectFile.id, rawDiff: diff, fileType: projectFile.fileType] as JSON)
+        } else {
+            render("No diff available, wrong working directory!")
         }
-
-        else render("No diff available, wrong working directory!")
     }
 
 }

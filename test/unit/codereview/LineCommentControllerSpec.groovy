@@ -18,8 +18,8 @@ class LineCommentControllerSpec extends Specification {
     def setup() {
         controller.metaClass.mixin(SpringSecurityControllerMethodsMock)
         controller.infrastructureService = Mock(InfrastructureService)
-        controller.projectFileAccessService = Mock(ProjectFileAccessService)
-        controller.projectFileAccessService.getFileContent(_, _) >> nLinesOfSampleText(n: 12)
+        controller.scmAccessService = Mock(ScmAccessService)
+        controller.scmAccessService.getFileContent(_) >> nLinesOfSampleText(n: 12)
     }
 
     def 'should add comment correctly to db'() {
@@ -28,7 +28,7 @@ class LineCommentControllerSpec extends Specification {
 
         def testProject = new Project('testProject', 'testUrl')
         def changeset = new Changeset('hash23', 'zmiany', new Date())
-        def projectFile = new ProjectFile('info.txt', 'read manuals!')
+        def projectFile = new ProjectFile('info.txt')
         testProject.addToChangesets(changeset)
         changeset.addToProjectFiles(projectFile)
         testProject.save()
