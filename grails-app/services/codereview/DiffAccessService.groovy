@@ -27,7 +27,7 @@ class DiffAccessService {
     Repository getRepositoryFromWorkingDirectory(String gitWorkingDirectory) {
         File gitDir = new File(gitWorkingDirectory)
         if (!gitDir.exists()) {
-            throw new IllegalArgumentException("Can't find git working directory and access revision.")
+            throw new IllegalArgumentException("Can't find git working directory '${gitWorkingDirectory}'")
         }
         RepositoryBuilder repositoryBuilder = new RepositoryBuilder()
         Repository repository = repositoryBuilder.setGitDir(gitDir) // --git-dir if supplied, no-op if null

@@ -1,8 +1,18 @@
 package codereview
 
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder
-import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.lib.Repository
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+
+import org.eclipse.jgit.revwalk.RevWalk
+import org.eclipse.jgit.revwalk.RevCommit
+import org.eclipse.jgit.lib.ObjectId
+import org.eclipse.jgit.treewalk.TreeWalk
+
+import org.eclipse.jgit.lib.ObjectLoader
+
+import static com.google.common.base.Preconditions.checkNotNull
+import static com.google.common.base.Preconditions.checkArgument
 
 class GitRepositoryService {
 
@@ -14,36 +24,35 @@ class GitRepositoryService {
         def PATH = infrastructureService.getFullPathForProjectWorkingDirectory(projectName)
         File gitDir = new File(PATH + "/.git")
         if (!gitDir.exists()) {
-        FileRepositoryBuilder builder = new FileRepositoryBuilder();
-        Repository repository = builder.setGitDir(new File(PATH))
-                .readEnvironment() // scan environment GIT_* variables
-                .findGitDir() // scan up the file system tree
-                .build();
+            FileRepositoryBuilder builder = new FileRepositoryBuilder();
+            Repository repository = builder.setGitDir(new File(PATH))
+                    .readEnvironment() // scan environment GIT_* variables
+                    .findGitDir() // scan up the file system tree
+                    .build();
 
-        Git git = new Git(repository)
-        git.cloneRepository()
-        .setBare(false)
-        .setCloneAllBranches(true)
-        .setDirectory(new File(PATH)).setURI(scmUrl)
-        .call()
+            Git git = new Git(repository)
+            git.cloneRepository()
+                    .setBare(false)
+                    .setCloneAllBranches(true)
+                    .setDirectory(new File(PATH)).setURI(scmUrl)
+                    .call()
         }
     }
 
     def updateRepository(String scmUrl) {
         String projectName = getProjectNameFromScmUrl(scmUrl)
-
         def PATH = infrastructureService.getFullPathForProjectWorkingDirectory(projectName) + "/.git"
         File gitDir = new File(PATH)
-        if(!gitDir.exists()) {
+        if (!gitDir.exists()) {
             createRepository(scmUrl)
         }
         Repository repository = diffAccessService.getRepositoryFromWorkingDirectory(PATH)
 
         Git git = new Git(repository)
-        assert(!repository.isBare())
+        assert (!repository.isBare())
         def pullResult = git.pull().call()
         [success: pullResult.successful, from: pullResult.fetchedFrom, fetchProperties: pullResult.fetchResult.properties,
-                mergeResult: pullResult.mergeResult.toString() ]
+                mergeResult: pullResult.mergeResult.toString()]
     }
 
     def getAllChangesets(String scmUrl) {
@@ -60,10 +69,15 @@ class GitRepositoryService {
     def prepareGitChangesets(logOutput, String PATH) {
         def logIterator = logOutput.iterator()
         def changesets = []
-        while(logIterator.hasNext())  {
+        while (logIterator.hasNext()) {
             def commit = logIterator.next()
             def commitHash = commit.toString().split(" ")[1]
-            GitChangeset gitChangeset = new GitChangeset( commit.fullMessage, commit.authorIdent.emailAddress, commitHash, new Date(commit.getCommitTime() *1000L ) )
+            GitChangeset gitChangeset = new GitChangeset(
+                    commit.fullMessage,
+                    commit.authorIdent.emailAddress,
+                    commitHash,
+                    new Date(commit.getCommitTime() * 1000L)
+            )
             gitChangeset.files = diffAccessService.getChangedFilesToCommit(PATH, commitHash)
             changesets.add(gitChangeset)
         }
@@ -77,11 +91,22 @@ class GitRepositoryService {
         prepareGitChangesets(logOutput, git.repository.directory.absolutePath)
     }
 
-    def prepareGit(String scmUrl) {
+    private Git prepareGit(String scmUrl) {
         def projectName = getProjectNameFromScmUrl(scmUrl)
-        def PATH = infrastructureService.getFullPathForProjectWorkingDirectory(projectName)  + "/.git"
+        def PATH = infrastructureService.getFullPathForProjectWorkingDirectory(projectName) + "/.git"
         Repository repository = diffAccessService.getRepositoryFromWorkingDirectory(PATH)
         new Git(repository)
     }
 
+    String getFileContentFromChangeset(String scmUrl, String revisionString, String fileName) {
+        def git = prepareGit(scmUrl)
+        def repository = git.repository
+        ObjectId changesetId = repository.resolve(revisionString)
+        checkArgument(changesetId != null, "No such revision in ${scmUrl}: ${revisionString}")
+        RevCommit revCommit = new RevWalk(repository).parseCommit(changesetId)
+        def treeWalk = TreeWalk.forPath(repository, fileName, revCommit.getTree())
+        checkArgument(treeWalk != null, "No such file in ${scmUrl}/${revisionString}: ${fileName}")
+        ObjectLoader objectLoader = repository.open(treeWalk.getObjectId(0))
+        return new String(objectLoader.bytes)
+    }
 }

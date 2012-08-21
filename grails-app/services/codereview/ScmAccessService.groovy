@@ -8,29 +8,23 @@ class ScmAccessService {
 
     GitRepositoryService gitRepositoryService
 
-
     void checkoutProject(String scmUrl) {
         gitRepositoryService.createRepository(scmUrl)
     }
 
     void updateProject(String scmUrl) {
-
         gitRepositoryService.updateRepository(scmUrl)
     }
 
     def importAllChangesets(String projectScmUrl) {
         def project = Project.findByUrl(projectScmUrl)
-
         saveImportedChangesets(fetchAllChangesetsUsingJgit(projectScmUrl), project)
-
         project.save(failOnError: true, flush: true)
     }
 
     def importNewChangesets(String projectScmUrl,String hashOfLastChangeset) {
         def project = Project.findByUrl(projectScmUrl)
-
         saveImportedChangesets(fetchNewChangesetsUsingJgit(projectScmUrl, hashOfLastChangeset), project)
-
         project.save(failOnError: true, flush: true)
     }
 
@@ -52,13 +46,11 @@ class ScmAccessService {
     }
 
     def fetchAllChangesetsUsingJgit(String projectScmUrl) {
-
         def gitChangesets = gitRepositoryService.getAllChangesets(projectScmUrl)
         convertToChangesetsUsingJgit(gitChangesets)
     }
 
     def fetchNewChangesetsUsingJgit (String projectScmUrl, String lastChangesetHash) {
-
         def gitChangesets = gitRepositoryService.getNewChangesets(projectScmUrl, lastChangesetHash)
         convertToChangesetsUsingJgit(gitChangesets)
     }
