@@ -16,44 +16,38 @@ class ScmAccessService {
         gitRepositoryService.updateRepository(scmUrl)
     }
 
-    def importAllChangesets(String projectScmUrl) {
+    void importAllChangesets(String projectScmUrl) {
+        def changesets = convertToChangesets(gitRepositoryService.getAllChangesets(projectScmUrl))
+        saveChangesets(projectScmUrl, changesets)
+    }
+
+    void importNewChangesets(String projectScmUrl, String hashOfLastChangeset) {
+        def changesets = convertToChangesets(gitRepositoryService.getNewChangesets(projectScmUrl, hashOfLastChangeset))
+        saveChangesets(projectScmUrl, changesets)
+    }
+
+    private void saveChangesets(String projectScmUrl, List<Changeset> changesets) {
         def project = Project.findByUrl(projectScmUrl)
-        saveChangesets(fetchAllChangesets(projectScmUrl), project)
+        changesets.each { saveChangeset(it, project) }
         project.save(failOnError: true, flush: true)
     }
 
-    def importNewChangesets(String projectScmUrl,String hashOfLastChangeset) {
-        def project = Project.findByUrl(projectScmUrl)
-        saveChangesets(fetchNewChangesetsSince(projectScmUrl, hashOfLastChangeset), project)
-        project.save(failOnError: true, flush: true)
-    }
-
-    def saveChangesets(changesets, project) {
-        changesets.each { Changeset changesetToSave ->
-            def commiter = Commiter.findOrCreateWhere(cvsCommiterId: changesetToSave.commiter.cvsCommiterId)
-            def email = commiter.cvsCommiterId
-            def user = email ? User.findByEmail(email) : null
-            commiter.addToChangesets(changesetToSave)
-            if (user != null) {
-                user.addToCommitters(commiter)
-            }
-            project.addToChangesets(changesetToSave)
-            commiter.save(failOnError: true, flush: true)
-            if (user != null) {
-                user.save(failOnError: true, flush: true)
-            }
+    private void saveChangeset(Changeset changesetToSave, Project project) {
+        def commiter = Commiter.findOrCreateWhere(cvsCommiterId: changesetToSave.commiter.cvsCommiterId)
+        def email = commiter.cvsCommiterId
+        def user = email ? User.findByEmail(email) : null
+        commiter.addToChangesets(changesetToSave)
+        if (user != null) {
+            user.addToCommitters(commiter)
+        }
+        project.addToChangesets(changesetToSave)
+        commiter.save(failOnError: true, flush: true)
+        if (user != null) {
+            user.save(failOnError: true, flush: true)
         }
     }
 
-    def fetchAllChangesets(String projectScmUrl) {
-        convertToChangesets(gitRepositoryService.getAllChangesets(projectScmUrl))
-    }
-
-    def fetchNewChangesetsSince(String projectScmUrl, String lastChangesetHash) {
-        convertToChangesets(gitRepositoryService.getNewChangesets(projectScmUrl, lastChangesetHash))
-    }
-
-    def convertToChangesets(gitChangesets) {
+    private List<Changeset> convertToChangesets(gitChangesets) {
         if (gitChangesets == null) {
             return []
         } else {
@@ -61,7 +55,7 @@ class ScmAccessService {
         }
     }
 
-    Changeset buildChangeset(GitChangeset gitChangeset) {
+    private Changeset buildChangeset(GitChangeset gitChangeset) {
         Commiter commiter = new Commiter(gitChangeset.authorEmail)
         Changeset changeset = new Changeset(gitChangeset.rev, gitChangeset.fullMessage, gitChangeset.date)
         commiter.addToChangesets(changeset)
