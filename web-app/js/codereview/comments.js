@@ -40,7 +40,7 @@ function addLineComment(projectFileId, changesetId, lineNumber) {
             }
             else {
                 $('.longComment').remove();
-                $('.add_comment').append($('#longCommentTemplate').render());
+                $('.addLongCommentMessage').append($('#longCommentTemplate').render());
             }
         },
         "json"
@@ -64,6 +64,7 @@ function expandCommentForm(changesetId) {
 function resetCommentForm(changesetId) {
     $('#add-comment-' + changesetId).val("");
     $('#add-comment-' + changesetId).attr('rows', 1);
+    $('.longComment').remove();
     $('#commentFormButtons-' + changesetId).hide();
 }
 

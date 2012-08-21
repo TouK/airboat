@@ -237,6 +237,8 @@
         <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..."
                   style="height:80px;width:282px;"></textarea>
 
+        <div class="addLongCommentMessage"></div>
+
         <div class="btn-group pull-right">
             <button type="button" class="btn btn-primary" id="addCommentButton-{{>fileId}}"
                     onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
