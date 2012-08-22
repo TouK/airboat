@@ -70,10 +70,11 @@ function appendAccordion(changesetId, fileIdentifier) {
         })
     });
 }
-
 function updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, projectFileId) {
     renderCommentGroupsWithSnippets(projectFileId, commentGroupsWithSnippetsForCommentedFile)
-    $('#collapse-inner-' + changesetId + projectFileId).removeAttr('style');
+    $('#collapse-inner-' + changesetId + projectFileId).removeAttr('style')
+    $('#accordion-group-' + changesetId + projectFileId + ' .commentsCount')
+        .text(commentGroupsWithSnippetsForCommentedFile.commentsCount)
 }
 
 function appendSnippetToFileInAccordion(projectFileId) {

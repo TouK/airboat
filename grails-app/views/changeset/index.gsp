@@ -84,9 +84,9 @@
     });
 
     $().ready(function () {
-        if($.cookies.get( 'skin' )) {
-            $("#skin").attr("href", $.cookies.get( 'skin').href);
-            if(!codeReview.isAuthenticated()) {
+        if ($.cookies.get('skin')) {
+            $("#skin").attr("href", $.cookies.get('skin').href);
+            if (!codeReview.isAuthenticated()) {
                 $.cookies.del('skin')
                 $("#skin").attr("href", "${createLink(uri: '/libs/bootstrap/themes/default/bootstrap-default.css')}");
             }
@@ -126,9 +126,9 @@
         var url = "${createLink(uri: '/user/fetchSkinOptions/')}" + username;
         $.getJSON(url, function (skinOptions) {
             var skinHref = "${createLink(uri: '/libs/bootstrap/themes/')}" + skinOptions.skin + "/bootstrap-" + skinOptions.skin + ".css";
-            var skinOptions = {username: username, href: skinHref };
-            $.cookies.set( 'skin', skinOptions );
-            $("#skin").attr("href", $.cookies.get( 'skin').href);
+            var skinOptions = {username:username, href:skinHref };
+            $.cookies.set('skin', skinOptions);
+            $("#skin").attr("href", $.cookies.get('skin').href);
         });
     }
 
@@ -226,7 +226,7 @@
             {{if howManyComments != 0}}
             <div class="row-fluid span3">
                 <button class="btn btn disabled pull-right" style="margin:2px 5px 0px 5px"><i
-                        class="icon-comment"></i>   {{>howManyComments}}</button>
+                        class="icon-comment"></i><span class='commentsCount'>{{>howManyComments}}</span></button>
             </div>
             {{/if}}
         </div>
@@ -287,6 +287,8 @@
                   class="span12" rows="1"></textarea>
     </form>
 
+    <div class="addLongCommentMessageToChangeset"></div>
+
     <div id="commentFormButtons-{{>identifier}}" class="btn-group pull-right" style="display: none;">
         <button type="button" class="btn btn-primary btnWarningBackground" id="addCommentButton-{{>identifier}}"
                 onClick="addComment('{{>identifier}}')">Add comment</button>
@@ -322,8 +324,10 @@
 </script>
 
 <script id="longCommentTemplate" type="text/x-jsrender">
-    <div class="longComment">
-        Your comment is too long!
+
+    <div class="alert alert-block">
+        {{: #data }}
+
     </div>
 </script>
 

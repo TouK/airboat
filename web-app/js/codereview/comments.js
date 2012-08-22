@@ -11,11 +11,12 @@ function addComment(changesetId) {
             if (comment.errors == null) {
                 $('#comments-' + changesetId).append($('#commentTemplate').render(comment));
                 resetCommentForm(changesetId);
-                $('.longComment').remove();
+                $('.addLongCommentMessageToChangeset').html("");
             }
             else {
-                $('.longComment').remove();
-                $('#commentForm-' + changesetId).append($('#longCommentTemplate').render());
+                $('.addLongCommentMessageToChangeset')
+                    .html($('#longCommentTemplate').render(" Your comment is too long!"))
+                    .hide().fadeIn();
             }
         },
         "json"
@@ -36,11 +37,12 @@ function addLineComment(projectFileId, changesetId, lineNumber) {
             if (commentGroupsWithSnippetsForCommentedFile.errors == null) {
                 updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, projectFileId);
                 hideAndClearLineCommentFrom(changesetId, projectFileId);
-                $('.longComment').remove();
             }
             else {
-                $('.longComment').remove();
-                $('.addLongCommentMessage').append($('#longCommentTemplate').render());
+                $('.addLongCommentMessage')
+                    .html($('#longCommentTemplate')
+                    .render(" Your comment is too long!"))
+                    .hide().fadeIn();
             }
         },
         "json"
