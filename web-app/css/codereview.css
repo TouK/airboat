@@ -10,6 +10,40 @@ textarea {
     white-space: pre-wrap;
 }
 
+.nextToGravatar {
+    margin-left: 69px; /*gravatar width (60) + gravatar container's padding (9) */
+}
+
+.padding {
+    margin: 19px;
+}
+
+.margin-top-small {
+    margin-top: 9px;
+}
+
+.margin-bottom-small, form.margin-bottom-small, .accordion.margin-bottom-small {
+    margin-bottom: 9px;
+}
+
+.center {
+    margin: 0 auto;
+}
+
+.sizeOfIcon {
+    width: 14px;
+    height: 14px;
+}
+
+.wideButton {
+    display: block;
+    width: 100%;
+}
+
+.wideButton:hover {
+    background-color: rgba(255, 255, 255, 0.5);;
+}
+
 .future {
 
 }
@@ -63,14 +97,6 @@ textarea {
 .navbar.logonavbar .dropdown .caret {
     margin-top: 33px;
     margin-left: 6px;
-}
-
-.padding {
-    margin: 19px;
-}
-
-.margin-right {
-    margin: 0 19px 0 0;
 }
 
 #loading {

@@ -78,7 +78,7 @@
 
     $.views.helpers({
         getGravatar:function (email, size) {
-            var size = size || 50;
+            var size = size || 60;
             return 'http://www.gravatar.com/avatar/' + $.md5(email) + '.jpg?s=' + size;
         }
     });
@@ -154,43 +154,39 @@
 <script id="changesetTemplate" type="text/x-jsrender">
 
     <div class='row-fluid'>
-        <div class="span5 well">
+        <div class="span5 well well-small">
             <div class="row-fluid">
-                <div class="pull-left margin-right">
-                    <img src='{{>~getGravatar(email)}}'/>
-                </div>
+                <img class="pull-left" src='{{>~getGravatar(email)}}'/>
 
-                <div class="pull-left">
-                    <span class="badge {{if belongsToCurrentUser}}badge-success{{/if}}">{{>author}}</span>
-                    <br/>
-                    <span class="badge">{{>projectName}}</span>
-                </div>
+                <div class="nextToGravatar">
+                    <div>
+                        <span class="badge {{if belongsToCurrentUser}}badge-success{{/if}}">{{>author}}</span>
+                        commited to <span class="badge">{{>projectName}}</span>
 
-                <div class="pull-right">
-                    <span class="pull-right badge badge-info">{{>date}}</span>
-                    <br/>
-                    <span class="pull-right badge badge-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
+                        <span class="pull-right badge badge-info">{{>date}}</span>
+                        <span class="pull-right badge badge-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
+                    </div>
+
+                    <div class="commitMessage margin-top-small">{{>commitComment}}</div>
+
+                    <a id="more-button-{{>identifier}}" class="wideButton"
+                       onclick="showChangesetDetails('{{>identifier}}')">
+                        <div class="center sizeOfIcon"><i class="icon-chevron-down"></i></div>
+                    </a>
                 </div>
             </div>
 
-            <div class="row-fluid well-small commitMessage">{{>commitComment}}</div>
-
-            <div id="more-button-{{>identifier}}">
-                <a class="btn btn-primary btn-big" onclick="showChangesetDetails('{{>identifier}}')">
-                    More...
-                </a>
-            </div>
-
-            <div id="changesetDetails-{{>identifier}}" style="display:none;">
-                <div class="accordion" id="accordion-{{>identifier}}"></div>
+            <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small">
+                <div class="accordion margin-bottom-small" id="accordion-{{>identifier}}"></div>
 
                 <div class="comments" id="comments-{{>identifier}}"></div>
 
                 <div id="comment-form-{{>identifier}}"></div>
 
-                <div id="less-button-{{>identifier}}">
-                    <a class="btn btn-primary btn-big" onclick="showLessAboutChangeset('{{>identifier}}')">Less...</a>
-                </div>
+                <a id="less-button-{{>identifier}}" class="wideButton"
+                   onclick="showLessAboutChangeset('{{>identifier}}')">
+                    <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
+                </a>
             </div>
         </div>
 
@@ -264,7 +260,7 @@
 <!-- FIXME reuse comment form template for both types of comments -->
 <script id="addLineCommentFormTemplate" type="text/x-jsrender">
 
-    <form class="add_comment .form-inline">
+    <form class=".form-inline">
         <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..."
                   style="height:100px;width:95%;"></textarea>
 
@@ -281,7 +277,7 @@
 
 <script id="commentFormTemplate" type="text/x-jsrender">
 
-    <form id="commentForm-{{>identifier}}" class="add_comment">
+    <form id="commentForm-{{>identifier}}" class="margin-bottom-small">
         <textarea onfocus="expandCommentForm('{{>identifier}}',this)"
                   id="add-comment-{{>identifier}}" placeholder="Add comment..."
                   class="span12" rows="1"></textarea>
