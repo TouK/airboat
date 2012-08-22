@@ -70,11 +70,11 @@
 </script>
 
 <div id="content" class="padding"></div>
+<div class="alert alert-info" id="loading">
+    <div class="well-small"><img id="loading-image" src="${createLink(uri: '/css/images/ajax-loader.gif')}"/> Loading...</div>
+</div>
 
 <script type="text/javascript">
-
-
-
 
     $.views.helpers({
         getGravatar:function (email, size) {
@@ -109,6 +109,12 @@
         $(".colorbox").colorbox(codeReview.colorboxSettings);
         $('.dropdown-toggle').dropdown();
     });
+
+    $(document).ajaxStart(function(){
+        $('#loading').show();
+    }).ajaxStop(function(){
+                $('#loading').hide();
+            });
 
     function onLoggedIn(username) {
         $.colorbox.close();
@@ -302,14 +308,14 @@
 
 <script id="diffTemplate" type="text/x-jsrender">
 
-    <div class="row-fluid">
-        <div class="span11 well-small">
+
+        <div class="span12">
             <button type="button" class="btn btn-primary" onClick="showDiff('{{>changesetId}}')"
                     id="button-showing-diff-{{>changesetId}}">Show diff</button>
             <button type="button" class="btn btn-primary" onClick="hideDiff('{{>changesetId}}')" style="display:none"
                     id="button-hiding-diff-{{>changesetId}}">Hide diff</button>
         </div>
-    </div>
+
 
     <div id="diff-box-{{>changesetId}}" style="display:none">
     </div>

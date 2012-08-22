@@ -73,3 +73,12 @@ textarea {
     margin: 0 19px 0 0;
 }
 
+#loading {
+    position:fixed;
+    bottom:0px;
+    right:18px;
+}
+
+#loading-image {
+    padding-right: 5px
+}

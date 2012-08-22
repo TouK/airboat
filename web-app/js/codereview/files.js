@@ -42,6 +42,7 @@ function showFile(changesetId, fileId) {
 
     appendDiff(changesetId, fileId);
     previousExpandedForFilesChangesetId = changesetId;
+
 }
 
 function hideFile(changesetId, fileId) {
