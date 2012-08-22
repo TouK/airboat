@@ -116,23 +116,29 @@ log4j = {
         production {
             root {
                 info 'stdout'
+                error 'stacktrace'
             }
             all additivity: false
             all rollingFileQuartz: 'org.quartz'
+
         }
         development {
             root {
                 info 'stdout'
+                error 'stacktrace'
             }
             all additivity: false
             all rollingFileQuartz: 'org.quartz'
+
         }
         test {
             root {
                 info 'stdout'
+                error 'stacktrace'
             }
             all additivity: false
             all rollingFileQuartz: 'org.quartz'
+
         }
     }
 }
