@@ -30,7 +30,11 @@ class ProjectFileController {
         }
         def comments = getLineComments(projectFile)
         def commentGroupsWithSnippets = getCommentsGroupsWithSnippets(projectFile, comments)
-        render([fileType: projectFile.fileType, commentGroupsWithSnippets: commentGroupsWithSnippets] as JSON)
+        render([
+                fileType: projectFile.fileType,
+                commentGroupsWithSnippets: commentGroupsWithSnippets,
+                commentsCount: comments.size()
+        ] as JSON)
     }
 
     private List<Map<String, Object>> getLineComments(ProjectFile projectFile) {

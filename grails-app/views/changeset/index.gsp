@@ -84,9 +84,9 @@
     });
 
     $().ready(function () {
-        if($.cookies.get( 'skin' )) {
-            $("#skin").attr("href", $.cookies.get( 'skin').href);
-            if(!codeReview.isAuthenticated()) {
+        if ($.cookies.get('skin')) {
+            $("#skin").attr("href", $.cookies.get('skin').href);
+            if (!codeReview.isAuthenticated()) {
                 $.cookies.del('skin')
                 $("#skin").attr("href", "${createLink(uri: '/libs/bootstrap/themes/default/bootstrap-default.css')}");
             }
@@ -120,9 +120,9 @@
         var url = "${createLink(uri: '/user/fetchSkinOptions/')}" + username;
         $.getJSON(url, function (skinOptions) {
             var skinHref = "${createLink(uri: '/libs/bootstrap/themes/')}" + skinOptions.skin + "/bootstrap-" + skinOptions.skin + ".css";
-            var skinOptions = {username: username, href: skinHref };
-            $.cookies.set( 'skin', skinOptions );
-            $("#skin").attr("href", $.cookies.get( 'skin').href);
+            var skinOptions = {username:username, href:skinHref };
+            $.cookies.set('skin', skinOptions);
+            $("#skin").attr("href", $.cookies.get('skin').href);
         });
     }
 
@@ -220,7 +220,7 @@
             {{if howManyComments != 0}}
             <div class="row-fluid span3">
                 <button class="btn btn disabled pull-right" style="margin:2px 5px 0px 5px"><i
-                        class="icon-comment"></i>   {{>howManyComments}}</button>
+                        class="icon-comment"></i><span class='commentsCount'>{{>howManyComments}}</span></button>
             </div>
             {{/if}}
         </div>
