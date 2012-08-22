@@ -281,6 +281,8 @@
                   class="span12" rows="1"></textarea>
     </form>
 
+    <div class="addLongCommentMessageToChangeset"></div>
+
     <div id="commentFormButtons-{{>identifier}}" class="btn-group pull-right" style="display: none;">
         <button type="button" class="btn btn-primary btnWarningBackground" id="addCommentButton-{{>identifier}}"
                 onClick="addComment('{{>identifier}}')">Add comment</button>
@@ -316,8 +318,10 @@
 </script>
 
 <script id="longCommentTemplate" type="text/x-jsrender">
-    <div class="longComment">
-        Your comment is too long!
+
+    <div class="alert alert-block">
+        {{: #data }}
+
     </div>
 </script>
 
