@@ -10,6 +10,10 @@ textarea {
     white-space: pre-wrap;
 }
 
+.changeset.well {
+    margin-bottom: 14px;
+}
+
 .nextToGravatar {
     margin-left: 69px; /*gravatar width (60) + gravatar container's padding (9) */
 }

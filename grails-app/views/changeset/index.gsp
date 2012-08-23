@@ -79,7 +79,10 @@
     $.views.helpers({
         getGravatar:function (email, size) {
             var size = size || 60;
-            return 'http://www.gravatar.com/avatar/' + $.md5(email) + '.jpg?s=' + size;
+            return 'http://www.gravatar.com/avatar/' + $.md5(email) + '.jpg?' + $.param({
+                s: size,
+                d: 'identicon'
+            });
         }
     });
 
@@ -154,7 +157,7 @@
 <script id="changesetTemplate" type="text/x-jsrender">
 
     <div class='row-fluid'>
-        <div class="span5 well well-small">
+        <div class="span5 well well-small changeset">
             <div class="row-fluid">
                 <img class="pull-left" src='{{>~getGravatar(email)}}'/>
 

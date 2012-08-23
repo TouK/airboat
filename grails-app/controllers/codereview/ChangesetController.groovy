@@ -24,16 +24,6 @@ class ChangesetController {
         render changesetsProperties as JSON
     }
 
-    private String getUserEmail(Changeset changeset) {
-        def user = changeset.commiter.user
-        if (user == null) {
-            //TODO check if the assumption that committers not always have email holds. If not, use commiter.email
-            'no.such.email@codereview.touk.pl'
-        } else {
-            user.email
-        }
-    }
-
     @VisibleForTesting
     boolean belongsToCurrentUser(Changeset changeset) {
         authenticatedUser != null && authenticatedUser == changeset.commiter?.user
@@ -68,13 +58,17 @@ class ChangesetController {
                 id: changeset.id,
                 identifier: changeset.identifier,
                 author: changeset.commiter.cvsCommiterId,
-                email: getUserEmail(changeset),
+                email: getEmail(changeset.commiter),
                 date: changeset.date.format('yyyy-MM-dd HH:mm'),
                 commitComment: changeset.commitComment,
                 commentsCount: changeset.commentsCount,
                 projectName: changeset.project.name,
                 belongsToCurrentUser: belongsToCurrentUser(changeset)
         ]
+    }
+
+    private String getEmail(Commiter commiter) {
+        commiter.user?.email ?: commiter.email
     }
 
     private List<Changeset> getLastChagesetsFromProject(String projectName) {

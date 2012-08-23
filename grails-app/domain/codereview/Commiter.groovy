@@ -16,4 +16,8 @@ class Commiter {
         cvsCommiterId blank: false, unique:true
         user nullable: true
     }
+
+    def getEmail() {
+        cvsCommiterId //TODO this holds for git, not for svn
+    }
 }
