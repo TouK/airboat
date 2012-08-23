@@ -1,47 +1,31 @@
 package codereview
 
 import grails.plugin.spock.IntegrationSpec
-import spock.lang.Ignore
+
+import static testFixture.Fixture.*
 import testFixture.Fixture
 import org.eclipse.jgit.diff.DiffEntry
 
+//FIXME using a smaller repository in this test could save up to 15 seconds (1/4 of tests run-time!)
+// - when checking out via VPN
 class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
-    GitRepositoryService gitRepositoryService
+    static GitRepositoryService gitRepositoryService
+    static InfrastructureService infrastructureService
 
-    def "should extract project name from scmUrl"() {
-        when:
-        def projectName = gitRepositoryService.getProjectNameFromScmUrl(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-        def projectName2 = gitRepositoryService.getProjectNameFromScmUrl("git://home/projects/kaboom.git")
-
-        then:
-        projectName == "codereview"
-        projectName2 == "kaboom"
+    def setupSpec() {
+        Project.build(name: PROJECT_CODEREVIEW_NAME, url: PROJECT_CODEREVIEW_REPOSITORY_URL)
+        gitRepositoryService.updateOrCheckOutRepository(PROJECT_CODEREVIEW_REPOSITORY_URL)
     }
 
-    @Ignore //FIXME implement
-    def "should set repo  if it isn't set already"() {
-        when:
-        gitRepositoryService.createRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-
-        then:
-        true
-    }
-
-    //FIXME this test has a weak verificaiton part, supposedly needs better setup remove already existing repo?
-    def "should update repo by pulling"() {
-        when:
-        gitRepositoryService.createRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-        gitRepositoryService.updateRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-
-        then:
-        noExceptionThrown()
+    def cleanupSpec() {
+        assert infrastructureService.getWorkingDirectory().deleteDir()
+        Project.findByName(PROJECT_CODEREVIEW_NAME).delete(flush: true)
     }
 
     def "should get all changesets"() {
         when:
-        gitRepositoryService.createRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-        def changesets = gitRepositoryService.getAllChangesets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
+        def changesets = gitRepositoryService.getAllChangesets(PROJECT_CODEREVIEW_REPOSITORY_URL)
 
         then:
         !changesets.isEmpty()
@@ -49,22 +33,12 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
         changesets[1].files != null
     }
 
-    def "check changeset file ChangeType "() {
-        when:
-        gitRepositoryService.createRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-        def changesets = gitRepositoryService.getAllChangesets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-
-        then:
-        changesets[0].files[0].changeType == DiffEntry.ChangeType.MODIFY
-    }
-
     def "should get only newer changesets"() {
         when:
-        gitRepositoryService.createRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-        def changesets = gitRepositoryService.getAllChangesets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
+        def changesets = gitRepositoryService.getAllChangesets(PROJECT_CODEREVIEW_REPOSITORY_URL)
         int index = changesets.size() / 10
         String hash = changesets[index].rev
-        def newerChangesets = gitRepositoryService.getNewChangesets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL, hash)
+        def newerChangesets = gitRepositoryService.getNewChangesets(PROJECT_CODEREVIEW_REPOSITORY_URL, hash)
 
         then:
         !newerChangesets.isEmpty()
@@ -74,66 +48,53 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     }
 
     def "should get arbitrary changeset's file content"() {
-        given:
-        gitRepositoryService.createRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-        gitRepositoryService.updateRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-
         when:
         def text = gitRepositoryService.getFileContentFromChangeset(
-                Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL,
-                Fixture.FIRST_COMMIT_HASH,
-                Fixture.APPLICATION_PROPERTIES_FILE_NAME
+                PROJECT_CODEREVIEW_REPOSITORY_URL,
+                FIRST_COMMIT_HASH,
+                APPLICATION_PROPERTIES_FILE_NAME
         )
         def otherText = gitRepositoryService.getFileContentFromChangeset(
-                Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL,
-                Fixture.SECOND_COMMIT_INCLUDING_APPLICATION_PROPERTIES,
-                Fixture.APPLICATION_PROPERTIES_FILE_NAME
+                PROJECT_CODEREVIEW_REPOSITORY_URL,
+                SECOND_COMMIT_INCLUDING_APPLICATION_PROPERTIES,
+                APPLICATION_PROPERTIES_FILE_NAME
         )
 
         then:
-        text.split('\n')[1] == Fixture.APPLICATION_PROPERTIES_SECOND_LINE_IN_FIRST_COMMIT
-        otherText.split('\n')[1] == Fixture.APPLICATION_PROPERTIES_SECOND_LINE_IN_SECOND_COMMIT_INCLUDING_IT
+        text.split('\n')[1] == APPLICATION_PROPERTIES_SECOND_LINE_IN_FIRST_COMMIT
+        otherText.split('\n')[1] == APPLICATION_PROPERTIES_SECOND_LINE_IN_SECOND_COMMIT_INCLUDING_IT
     }
 
     def "should get arbitrary changeset's file content for a file nested in subdirectories"() {
-        given:
-        gitRepositoryService.createRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-
         when:
         def text = gitRepositoryService.getFileContentFromChangeset(
-                Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL,
-                Fixture.FIRST_COMMIT_HASH,
-                Fixture.PATH_TO_FILE_PRESENT_IN_FIRST_COMMIT
+                PROJECT_CODEREVIEW_REPOSITORY_URL,
+                FIRST_COMMIT_HASH,
+                PATH_TO_FILE_PRESENT_IN_FIRST_COMMIT
         )
 
         then:
-        text.split('\n')[0] == Fixture.FIRST_LINE_OF_FILE_PRESENT_IN_FIRST_COMMIT
+        text.split('\n')[0] == FIRST_LINE_OF_FILE_PRESENT_IN_FIRST_COMMIT
     }
 
     def "should get arbitrary changeset's file content with proper polish diacritic characters"() {
-        given:
-        gitRepositoryService.createRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-
         when:
         def text = gitRepositoryService.getFileContentFromChangeset(
-                Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL,
-                Fixture.FIRST_COMMIT_WITH_FILE_IN_PONGLISH,
-                Fixture.FILE_IN_PONGLISH
+                PROJECT_CODEREVIEW_REPOSITORY_URL,
+                FIRST_COMMIT_WITH_FILE_IN_PONGLISH,
+                FILE_IN_PONGLISH
         )
 
         then:
-        text.split('\n')[Fixture.LINE_WITH_PONGLISH_NUMBER - 1] == Fixture.LINE_WITH_PONGLISH_TEXT
+        text.split('\n')[LINE_WITH_PONGLISH_NUMBER - 1] == LINE_WITH_PONGLISH_TEXT
     }
 
     def "should throw an exception for inexistent commit"() {
-        given:
-        gitRepositoryService.createRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-
         when:
-        def text = gitRepositoryService.getFileContentFromChangeset(
-                Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL,
+        gitRepositoryService.getFileContentFromChangeset(
+                PROJECT_CODEREVIEW_REPOSITORY_URL,
                 "notAHashReally",
-                Fixture.FILE_IN_PONGLISH
+                FILE_IN_PONGLISH
         )
 
         then:
@@ -141,17 +102,23 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     }
 
     def "should throw an exception for inexistent file"() {
-        given:
-        gitRepositoryService.createRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
-
         when:
-        def text = gitRepositoryService.getFileContentFromChangeset(
-                Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL,
-                Fixture.FIRST_COMMIT_WITH_FILE_IN_PONGLISH,
+        gitRepositoryService.getFileContentFromChangeset(
+                PROJECT_CODEREVIEW_REPOSITORY_URL,
+                FIRST_COMMIT_WITH_FILE_IN_PONGLISH,
                 'no-such-file.txt'
         )
 
         then:
         thrown(IllegalArgumentException)
+    }
+
+    def "check changeset file ChangeType "() {
+        when:
+        gitRepositoryService.createRepository(PROJECT_CODEREVIEW_REPOSITORY_URL)
+        def changesets = gitRepositoryService.getAllChangesets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
+
+        then:
+        changesets[0].files[0].changeType == DiffEntry.ChangeType.MODIFY
     }
 }

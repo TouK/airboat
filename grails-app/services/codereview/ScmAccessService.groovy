@@ -11,7 +11,7 @@ class ScmAccessService {
     GitRepositoryService gitRepositoryService
 
     void updateProject(String scmUrl) {
-        gitRepositoryService.updateRepository(scmUrl)
+        gitRepositoryService.updateOrCheckOutRepository(scmUrl)
     }
 
     void importAllChangesets(String projectScmUrl) {

@@ -20,7 +20,6 @@ class ChangesetControllerSpec extends Specification {
         Project project = Project.build()
         def changesets = (1..3).collect { Changeset.build(project: project) }
 
-
         when:
         controller.params.projectName = project.name
         controller.getLastChangesets()
