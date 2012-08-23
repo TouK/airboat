@@ -5,7 +5,10 @@ import grails.plugin.spock.IntegrationSpec
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.springframework.dao.InvalidDataAccessApiUsageException
 import spock.lang.Ignore
+import testFixture.Fixture
+import org.eclipse.jgit.diff.DiffEntry
 
+//TODO maybe this spec tests too much. There's a service injected with two others underneath, a git repo is cloned...
 class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
     def scmAccessService
@@ -93,7 +96,6 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         changeset != null
         changesetCommiter != null
     }
-
 
     def 'should save Changeset to db and add commiter if it is not yet in db'() {
         Project project

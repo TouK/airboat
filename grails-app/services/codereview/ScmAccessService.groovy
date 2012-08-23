@@ -1,5 +1,7 @@
 package codereview
 
+import org.eclipse.jgit.diff.DiffEntry
+
 /**
  * Deleguje operacje na projekcie w SCM do odpowiedniej implementacji w zależności od rodzaju repozutorium kodu.
  * Teraz działa tylko dla GIT.
@@ -7,10 +9,6 @@ package codereview
 class ScmAccessService {
 
     GitRepositoryService gitRepositoryService
-
-    void checkoutProject(String scmUrl) {
-        gitRepositoryService.createRepository(scmUrl)
-    }
 
     void updateProject(String scmUrl) {
         gitRepositoryService.updateRepository(scmUrl)
@@ -60,11 +58,15 @@ class ScmAccessService {
         Changeset changeset = new Changeset(gitChangeset.rev, gitChangeset.fullMessage, gitChangeset.date)
         commiter.addToChangesets(changeset)
         if (gitChangeset?.files != null) {
-            gitChangeset.files.each { file ->
-                changeset.addToProjectFiles(new ProjectFile(file.name))
+            gitChangeset.files.each { GitChangedFile file ->
+                changeset.addToProjectFiles(new ProjectFile(file.name, convertChangeType(file.changeType)))
             }
         }
         return changeset
+    }
+
+    ChangeType convertChangeType(DiffEntry.ChangeType changeType) {
+        ChangeType.valueOf(ChangeType, changeType.toString())
     }
 
     String getFileContent(ProjectFile projectFile) {
@@ -72,6 +74,7 @@ class ScmAccessService {
                 projectFile.changeset.project.url,
                 projectFile.changeset.identifier,
                 projectFile.name
+
         )
     }
 }

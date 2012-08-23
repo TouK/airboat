@@ -63,7 +63,7 @@ class ChangesetController {
                 commitComment: changeset.commitComment,
                 commentsCount: changeset.commentsCount,
                 projectName: changeset.project.name,
-                belongsToCurrentUser: belongsToCurrentUser(changeset)
+                belongsToCurrentUser: belongsToCurrentUser(changeset),
         ]
     }
 

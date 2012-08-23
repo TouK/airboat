@@ -134,7 +134,6 @@
             $("#skin").attr("href", $.cookies.get('skin').href);
         });
     }
-
 </script>
 
 <script id="loginStatusTemplate" type="text/x-jsrender">
@@ -219,6 +218,7 @@
             <div class="row-fluid span9">
                 <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}"
                    href="#collapse-inner-{{>collapseId}}">
+                    <i class="{{: iconForChangeType[fileChangeType] }}"></i>
                     {{>name}}
                 </a>
             </div>
@@ -232,7 +232,7 @@
     </div>
 
     <div id='collapse-inner-{{>collapseId}}' class="accordion-body collapse"
-         data-changeset_id='{{>changesetId}}' data-file_id='{{>fileId}}'>
+         data-changeset_id='{{:changesetId}}' data-file_id='{{:fileId}}' data-file_change_type='{{:fileChangeType}}'>
         <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
             <div id="fileComments-{{>fileId}}"></div>
         </div>

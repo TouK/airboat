@@ -47,6 +47,14 @@ function appendChangeset(changeset) {
     });
 }
 
+iconForChangeType = {
+    ADD:'icon-plus',
+    DELETE:'icon-minus',
+    MODIFY:'icon-edit',
+    RENAME:'icon-pencil',
+    COPY:'icon-move'
+}
+
 function appendAccordion(changesetId, fileIdentifier) {
     $('#accordion-' + changesetId).html("");
 
@@ -58,7 +66,9 @@ function appendAccordion(changesetId, fileIdentifier) {
                 changesetId:changesetId,
                 fileId:data[i].id,
                 collapseId:(changesetId + data[i].id),
-                howManyComments:data[i].lineComments.length
+                howManyComments:data[i].lineComments.length,
+                fileChangeType:data[i].changeType.name,
+                iconForChangeType:iconForChangeType
             });
 
             $('#accordion-' + changesetId).append(accordionRow);
@@ -66,7 +76,7 @@ function appendAccordion(changesetId, fileIdentifier) {
         }
 
         $('#accordion-' + changesetId + ' .accordion-body.collapse').on('shown', function () {
-            showFile(this.dataset.changeset_id, this.dataset.file_id);
+            showFile(this.dataset.changeset_id, this.dataset.file_id, this.dataset.file_change_type);
         })
     });
 }

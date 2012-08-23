@@ -3,12 +3,14 @@ package codereview
 class ProjectFile {
 
     String name
+    ChangeType changeType
 
     static belongsTo = [changeset: Changeset]
     static hasMany = [lineComments: LineComment]
 
-    ProjectFile(String name) {
+    ProjectFile(String name, ChangeType changeType) {
         this.name = name
+        this.changeType = changeType
     }
 
     String getFileType() {

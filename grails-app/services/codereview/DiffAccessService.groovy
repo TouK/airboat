@@ -16,7 +16,7 @@ class DiffAccessService {
         Repository repository = getRepositoryFromWorkingDirectory(gitWorkingDirectory)
         Git git = new Git(repository);
         ByteArrayOutputStream baos = new ByteArrayOutputStream()
-        List<DiffEntry> diffs= git.diff()
+        List<DiffEntry> diffs = git.diff()
                 .setNewTree(getTreeIterator(repository, newHash))
                 .setOldTree(getTreeIterator(repository, oldHash))
                 .setOutputStream(baos)
@@ -38,13 +38,13 @@ class DiffAccessService {
         ObjectId commitId = repository.resolve(hash + "^{tree}");
         CanonicalTreeParser treeIterator = new CanonicalTreeParser();
         ObjectReader reader = repository.newObjectReader();
-       if(commitId!= null) {
-        treeIterator.reset(reader, commitId);
-        return treeIterator
-       }
+        if (commitId != null) {
+            treeIterator.reset(reader, commitId);
+            return treeIterator
+        }
         else {
-           return null
-       }
+            return null
+        }
     }
 
     String getDiffComparingToPreviousCommit(String hash, String gitWorkingDirectory) {
@@ -54,39 +54,40 @@ class DiffAccessService {
 
     String getDiffToProjectFile(ProjectFile projectFile, String projectWorkingDirectory) {
         String gitWorkingDirectory = projectWorkingDirectory
-        if(!projectWorkingDirectory.contains("/.git"))  {
-         gitWorkingDirectory += "/.git"
+        if (!projectWorkingDirectory.contains("/.git")) {
+            gitWorkingDirectory += "/.git"
         }
 
         String changesetDiff = getDiffComparingToPreviousCommit(projectFile.changeset.identifier, gitWorkingDirectory)
         return extractDiffForFileFromGitDiffCommandOutput(changesetDiff, projectFile.name)
     }
 
-    String extractDiffForFileFromGitDiffCommandOutput(String diff, String fileName)  {
+    String extractDiffForFileFromGitDiffCommandOutput(String diff, String fileName) {
         def fileDiff = []
-        diff.split("diff --git").each { if(it.contains(fileName)) {fileDiff.add(it.split("\n")[4..-1].join("\n") + "\n")}}
+        diff.split("diff --git").each { if (it.contains(fileName)) {fileDiff.add(it.split("\n")[4..-1].join("\n") + "\n")}}
         return fileDiff.join("\n")
     }
 
-    def getChangedFilesToCommit(String gitWorkingDirectory, String hash) {
+    List<GitChangedFile> getChangedFilesToCommit(String gitWorkingDirectory, String hash) {
+
+
         Repository repository = getRepositoryFromWorkingDirectory(gitWorkingDirectory)
         Git git = new Git(repository);
         def oldTree = getTreeIterator(repository, hash + "^1")
-        def newTree =   getTreeIterator(repository, hash)
-        if(newTree != null && oldTree != null)   {
-        List<DiffEntry> diffs= git.diff()
-                .setNewTree(newTree)
-                .setOldTree(oldTree)
-
-                .call()
-        diffs.collect {   changedFile ->
-            if (!changedFile.newPath.contains("null") ) {
-            [name: changedFile.newPath]
+        def newTree = getTreeIterator(repository, hash)
+        if (newTree != null && oldTree != null) {
+            List<DiffEntry> diffs = git.diff()
+                    .setNewTree(newTree)
+                    .setOldTree(oldTree)
+                    .call()
+            diffs.collect {   changedFile ->
+                if (!changedFile.newPath.contains("null")) {
+                    new GitChangedFile(name: changedFile.newPath, changeType: changedFile.changeType)
+                }
+                else {
+                    new GitChangedFile(name: changedFile.oldPath, changeType: changedFile.changeType)
+                }
             }
-            else {
-                [name: changedFile.oldPath]
-            }
-        }
         }
         else {
             return null

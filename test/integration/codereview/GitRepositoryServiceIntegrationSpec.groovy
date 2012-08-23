@@ -3,6 +3,7 @@ package codereview
 import grails.plugin.spock.IntegrationSpec
 import spock.lang.Ignore
 import testFixture.Fixture
+import org.eclipse.jgit.diff.DiffEntry
 
 class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
@@ -46,6 +47,15 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
         !changesets.isEmpty()
         changesets.size > 0
         changesets[1].files != null
+    }
+
+    def "check changeset file ChangeType "() {
+        when:
+        gitRepositoryService.createRepository(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
+        def changesets = gitRepositoryService.getAllChangesets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
+
+        then:
+        changesets[1].files[1].changeType == DiffEntry.ChangeType.MODIFY
     }
 
     def "should get only newer changesets"() {

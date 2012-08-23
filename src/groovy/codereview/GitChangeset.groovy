@@ -12,7 +12,7 @@ class GitChangeset {
     String authorEmail
     String rev
     Date date
-    def files
+    List<GitChangedFile> files
 
     GitChangeset(String fullMessage, String authorEmail, String rev, Date date) {
         this.fullMessage = fullMessage

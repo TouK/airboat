@@ -3,7 +3,7 @@ package codereview
 //FIXME add constraints tests
 class Project {
 
-    String name
+    String name //FIXME get rid of this field, since we assume in code all around that it can be computed from url
     String url
 
     Project(String name, String url) {
