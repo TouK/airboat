@@ -115,7 +115,6 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
     def "check changeset file ChangeType "() {
         when:
-        gitRepositoryService.createRepository(PROJECT_CODEREVIEW_REPOSITORY_URL)
         def changesets = gitRepositoryService.getAllChangesets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
 
         then:
