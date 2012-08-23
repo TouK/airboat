@@ -55,7 +55,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
         def changesets = gitRepositoryService.getAllChangesets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
 
         then:
-        changesets[1].files[1].changeType == DiffEntry.ChangeType.MODIFY
+        changesets[0].files[0].changeType == DiffEntry.ChangeType.MODIFY
     }
 
     def "should get only newer changesets"() {
