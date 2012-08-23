@@ -9,20 +9,13 @@ import static codereview.Constants.CODEREVIEW_WORKING_DIRECTORY_PROPERTY
 @Mock(Project)
 class InfrastructureServiceSpec extends Specification {
 
-    String workingDirectory
-
-    def setup() {
-        workingDirectory = System.getProperty(CODEREVIEW_WORKING_DIRECTORY_PROPERTY)
-    }
-
-    def cleanup() {
-        System.setProperty(CODEREVIEW_WORKING_DIRECTORY_PROPERTY, workingDirectory)
-    }
+    String overridenDirectory = "wherever-you-want"
 
     def 'should use codereview.workingDirectory parameter to determine base directory name'() {
-        when:
-        def overridenDirectory = "wherever-you-want"
+        given:
         System.setProperty(CODEREVIEW_WORKING_DIRECTORY_PROPERTY, overridenDirectory)
+
+        when:
         def name = new InfrastructureService().getBaseDirectoryName()
 
         then:
@@ -46,7 +39,7 @@ class InfrastructureServiceSpec extends Specification {
         def returnProjectName = new InfrastructureService().getDirectoryNameForTheProject(testProject.url)
 
         then:
-        returnProjectName == 'Project'
+        returnProjectName == testProject.name
     }
 
 }
