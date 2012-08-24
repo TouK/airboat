@@ -1208,11 +1208,11 @@ select:focus:required:invalid:focus {
 }
 
 :-moz-placeholder {
-    color: #ccc1d7;
+    color: #9E5389;
 }
 
 :-ms-input-placeholder {
-    color: #ccc1d7;
+    color: #9E5389;
 }
 
 ::-webkit-input-placeholder {
