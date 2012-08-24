@@ -6,6 +6,9 @@ textarea {
     padding: 10px;
 }
 
+body {
+    padding-top: 90px
+}
 .commitMessage {
     white-space: pre-wrap;
 }

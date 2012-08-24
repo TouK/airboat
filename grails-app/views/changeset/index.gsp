@@ -29,7 +29,7 @@
 
 <body>
 
-<div class="navbar logonavbar">
+<div class="navbar logonavbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
             <a class="brand" href="#">
