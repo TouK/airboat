@@ -145,10 +145,10 @@
         <div data-link="visible{: loggedInUserName !== '' }">
             %{--TODO use uri global variable when referencing a controller--}%
             Yo <a data-link="{:loggedInUserName} href{: 'user/options/'}"></a>!
-            Wanna <g:link controller='logout'>log out</g:link>?
+        Wanna <g:link controller='logout'>log out</g:link>?
 
             <span data-link="visible{: isAdmin }">
-            <g:link controller='user' action='admin'>Admin page</g:link>
+                <g:link controller='user' action='admin'>Admin page</g:link>
             </span>
         </div>
 
@@ -176,7 +176,7 @@
                         <span class="pull-right badge badge-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
                     </div>
 
-                    <div class="commitMessage margin-top-small">{{>commitComment}}</div>
+                    <div class="commitMessage margin-top-small"><h5>Commit message:</h5> {{>commitComment}}</div>
 
                     <a id="more-button-{{>identifier}}" class="wideButton"
                        onclick="showChangesetDetails('{{>identifier}}')">
@@ -226,7 +226,8 @@
             <div class="row-fluid span9">
                 <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}"
                    href="#collapse-inner-{{>collapseId}}">
-                    <i title="{{: textForChangeType[fileChangeType] }}" class="{{: iconForChangeType[fileChangeType] }}"></i>
+                    <i title="{{: textForChangeType[fileChangeType] }}"
+                       class="{{: iconForChangeType[fileChangeType] }}"></i>
                     {{>name}}
                 </a>
             </div>
