@@ -10,7 +10,12 @@ class UserController {
     def springSecurityService
 
     def create() {
-        [command: new CreateUserCommand()]
+    }
+
+
+    @Secured('hasRole("ROLE_ADMIN")')
+    def admin() {
+
     }
 
     def save(CreateUserCommand command) {
@@ -40,6 +45,7 @@ class UserController {
         user.save()
         render (user as JSON)
     }
+
     private void validateDbDependentConstraintsAndSaveUser(CreateUserCommand command) {
         def user = new User(command.properties)
         if (user.validate()) {
@@ -55,6 +61,8 @@ class UserController {
     }
 
     //FIXME move to service
+
+
     private void saveUser(User user) {
         user.enabled = true
         Commiter.findAllByCvsCommiterIdIlike("%${user.email}%").each {
@@ -62,4 +70,6 @@ class UserController {
         }
         user.save(failOnError: true)
     }
+
+
 }

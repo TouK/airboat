@@ -61,7 +61,7 @@
     function authAjax() {
         $.post(this.action, $(this).serialize(), function (login) {
             if (login.success) {
-                top.onLoggedIn(login.username);
+                top.onLoggedIn(login.username, login.isAdmin);
             } else if (login.error) {
                 $('#loginForm .errors')
                         .html($('#formErrorTemplate').render(login.error))

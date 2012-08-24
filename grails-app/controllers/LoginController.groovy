@@ -10,6 +10,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.security.auth.login.AccountExpiredException
 import javax.servlet.http.HttpServletResponse
+import codereview.User
+import codereview.Role
+import codereview.UserRole
 
 class LoginController {
 
@@ -114,7 +117,10 @@ class LoginController {
      * The Ajax success redirect url.
      */
     def ajaxSuccess = {
-        render([success: true, username: springSecurityService.authentication.name] as JSON)
+        User user = User.findByUsername(springSecurityService.authentication.name)
+        Role role = Role.findByAuthority("ROLE_ADMIN")
+        Boolean isAdmin = (UserRole.findByUserAndRole(user, role) != null )
+        render([success: true, username: springSecurityService.authentication.name, isAdmin: isAdmin] as JSON)
     }
 
     /**

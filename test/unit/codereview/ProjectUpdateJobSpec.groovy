@@ -16,7 +16,7 @@ class ProjectUpdateJobSpec extends Specification {
     void "shouldn't delete all old changesets during updating"() {
 
         given:
-        def project = new Project('testProject', 'testUrl')
+        def project = new Project('testProject', 'git://git.touk.pl/touk_testing')
         def committer = new Commiter('agj')
         def changeset = new Changeset('hash23', 'coding', new Date())
 

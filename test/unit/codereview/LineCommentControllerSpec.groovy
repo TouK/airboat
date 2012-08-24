@@ -26,7 +26,7 @@ class LineCommentControllerSpec extends Specification {
         given:
         controller.authenticatedUser = User.build(username: 'logged.in@codereview.com')
 
-        def testProject = new Project('testProject', 'testUrl')
+        def testProject = new Project('testProject', 'git://git.touk.pl/touk_test')
         def changeset = new Changeset('hash23', 'zmiany', new Date())
         def projectFile = new ProjectFile(name: 'info.txt', changeType: ChangeType.ADD)
         testProject.addToChangesets(changeset)

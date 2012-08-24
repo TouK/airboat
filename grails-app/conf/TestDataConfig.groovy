@@ -7,7 +7,7 @@ testDataConfig {
         'codereview.Project' {
             def (nameCounter, urlCounter) = [1, 1]
             name = {-> "name_${nameCounter++}" }
-            url = {-> "url_${urlCounter++}" }
+            url = {-> "git://git.touk.pl/touk_${urlCounter++}" }
         }
 
         'codereview.Changeset' {

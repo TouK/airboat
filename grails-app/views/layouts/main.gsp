@@ -39,7 +39,7 @@
             colorboxSettings: {transition:"fade", iframe:true, width:640, height:420}
 
             , loggedInUserName:'<sec:username/>'
-
+            , isAdmin: "<sec:ifAnyGranted roles="ROLE_ADMIN">true</sec:ifAnyGranted>" ? true : false
             , isAuthenticated:function(){
                 return this.loggedInUserName !== '';
             }

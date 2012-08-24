@@ -9,6 +9,7 @@ class UrlMappings {
 
         '/'(controller: 'changeset')
         '/register'(controller: 'user', action: 'create')
+        '/admin'(controller: 'user',action:  'admin')
         '500'(view: '/error')
     }
 }

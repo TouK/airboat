@@ -119,9 +119,11 @@
                 $('#loading').hide();
             });
 
-    function onLoggedIn(username) {
+    function onLoggedIn(username, isAdmin) {
+        isAdmin = isAdmin ? true : false;
         $.colorbox.close();
         $.observable(codeReview).setProperty('loggedInUserName', username);
+        $.observable(codeReview).setProperty('isAdmin', isAdmin);
         setUserPreferences(username);
     }
 
@@ -140,9 +142,12 @@
     <div class="textInNavbar">
         <div data-link="visible{: loggedInUserName !== '' }">
             %{--TODO use uri global variable when referencing a controller--}%
-            Yo <a href="user/{{:loggedInUserName}}"
-                  data-link="{:loggedInUserName} href{: 'user/options/'}"></a>!
-        Wanna <g:link controller='logout'>log out</g:link>?
+            Yo <a data-link="{:loggedInUserName} href{: 'user/options/'}"></a>!
+            Wanna <g:link controller='logout'>log out</g:link>?
+
+            <span data-link="visible{: isAdmin }">
+            <g:link controller='user' action='admin'>Admin page</g:link>
+            </span>
         </div>
 
         <div data-link="visible{: loggedInUserName === '' }">
