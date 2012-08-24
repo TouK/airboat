@@ -223,7 +223,7 @@
             <div class="row-fluid span9">
                 <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}"
                    href="#collapse-inner-{{>collapseId}}">
-                    <i class="{{: iconForChangeType[fileChangeType] }}"></i>
+                    <i title="{{: textForChangeType[fileChangeType] }}" class="{{: iconForChangeType[fileChangeType] }}"></i>
                     {{>name}}
                 </a>
             </div>

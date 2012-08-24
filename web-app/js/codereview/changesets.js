@@ -55,6 +55,14 @@ iconForChangeType = {
     COPY:'icon-move'
 }
 
+textForChangeType = {
+    ADD:'added',
+    DELETE:'deleted',
+    MODIFY:'modified',
+    RENAME:'renamed',
+    COPY:'copied'
+}
+
 function appendAccordion(changesetId, fileIdentifier) {
     $('#accordion-' + changesetId).html("");
 
@@ -68,6 +76,7 @@ function appendAccordion(changesetId, fileIdentifier) {
                 collapseId:(changesetId + data[i].id),
                 howManyComments:data[i].lineComments.length,
                 fileChangeType:data[i].changeType.name,
+                textForChangeType:textForChangeType,
                 iconForChangeType:iconForChangeType
             });
 
