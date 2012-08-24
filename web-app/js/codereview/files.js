@@ -1,5 +1,5 @@
 var previousExpandedForFilesChangesetId; //FIXME remove - this does not belong here, it's here for popovers setup...
-function showFile(changesetId, fileId, fileChangeType) {
+function showFile(changesetId, fileId, fileChangeType, fileName) {
 
     var fileContentUrl = uri.projectFile.getFileWithContent;
     fileContentUrl += fileId;
@@ -38,11 +38,15 @@ function showFile(changesetId, fileId, fileChangeType) {
     else {
         $("#content-files-" + changesetId).html("");
         var title = $("#fileTitleTemplate").render({
-            fileName:"Sorry, such file doesn't exist. ",
+            fileName:fileName,
             changesetId:changesetId,
             fileId:fileId
         });
         $("#content-files-title-" + changesetId).html(title);
+        $("#content-files-" + changesetId).html("<pre class='codeViewer'/>");
+        $("#content-files-" + changesetId + " .codeViewer")
+            .html("<h3>This file was removed.</h3>")
+
     }
 
     $("#content-files-" + changesetId).show();
@@ -82,7 +86,7 @@ function appendDiff(changesetId, fileId) {
             .addClass("language-" + projectDiff.fileType)
             .syntaxHighlight();
 
-    })
+    });
 }
 
 function colorizeDiff(text) {

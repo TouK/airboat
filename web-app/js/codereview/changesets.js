@@ -85,7 +85,7 @@ function appendAccordion(changesetId, fileIdentifier) {
         }
 
         $('#accordion-' + changesetId + ' .accordion-body.collapse').on('shown', function () {
-            showFile(this.dataset.changeset_id, this.dataset.file_id, this.dataset.file_change_type);
+            showFile(this.dataset.changeset_id, this.dataset.file_id, this.dataset.file_change_type, this.dataset.file_name_slice);
         })
     });
 }

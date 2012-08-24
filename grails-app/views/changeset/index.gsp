@@ -70,8 +70,10 @@
 </script>
 
 <div id="content" class="padding"></div>
+
 <div class="alert alert-info" id="loading">
-    <div class="well-small"><img id="loading-image" src="${createLink(uri: '/css/images/ajax-loader.gif')}"/> Loading...</div>
+    <div class="well-small"><img id="loading-image" src="${createLink(uri: '/css/images/ajax-loader.gif')}"/> Loading...
+    </div>
 </div>
 
 <script type="text/javascript">
@@ -80,8 +82,8 @@
         getGravatar:function (email, size) {
             var size = size || 60;
             return 'http://www.gravatar.com/avatar/' + $.md5(email) + '.jpg?' + $.param({
-                s: size,
-                d: 'identicon'
+                s:size,
+                d:'identicon'
             });
         }
     });
@@ -113,9 +115,9 @@
         $('.dropdown-toggle').dropdown();
     });
 
-    $(document).ajaxStart(function(){
+    $(document).ajaxStart(function () {
         $('#loading').show();
-    }).ajaxStop(function(){
+    }).ajaxStop(function () {
                 $('#loading').hide();
             });
 
@@ -204,6 +206,7 @@
             <div id="diff-{{>identifier}}"></div>
 
             <div class="files-right">
+
                 <div id="content-files-{{>identifier}}"></div>
             </div>
         </div>
@@ -237,7 +240,8 @@
     </div>
 
     <div id='collapse-inner-{{>collapseId}}' class="accordion-body collapse"
-         data-changeset_id='{{:changesetId}}' data-file_id='{{:fileId}}' data-file_change_type='{{:fileChangeType}}'>
+         data-changeset_id='{{:changesetId}}' data-file_id='{{:fileId}}' data-file_change_type='{{:fileChangeType}}'
+         data-file_name_slice='{{:name}}'>
         <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
             <div id="fileComments-{{>fileId}}"></div>
         </div>
@@ -269,6 +273,7 @@
 <script id="addLineCommentFormTemplate" type="text/x-jsrender">
 
     <form class=".form-inline">
+
         <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..."
                   style="height:100px;width:95%;"></textarea>
 
@@ -314,16 +319,15 @@
 
 <script id="diffTemplate" type="text/x-jsrender">
 
+    <div>
+        <button type="button" class="btn btn-primary" onClick="showDiff('{{>changesetId}}')"
+                id="button-showing-diff-{{>changesetId}}">Show diff</button>
+        <button type="button" class="btn btn-primary" onClick="hideDiff('{{>changesetId}}')" style="display:none"
+                id="button-hiding-diff-{{>changesetId}}">Hide diff</button>
+    </div>
 
-        <div class="span12">
-            <button type="button" class="btn btn-primary" onClick="showDiff('{{>changesetId}}')"
-                    id="button-showing-diff-{{>changesetId}}">Show diff</button>
-            <button type="button" class="btn btn-primary" onClick="hideDiff('{{>changesetId}}')" style="display:none"
-                    id="button-hiding-diff-{{>changesetId}}">Hide diff</button>
-        </div>
+    <div id="diff-box-{{>changesetId}}" style="display: none">
 
-
-    <div id="diff-box-{{>changesetId}}" style="display:none">
     </div>
 </script>
 
