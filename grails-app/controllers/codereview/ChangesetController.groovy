@@ -54,6 +54,7 @@ class ChangesetController {
     }
 
     private def convertToChangesetProperties(Changeset changeset) {
+
         [
                 id: changeset.id,
                 identifier: changeset.identifier,
@@ -63,8 +64,20 @@ class ChangesetController {
                 commitComment: changeset.commitComment,
                 commentsCount: changeset.commentsCount,
                 projectName: changeset.project.name,
+
                 belongsToCurrentUser: belongsToCurrentUser(changeset),
         ]
+    }
+
+    def generateRandomPastelColor() {
+        Random random = new Random();
+        int red = random.nextInt(256);
+        int green = random.nextInt(256);
+        int blue = random.nextInt(256);
+        red = (red + 255) / 2;
+        green = (green + 255) / 2;
+        blue = (blue + 255) / 2;
+        return [red: red, green: green, blue: blue];
     }
 
     private String getEmail(Commiter commiter) {

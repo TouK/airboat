@@ -16,9 +16,11 @@ class Project {
     static constraints = {
         name unique: true
         name blank: false
+        name size: 2..80
         url blank:  false
         url unique: true
         url url: true
+
     }
 
     boolean hasChangesets() {

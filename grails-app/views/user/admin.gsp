@@ -27,6 +27,7 @@
 
                 <div class="well-small">
                     <h2>Add project:</h2>
+                    <div class="alert-error" id="addingErrors"></div>
                     <form action='${postUrl}' class="form-inline" method='POST' id='addProjectForm'>
                         <div class="errors"></div>
                         <fieldset>
@@ -74,7 +75,7 @@
         title: '',
         text: '',
         sticky: false,
-        time: 8000
+        time: 4000
     }
 
     function appendProjectOptionsToSelection(id) {
@@ -85,14 +86,20 @@
         });
     }
     function addProject() {
-
-        $.post("${createLink(uri: '/project/create')}", $(this).serialize(), function (project) {
+        var name = $("#nameInput").val();
+        var url = $("#urlInput").val();
+        if(!name || !url) {
+            $("#addingErrors").text("You have to fill both fields.");
+            return false;
+        }
+        $.post("${createLink(uri: '/project/create')}", {url: url, name: name}, function (project) {
             appendProjectOptionsToSelection("#nameSelect");
             eraseForms();
             var additionNotice = noticeParameters;
             additionNotice.text = project.message;
             additionNotice.title = "Adding...";
             $.gritter.add(additionNotice);
+            $("#addingErrors").text(project.errors);
         }, 'json');
 
 

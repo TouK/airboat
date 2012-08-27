@@ -163,6 +163,7 @@
 <script id="changesetTemplate" type="text/x-jsrender">
 
     <div class='row-fluid'>
+
         <div class="span5 well well-small changeset">
             <div class="row-fluid">
                 <img class="pull-left" src='{{>~getGravatar(email)}}'/>
