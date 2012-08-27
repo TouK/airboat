@@ -5,6 +5,9 @@ import grails.plugin.spock.IntegrationSpec
 import static testFixture.Fixture.*
 import testFixture.Fixture
 import org.eclipse.jgit.diff.DiffEntry
+import spock.lang.Timeout
+
+import static java.util.concurrent.TimeUnit.SECONDS
 
 //FIXME using a smaller repository in this test could save up to 15 seconds (1/4 of tests run-time!)
 // - when checking out via VPN
@@ -14,13 +17,14 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     static InfrastructureService infrastructureService
 
     def setupSpec() {
+        assert infrastructureService.getWorkingDirectory().deleteDir()
         Project.build(name: PROJECT_CODEREVIEW_NAME, url: PROJECT_CODEREVIEW_REPOSITORY_URL)
         gitRepositoryService.updateOrCheckOutRepository(PROJECT_CODEREVIEW_REPOSITORY_URL)
     }
 
     def cleanupSpec() {
-        assert infrastructureService.getWorkingDirectory().deleteDir()
         Project.findByName(PROJECT_CODEREVIEW_NAME).delete(flush: true)
+        infrastructureService.getWorkingDirectory().deleteDir()
     }
 
     def "should get all changesets"() {
@@ -113,11 +117,21 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
         thrown(IllegalArgumentException)
     }
 
-    def "check changeset file ChangeType "() {
+    def "should get changesets in reverse chronological order"() {
         when:
         def changesets = gitRepositoryService.getAllChangesets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
 
         then:
-        changesets[0].files[0].changeType == DiffEntry.ChangeType.MODIFY
+        def changesetsInReverseChronology = changesets.sort(false) { -it.date.time }
+        changesets == changesetsInReverseChronology
+    }
+
+    def "should read changeset types from git repository"() {
+        when:
+        def changesets = gitRepositoryService.getAllChangesets(Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL)
+
+        then:
+        def firstCommit = changesets.last()
+        firstCommit.files.every { it.changeType == DiffEntry.ChangeType.ADD }
     }
 }

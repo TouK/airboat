@@ -54,7 +54,7 @@ class GitRepositoryService {
         prepareGitChangesets(logOutput, git.repository.workTree)
     }
 
-    private def prepareGitChangesets(Iterable<RevCommit> logOutput, File workTree) {
+    private List<GitChangeset> prepareGitChangesets(Iterable<RevCommit> logOutput, File workTree) {
         def logIterator = logOutput.iterator()
         def changesets = []
         while (logIterator.hasNext()) {

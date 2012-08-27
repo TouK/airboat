@@ -21,18 +21,16 @@ import spock.lang.Ignore
 
 class JgitApiLearningSpec extends Specification {
 
-    def "Should build repository object" (){
+    def "Should build repository object for yet-nonexistent directory" (){
         when:
-        def gitDir = new File("/home/touk/codereview")
+        def gitDir = new File("/file/that/does/not/exist")
         def repositoryBuilder = new RepositoryBuilder()
-        def repository = repositoryBuilder.setGitDir(gitDir) // --git-dir if supplied, no-op if null
-                .readEnvironment() // scan environment GIT_* variables
-                .findGitDir() // scan up the file system tree
-                .build()
+        def repository = repositoryBuilder.setGitDir(gitDir).build()
+
         then:
-        repository.directory.toString() == "/home/touk/codereview"
+        repository.directory == gitDir
         repository.isBare()
-        repository.toString() == "Repository[/home/touk/codereview]"
+        repository.directory.exists() == false
     }
 
     @Ignore
