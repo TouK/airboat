@@ -1,9 +1,0 @@
-Remove from project:
-fancybox legacy script-files
-scrolling script-files
-remove img directory
-UserComment view files - or change it
-
-
- indents
-height:"80%" ,
