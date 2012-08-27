@@ -7,9 +7,11 @@ class ProjectController {
     def create(String url, String name) {
         def errorMessages = [
                 "url.invalid": "is incorrect",
-                unique: "already exists, choose something different",
-                "size.toosmall": "should have more than 2 characters",
-                "size.toobig": "should be shorter than 80 characters"
+                unique: "already exists, use different one",
+                "size.toosmall": "should have at least 2 characters",
+                "size.toobig": "should be shorter than 80 characters",
+                nullable: "can't be empty",
+                blank: "can't be empty"
         ]
 
         Project project = new Project(name, url)
@@ -20,17 +22,18 @@ class ProjectController {
         }
         else {
             render([message: "Adding failed...",
-                    errors: project.errors.fieldError.collect {it.field + " " +errorMessages[it.code]}.join("\n")] as JSON)
+                    errors: project.errors.fieldErrors.collect {[message: it.field+ " " +errorMessages[it.code]]  }] as JSON)
         }
     }
 
     def remove(String name) {
         def project = Project.findByName(name)
-        if(project.delete()){
-            render([message: "Project deleted"] as JSON)
+        project.delete(flush: true)
+        if(!Project.findByName(name)){
+            render([message: " deleted"] as JSON)
         }
         else{
-            render([message: "Project couldn't be deleted"] as JSON)
+            render([message: " couldn't be deleted"] as JSON)
         }
     }
 

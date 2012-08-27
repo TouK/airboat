@@ -15,7 +15,6 @@ class UserCommentController {
     def addComment(String changesetId, String text) {
         def changeset = Changeset.findByIdentifier(changesetId)
         checkArgument(changeset != null, "Unknown changeset: ${changesetId}")
-        //FIXME make comment belongsTo User
         def userComment = new UserComment(author: authenticatedUser, text: text)
         changeset.addToUserComments(userComment)
         userComment.validate()

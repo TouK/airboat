@@ -7,9 +7,7 @@
     <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="${createLink(uri: '/libs/gritter/css/jquery.gritter.css')}" />
-    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-    <script type="text/javascript" src="${createLink(uri: '/libs/gritter/js/jquery.gritter.js')}"></script>
+
 
 </head>
 <body>
@@ -21,13 +19,15 @@
 
                 <div class="well-small">
                     <h2>Projects:</h2>
+                    <div class="alert-success" id="removalSuccess"></div>
                     <ul id="nameSelect"></ul>
                 </div>
 
 
                 <div class="well-small">
                     <h2>Add project:</h2>
-                    <div class="alert-error" id="addingErrors"></div>
+                    <div class="errors"></div>
+                    <div class="alert-success" id="addingSuccess"></div>
                     <form action='${postUrl}' class="form-inline" method='POST' id='addProjectForm'>
                         <div class="errors"></div>
                         <fieldset>
@@ -55,6 +55,14 @@
     <li>{{>name}}  <i class="icon-remove" onclick="confirmRemoval('{{>name}}')"></i></li>
 </script>
 
+<script id="formErrorsTemplate" type="text/x-jsrender">
+    <ul class="alert-block" role="alert">
+        {{for #data}}
+        <li class="alert-error" {{if field}}data-field-id="{{:field}}"{{/if}}>{{:message}}</li>
+        {{/for}}
+    </ul>
+</script>
+
 
 
 <script type="text/javascript">
@@ -64,19 +72,9 @@
     }
     $('#addProjectForm').submit(addProject);
 
-
     $(document).ready( function(){
        appendProjectOptionsToSelection("#nameSelect");
-
-
     });
-
-    var noticeParameters = {
-        title: '',
-        text: '',
-        sticky: false,
-        time: 4000
-    }
 
     function appendProjectOptionsToSelection(id) {
 
@@ -88,18 +86,20 @@
     function addProject() {
         var name = $("#nameInput").val();
         var url = $("#urlInput").val();
-        if(!name || !url) {
-            $("#addingErrors").text("You have to fill both fields.");
-            return false;
-        }
+
         $.post("${createLink(uri: '/project/create')}", {url: url, name: name}, function (project) {
             appendProjectOptionsToSelection("#nameSelect");
-            eraseForms();
-            var additionNotice = noticeParameters;
-            additionNotice.text = project.message;
-            additionNotice.title = "Adding...";
-            $.gritter.add(additionNotice);
-            $("#addingErrors").text(project.errors);
+            if(!project.errors){
+                eraseForms();
+                var message = project.message;
+                $("#addingSuccess").text(message).hide().fadeIn();
+            }
+            else {
+                $("#addingSuccess").text("");
+                $('#addProjectForm .errors')
+                        .html($('#formErrorsTemplate').render([project.errors]))
+                        .hide().fadeIn()
+            }
         }, 'json');
 
 
@@ -108,16 +108,12 @@
 
     function removeProject(name) {
         $.post("${createLink(uri: '/project/remove')}", {name: name}, function (project) {
-            var removalNotice = noticeParameters;
-            removalNotice.text = "Project " + name + " removed.";
-            removalNotice.title = "Removing...";
-            $.gritter.add(removalNotice);
-
+            var removalNotice = "Project " + name + project.message;
+            $("#removalSuccess").text(removalNotice);
         }, 'json').then(function() {
                     eraseForms();
                     appendProjectOptionsToSelection("#nameSelect");
                 })
-
     }
 
     function eraseForms(){
@@ -125,6 +121,7 @@
         $("#nameInput").val("");
         $("#urlInput").val("");
     }
+
     function confirmRemoval(name) {
         $("<div>Are you sure about the removal of project " + name + "?</div>").dialog({ buttons:[
             {
@@ -139,7 +136,6 @@
                 click:function () {
                     $(this).dialog("close");
                 }
-
             }
         ] });
         return false;
