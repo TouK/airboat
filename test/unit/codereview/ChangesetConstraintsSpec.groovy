@@ -6,7 +6,7 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(Changeset)
-@Build(Changeset)
+@Build([Changeset, ProjectFile])
 class ChangesetConstraintsSpec extends Specification {
 
     static String alreadyUsedIdentifier = 'alreadyUsedIdentifier'
@@ -42,5 +42,27 @@ class ChangesetConstraintsSpec extends Specification {
         then:
         changeset.userComments == null
         changeset.commentsCount == 0
+    }
+
+    def 'Changeset and its associated ProjectFiles must have the same Project'() {
+        given:
+        ProjectFile projectFile = ProjectFile.build()
+        Changeset changeset = Changeset.build()
+
+        expect:
+        changeset.project != projectFile.project
+
+        when:
+        changeset.addToProjectFiles(projectFile)
+
+        then:
+        !changeset.validate()
+        println(changeset.errors.getFieldError('projectFiles'))
+
+        changeset.errors.getFieldError('projectFiles').code == 'changesetsProjectFilesMustBeInSameProject'
+        changeset.errors.getFieldError('projectFiles').arguments == [
+                'projectFiles', Changeset, changeset.projectFiles,
+                changeset.project.name, [[projectFile.name, projectFile.project.name]]
+        ]
     }
 }

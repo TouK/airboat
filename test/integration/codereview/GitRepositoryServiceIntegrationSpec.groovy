@@ -16,6 +16,8 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     static GitRepositoryService gitRepositoryService
     static InfrastructureService infrastructureService
 
+    ScmAccessService scmAccessService
+
     def setupSpec() {
         assert infrastructureService.getWorkingDirectory().deleteDir()
         Project.build(name: PROJECT_CODEREVIEW_NAME, url: PROJECT_CODEREVIEW_REPOSITORY_URL)
@@ -35,6 +37,14 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
         !changesets.isEmpty()
         changesets.size > 0
         changesets[1].files != null
+    }
+
+    def "should import project meta-data to db"() { //TODO move elsewhere
+        when:
+        scmAccessService.importAllChangesets(PROJECT_CODEREVIEW_REPOSITORY_URL)
+
+        then:
+        Project.findByName(PROJECT_CODEREVIEW_NAME).changesets.size() > Fixture.LOWER_BOUND_FOR_NUMBER_OF_COMMITS
     }
 
     def "should get only newer changesets"() {

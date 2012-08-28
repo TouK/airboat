@@ -21,7 +21,8 @@
             },
             projectFile:{
                 getFileWithContent:"${createLink(uri:'/projectFile/getFileWithContent/')}",
-                getLineCommentsWithSnippetsToFile:"${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}"
+                getLineCommentsWithSnippetsToFile:"${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}",
+                getDiffWithPreviousRevision:"${createLink(uri:'/projectFile/getDiffWithPreviousRevision/')}"
             },
             login:"${createLink(uri: '/login/auth')}",
 

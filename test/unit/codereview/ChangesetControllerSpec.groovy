@@ -46,10 +46,11 @@ class ChangesetControllerSpec extends Specification {
         responseSpecificChangeset.identifier == 'hash24'
     }
 
-    def 'getFileNamesForChangeset should return file names from changeset '() {
+    def 'getFileNamesForChangeset should return file names from changeset'() {
         given:
-        Changeset changeset = Changeset.build()
-        ProjectFile projectFile = ProjectFile.build(changeset: changeset, name: 'kickass!')
+        Project project = Project.build()
+        ProjectFile projectFile = ProjectFile.buildWithoutSave(name: 'kickass!', project: project)
+        Changeset changeset = Changeset.build(projectFiles: [projectFile], project: project)
 
         when:
         controller.params.id = changeset.identifier

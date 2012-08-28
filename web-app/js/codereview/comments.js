@@ -28,17 +28,16 @@ function cancelLineComment(fileIdentifier, changesetId, lineNumber) {
     hidePopovers(changesetId);
 }
 
-function addLineComment(projectFileId, changesetId, lineNumber) {
+function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
     var text = $('#add-line-comment-' + projectFileId).val();
 
     $.post(uri.lineComment.addComment,
-        { text:text, lineNumber:lineNumber, fileId:projectFileId},
+        { changesetIdentifier: changesetIdentifier, projectFileId:projectFileId, text:text, lineNumber:lineNumber},
         function (commentGroupsWithSnippetsForCommentedFile) {
             if (commentGroupsWithSnippetsForCommentedFile.errors == null) {
-                updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, projectFileId);
-                hideAndClearLineCommentFrom(changesetId, projectFileId);
-            }
-            else {
+                updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId);
+                hideAndClearLineCommentFrom(changesetIdentifier, projectFileId);
+            } else {
                 $('.addLongCommentMessage')
                     .html($('#longCommentTemplate')
                     .render(" Your comment is too long!"))

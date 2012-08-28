@@ -1,13 +1,11 @@
 package codereview
 
 class LineComment {
-    Integer lineNumber
     String text
     Date dateCreated
-    static belongsTo = [author: User, projectFile: ProjectFile]
+    static belongsTo = [author: User]
 
-    LineComment(User author, Integer lineNumber, String text) {
-        this.lineNumber = lineNumber
+    LineComment(User author, String text) {
         this.text = text
         author.addToLineComments(this)
     }

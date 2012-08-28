@@ -1,63 +1,63 @@
 var previousExpandedForFilesChangesetId; //FIXME remove - this does not belong here, it's here for popovers setup...
-function showFile(changesetId, fileId, fileChangeType, fileName) {
+function showFile(changesetIdentifier, fileId, fileChangeType) {
 
-    var fileContentUrl = uri.projectFile.getFileWithContent;
-    fileContentUrl += fileId;
-    var fileContent;
+    var fileContentUrl = uri.projectFile.getFileWithContent + '?' + $.param({
+        changesetIdentifier:changesetIdentifier, projectFileId:fileId
+    });
+
     if (fileChangeType != 'DELETE') {
         $.getJSON(fileContentUrl, function (file) {
             var title = $("#fileTitleTemplate").render({
                 fileName:divideNameWithSlashesInTwo(file.name),
-                changesetId:changesetId,
+                changesetId:changesetIdentifier,
                 fileId:fileId
             });
 
-            $("#content-files-title-" + changesetId).html(title);
+            $("#content-files-title-" + changesetIdentifier).html(title);
 
             $.SyntaxHighlighter.init({lineNumbers:true});
 
-            $("#content-files-" + changesetId).html("<pre class='codeViewer'/>");
-            $("#content-files-" + changesetId + " .codeViewer")
+            $("#content-files-" + changesetIdentifier).html("<pre class='codeViewer'/>");
+            $("#content-files-" + changesetIdentifier + " .codeViewer")
                 .text(file.content)
                 .addClass("language-" + file.filetype)
                 .syntaxHighlight();
 
-            $('#content-files-' + changesetId + ' .linenums li').each(function (i, element, ignored) {
+            $('#content-files-' + changesetIdentifier + ' .linenums li').each(function (i, element, ignored) {
                 $(element).click(function () {
-                    $('#content-files-' + changesetId + ' .linenums li').popover("hide");
+                    $('#content-files-' + changesetIdentifier + ' .linenums li').popover("hide");
                     $(element).popover("show");
 
                 });
                 //TODO check if creating the content of the popover (i.e. commentForm) can be deferred to popover activation
-                var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetId, lineNumber:i + 1 });
+                var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetIdentifier, lineNumber:i + 1 });
 
                 $(element).popover({content:commentForm, placement:"left", trigger:"manual" });
             });
         });
-    }
-    else {
-        $("#content-files-" + changesetId).html("");
+    } else {
+        $("#content-files-" + changesetIdentifier).html("");
         var title = $("#fileTitleTemplate").render({
             fileName:fileName,
-            changesetId:changesetId,
+            changesetId:changesetIdentifier,
             fileId:fileId
         });
-        $("#content-files-title-" + changesetId).html(title);
-        $("#content-files-" + changesetId).html("<pre class='codeViewer'/>");
-        $("#content-files-" + changesetId + " .codeViewer")
+        $("#content-files-title-" + changesetIdentifier).html(title);
+        $("#content-files-" + changesetIdentifier).html("<pre class='codeViewer'/>");
+        $("#content-files-" + changesetIdentifier + " .codeViewer")
             .html("<h3>This file was removed.</h3>")
 
     }
 
-    $("#content-files-" + changesetId).show();
-    $('#content-files-span-' + changesetId).show();
-    $("#content-files-title-" + changesetId).show();
+    $("#content-files-" + changesetIdentifier).show();
+    $('#content-files-span-' + changesetIdentifier).show();
+    $("#content-files-title-" + changesetIdentifier).show();
     if (previousExpandedForFilesChangesetId != null) {
         hidePopovers(previousExpandedForFilesChangesetId);
     }
 
-    appendDiff(changesetId, fileId);
-    previousExpandedForFilesChangesetId = changesetId;
+    appendDiff(changesetIdentifier, fileId);
+    previousExpandedForFilesChangesetId = changesetIdentifier;
 
 }
 
@@ -70,18 +70,20 @@ function hideFile(changesetId, fileId) {
 }
 
 
-function appendDiff(changesetId, fileId) {
+function appendDiff(changesetIdentifier, projectFileId) {
 
-    var diffUrl = "projectFile/getDiff/" + fileId;
+    var diffUrl = uri.projectFile.getDiffWithPreviousRevision + '?' + $.param({
+        changesetIdentifier: changesetIdentifier, projectFileId: projectFileId
+    });
 
     $.getJSON(diffUrl, function (projectDiff) {
-        var diff = $("#diffTemplate").render({changesetId:changesetId});
-        $("#diff-" + changesetId).html(diff);
+        var diff = $("#diffTemplate").render({changesetId:changesetIdentifier});
+        $("#diff-" + changesetIdentifier).html(diff);
 
         $.SyntaxHighlighter.init({lineNumbers:false});
 
-        $("#diff-box-" + changesetId).html("<pre class='codeViewer'/>");
-        $("#diff-box-" + changesetId + " .codeViewer")
+        $("#diff-box-" + changesetIdentifier).html("<pre class='codeViewer'/>");
+        $("#diff-box-" + changesetIdentifier + " .codeViewer")
             .html(colorizeDiff(projectDiff.rawDiff))
             .addClass("language-" + projectDiff.fileType)
             .syntaxHighlight();

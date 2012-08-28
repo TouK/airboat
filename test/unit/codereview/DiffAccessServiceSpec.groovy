@@ -8,12 +8,10 @@ import org.eclipse.jgit.lib.Repository
 
 import testFixture.JgitFixture
 
-import spock.lang.Ignore
-
 import org.eclipse.jgit.errors.RepositoryNotFoundException
 
-import static testFixture.Fixture.getPROJECT_CODEREVIEW_NAME
 import static testFixture.Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL
+import spock.lang.Ignore
 
 @Build([ProjectFile, Changeset])
 class DiffAccessServiceSpec extends Specification {
@@ -68,8 +66,8 @@ class DiffAccessServiceSpec extends Specification {
         when:
         def project = Project.build(url: PROJECT_CODEREVIEW_REPOSITORY_URL)
         def changeset = Changeset.build(identifier: secondCodereviewHash, project: project)
-        def projectFile = ProjectFile.build(changeset: changeset, name: "grails-app/views/changeset/index.gsp")
-        String fileDiff = diffAccessService.getDiffWithPreviousRevisionFor(projectFile)
+        def projectFile = ProjectFile.build(changesets: [changeset], name: "grails-app/views/changeset/index.gsp")
+        String fileDiff = diffAccessService.getDiffWithPreviousRevisionFor(changeset, projectFile)
 
         then:
         fileDiff != null
@@ -82,8 +80,8 @@ class DiffAccessServiceSpec extends Specification {
         when:
         def project = Project.build(url: projectWithoutRepositoryCloneUrl)
         def changeset = Changeset.build(identifier: secondCodereviewHash, project: project)
-        def projectFile = ProjectFile.build(changeset: changeset, name: "grails-app/views/changeset/index.gsp")
-        diffAccessService.getDiffWithPreviousRevisionFor(projectFile)
+        def projectFile = ProjectFile.build(changesets: [changeset], name: "grails-app/views/changeset/index.gsp")
+        diffAccessService.getDiffWithPreviousRevisionFor(changeset, projectFile)
 
         then:
         thrown(RepositoryNotFoundException)
@@ -93,8 +91,8 @@ class DiffAccessServiceSpec extends Specification {
         when:
         def project = Project.build(url: PROJECT_CODEREVIEW_REPOSITORY_URL)
         def changeset = Changeset.build(identifier: secondCodereviewHash, project: project)
-        def projectFile = ProjectFile.build(changeset: changeset, name: "grails-app/nothing")
-        String fileDiff = diffAccessService.getDiffWithPreviousRevisionFor(projectFile)
+        def projectFile = ProjectFile.build(changesets: [changeset], name: "grails-app/nothing")
+        String fileDiff = diffAccessService.getDiffWithPreviousRevisionFor(changeset, projectFile)
 
         then:
         fileDiff == ""
@@ -106,10 +104,10 @@ class DiffAccessServiceSpec extends Specification {
         given:
         def project = Project.build(url: PROJECT_CODEREVIEW_REPOSITORY_URL)
         def changeset = Changeset.build(identifier: "what?", project: project)
-        def projectFile = ProjectFile.build(changeset: changeset, name: "grails-app/views/changeset/index.gsp")
+        def projectFile = ProjectFile.build(changesets: [changeset], name: "grails-app/views/changeset/index.gsp")
 
         when:
-        String fileDiff = diffAccessService.getDiffWithPreviousRevisionFor(projectFile)
+        String fileDiff = diffAccessService.getDiffWithPreviousRevisionFor(changeset, projectFile)
 
         then:
         fileDiff == ""

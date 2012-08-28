@@ -4,9 +4,10 @@ class ProjectFile {
 
     String name
     ChangeType changeType
+    Project project
 
-    static belongsTo = [changeset: Changeset]
-    static hasMany = [lineComments: LineComment]
+    static belongsTo = [Changeset, Project]
+    static hasMany = [changesets: Changeset]
 
     ProjectFile(String name, ChangeType changeType) {
         this.name = name

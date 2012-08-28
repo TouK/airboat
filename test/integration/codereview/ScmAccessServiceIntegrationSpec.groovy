@@ -181,7 +181,7 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         associatedCommiters*.cvsCommiterId == [cvsCommitterId]
     }
 
-    //learning tests. TODO move to another class
+    //learning tests. TODO move to another class. These tests will fail in unit-test environment. Document it.
     def "should not validate if subobjects don't validate"() {
         when:
         Commiter committer = new Commiter('valid id').addToChangesets(new Changeset(null, null, null))

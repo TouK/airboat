@@ -2,25 +2,33 @@ package codereview
 
 import org.spockframework.missing.ControllerIntegrationSpec
 
+import static com.google.common.collect.Iterables.getOnlyElement
+
 class ProjectFileControllerIntegrationSpec extends ControllerIntegrationSpec {
 
-    def 'should return comments'() {
+    def 'should return Comments for ProjectFile with their position in given Changeset'() {
         given:
         def fileName = 'groovy.groovy'
         Project project = Project.build()
+        ProjectFile projectFile = ProjectFile.buildWithoutSave(name: fileName, project: project)
+        LineComment comment = LineComment.build(text: 'first comment')
 
-        Changeset firstChangeset = Changeset.build(project: project)
-        ProjectFile firstProjectfile = ProjectFile.build(changeset: firstChangeset, name: fileName)
-        LineComment firstLinecomment = LineComment.build(projectFile: firstProjectfile, text: 'first comment')
+        Changeset firstChangeset = Changeset.build(projectFiles: [projectFile], project: project)
+        Changeset secondChangeset = Changeset.build(projectFiles: [projectFile], project: project)
 
-        Changeset secondChangeset = Changeset.build(project: project)
-        ProjectFile secondProjectfile = ProjectFile.build(changeset: secondChangeset, name: fileName)
-        LineComment secondLinecomment = LineComment.build(projectFile: secondProjectfile, text: 'second comment')
+        LineCommentPosition.build(changeset: firstChangeset, projectFile: projectFile, comment: comment, lineNumber: 13)
+        LineCommentPosition.build(changeset: secondChangeset, projectFile: projectFile, comment: comment, lineNumber: 42)
 
         when:
-        def comments = controller.getLineComments(firstProjectfile)
+        def comments = controller.getLineComments(firstChangeset, projectFile)
 
         then:
-        comments*.text == [firstLinecomment, secondLinecomment]*.text
+        comments*.lineNumber == firstChangeset.lineCommentsPositions*.lineNumber
+
+        when:
+        comments = controller.getLineComments(secondChangeset, projectFile)
+
+        then:
+        comments*.lineNumber == secondChangeset.lineCommentsPositions*.lineNumber
     }
 }

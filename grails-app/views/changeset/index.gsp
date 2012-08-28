@@ -283,7 +283,7 @@
 
         <div class="btn-group pull-right">
             <button type="button" class="btn btn-primary" id="addCommentButton-{{>fileId}}"
-                    onClick="addLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Add comment</button>
+                    onClick="addLineComment('{{>changesetId}}', '{{>fileId}}', '{{>lineNumber}}')">Add comment</button>
             <button type="button" class="btn btn-primary"
                     onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Cancel</button>
         </div>

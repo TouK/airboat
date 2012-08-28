@@ -13,9 +13,9 @@ class DiffAccessService {
 
     def infrastructureService
 
-    String getDiffWithPreviousRevisionFor(ProjectFile projectFile) {
-        File projectRoot = infrastructureService.getProjectRoot(projectFile.changeset.project.url)
-        String changesetDiff = getDiffWithPreviousCommit(projectRoot, projectFile.changeset.identifier)
+    String getDiffWithPreviousRevisionFor(Changeset changeset, ProjectFile projectFile) {
+        File projectRoot = infrastructureService.getProjectRoot(changeset.project.url)
+        String changesetDiff = getDiffWithPreviousCommit(projectRoot, changeset.identifier)
         return extractDiffForFileFromGitDiffCommandOutput(changesetDiff, projectFile.name)
     }
 

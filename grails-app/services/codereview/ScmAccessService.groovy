@@ -10,7 +10,7 @@ class ScmAccessService {
 
     GitRepositoryService gitRepositoryService
 
-    void updateProject(String scmUrl) {
+    void updateOrCheckOutRepository(String scmUrl) {
         gitRepositoryService.updateOrCheckOutRepository(scmUrl)
     }
 
@@ -39,6 +39,7 @@ class ScmAccessService {
             user.addToCommitters(commiter)
         }
         project.addToChangesets(changesetToSave)
+        changesetToSave.projectFiles.each { it.project = project }
         commiter.save(failOnError: true, flush: true)
         if (user != null) {
             user.save(failOnError: true, flush: true)
@@ -69,10 +70,10 @@ class ScmAccessService {
         ChangeType.valueOf(ChangeType, changeType.toString())
     }
 
-    String getFileContent(ProjectFile projectFile) {
+    String getFileContent(Changeset changeset, ProjectFile projectFile) {
         return gitRepositoryService.getFileContentFromChangeset(
-                projectFile.changeset.project.url,
-                projectFile.changeset.identifier,
+                changeset.project.url,
+                changeset.identifier,
                 projectFile.name
 
         )

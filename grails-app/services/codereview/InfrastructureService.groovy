@@ -8,7 +8,7 @@ class InfrastructureService {
     }
 
     private File getWorkingDirectory() {
-        def overridenWorkingDirectoryPath = System.getProperty('codereview.workingDirectory')
+        def overridenWorkingDirectoryPath = System.getProperty(Constants.CODEREVIEW_WORKING_DIRECTORY_PROPERTY)
         if (overridenWorkingDirectoryPath != null) {
             new File(overridenWorkingDirectoryPath)
         } else {

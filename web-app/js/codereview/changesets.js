@@ -36,7 +36,7 @@ function appendChangeset(changeset) {
     $('#content').append($("#changesetTemplate").render(changeset));
     showCommentsToChangeset(changeset.identifier);
     $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render({identifier:changeset.identifier}));
-    appendAccordion(changeset.identifier, null);
+    appendAccordion(changeset.identifier);
 
     $('#hash-' + changeset.identifier).tooltip({title:changeset.identifier + ", click to copy", trigger:"hover"});
     $('#hash-' + changeset.identifier).zclip({
@@ -63,25 +63,26 @@ textForChangeType = {
     COPY:'copied'
 }
 
-function appendAccordion(changesetId, fileIdentifier) {
+function appendAccordion(changesetId) {
     $('#accordion-' + changesetId).html("");
 
     $.getJSON(uri.changeset.getFileNamesForChangeset + changesetId, function (data) {
 
         for (i = 0; i < data.length; i++) {
+            var projectFile = data[i];
             var accordionRow = $("#accordionFilesTemplate").render({
-                name:sliceName(data[i].name, lineBoundary),
+                name:sliceName(projectFile.name, lineBoundary),
                 changesetId:changesetId,
-                fileId:data[i].id,
-                collapseId:(changesetId + data[i].id),
-                howManyComments:data[i].lineComments.length,
-                fileChangeType:data[i].changeType.name,
+                fileId:projectFile.id,
+                collapseId:(changesetId + projectFile.id),
+                howManyComments: projectFile.lineComments ? projectFile.lineComments.length : 0,
+                fileChangeType:projectFile.changeType.name,
                 textForChangeType:textForChangeType,
                 iconForChangeType:iconForChangeType
             });
 
             $('#accordion-' + changesetId).append(accordionRow);
-            appendSnippetToFileInAccordion(data[i].id)
+            appendSnippetToFileInAccordion(changesetId, projectFile.id)
         }
 
         $('#accordion-' + changesetId + ' .accordion-body.collapse').on('shown', function () {
@@ -96,8 +97,10 @@ function updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId,
         .text(commentGroupsWithSnippetsForCommentedFile.commentsCount)
 }
 
-function appendSnippetToFileInAccordion(projectFileId) {
-    $.getJSON(uri.projectFile.getLineCommentsWithSnippetsToFile + projectFileId,
+function appendSnippetToFileInAccordion(changesetIdentifier, projectFileId) {
+    $.getJSON(uri.projectFile.getLineCommentsWithSnippetsToFile + '?' + $.param({
+        changesetIdentifier:changesetIdentifier, projectFileId:projectFileId
+    }),
         function (commentGroupsWithSnippetsForFile) {
             renderCommentGroupsWithSnippets(projectFileId, commentGroupsWithSnippetsForFile)
         }
