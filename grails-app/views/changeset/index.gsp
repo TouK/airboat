@@ -19,8 +19,9 @@
     <script src="${createLink(uri: '/libs/jquery.zclip/jquery.zclip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/jquery.cookie/jquery.cookies.js')}" type="text/javascript"></script>
 
-    <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet"/>
+    <script src="${createLink(uri: '/libs/jquery.scrollto.min.js')}" type="text/javascript"></script>
 
+    <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet"/>
 
     <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/files.js')}" type="text/javascript"></script>
@@ -69,7 +70,9 @@
     });
 </script>
 
-<div id="content" class="padding"></div>
+<div class="padding">
+    <div id="content"></div>
+</div>
 
 <div class="alert alert-info" id="loading">
     <div class="well-small"><img id="loading-image" src="${createLink(uri: '/css/images/ajax-loader.gif')}"/> Loading...
@@ -89,6 +92,8 @@
     });
 
     $().ready(function () {
+        codeReview.initialFirstChangesetOffset = $('#content').position().top
+
         if ($.cookies.get('skin')) {
             $("#skin").attr("href", $.cookies.get('skin').href);
             if (!codeReview.isAuthenticated()) {
