@@ -28,7 +28,7 @@
 </head>
 
 <body>
-
+<div class="underNavbar">
 <div class="navbar logonavbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
@@ -340,6 +340,6 @@
 
     </div>
 </script>
-
+</div>
 </body>
 </html>

@@ -7,7 +7,6 @@
 </head>
 
 <body>
-
 <div class="span6 well well-large">
     <h1>Register</h1>
     <g:form name='createUserForm' action="save" class="form-horizontal">

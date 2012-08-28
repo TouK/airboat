@@ -6,8 +6,8 @@ textarea {
     padding: 10px;
 }
 
-body {
-    padding-top: 5px
+.underNavbar {
+    padding-top: 90px
 }
 
 .commitMessage {
