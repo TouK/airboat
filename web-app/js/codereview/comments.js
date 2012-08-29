@@ -89,10 +89,9 @@ function expandReplyForm(fileId, lineNumber) {
 }
 
 function cancelReply(fileId,lineNumber) {
-    $("#add-reply-" + fileId + "-" + lineNumber).text("");
     $('#replyFormButtons-' + fileId +'-' + lineNumber).hide();
-    $("#add-reply-" + fileId + "-" + lineNumber).text("");
     $("#add-reply-" + fileId + "-" + lineNumber).attr('rows', 1);
+    $("#add-reply-" + fileId + "-" + lineNumber).val("");
 
 }
 function resetCommentForm(changesetId) {
