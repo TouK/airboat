@@ -30,6 +30,11 @@
 
 <body>
 <div class="underNavbar">
+
+<div class="test">
+
+</div>
+
 <div class="navbar logonavbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
@@ -88,6 +93,20 @@
                 s:size,
                 d:'identicon'
             });
+        }
+    });
+
+    function colorFromMd5Hash(md5hash) {
+        var colorCount = 18
+        var numberOfHuesInHSL = 360;
+        var color = (numberOfHuesInHSL / colorCount) * (parseInt(md5hash) % colorCount)
+        return "hsl(" + color + ", 50%, 50%)"
+    }
+
+    $.views.helpers({
+        colorForProjectName:function (projectName) {
+            var md5hash = $.md5(projectName);
+            return  colorFromMd5Hash((md5hash.substr(1, 12)));
         }
     });
 
@@ -176,7 +195,8 @@
                 <div class="nextToGravatar">
                     <div>
                         <span class="badge {{if belongsToCurrentUser}}badge-success{{/if}}">{{>author}}</span>
-                        commited to <span class="badge">{{>projectName}}</span>
+                        commited to <span class="badge"
+                                          style="background-color: {{>~colorForProjectName(projectId)}}">{{>projectName}}</span>
 
                         <span class="pull-right badge badge-info">{{>date}}</span>
                         <span class="pull-right badge badge-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
