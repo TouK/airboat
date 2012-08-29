@@ -28,7 +28,8 @@ class LineCommentController {
         projectFile.addToLineComments(lineComment)
         lineComment.validate()
         if (lineComment.hasErrors()) {
-            render(lineComment.errors as JSON)
+            render([errors: lineComment.errors.fieldError] as JSON)
+
         }
         else {
             projectFile.save()

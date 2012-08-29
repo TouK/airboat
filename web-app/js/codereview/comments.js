@@ -38,10 +38,16 @@ function addLineComment(projectFileId, changesetId, lineNumber) {
                 updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, projectFileId);
                 hideAndClearLineCommentFrom(changesetId, projectFileId);
             }
-            else {
+            else if (commentGroupsWithSnippetsForCommentedFile.errors.code == "maxSize.exceeded"){
                 $('.addLongCommentMessage')
                     .html($('#longCommentTemplate')
                     .render(" Your comment is too long!"))
+                    .hide().fadeIn();
+            }
+            else if(commentGroupsWithSnippetsForCommentedFile.errors.code == "blank"){
+                $('.addLongCommentMessage')
+                    .html($('#longCommentTemplate')
+                    .render("Comment can't be empty"))
                     .hide().fadeIn();
             }
         },
@@ -58,10 +64,16 @@ function addReply(fileId, changesetId, lineNumber){
             if (commentGroupsWithSnippetsForCommentedFile.errors == null) {
                 updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, fileId);
             }
-            else {
-                $('#div-comments-'+ fileId+'-'+lineNumber +' .addLongCommentMessage')
+            else if (commentGroupsWithSnippetsForCommentedFile.errors.code == "maxSize.exceeded") {
+                $('#reply-info-'+ fileId+'-'+lineNumber)
                     .html($('#longCommentTemplate')
                     .render(" Your comment is too long!"))
+                    .hide().fadeIn();
+            }
+            else if(commentGroupsWithSnippetsForCommentedFile.errors.code == "blank") {
+                $('#reply-info-'+ fileId+'-'+lineNumber)
+                    .html($('#longCommentTemplate')
+                    .render("Comment can't be empty!"))
                     .hide().fadeIn();
             }
         },

@@ -14,5 +14,6 @@ class LineComment {
 
     static constraints = {
         text maxSize: 4096
+        text blank: false
     }
 }

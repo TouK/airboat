@@ -276,7 +276,7 @@
                   onfocus="expandReplyForm('{{>fileId}}', '{{>lineNumber}}')"
                   class="span12" rows="1"></textarea>
 
-        <div class="addLongCommentMessage"></div>
+        <div class="addLongCommentMessage" id="reply-info-{{>fileId}}-{{>lineNumber}}"></div>
 
         <div class="btn-group pull-right" id="replyFormButtons-{{>fileId}}-{{>lineNumber}}" style="display: none; margin-bottom:10px">
             <button type="button" class="btn btn-primary" id="replyButton-{{>fileId}}-{{>lineNumber}}"
