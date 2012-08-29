@@ -49,6 +49,26 @@ function addLineComment(projectFileId, changesetId, lineNumber) {
     );
 }
 
+function addReply(fileId, changesetId, lineNumber){
+    var text = $("#add-reply-" + fileId + "-" + lineNumber).val();
+
+    $.post(uri.lineComment.addComment,
+        { text:text, lineNumber:lineNumber, fileId:fileId},
+        function (commentGroupsWithSnippetsForCommentedFile) {
+            if (commentGroupsWithSnippetsForCommentedFile.errors == null) {
+                updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, fileId);
+            }
+            else {
+                $('#div-comments-'+ fileId+'-'+lineNumber +' .addLongCommentMessage')
+                    .html($('#longCommentTemplate')
+                    .render(" Your comment is too long!"))
+                    .hide().fadeIn();
+            }
+        },
+        "json"
+    );
+
+}
 function hideAndClearLineCommentFrom(changesetId, fileIdentifier) {
     $('#content-files-' + changesetId + ' .linenums li').popover("hide");
     $('#add-line-comment-' + fileIdentifier).val("");
@@ -63,6 +83,18 @@ function expandCommentForm(changesetId) {
     $('#add-comment-' + changesetId).attr('rows', 3);
 }
 
+function expandReplyForm(fileId, lineNumber) {
+    $('#replyFormButtons-' + fileId +'-' + lineNumber).slideDown(100);
+    $("#add-reply-" + fileId + "-" + lineNumber).attr('rows', 3);
+}
+
+function cancelReply(fileId,lineNumber) {
+    $("#add-reply-" + fileId + "-" + lineNumber).text("");
+    $('#replyFormButtons-' + fileId +'-' + lineNumber).hide();
+    $("#add-reply-" + fileId + "-" + lineNumber).text("");
+    $("#add-reply-" + fileId + "-" + lineNumber).attr('rows', 1);
+
+}
 function resetCommentForm(changesetId) {
     $('#add-comment-' + changesetId).val("");
     $('#add-comment-' + changesetId).attr('rows', 1);

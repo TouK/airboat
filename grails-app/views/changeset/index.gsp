@@ -272,6 +272,18 @@
 
 <script id="snippetTemplate" type="text/x-jsrender">
     <div id="div-comments-{{>fileId}}-{{>lineNumber}}"></div>
+        <textarea id="add-reply-{{>fileId}}-{{>lineNumber}}" placeholder="Reply..."
+                  onfocus="expandReplyForm('{{>fileId}}', '{{>lineNumber}}')"
+                  class="span12" rows="1"></textarea>
+
+        <div class="addLongCommentMessage"></div>
+
+        <div class="btn-group pull-right" id="replyFormButtons-{{>fileId}}-{{>lineNumber}}" style="display: none; margin-bottom:10px">
+            <button type="button" class="btn btn-primary" id="replyButton-{{>fileId}}-{{>lineNumber}}"
+                    onClick="addReply('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Reply</button>
+            <button type="button" class="btn btn-primary"
+                    onClick="cancelReply('{{>fileId}}', '{{>lineNumber}}')">Cancel</button>
+        </div>
 
     <div id="snippet-{{>fileId}}-{{>lineNumber}}"></div>
 </script>
