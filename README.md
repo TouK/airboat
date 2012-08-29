@@ -17,4 +17,4 @@ Any contributions (bug reports / feature requests / pull requests) are most welc
 # Demo
 is available [here](http://cr.touk.pl/demo) (new version is deployed about-weekly, all data is deleted).
 
-Also, continuous deployment is made to [this] (http://cr.touk.pl/cd) place.
+Also, continuous deployment is made to [this] (http://cr-cd.touk.pl/cd) place.
