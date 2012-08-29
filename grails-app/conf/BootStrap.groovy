@@ -15,16 +15,24 @@ class BootStrap {
 
         environments {
             production {
-                bootstrapNonTestEnvironment()
+                bootstrapNonTestEnvironment(projectCodeReview())
             }
             development {
-                bootstrapNonTestEnvironment()
+                bootstrapNonTestEnvironment(
+                    projectCodeReview(),
+                    new Project('drip', 'https://github.com/flatland/drip.git'),
+                    new Project('visibility.js', 'https://github.com/ai/visibility.js.git'),
+                )
             }
         }
     }
 
-    private void bootstrapNonTestEnvironment() {
-        new Project('codereview', PROJECT_CODEREVIEW_REPOSITORY_URL).save(flush: true)
+    private Project projectCodeReview() {
+        new Project('codereview', PROJECT_CODEREVIEW_REPOSITORY_URL)
+    }
+
+    private void bootstrapNonTestEnvironment(Project... projects) {
+        projects.each { it.save(flush: true) }
         ProjectUpdateJob.triggerNow()
         createAdmin()
     }

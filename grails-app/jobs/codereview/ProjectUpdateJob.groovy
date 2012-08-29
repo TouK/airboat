@@ -25,7 +25,7 @@ class ProjectUpdateJob {
     def update(Project project) {
         String projectRepositoryUrl = project.url
         Project.withTransaction({ DefaultTransactionStatus ignoredStatus ->
-            time("update of project ${project.url}") {
+            time("update of project $project.url") {
                 scmAccessService.updateProject(projectRepositoryUrl)
                 if (project.hasChangesets()) {
                     String lastChangesetHash = project.changesets.sort {it.date}.last().identifier
@@ -39,12 +39,12 @@ class ProjectUpdateJob {
 
     def time(String actionName, Closure action) {
         long startTime = System.nanoTime()
-        log.info("Starting ${actionName}")
+        log.info("Starting $actionName")
         try {
             action()
-            log.info("Finished ${actionName}. It completed successfully after ${durationSince(startTime)}")
+            log.info("Finished $actionName. It completed successfully after ${durationSince(startTime)}")
         } catch (Exception e) {
-            log.warn("Finished ${actionName}. It FAILED after ${durationSince(startTime)}")
+            log.warn("Finished $actionName. It FAILED after ${durationSince(startTime)}")
             throw e
         }
     }
