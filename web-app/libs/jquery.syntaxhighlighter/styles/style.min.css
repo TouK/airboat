@@ -10,7 +10,8 @@
 }
 
 .prettyprint ol.linenums li {
-    padding-left: 0px;
+    padding-left: 15px;
+    border-left: 3px #999 solid
 }
 
 .prettyprint li>* {

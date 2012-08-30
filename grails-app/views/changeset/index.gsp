@@ -240,15 +240,17 @@
             </div>
         </div>
 
-        <div class="span7 well" id="content-files-span-{{>identifier}}" style="display: none;">
-            <div id="content-files-title-{{>identifier}}"></div>
-            <br/>
+        <div class="span7">
+            <div class="well" id="content-files-span-{{>identifier}}" style="display: none;">
+                <div id="content-files-title-{{>identifier}}"></div>
+                <br/>
 
-            <div id="diff-{{>identifier}}"></div>
+                <div id="diff-{{>identifier}}"></div>
 
-            <div class="files-right">
+                <div class="files-right">
 
-                <div id="content-files-{{>identifier}}"></div>
+                    <div id="content-files-{{>identifier}}"></div>
+                </div>
             </div>
         </div>
     </div>
