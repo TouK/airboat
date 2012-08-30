@@ -120,7 +120,6 @@ log4j = {
             }
             all additivity: false
             all rollingFileQuartz: 'org.quartz'
-
         }
         development {
             root {
@@ -129,7 +128,6 @@ log4j = {
             }
             all additivity: false
             all rollingFileQuartz: 'org.quartz'
-
         }
         test {
             root {
@@ -138,7 +136,6 @@ log4j = {
             }
             all additivity: false
             all rollingFileQuartz: 'org.quartz'
-
         }
     }
 }

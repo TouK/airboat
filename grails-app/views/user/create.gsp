@@ -7,49 +7,48 @@
 </head>
 
 <body>
-<div class="container">
-    <div class="span6 offset2 well well-large">
-        <h1>Register</h1>
-        <g:form name='createUserForm' action="save" class="form-horizontal">
-            <div class="errors"></div>
-            <fieldset>
-                <div class="control-group">
-                    <label for="emailInput" class="control-label">E-mail</label>
+<div class="span6 well well-large">
+    <h1>Register</h1>
+    <g:form name='createUserForm' action="save" class="form-horizontal">
+        <div class="errors"></div>
+        <fieldset>
+            <div class="control-group">
+                <label for="emailInput" class="control-label">E-mail</label>
 
-                    <div class="controls">
-                        <input id="emailInput" type="email" name="email">
-                    </div>
+                <div class="controls">
+                    <input id="emailInput" type="email" name="email">
                 </div>
-
-                <div class="control-group">
-                    <label for="passwordInput" class="control-label">Password</label>
-
-                    <div class="controls">
-                        <input id="passwordInput" type="password" name="password">
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <label for="passwordRepeatInput" class="control-label">Repeat password</label>
-
-                    <div class="controls">
-                        <input id="passwordRepeatInput" type="password" name="password2">
-                    </div>
-                </div>
-            </fieldset>
-
-            <div class="form-actions">
-                <g:submitButton name="create" class="btn btn-primary" value="Register"/>
             </div>
 
-        </g:form>
-    </div>
+            <div class="control-group">
+                <label for="passwordInput" class="control-label">Password</label>
+
+                <div class="controls">
+                    <input id="passwordInput" type="password" name="password">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="passwordRepeatInput" class="control-label">Repeat password</label>
+
+                <div class="controls">
+                    <input id="passwordRepeatInput" type="password" name="password2">
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="form-actions">
+            <g:submitButton name="create" class="btn btn-primary" value="Register"/>
+        </div>
+
+    </g:form>
 </div>
+
 
 <script id="formErrorsTemplate" type="text/x-jsrender">
     <ul class="alert-block" role="alert">
         {{for #data}}
-            <li class="alert-error" {{if field}}data-field-id="{{:field}}"{{/if}}>{{:message}}</li>
+        <li class="alert-error" {{if field}}data-field-id="{{:field}}"{{/if}}>{{:message}}</li>
         {{/for}}
     </ul>
 </script>
@@ -69,12 +68,17 @@
             } else if (registration.errors) {
                 $('#createUserForm .errors')
                         .html($('#formErrorsTemplate').render([registration.errors]))
-                        .hide().fadeIn()
+                        .hide().fadeIn();
+                resizeColorbox();
             } else {
                 alert("An error occured. Please file a bug using our feedback form.")
             }
         }, 'json');
         return false;
+    }
+
+    function resizeColorbox() {
+        parent.$.fn.colorbox.resize({width:"650px", height:"486px"});
     }
 </script>
 </body>

@@ -11,37 +11,32 @@ import codereview.UserRole
 
 class BootStrap {
 
-    //FIXME add a bootstrap test, errors here are too frequent...
     def init = { servletContext ->
 
         environments {
             production {
-                createAndSaveConfiguredProjects(['cyclone', 'franek-kimono', 'cyclos', 'zephyr', 'bb-mobile', 'breeze',
-                        'cyclos-adapter', 'mobilizer', 'stratus', 'cyclone-sms'])
-                ProjectUpdateJob.triggerNow()
-                createAdmin()
+                bootstrapNonTestEnvironment(projectCodeReview())
             }
             development {
-                createAndSaveConfiguredProjects(['cyclone', 'cyclos', 'franek-kimono'])
-                ProjectUpdateJob.triggerNow()
-                createAdmin()
+                bootstrapNonTestEnvironment(
+                    projectCodeReview(),
+                    new Project('drip', 'https://github.com/flatland/drip.git'),
+                    new Project('visibility.js', 'https://github.com/ai/visibility.js.git'),
+                )
             }
         }
     }
 
-    private void createAndSaveConfiguredProjects(ArrayList<String> qriosRepositoriesToImport) {
-        def codereview = projectFromRepository(TOUK_GIT_REPOS_SERVER, 'touk', 'codereview')
-        def projects = [codereview] + qriosRepositoriesToImport.collect { projectFromQriosRepository(it) }
-        projects.each { Project it -> it.save(flush: true) }
+    private Project projectCodeReview() {
+        new Project('codereview', PROJECT_CODEREVIEW_REPOSITORY_URL)
     }
 
-    private Project projectFromQriosRepository(String repositoryName) {
-        projectFromRepository(TOUK_GIT_REPOS_SERVER, 'qrios', repositoryName)
+    private void bootstrapNonTestEnvironment(Project... projects) {
+        projects.each { it.save(flush: true) }
+        ProjectUpdateJob.triggerNow()
+        createAdmin()
     }
 
-    private Project projectFromRepository(String repositoryServer, String projectName, String repositoryName) {
-        new Project(repositoryName, "git://${repositoryServer}/${projectName}/${repositoryName}.git")
-    }
 
     def createAdmin() {
         Role administrator

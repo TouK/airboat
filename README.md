@@ -17,4 +17,11 @@ Any contributions (bug reports / feature requests / pull requests) are most welc
 # Demo
 is available [here](http://cr.touk.pl/demo) (new version is deployed about-weekly, all data is deleted).
 
-Also, continuous deployment is made to [this] (http://cr.touk.pl/cd) place.
+Also, continuous deployment is made to [this] (http://cr-cd.touk.pl/cd) place.
+
+# How do I...
+ 
+## ...import my project to CodeReview?
+First, you login as admin@codereview.pl (password: 'admin' :)). Then, you grasp the 'Admin page' near the 'log out' link.
+ After that everything is straightforward. After adding a project you might need to wait a bit till it gets imported
+(We're working on showing some kind of notification during the import)

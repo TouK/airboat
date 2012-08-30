@@ -30,7 +30,7 @@ class LineCommentController {
         changeset.addToLineCommentsPositions(position)
         lineComment.validate()
         if (lineComment.hasErrors()) {
-            render(lineComment.errors as JSON)
+            render([errors: lineComment.errors.fieldError] as JSON)
         } else {
             lineComment.save(failOnError: true)
             redirect(controller: 'projectFile', action: 'getLineCommentsWithSnippetsToFile',

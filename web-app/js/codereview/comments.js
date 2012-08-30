@@ -37,10 +37,15 @@ function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
             if (commentGroupsWithSnippetsForCommentedFile.errors == null) {
                 updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId);
                 hideAndClearLineCommentFrom(changesetIdentifier, projectFileId);
-            } else {
+            } else if (commentGroupsWithSnippetsForCommentedFile.errors.code == "maxSize.exceeded") {
                 $('.addLongCommentMessage')
                     .html($('#longCommentTemplate')
                     .render(" Your comment is too long!"))
+                    .hide().fadeIn();
+            } else if(commentGroupsWithSnippetsForCommentedFile.errors.code == "blank"){
+                $('.addLongCommentMessage')
+                    .html($('#longCommentTemplate')
+                    .render("Comment can't be empty"))
                     .hide().fadeIn();
             }
         },
@@ -48,6 +53,32 @@ function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
     );
 }
 
+function addReply(projectFileId, changesetIdentifier, lineNumber){
+    var text = $("#add-reply-" + projectFileId + "-" + lineNumber).val();
+
+    $.post(uri.lineComment.addComment,
+        { changesetIdentifier: changesetIdentifier, projectFileId:projectFileId, text:text, lineNumber:lineNumber},
+        function (commentGroupsWithSnippetsForCommentedFile) {
+            if (commentGroupsWithSnippetsForCommentedFile.errors == null) {
+                updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId);
+            }
+            else if (commentGroupsWithSnippetsForCommentedFile.errors.code == "maxSize.exceeded") {
+                $('#reply-info-'+ projectFileId+'-'+lineNumber)
+                    .html($('#longCommentTemplate')
+                    .render(" Your comment is too long!"))
+                    .hide().fadeIn();
+            }
+            else if(commentGroupsWithSnippetsForCommentedFile.errors.code == "blank") {
+                $('#reply-info-'+ projectFileId+'-'+lineNumber)
+                    .html($('#longCommentTemplate')
+                    .render("Comment can't be empty!"))
+                    .hide().fadeIn();
+            }
+        },
+        "json"
+    );
+
+}
 function hideAndClearLineCommentFrom(changesetId, fileIdentifier) {
     $('#content-files-' + changesetId + ' .linenums li').popover("hide");
     $('#add-line-comment-' + fileIdentifier).val("");
@@ -62,6 +93,17 @@ function expandCommentForm(changesetId) {
     $('#add-comment-' + changesetId).attr('rows', 3);
 }
 
+function expandReplyForm(fileId, lineNumber) {
+    $('#replyFormButtons-' + fileId +'-' + lineNumber).slideDown(100);
+    $("#add-reply-" + fileId + "-" + lineNumber).attr('rows', 3);
+}
+
+function cancelReply(fileId,lineNumber) {
+    $('#replyFormButtons-' + fileId +'-' + lineNumber).hide();
+    $("#add-reply-" + fileId + "-" + lineNumber).attr('rows', 1);
+    $("#add-reply-" + fileId + "-" + lineNumber).val("");
+
+}
 function resetCommentForm(changesetId) {
     $('#add-comment-' + changesetId).val("");
     $('#add-comment-' + changesetId).attr('rows', 1);

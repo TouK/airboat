@@ -19,8 +19,9 @@
     <script src="${createLink(uri: '/libs/jquery.zclip/jquery.zclip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/jquery.cookie/jquery.cookies.js')}" type="text/javascript"></script>
 
-    <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet"/>
+    <script src="${createLink(uri: '/libs/jquery.scrollto.min.js')}" type="text/javascript"></script>
 
+    <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet"/>
 
     <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/files.js')}" type="text/javascript"></script>
@@ -28,6 +29,11 @@
 </head>
 
 <body>
+<div class="underNavbar">
+
+<div class="test">
+
+</div>
 
 <div class="navbar logonavbar navbar-fixed-top">
     <div class="navbar-inner">
@@ -69,7 +75,9 @@
     });
 </script>
 
-<div id="content" class="padding"></div>
+<div class="padding">
+    <div id="content"></div>
+</div>
 
 <div class="alert alert-info" id="loading">
     <div class="well-small"><img id="loading-image" src="${createLink(uri: '/css/images/ajax-loader.gif')}"/> Loading...
@@ -88,7 +96,23 @@
         }
     });
 
+    function colorFromMd5Hash(md5hash) {
+        var colorCount = 18
+        var numberOfHuesInHSL = 360;
+        var color = (numberOfHuesInHSL / colorCount) * (parseInt(md5hash, 16) % colorCount)
+        return "hsl(" + color + ", 50%, 50%)"
+    }
+
+    $.views.helpers({
+        colorForProjectName:function (projectName) {
+            var md5hash = $.md5(projectName);
+            return  colorFromMd5Hash(md5hash.substr(0, 12));
+        }
+    });
+
     $().ready(function () {
+        codeReview.initialFirstChangesetOffset = $('#content').position().top
+
         if ($.cookies.get('skin')) {
             $("#skin").attr("href", $.cookies.get('skin').href);
             if (!codeReview.isAuthenticated()) {
@@ -113,12 +137,15 @@
 
         $(".colorbox").colorbox(codeReview.colorboxSettings);
         $('.dropdown-toggle').dropdown();
+
+        $('body').bind('codeReview-pageStructureChanged', repositionZclips)
     });
 
     $(document).ajaxStart(function () {
         $('#loading').show();
     }).ajaxStop(function () {
                 $('#loading').hide();
+                $('body').trigger('codeReview-pageStructureChanged') //most probably
             });
 
     function onLoggedIn(username, isAdmin) {
@@ -137,6 +164,12 @@
             $.cookies.set('skin', skinOptions);
             $("#skin").attr("href", $.cookies.get('skin').href);
         });
+    }
+
+    function repositionZclips() {
+        for (var i = 1; i < ZeroClipboard.nextId; i++) {
+            ZeroClipboard.clients[i].reposition()
+        }
     }
 </script>
 
@@ -171,7 +204,8 @@
                 <div class="nextToGravatar">
                     <div>
                         <span class="badge {{if belongsToCurrentUser}}badge-success{{/if}}">{{>author}}</span>
-                        commited to <span class="badge">{{>projectName}}</span>
+                        commited to <span class="badge"
+                                          style="background-color: {{>~colorForProjectName(projectName)}}">{{>projectName}}</span>
 
                         <span class="pull-right badge badge-info">{{>date}}</span>
                         <span class="pull-right badge badge-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
@@ -267,6 +301,19 @@
 
 <script id="snippetTemplate" type="text/x-jsrender">
     <div id="div-comments-{{>fileId}}-{{>lineNumber}}"></div>
+    <textarea id="add-reply-{{>fileId}}-{{>lineNumber}}" placeholder="Reply..."
+              onfocus="expandReplyForm('{{>fileId}}', '{{>lineNumber}}')"
+              class="span12" rows="1"></textarea>
+
+    <div class="addLongCommentMessage" id="reply-info-{{>fileId}}-{{>lineNumber}}"></div>
+
+    <div class="btn-group pull-right" id="replyFormButtons-{{>fileId}}-{{>lineNumber}}"
+         style="display: none; margin-bottom:10px">
+        <button type="button" class="btn btn-primary" id="replyButton-{{>fileId}}-{{>lineNumber}}"
+                onClick="addReply('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Reply</button>
+        <button type="button" class="btn btn-primary"
+                onClick="cancelReply('{{>fileId}}', '{{>lineNumber}}')">Cancel</button>
+    </div>
 
     <div id="snippet-{{>fileId}}-{{>lineNumber}}"></div>
 </script>
@@ -340,6 +387,6 @@
 
     </div>
 </script>
-
+</div>
 </body>
 </html>
