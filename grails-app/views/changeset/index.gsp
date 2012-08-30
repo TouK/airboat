@@ -99,14 +99,14 @@
     function colorFromMd5Hash(md5hash) {
         var colorCount = 18
         var numberOfHuesInHSL = 360;
-        var color = (numberOfHuesInHSL / colorCount) * (parseInt(md5hash) % colorCount)
+        var color = (numberOfHuesInHSL / colorCount) * (parseInt(md5hash, 16) % colorCount)
         return "hsl(" + color + ", 50%, 50%)"
     }
 
     $.views.helpers({
         colorForProjectName:function (projectName) {
             var md5hash = $.md5(projectName);
-            return  colorFromMd5Hash((md5hash.substr(1, 12)));
+            return  colorFromMd5Hash(md5hash.substr(0, 12));
         }
     });
 
@@ -196,7 +196,7 @@
                     <div>
                         <span class="badge {{if belongsToCurrentUser}}badge-success{{/if}}">{{>author}}</span>
                         commited to <span class="badge"
-                                          style="background-color: {{>~colorForProjectName(projectId)}}">{{>projectName}}</span>
+                                          style="background-color: {{>~colorForProjectName(projectName)}}">{{>projectName}}</span>
 
                         <span class="pull-right badge badge-info">{{>date}}</span>
                         <span class="pull-right badge badge-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
@@ -292,18 +292,19 @@
 
 <script id="snippetTemplate" type="text/x-jsrender">
     <div id="div-comments-{{>fileId}}-{{>lineNumber}}"></div>
-        <textarea id="add-reply-{{>fileId}}-{{>lineNumber}}" placeholder="Reply..."
-                  onfocus="expandReplyForm('{{>fileId}}', '{{>lineNumber}}')"
-                  class="span12" rows="1"></textarea>
+    <textarea id="add-reply-{{>fileId}}-{{>lineNumber}}" placeholder="Reply..."
+              onfocus="expandReplyForm('{{>fileId}}', '{{>lineNumber}}')"
+              class="span12" rows="1"></textarea>
 
-        <div class="addLongCommentMessage" id="reply-info-{{>fileId}}-{{>lineNumber}}"></div>
+    <div class="addLongCommentMessage" id="reply-info-{{>fileId}}-{{>lineNumber}}"></div>
 
-        <div class="btn-group pull-right" id="replyFormButtons-{{>fileId}}-{{>lineNumber}}" style="display: none; margin-bottom:10px">
-            <button type="button" class="btn btn-primary" id="replyButton-{{>fileId}}-{{>lineNumber}}"
-                    onClick="addReply('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Reply</button>
-            <button type="button" class="btn btn-primary"
-                    onClick="cancelReply('{{>fileId}}', '{{>lineNumber}}')">Cancel</button>
-        </div>
+    <div class="btn-group pull-right" id="replyFormButtons-{{>fileId}}-{{>lineNumber}}"
+         style="display: none; margin-bottom:10px">
+        <button type="button" class="btn btn-primary" id="replyButton-{{>fileId}}-{{>lineNumber}}"
+                onClick="addReply('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Reply</button>
+        <button type="button" class="btn btn-primary"
+                onClick="cancelReply('{{>fileId}}', '{{>lineNumber}}')">Cancel</button>
+    </div>
 
     <div id="snippet-{{>fileId}}-{{>lineNumber}}"></div>
 </script>
