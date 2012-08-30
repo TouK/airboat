@@ -36,4 +36,5 @@ class GormLearnigSpec extends Specification {
         expect:
         UserComment.findByAuthorAndText(comment.author, comment.text).dateCreated != null
     }
+
 }
