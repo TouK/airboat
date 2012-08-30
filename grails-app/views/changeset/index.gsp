@@ -212,22 +212,28 @@
                     </div>
 
                     <div class="commitMessage margin-top-small"><h5>Commit message:</h5> {{>commitComment}}</div>
-
-                    <a id="more-button-{{>identifier}}" class="wideButton"
-                       onclick="showChangesetDetails('{{>identifier}}')">
-                        <div class="center sizeOfIcon"><i class="icon-chevron-down"></i></div>
-                    </a>
                 </div>
+
+                <a id="more-button-{{>identifier}}" class="wideButton"
+                   onclick="showChangesetDetails('{{>identifier}}')">
+                    <div class="center sizeOfIcon"><i class="icon-chevron-down"></i></div>
+                </a>
             </div>
 
             <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small">
+
+                <a id="less-button-up-{{>identifier}}" class="wideButton"
+                   onclick="showLessAboutChangeset('{{>identifier}}')">
+                    <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
+                </a>
+
                 <div class="accordion margin-bottom-small" id="accordion-{{>identifier}}"></div>
 
                 <div class="comments" id="comments-{{>identifier}}"></div>
 
                 <div id="comment-form-{{>identifier}}"></div>
 
-                <a id="less-button-{{>identifier}}" class="wideButton"
+                <a id="less-button-down-{{>identifier}}" class="wideButton"
                    onclick="showLessAboutChangeset('{{>identifier}}')">
                     <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
                 </a>
