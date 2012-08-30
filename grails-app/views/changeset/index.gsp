@@ -137,12 +137,15 @@
 
         $(".colorbox").colorbox(codeReview.colorboxSettings);
         $('.dropdown-toggle').dropdown();
+
+        $('body').bind('codeReview-pageStructureChanged', repositionZclips)
     });
 
     $(document).ajaxStart(function () {
         $('#loading').show();
     }).ajaxStop(function () {
                 $('#loading').hide();
+                $('body').trigger('codeReview-pageStructureChanged') //most probably
             });
 
     function onLoggedIn(username, isAdmin) {
@@ -161,6 +164,12 @@
             $.cookies.set('skin', skinOptions);
             $("#skin").attr("href", $.cookies.get('skin').href);
         });
+    }
+
+    function repositionZclips() {
+        for (var i = 1; i < ZeroClipboard.nextId; i++) {
+            ZeroClipboard.clients[i].reposition()
+        }
     }
 </script>
 
