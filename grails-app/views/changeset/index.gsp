@@ -222,7 +222,7 @@
 
             <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small">
 
-                <a id="less-button-up-{{>identifier}}" class="wideButton"
+                <a id="less-button-topChangeset-{{>identifier}}" class="wideButton"
                    onclick="showLessAboutChangeset('{{>identifier}}')">
                     <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
                 </a>
@@ -233,7 +233,7 @@
 
                 <div id="comment-form-{{>identifier}}"></div>
 
-                <a id="less-button-down-{{>identifier}}" class="wideButton"
+                <a id="less-button-downChangeset-{{>identifier}}" class="wideButton"
                    onclick="showLessAboutChangeset('{{>identifier}}')">
                     <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
                 </a>
