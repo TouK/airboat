@@ -8,9 +8,14 @@ function showFile(changesetId, fileId, fileChangeType, fileName) {
     var fileContent;
     if (fileChangeType != 'DELETE') {
         $.getJSON(fileContentUrl, function (file) {
-            fillFileTitleTemplate(divideNameWithSlashesInTwo(file.name), changesetId, fileId);
-            renderContentFileWithSyntaxHighlighter(changesetId, file, fileId);
-            showFilesContent(changesetId);
+            if (file.isText) {
+                fillFileTitleTemplate(divideNameWithSlashesInTwo(file.name), changesetId, fileId);
+                renderContentFileWithSyntaxHighlighter(changesetId, file, fileId);
+                showFilesContent(changesetId);
+            }
+            else {
+                showMessageAboutNonTextFile(changesetId);
+            }
         });
     }
     else {
@@ -93,6 +98,12 @@ function cleanPreviousFilesContent(changesetId) {
 
 function setContentFilesTitle(changesetId, title) {
     $("#content-files-title-" + changesetId).html(title);
+}
+
+function showMessageAboutNonTextFile(changesetId) {
+    $("#content-files-" + changesetId).html("<pre class='codeViewer'/>");
+    $("#content-files-" + changesetId + " .codeViewer")
+        .html("<h3>This file isn't text file.</h3>")
 }
 
 function fillFileTitleTemplate(fileName, changesetId, fileId) {
