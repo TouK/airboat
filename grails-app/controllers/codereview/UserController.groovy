@@ -39,6 +39,43 @@ class UserController {
 
     }
 
+    @Secured('isAuthenticated()')
+    def dashboard() {
+
+    }
+
+    def changesets(String username) {
+        User user = User.findByEmail(username)
+        def changesets   = []
+        user.committers.each {
+            it.changesets.each {
+                changesets.add(it)
+            }
+        }
+        changesets = changesets.sort {it.date}
+        render (changesets.subList(changesets.size()-6, changesets.size()-1) as JSON)
+    }
+
+    def projects(String username) {
+        User user = User.findByEmail(username)
+        def projects   = []
+        user.committers.each {
+            it.changesets.each {
+                if(!projects.contains(it.project)) projects.add(it.project)
+            }
+        }
+        render (projects as JSON)
+    }
+
+    def comments(String username) {
+        User user = User.findByEmail(username)
+        def comments   = []
+        user.lineComments.each {
+            comments.add(it)
+        }
+        render (comments as JSON)
+    }
+
     def setSkinOptions(String username, String skin) {
         User user = User.findByEmail(username)
         user.skin =  skin

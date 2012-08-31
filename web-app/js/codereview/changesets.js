@@ -1,4 +1,5 @@
-var projectName = ''
+var projectName = '';
+var lineBoundary = 50;
 
 function showProject(projectId) {
     projectName = projectId
@@ -34,9 +35,11 @@ function appendChangeset(changeset) {
     var shortIdentifier = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
     changeset = $.extend({shortIdentifier:shortIdentifier}, changeset)
     $('#content').append($("#changesetTemplate").render(changeset));
-    showCommentsToChangeset(changeset.identifier);
+
+    showCommentsToChangeset(changeset.userComments, changeset.identifier);
+
     $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render({identifier:changeset.identifier}));
-    appendAccordion(changeset.identifier, null);
+    appendAccordion(changeset.files, changeset.identifier);
 
     $('#hash-' + changeset.identifier).tooltip({title:changeset.identifier + ", click to copy", trigger:"hover"});
     $('#hash-' + changeset.identifier).zclip({
@@ -63,33 +66,32 @@ textForChangeType = {
     COPY:'copied'
 }
 
-function appendAccordion(changesetId, fileIdentifier) {
+function appendAccordion(files, changesetId) {
     $('#accordion-' + changesetId).html("");
 
-    $.getJSON(uri.changeset.getFileNamesForChangeset + changesetId, function (data) {
-
-        for (i = 0; i < data.length; i++) {
+        for (var i = 0; i < files.length; i++) {
             var accordionRow = $("#accordionFilesTemplate").render({
-                name:sliceName(data[i].name, lineBoundary),
+                name:sliceName(files[i].name, lineBoundary),
                 changesetId:changesetId,
-                fileId:data[i].id,
-                collapseId:(changesetId + data[i].id),
-                howManyComments:data[i].lineComments.length,
-                fileChangeType:data[i].changeType.name,
+                fileId:files[i].id,
+                collapseId:(changesetId + files[i].id),
+                howManyComments:files[i].lineComments.length,
+                fileChangeType:files[i].changeType.name,
                 textForChangeType:textForChangeType,
                 iconForChangeType:iconForChangeType
             });
 
             $('#accordion-' + changesetId).append(accordionRow);
-            appendSnippetToFileInAccordion(data[i].id, changesetId)
+            appendSnippetToFileInAccordion(files[i], changesetId)
         }
 
         $('#accordion-' + changesetId + ' .accordion-body.collapse').on('shown', function () {
             $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
             showFile(this.dataset.changeset_id, this.dataset.file_id, this.dataset.file_change_type, this.dataset.file_name_slice);
-        })
-    });
+        });
+
 }
+
 function updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, projectFileId) {
     renderCommentGroupsWithSnippets(projectFileId, changesetId, commentGroupsWithSnippetsForCommentedFile);
     $('#collapse-inner-' + changesetId + projectFileId).removeAttr('style');
@@ -97,22 +99,21 @@ function updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId,
         .text(commentGroupsWithSnippetsForCommentedFile.commentsCount)
 }
 
-function appendSnippetToFileInAccordion(projectFileId, changesetId) {
-    $.getJSON(uri.projectFile.getLineCommentsWithSnippetsToFile + projectFileId,
-        function (commentGroupsWithSnippetsForFile) {
-            renderCommentGroupsWithSnippets(projectFileId, changesetId, commentGroupsWithSnippetsForFile);
-        }
-    );
+function appendSnippetToFileInAccordion(file, changesetId) {
+    $.getJSON(uri.projectFile.getLineCommentsWithSnippetsToFile + file.id, function(lineComments) {
+        renderCommentGroupsWithSnippets(file.id, changesetId, lineComments);
+    });
+
 }
 
 function renderCommentGroupsWithSnippets(fileId, changesetId, commentGroupsWithSnippetsForFile) {
-    var fileType = commentGroupsWithSnippetsForFile.fileType;
-    var commentGroupsWithSnippets = commentGroupsWithSnippetsForFile.commentGroupsWithSnippets;
+    var fileType = "javascript";
+    var commentGroupsWithSnippets = commentGroupsWithSnippetsForFile;
 
     if (commentGroupsWithSnippets.length > 0) {
         $('#fileComments-' + fileId).html("");
 
-        for (j = 0; j < commentGroupsWithSnippets.length; j++) {
+        for (var j = 0; j < commentGroupsWithSnippets.length; j++) {
             renderCommentGroupWithSnippets(commentGroupsWithSnippets[j], fileId, changesetId, fileType);
         }
     }

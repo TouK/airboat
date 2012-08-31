@@ -21,44 +21,16 @@ class ChangesetControllerSpec extends Specification {
         def changesets = (1..3).collect { Changeset.build(project: project) }
 
         when:
-        controller.params.projectName = project.name
-        controller.getLastChangesets()
+
+        controller.getLastChangesets(project.name)
 
         then:
         response.getContentType().startsWith('application/json')
         response.json.size() == changesets.size()
     }
 
-    def 'getChangeset should return one specific changeset '() {
-        given:
-        def specificChangesetId = 'hash24'
-        Changeset.build(identifier: specificChangesetId)
-        Changeset.build()
-        Changeset.build()
 
-        when:
-        controller.params.id = specificChangesetId
-        controller.getChangeset()
 
-        then:
-        response.json.size() == 1
-        def responseSpecificChangeset = response.json.first()
-        responseSpecificChangeset.identifier == 'hash24'
-    }
-
-    def 'getFileNamesForChangeset should return file names from changeset '() {
-        given:
-        Changeset changeset = Changeset.build()
-        ProjectFile projectFile = ProjectFile.build(changeset: changeset, name: 'kickass!')
-
-        when:
-        controller.params.id = changeset.identifier
-        controller.getFileNamesForChangeset()
-
-        then:
-        response.json.size() == 1
-        response.json.first().name == projectFile.name
-    }
 
     def "should mark logged in user's changesets as theirs"() {
         given:
@@ -68,7 +40,7 @@ class ChangesetControllerSpec extends Specification {
         Changeset.build(commiter: Commiter.build(user: User.build(username: 'kpt@touk.pl')))
 
         when:
-        controller.getLastChangesets()
+        controller.getLastChangesets(null)
 
         then:
         response.json*.belongsToCurrentUser == [false, true]

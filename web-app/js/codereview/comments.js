@@ -113,14 +113,7 @@ function resetCommentForm(changesetId) {
     $('#commentFormButtons-' + changesetId).hide();
 }
 
-function showCommentsToChangeset(id) {
-    $('#comments-' + id).html("");
-    var fileUrl = uri.userComment.returnCommentsToChangeset
-    fileUrl += id;
-    $.getJSON(fileUrl, function (data) {
-        for (i = 0; i < data.length; i++) {
-            var comment = $("#commentTemplate").render(data[i]);
-            $('#comments-' + id).append(comment);
-        }
-    });
+function showCommentsToChangeset(userComments, changesetId) {
+    var comments = $("#commentTemplate").render(userComments);
+    $('#comments-' + changesetId).html(comments);
 }

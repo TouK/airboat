@@ -13,12 +13,12 @@ class ChangesetController {
         render(view: 'index', model: [projects: Project.all])
     }
 
-    def getLastChangesets = {
+    def getLastChangesets (String projectName) {
         def changesets
-        if (isNullOrEmpty(params.projectName)) {
+        if (isNullOrEmpty(projectName)) {
             changesets = Changeset.list(max: 21, sort: 'date', order: 'desc')
         } else {
-            changesets = getLastChagesetsFromProject(params.projectName)
+            changesets = getLastChangesetsFromProject(projectName)
         }
         def changesetsProperties = changesets.collect this.&convertToChangesetProperties
         render changesetsProperties as JSON
@@ -29,18 +29,7 @@ class ChangesetController {
         authenticatedUser != null && authenticatedUser == changeset.commiter?.user
     }
 
-    def getFileNamesForChangeset = {
-        def changeset = Changeset.findByIdentifier(params.id)
-        def files = ProjectFile.findAllByChangeset(changeset)
-        render files as JSON
-    }
 
-
-    def getChangeset = {
-        def changeset = Changeset.findByIdentifier(params.id)
-        def changesetList = [changeset]
-        render changesetList as JSON
-    }
 
     def getNextFewChangesetsOlderThan(String changesetId, String projectName) {
         def nextFewChangesets
@@ -55,6 +44,7 @@ class ChangesetController {
 
     private def convertToChangesetProperties(Changeset changeset) {
 
+        def userComments = UserComment.findAllByChangeset(changeset).sort {it.dateCreated}
         [
                 id: changeset.id,
                 identifier: changeset.identifier,
@@ -64,7 +54,9 @@ class ChangesetController {
                 commitComment: changeset.commitComment,
                 commentsCount: changeset.commentsCount,
                 projectName: changeset.project.name,
+                userComments: userComments.collect {getCommentJSONproperties(it)},
                 belongsToCurrentUser: belongsToCurrentUser(changeset),
+                files: ProjectFile.findAllByChangeset(changeset)
         ]
     }
 
@@ -83,7 +75,7 @@ class ChangesetController {
         commiter.user?.email ?: commiter.email
     }
 
-    private List<Changeset> getLastChagesetsFromProject(String projectName) {
+    private List<Changeset> getLastChangesetsFromProject(String projectName) {
         def projectQuery
         def project = Project.findByName(projectName) //TODO examine number of queries and try to make it 1.
         projectQuery = Changeset.findAllByProject(project, [max: 21, sort: 'date', order: 'desc'])
@@ -106,5 +98,24 @@ class ChangesetController {
                 [sort: 'date', order: 'desc', max: 10]
         )
     }
+
+
+    private def getCommentJSONproperties(UserComment userComment) {
+        def commentProperties = userComment.properties + [
+                belongsToCurrentUser: (userComment.author == authenticatedUser),
+                author: userComment.author.username,
+                dateCreated: userComment.dateCreated.format('yyyy-MM-dd HH:mm')
+        ]
+        commentProperties.keySet().retainAll('text', 'author', 'dateCreated', 'belongsToCurrentUser')
+        commentProperties
+    }
+
+
+
+
+
+
+
+
 }
 

@@ -41,27 +41,25 @@ class ProjectFileController {
     def getFileWithContent(Long id) {
         def projectFile = ProjectFile.findById(id)
         def fileContent = scmAccessService.getFileContent(projectFile)
-
         render([content: fileContent, filetype: projectFile.fileType, name: projectFile.name, isText: isKnownTextFormat(projectFile.fileType)] as JSON)
     }
-
 
     Boolean isKnownTextFormat(String fileType) {
         textFileFormats.contains(fileType)
     }
 
     def getLineCommentsWithSnippetsToFile(Long id) {
+
+        render(prepareLineCommentsWithSnippetsToFile(id) as JSON)
+    }
+
+    def prepareLineCommentsWithSnippetsToFile(Long id){
         def projectFile = ProjectFile.findById(id)
         if (projectFile == null) {
             throw new IllegalArgumentException('No file with such id was found')
         }
         def comments = getLineComments(projectFile)
-        def commentGroupsWithSnippets = getCommentsGroupsWithSnippets(projectFile, comments)
-        render([
-                fileType: projectFile.fileType,
-                commentGroupsWithSnippets: commentGroupsWithSnippets,
-                commentsCount: comments.size()
-        ] as JSON)
+        getCommentsGroupsWithSnippets(projectFile, comments)
     }
 
     private List<Map<String, Object>> getLineComments(ProjectFile projectFile) {

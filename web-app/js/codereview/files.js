@@ -11,6 +11,7 @@ function showFile(changesetId, fileId, fileChangeType, fileName) {
             fillFileTitleTemplate(divideNameWithSlashesInTwo(file.name), changesetId, fileId);
             renderContentFileWithSyntaxHighlighter(changesetId, file, fileId);
             showFilesContent(changesetId);
+
         });
     }
     else {
