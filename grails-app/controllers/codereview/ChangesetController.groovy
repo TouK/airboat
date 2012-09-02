@@ -100,11 +100,16 @@ class ChangesetController {
         Changeset.findAll(
                 "from Changeset as changeset \
                     where changeset.project.name = :projectName \
-                    and date < (select c.date from Changeset as c where c.identifier = :changesetId) \
+                    and date < (select c.date from Changeset as c \
+                        where c.project.name = :projectName \
+                        and c.identifier = :changesetId \
+                    )\
                 ",
                 [projectName: projectName, changesetId: changesetId],
+                //FIXME confirm that this not working since 83e1704847e6ac35103d82cfd62f8a3ab463d31e is a bug in grails
+                //and report it:
                 [sort: 'date', order: 'desc', max: 10]
-        )
+        ).sort() { -it.date.time }
     }
 }
 

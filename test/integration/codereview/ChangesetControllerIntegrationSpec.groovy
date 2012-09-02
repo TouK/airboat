@@ -14,36 +14,45 @@ class ChangesetControllerIntegrationSpec extends ControllerIntegrationSpec {
     def 'should return few next changesets older than one with given revision id as JSON'() {
         given:
         String latestChangesetId = '3'
-        Changeset.build(identifier: latestChangesetId, date: new Date(3))
-        Changeset.build(identifier: '2', date: new Date(2))
-        Changeset.build(identifier: '1', date: new Date(1))
+        buildChangelogEntry(latestChangesetId as Integer)
+        buildChangelogEntry(2)
+        buildChangelogEntry(1)
 
         when:
         controller.getNextFewChangesetsOlderThan(latestChangesetId, null)
 
         then:
         def responseChangesets = controller.response.json
-        responseChangesets.size() == 2
-        responseChangesets[0].identifier == 2 as String
-        responseChangesets[1].identifier == 1 as String
+        responseChangesets*.identifier == ['2', '1']
     }
 
     def 'getNextFewChangesetsOlderThan() should return few next changesets older one with given revision id as JSON'() {
         given:
         String latestChangesetId = '3'
         Project project = Project.build(name: 'foo')
-        Changeset.build(project: project, identifier: latestChangesetId, date: new Date(3))
-        Changeset.build(project: project, identifier: '2', date: new Date(2))
-        Changeset.build(project: Project.build(name: 'bar'), identifier: '1', date: new Date(1))
-        Changeset.build(project: project, identifier: '0', date: new Date(0))
+        buildChangelogEntry(latestChangesetId as Integer, project)
+        buildChangelogEntry(2, project)
+        buildChangelogEntry(1, Project.build(name: 'bar'))
+        buildChangelogEntry(0, project)
 
         when:
         controller.getNextFewChangesetsOlderThan(latestChangesetId, project.name)
 
         then:
         def responseChangesets = controller.response.json
-        responseChangesets.size() == 2
-        responseChangesets[0].identifier == '2'
-        responseChangesets[1].identifier == '0'
+        responseChangesets*.identifier == ['2', '0']
+    }
+
+    private void buildChangelogEntry(int positionCountingFromOldest, Project project = Project.build()) {
+        Changeset.build(
+                project: project,
+                identifier: "$positionCountingFromOldest",
+                date: minutesSinceEpoch(positionCountingFromOldest)
+        )
+    }
+
+    //default time format is accurate to minutes, so for dates to be distinguishable in error logs, use this:
+    private Date minutesSinceEpoch(int minutes) {
+        new Date(minutes * 1000 * 60)
     }
 }
