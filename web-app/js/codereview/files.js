@@ -31,12 +31,12 @@ function showFile(changesetId, fileId, fileChangeType, fileName) {
     previousExpandedForFilesChangesetId = changesetId;
 }
 
-function hideFile(changesetId, fileId) {
-    $("#content-files-" + changesetId).hide();
+function hideFile(changesetId) {
+//    $("#content-files-" + changesetId).hide();
     $('#content-files-span-' + changesetId).hide();
-    $('#content-files-' + changesetId + ' .linenums li').popover("hide");
+//    $('#content-files-' + changesetId + ' .linenums li').popover("hide");
     hidePopovers(changesetId);
-    $("#content-files-title-" + changesetId).hide();
+//    $("#content-files-title-" + changesetId).hide();
 }
 
 function appendDiff(changesetId, fileId) {

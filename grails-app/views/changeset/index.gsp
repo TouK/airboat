@@ -300,7 +300,7 @@
         </div>
 
         <div class="span1">
-            <button type="button" class="btn pull-right " onClick="hideFile('{{>changesetId}}', '{{>fileId}}')">
+            <button type="button" class="btn pull-right " onClick="hideFile('{{>changesetId}}')">
                 <i class="icon-remove"></i>
             </button>
         </div>
