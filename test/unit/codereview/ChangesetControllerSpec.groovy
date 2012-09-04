@@ -7,18 +7,22 @@ import mixins.SpringSecurityControllerMethodsMock
 import spock.lang.Ignore
 
 @TestFor(ChangesetController)
-@Build([ProjectFile, User, Changeset])
+@Build([ProjectFile, User, Changeset, LineComment])
 class ChangesetControllerSpec extends Specification {
 
     def setup() {
         controller.metaClass.mixin(SpringSecurityControllerMethodsMock)
         controller.scmAccessService = Mock(ScmAccessService)
+        controller.snippetWithCommentsService = Mock(SnippetWithCommentsService)
+
     }
 
     def 'getLastChangesets should return JSON'() {
         given:
         Project project = Project.build()
         def changesets = (1..3).collect { Changeset.build(project: project) }
+        ProjectFile projectFile = ProjectFile.build(changeset: changesets[1], name: 'kickass!')
+        LineComment lineComment = LineComment.build(projectFile: projectFile, text: 'first comment')
 
         when:
         controller.params.projectName = project.name

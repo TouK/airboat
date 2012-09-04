@@ -70,4 +70,19 @@ class SnippetWithCommentsService {
 
         splitted[fromZeroBasedInclusive..toZeroBasedExclusive - 1].join('\n')
     }
+
+    private List<LineComment> getCommentsFromDatabase(String projectFile, String project) {
+        String fileName = projectFile
+        String projectName = project
+
+        def comments = LineComment.findAll(
+                "from LineComment as linecomment \
+                    where linecomment.projectFile.name = :fileName \
+                    and projectFile.changeset.project.name = :projectName \
+                    order by projectFile.changeset.date asc, linecomment.dateCreated asc \
+                     ",
+                [fileName: fileName, projectName: projectName],
+        )
+        comments
+    }
 }

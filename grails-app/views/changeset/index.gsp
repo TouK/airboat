@@ -211,6 +211,8 @@
                         <span class="pull-right badge badge-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
                     </div>
 
+                    <span class="pull-right badge badge">Comments: {{>allComments}}</span>
+
                     <div class="commitMessage margin-top-small"><h5>Commit message:</h5> {{>commitComment}}</div>
                 </div>
 
