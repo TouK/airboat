@@ -181,6 +181,7 @@ function showChangesetDetails(identifier) {
 }
 
 function showLessAboutChangeset(identifier) {
+    hideFile(identifier);
     $('#changesetDetails-' + identifier).hide(50);
     $('#more-button-' + identifier).show();
 }
