@@ -234,7 +234,7 @@
                 <div id="comment-form-{{>identifier}}"></div>
 
                 <a id="less-button-downChangeset-{{>identifier}}" class="wideButton"
-                   onclick="showLessAboutChangeset('{{>identifier}}')">
+                   onclick="showLessAboutChangesetAndScroll('{{>identifier}}')">
                     <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
                 </a>
             </div>

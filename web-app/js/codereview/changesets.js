@@ -185,5 +185,13 @@ function showLessAboutChangeset(identifier) {
     $('#more-button-' + identifier).show();
 }
 
+function showLessAboutChangesetAndScroll(identifier) {
+    $('#accordion-' + identifier + ' .accordion-body.collapse').parents('.changeset').ScrollTo({
+        onlyIfOutside: true,
+        offsetTop:codeReview.initialFirstChangesetOffset,
+        callback: function() { showLessAboutChangeset(identifier) }
+    });
+}
+
 
 
