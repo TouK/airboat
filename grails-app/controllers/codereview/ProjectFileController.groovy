@@ -6,7 +6,6 @@ import grails.converters.JSON
 class ProjectFileController {
 
     def scmAccessService
-    def infrastructureService
     def snippetWithCommentsService
     def diffAccessService
     static def textFileFormats = [

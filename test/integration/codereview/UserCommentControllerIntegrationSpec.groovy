@@ -1,16 +1,14 @@
 package codereview
 
-import org.spockframework.missing.ControllerIntegrationSpec
 import grails.converters.JSON
+import grails.plugin.spock.IntegrationSpec
 
 
-class UserCommentControllerIntegrationSpec extends ControllerIntegrationSpec {
-
-    def setup() {
-        JSON.registerObjectMarshaller(Map, { Map it -> it })
-    }
+class UserCommentControllerIntegrationSpec extends IntegrationSpec {
 
     def springSecurityService
+
+    UserCommentController controller = new UserCommentController()
 
     def 'should add comment when there is a logged in user'() {
         given:

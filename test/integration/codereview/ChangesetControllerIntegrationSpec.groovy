@@ -1,15 +1,12 @@
 package codereview
 
 import grails.converters.JSON
-import org.spockframework.missing.ControllerIntegrationSpec
+import grails.plugin.spock.IntegrationSpec
 
-class ChangesetControllerIntegrationSpec extends ControllerIntegrationSpec {
+class ChangesetControllerIntegrationSpec extends IntegrationSpec {
 
-    def setup() {
-        //TODO this is dubious. Why would we need to change the marshaller for tests!?
-        //TODO see: http://grails.1312388.n4.nabble.com/Testing-quot-render-x-as-XML-quot-with-mock-objects-td4632267.html
-        JSON.registerObjectMarshaller(Changeset, { Changeset changeset -> [id: changeset.id, identifier: changeset.identifier] })
-    }
+    def scmAccessService
+    ChangesetController controller = new ChangesetController(scmAccessService: scmAccessService)
 
     def 'should return few next changesets older than one with given revision id as JSON'() {
         given:

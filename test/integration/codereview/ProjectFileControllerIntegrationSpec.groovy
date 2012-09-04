@@ -1,8 +1,18 @@
 package codereview
 
-import org.spockframework.missing.ControllerIntegrationSpec
+import grails.plugin.spock.IntegrationSpec
 
-class ProjectFileControllerIntegrationSpec extends ControllerIntegrationSpec {
+class ProjectFileControllerIntegrationSpec extends IntegrationSpec {
+
+    def scmAccessService
+    def snippetWithCommentsService
+    def diffAccessService
+
+    ProjectFileController controller = new ProjectFileController(
+            scmAccessService: scmAccessService,
+            snippetWithCommentsService: snippetWithCommentsService,
+            diffAccessService: diffAccessService
+    )
 
     def 'should return comments'() {
         given:
