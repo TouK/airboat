@@ -1,22 +1,22 @@
 var previousExpandedForFilesChangesetId; //FIXME remove - this does not belong here, it's here for popovers setup...
 
-function showFile(changesetId, fileId, fileChangeType, fileName) {
+function showFile(changesetId, fileId, fileChangeType, fileName, textFormat) {
     appendDiff(changesetId, fileId);
 
     var fileContentUrl = uri.projectFile.getFileWithContent;
     fileContentUrl += fileId;
     var fileContent;
     if (fileChangeType != 'DELETE') {
-        $.getJSON(fileContentUrl, function (file) {
-            if (file.isText) {
+        if (JSON.parse(textFormat)) {
+            $.getJSON(fileContentUrl, function (file) {
                 fillFileTitleTemplate(divideNameWithSlashesInTwo(file.name), changesetId, fileId);
                 renderContentFileWithSyntaxHighlighter(changesetId, file, fileId);
                 showFilesContent(changesetId);
-            }
-            else {
-                showMessageAboutNonTextFile(changesetId);
-            }
-        });
+            } );
+        }
+        else {
+            showMessageAboutNonTextFile(changesetId);
+        }
     }
     else {
         cleanPreviousFilesContent(changesetId);
@@ -32,11 +32,8 @@ function showFile(changesetId, fileId, fileChangeType, fileName) {
 }
 
 function hideFile(changesetId) {
-//    $("#content-files-" + changesetId).hide();
     $('#content-files-span-' + changesetId).hide();
-//    $('#content-files-' + changesetId + ' .linenums li').popover("hide");
     hidePopovers(changesetId);
-//    $("#content-files-title-" + changesetId).hide();
 }
 
 function appendDiff(changesetId, fileId) {

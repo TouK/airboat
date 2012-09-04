@@ -66,13 +66,14 @@ textForChangeType = {
 function appendAccordion(changesetId, fileIdentifier) {
     $('#accordion-' + changesetId).html("");
 
-    $.getJSON(uri.changeset.getFileNamesForChangeset + changesetId, function (data) {
+    $.getJSON(uri.changeset.getChangesetFiles + changesetId, function (data) {
 
         for (i = 0; i < data.length; i++) {
             var accordionRow = $("#accordionFilesTemplate").render({
                 name:sliceName(data[i].name, lineBoundary),
                 changesetId:changesetId,
                 fileId:data[i].id,
+                textFormat: data[i].textFormat,
                 collapseId:(changesetId + data[i].id),
                 howManyComments:data[i].lineComments.length,
                 fileChangeType:data[i].changeType.name,
@@ -86,7 +87,7 @@ function appendAccordion(changesetId, fileIdentifier) {
 
         $('#accordion-' + changesetId + ' .accordion-body.collapse').on('shown', function () {
             $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
-            showFile(this.dataset.changeset_id, this.dataset.file_id, this.dataset.file_change_type, this.dataset.file_name_slice);
+            showFile(this.dataset.changeset_id, this.dataset.file_id, this.dataset.file_change_type, this.dataset.file_name_slice, this.dataset.text_format);
         })
     });
 }

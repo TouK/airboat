@@ -1,6 +1,28 @@
 package codereview
 
 class ProjectFile {
+    static def textFileFormats = [
+            "java",
+            "groovy",
+            "html",
+            "htm",
+            "jsp",
+            "gsp",
+            "py",
+            "rb",
+            "h",
+            "c",
+            "cpp",
+            "txt",
+            "md",
+            "php",
+            "",
+            "css",
+            "xml",
+            "javascript",
+            "json",
+            "sh"
+    ]
 
     String name
     ChangeType changeType
@@ -24,6 +46,10 @@ class ProjectFile {
         }
 
         extensionToFiletype.get(extension, extension)
+    }
+
+    boolean isTextFormat() {
+        textFileFormats.contains(fileType)
     }
 
     static constraints = {

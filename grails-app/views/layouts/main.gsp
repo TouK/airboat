@@ -10,7 +10,7 @@
             changeset:{
                 getLastChangesets:"${createLink(uri:'/changeset/getLastChangesets/')}",
                 getNextFewChangesetsOlderThan:"${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}",
-                getFileNamesForChangeset:"${createLink(uri:'/changeset/getFileNamesForChangeset/')}"
+                getChangesetFiles:"${createLink(uri:'/changeset/getChangesetFiles/')}"
             },
             userComment:{
                 addComment:"${createLink(uri: '/userComment/addComment')}",

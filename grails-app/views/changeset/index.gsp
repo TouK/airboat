@@ -284,8 +284,11 @@
     </div>
 
     <div id='collapse-inner-{{>collapseId}}' class="accordion-body collapse"
-         data-changeset_id='{{:changesetId}}' data-file_id='{{:fileId}}' data-file_change_type='{{:fileChangeType}}'
-         data-file_name_slice='{{:name}}'>
+         data-changeset_id='{{:changesetId}}'
+         data-file_id='{{:fileId}}'
+         data-file_change_type='{{:fileChangeType}}'
+         data-file_name_slice='{{:name}}'
+         data-text_format='{{:textFormat}}'>
         <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
             <div id="fileComments-{{>fileId}}"></div>
         </div>

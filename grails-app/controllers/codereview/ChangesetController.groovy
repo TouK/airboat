@@ -29,12 +29,19 @@ class ChangesetController {
         authenticatedUser != null && authenticatedUser == changeset.commiter?.user
     }
 
-    def getFileNamesForChangeset = {
+    def getChangesetFiles = {
         def changeset = Changeset.findByIdentifier(params.id)
         def files = ProjectFile.findAllByChangeset(changeset)
-        render files as JSON
+        def fileProperties = files.collect this.&getFileJSONProperties
+        render fileProperties as JSON
     }
 
+    private def getFileJSONProperties(ProjectFile file) {
+        def fileProperties = file.properties +[
+                id: file.id
+        ]
+        fileProperties
+    }
 
     def getChangeset = {
         def changeset = Changeset.findByIdentifier(params.id)
