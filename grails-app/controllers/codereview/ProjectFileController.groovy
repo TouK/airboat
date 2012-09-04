@@ -39,17 +39,7 @@ class ProjectFileController {
     }
 
     private List<Map<String, Object>> getLineComments(ProjectFile projectFile) {
-        String fileName = projectFile.name
-        String projectName = projectFile.changeset.project.name
-
-        def comments = LineComment.findAll(
-                "from LineComment as linecomment \
-                    where linecomment.projectFile.name = :fileName \
-                    and projectFile.changeset.project.name = :projectName \
-                    order by projectFile.changeset.date asc, linecomment.dateCreated asc \
-                     ",
-                [fileName: fileName, projectName: projectName],
-        )
+        List<LineComment> comments = snippetWithCommentsService.getCommentsFromDatabase(projectFile.name, projectFile.changeset.project.name)
         def commentsProperties = comments.collect { LineComment comment ->
             def properties = comment.properties + [
                     fromRevision: getRevisionType(projectFile.changeset, comment.projectFile.changeset),
@@ -61,6 +51,8 @@ class ProjectFileController {
         }
         commentsProperties
     }
+
+
 
     String getRevisionType(Changeset currentCommentChangesetDate, Changeset commentChangeset) {
         if (currentCommentChangesetDate.date < commentChangeset.date) {

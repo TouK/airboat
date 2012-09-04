@@ -117,6 +117,9 @@ function renderCommentGroupsWithSnippets(fileId, changesetId, commentGroupsWithS
             renderCommentGroupWithSnippets(commentGroupsWithSnippets[j], fileId, changesetId, fileType);
         }
     }
+    else {
+        $('#fileComments-' + fileId).html("<h5>This file has no comments.</h5>");
+    }
 }
 
 function renderCommentGroupWithSnippets(commentGroupWithSnippet, fileId, changesetId, fileType) {
@@ -189,9 +192,11 @@ function showLessAboutChangeset(identifier) {
 
 function showLessAboutChangesetAndScroll(identifier) {
     $('#accordion-' + identifier + ' .accordion-body.collapse').parents('.changeset').ScrollTo({
-        onlyIfOutside: true,
+        onlyIfOutside:true,
         offsetTop:codeReview.initialFirstChangesetOffset,
-        callback: function() { showLessAboutChangeset(identifier) }
+        callback:function () {
+            showLessAboutChangeset(identifier)
+        }
     });
 }
 

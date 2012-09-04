@@ -8,6 +8,7 @@ import com.google.common.annotations.VisibleForTesting
 class ChangesetController {
 
     ScmAccessService scmAccessService
+    SnippetWithCommentsService snippetWithCommentsService
 
     def index() {
         render(view: 'index', model: [projects: Project.all])
@@ -72,22 +73,29 @@ class ChangesetController {
                 commentsCount: changeset.commentsCount,
                 projectName: changeset.project.name,
                 belongsToCurrentUser: belongsToCurrentUser(changeset),
+                allComments: getAllComments(changeset)
         ]
-    }
-
-    def generateRandomPastelColor() {
-        Random random = new Random();
-        int red = random.nextInt(256);
-        int green = random.nextInt(256);
-        int blue = random.nextInt(256);
-        red = (red + 255) / 2;
-        green = (green + 255) / 2;
-        blue = (blue + 255) / 2;
-        return [red: red, green: green, blue: blue];
     }
 
     private String getEmail(Commiter commiter) {
         commiter.user?.email ?: commiter.email
+    }
+
+    private Integer getAllComments(Changeset changeset) {
+        def allLineComments = 0
+        List<LineComment> lineComments
+        if (changeset.projectFiles != null) {
+            changeset.projectFiles.name.each { projectFileName ->
+                lineComments = snippetWithCommentsService.getCommentsFromDatabase(projectFileName, changeset.project.name)
+                if (lineComments != null) {
+                    allLineComments += lineComments.size()
+                }
+            }
+        }
+        else {
+            allLineComments += 0
+        }
+        return (allLineComments + changeset.commentsCount)
     }
 
     private List<Changeset> getLastChagesetsFromProject(String projectName) {

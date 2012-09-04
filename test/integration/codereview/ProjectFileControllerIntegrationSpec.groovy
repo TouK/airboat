@@ -10,12 +10,13 @@ class ProjectFileControllerIntegrationSpec extends IntegrationSpec {
 
     ProjectFileController controller = new ProjectFileController(
             scmAccessService: scmAccessService,
-            snippetWithCommentsService: snippetWithCommentsService,
+            //snippetWithCommentsService: snippetWithCommentsService, //TODO somehow this does not set the field...
             diffAccessService: diffAccessService
     )
 
     def 'should return comments'() {
         given:
+        controller.snippetWithCommentsService = snippetWithCommentsService
         def fileName = 'groovy.groovy'
         Project project = Project.build()
 
@@ -26,6 +27,9 @@ class ProjectFileControllerIntegrationSpec extends IntegrationSpec {
         Changeset secondChangeset = Changeset.build(project: project)
         ProjectFile secondProjectfile = ProjectFile.build(changeset: secondChangeset, name: fileName)
         LineComment secondLinecomment = LineComment.build(projectFile: secondProjectfile, text: 'second comment')
+
+        expect:
+        controller.snippetWithCommentsService != null
 
         when:
         def comments = controller.getLineComments(firstProjectfile)
