@@ -1,74 +1,44 @@
 var previousExpandedForFilesChangesetId; //FIXME remove - this does not belong here, it's here for popovers setup...
-function showFile(changesetIdentifier, fileId, fileChangeType) {
+
+function showFile(changesetIdentifier, projectFileId, fileChangeType, fileName) {
+    appendDiff(changesetIdentifier, projectFileId);
 
     var fileContentUrl = uri.projectFile.getFileWithContent + '?' + $.param({
-        changesetIdentifier:changesetIdentifier, projectFileId:fileId
+        changesetIdentifier:changesetIdentifier, projectFileId:projectFileId
     });
 
     if (fileChangeType != 'DELETE') {
         $.getJSON(fileContentUrl, function (file) {
-            var title = $("#fileTitleTemplate").render({
-                fileName:divideNameWithSlashesInTwo(file.name),
-                changesetId:changesetIdentifier,
-                fileId:fileId
-            });
-
-            $("#content-files-title-" + changesetIdentifier).html(title);
-
-            $.SyntaxHighlighter.init({lineNumbers:true});
-
-            $("#content-files-" + changesetIdentifier).html("<pre class='codeViewer'/>");
-            $("#content-files-" + changesetIdentifier + " .codeViewer")
-                .text(file.content)
-                .addClass("language-" + file.filetype)
-                .syntaxHighlight();
-
-            $('#content-files-' + changesetIdentifier + ' .linenums li').each(function (i, element, ignored) {
-                $(element).click(function () {
-                    $('#content-files-' + changesetIdentifier + ' .linenums li').popover("hide");
-                    $(element).popover("show");
-
-                });
-                //TODO check if creating the content of the popover (i.e. commentForm) can be deferred to popover activation
-                var commentForm = $("#addLineCommentFormTemplate").render({fileId:fileId, changesetId:changesetIdentifier, lineNumber:i + 1 });
-
-                $(element).popover({content:commentForm, placement:"left", trigger:"manual" });
-            });
+            if (file.isText) {
+                fillFileTitleTemplate(divideNameWithSlashesInTwo(file.name), changesetIdentifier, projectFileId);
+                renderContentFileWithSyntaxHighlighter(changesetIdentifier, file, projectFileId);
+                showFilesContent(changesetIdentifier);
+            }
+            else {
+                showMessageAboutNonTextFile(changesetIdentifier);
+            }
         });
-    } else {
-        $("#content-files-" + changesetIdentifier).html("");
-        var title = $("#fileTitleTemplate").render({
-            fileName:fileName,
-            changesetId:changesetIdentifier,
-            fileId:fileId
-        });
-        $("#content-files-title-" + changesetIdentifier).html(title);
-        $("#content-files-" + changesetIdentifier).html("<pre class='codeViewer'/>");
-        $("#content-files-" + changesetIdentifier + " .codeViewer")
-            .html("<h3>This file was removed.</h3>")
-
+    }
+    else {
+        cleanPreviousFilesContent(changesetIdentifier);
+        fillFileTitleTemplate(fileName, changesetIdentifier, projectFileId);
+        showMessageAboutRemovedFile(changesetIdentifier);
+        showFilesContent(changesetIdentifier);
     }
 
-    $("#content-files-" + changesetIdentifier).show();
-    $('#content-files-span-' + changesetIdentifier).show();
-    $("#content-files-title-" + changesetIdentifier).show();
     if (previousExpandedForFilesChangesetId != null) {
         hidePopovers(previousExpandedForFilesChangesetId);
     }
-
-    appendDiff(changesetIdentifier, fileId);
     previousExpandedForFilesChangesetId = changesetIdentifier;
-
 }
 
-function hideFile(changesetId, fileId) {
+function hideFile(changesetId, projectFileId) {
     $("#content-files-" + changesetId).hide();
     $('#content-files-span-' + changesetId).hide();
     $('#content-files-' + changesetId + ' .linenums li').popover("hide");
     hidePopovers(changesetId);
     $("#content-files-title-" + changesetId).hide();
 }
-
 
 function appendDiff(changesetIdentifier, projectFileId) {
 
@@ -120,4 +90,59 @@ function hideDiff(changesetId) {
     $("#diff-box-" + changesetId).hide(100);
     $("#button-showing-diff-" + changesetId).show(100);
     $("#button-hiding-diff-" + changesetId).hide();
+}
+
+function showFilesContent(changesetId) {
+    $('#content-files-span-' + changesetId).show();
+}
+
+function cleanPreviousFilesContent(changesetId) {
+    $("#content-files-" + changesetId).html("");
+}
+
+function setContentFilesTitle(changesetId, title) {
+    $("#content-files-title-" + changesetId).html(title);
+}
+
+function showMessageAboutNonTextFile(changesetId) {
+    $("#content-files-" + changesetId).html("<pre class='codeViewer'/>");
+    $("#content-files-" + changesetId + " .codeViewer")
+        .html("<h3>This file isn't text file.</h3>")
+}
+
+function fillFileTitleTemplate(fileName, changesetId, projectFileId) {
+    var title = $("#fileTitleTemplate").render({
+        fileName:fileName,
+        changesetId:changesetId,
+        fileId:projectFileId
+    });
+    setContentFilesTitle(changesetId, title);
+}
+
+function showMessageAboutRemovedFile(changesetId) {
+    $("#content-files-" + changesetId).html("<pre class='codeViewer'/>");
+    $("#content-files-" + changesetId + " .codeViewer")
+        .html("<h3>This file was removed.</h3>")
+}
+
+function attachLineCommentPopover(changesetId, projectFileId) {
+    $('#content-files-' + changesetId + ' .linenums li').each(function (i, element, ignored) {
+        $(element).click(function () {
+            $('#content-files-' + changesetId + ' .linenums li').popover("hide");
+            $(element).popover("show");
+        });
+        //TODO check if creating the content of the popover (i.e. commentForm) can be deferred to popover activation
+        var commentForm = $("#addLineCommentFormTemplate").render({fileId:projectFileId, changesetId:changesetId, lineNumber:i + 1 });
+        $(element).popover({content:commentForm, placement:"left", trigger:"manual" });
+    });
+}
+
+function renderContentFileWithSyntaxHighlighter(changesetId, file, projectFileId) {
+    $.SyntaxHighlighter.init({lineNumbers:true});
+    $("#content-files-" + changesetId).html("<pre class='codeViewer'/>");
+    $("#content-files-" + changesetId + " .codeViewer")
+        .text(file.content)
+        .addClass("language-" + file.filetype)
+        .syntaxHighlight();
+    attachLineCommentPopover(changesetId, projectFileId);
 }

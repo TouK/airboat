@@ -9,18 +9,17 @@ import spock.lang.Unroll
 @Build([Changeset, ProjectFile])
 class ChangesetConstraintsSpec extends Specification {
 
-    static String alreadyUsedIdentifier = 'alreadyUsedIdentifier'
 
     def setup() {
         mockForConstraintsTests(Changeset)
-        Changeset.build(identifier: alreadyUsedIdentifier)
     }
 
     @Unroll("Field '#field' of class Changeset should have constraint '#constraint' violated by value '#violatingValue'")
     def 'Changeset should have well defined constraints:'() {
 
         when:
-        def changeset = new Changeset("$field": violatingValue)
+        def changeset = Changeset.build()
+        changeset."$field" = violatingValue
 
         then:
         changeset.validate() == false
@@ -29,7 +28,6 @@ class ChangesetConstraintsSpec extends Specification {
         where:
         field           | constraint | violatingValue
         'identifier'    | 'blank'    | ''
-        'identifier'    | 'unique'   | alreadyUsedIdentifier
         'identifier'    | 'nullable' | null
         'commitComment' | 'nullable' | null
         'date'          | 'nullable' | null
@@ -42,6 +40,28 @@ class ChangesetConstraintsSpec extends Specification {
         then:
         changeset.userComments == null
         changeset.commentsCount == 0
+    }
+
+    def 'two Changeset-s in two Projects can have the same identifier'() {
+        given:
+        Changeset existingChangeset = Changeset.build()
+
+        expect:
+        Changeset.build(identifier: existingChangeset.identifier)
+    }
+
+    def 'two Changeset-s in one Project can not have the same identifier'() {
+        given:
+        Changeset existingChangeset = Changeset.build()
+
+        when:
+        Changeset changeset = Changeset.buildWithoutSave(
+                project: existingChangeset.project, identifier: existingChangeset.identifier
+        )
+
+        then:
+        changeset.validate() == false
+        changeset.errors.getFieldError('identifier').code == 'unique'
     }
 
     def 'Changeset and its associated ProjectFiles must have the same Project'() {

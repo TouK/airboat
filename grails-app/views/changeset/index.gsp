@@ -212,37 +212,45 @@
                     </div>
 
                     <div class="commitMessage margin-top-small"><h5>Commit message:</h5> {{>commitComment}}</div>
-
-                    <a id="more-button-{{>identifier}}" class="wideButton"
-                       onclick="showChangesetDetails('{{>identifier}}')">
-                        <div class="center sizeOfIcon"><i class="icon-chevron-down"></i></div>
-                    </a>
                 </div>
+
+                <a id="more-button-{{>identifier}}" class="wideButton"
+                   onclick="showChangesetDetails('{{>identifier}}')">
+                    <div class="center sizeOfIcon"><i class="icon-chevron-down"></i></div>
+                </a>
             </div>
 
             <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small">
+
+                <a id="less-button-topChangeset-{{>identifier}}" class="wideButton"
+                   onclick="showLessAboutChangeset('{{>identifier}}')">
+                    <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
+                </a>
+
                 <div class="accordion margin-bottom-small" id="accordion-{{>identifier}}"></div>
 
                 <div class="comments" id="comments-{{>identifier}}"></div>
 
                 <div id="comment-form-{{>identifier}}"></div>
 
-                <a id="less-button-{{>identifier}}" class="wideButton"
+                <a id="less-button-downChangeset-{{>identifier}}" class="wideButton"
                    onclick="showLessAboutChangeset('{{>identifier}}')">
                     <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
                 </a>
             </div>
         </div>
 
-        <div class="span7 well" id="content-files-span-{{>identifier}}" style="display: none;">
-            <div id="content-files-title-{{>identifier}}"></div>
-            <br/>
+        <div class="span7">
+            <div class="well" id="content-files-span-{{>identifier}}" style="display: none;">
+                <div id="content-files-title-{{>identifier}}"></div>
+                <br/>
 
-            <div id="diff-{{>identifier}}"></div>
+                <div id="diff-{{>identifier}}"></div>
 
-            <div class="files-right">
+                <div class="files-right">
 
-                <div id="content-files-{{>identifier}}"></div>
+                    <div id="content-files-{{>identifier}}"></div>
+                </div>
             </div>
         </div>
     </div>

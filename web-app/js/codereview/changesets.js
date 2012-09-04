@@ -86,7 +86,7 @@ function appendAccordion(changesetId) {
         }
 
         $('#accordion-' + changesetId + ' .accordion-body.collapse').on('shown', function () {
-            $(this).parents('.changeset').ScrollTo({offsetTop: codeReview.initialFirstChangesetOffset});
+            $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
             showFile(this.dataset.changeset_id, this.dataset.file_id, this.dataset.file_change_type, this.dataset.file_name_slice);
         })
     });
@@ -178,12 +178,12 @@ function sliceName(name, lineWidth) {
 }
 
 function showChangesetDetails(identifier) {
-    $('#changesetDetails-' + identifier).show(100);
+    $('#changesetDetails-' + identifier).show(50);
     $("#more-button-" + identifier).hide();
 }
 
 function showLessAboutChangeset(identifier) {
-    $('#changesetDetails-' + identifier).hide(100);
+    $('#changesetDetails-' + identifier).hide(50);
     $('#more-button-' + identifier).show();
 }
 

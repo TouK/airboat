@@ -16,7 +16,14 @@ class ProjectFile {
 
     String getFileType() {
         def extensionToFiletype = [js: 'javascript', htm: 'html']
-        def extension = name[name.lastIndexOf('.') + 1..name.length() - 1]
+        def extension
+        if(name.contains('.')) {
+            extension = name[name.lastIndexOf('.') + 1..name.length() - 1]
+        }
+        else  {
+            extension = ""
+        }
+
         extensionToFiletype.get(extension, extension)
     }
 
