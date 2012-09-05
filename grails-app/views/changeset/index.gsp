@@ -211,7 +211,9 @@
                         <span class="pull-right badge badge-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
                     </div>
 
-                    <span class="pull-right badge badge">Comments: {{>allComments}}</span>
+                    <div class="commentIcon pull-right">
+                        <i class="icon-comment"></i><span style="padding-left: 0.4em">{{>allComments}}</span>
+                    </div>
 
                     <div class="commitMessage margin-top-small"><h5>Commit message:</h5> {{>commitComment}}</div>
                 </div>
@@ -278,8 +280,10 @@
             </div>
             {{if howManyComments != 0}}
             <div class="row-fluid span3">
-                <button class="btn btn disabled pull-right" style="margin:2px 5px 0px 5px"><i
-                        class="icon-comment"></i><span class='commentsCount'>{{>howManyComments}}</span></button>
+                <div class="commentIcon pull-right">
+                    <i class="icon-comment"></i><span class='commentsCount'
+                                                      style="padding-left: 0.4em">{{>howManyComments}}</span>
+                </div>
             </div>
             {{/if}}
         </div>
