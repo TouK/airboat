@@ -38,7 +38,7 @@ function appendChangeset(changeset) {
     $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render({identifier:changeset.identifier}));
     appendAccordion(changeset.identifier, null);
 
-    $('#hash-' + changeset.identifier).tooltip({title:changeset.identifier + ", click to copy", trigger:"hover"});
+    $('#hash-' + changeset.identifier).tooltip({title:changeset.identifier + ", click to copy", trigger:"hover", placement:"bottom"});
     $('#hash-' + changeset.identifier).zclip({
         path:uri.libs.zclip.swf,
         copy:changeset.identifier,
@@ -73,7 +73,7 @@ function appendAccordion(changesetId, fileIdentifier) {
                 name:sliceName(data[i].name, lineBoundary),
                 changesetId:changesetId,
                 fileId:data[i].id,
-                textFormat: data[i].textFormat,
+                textFormat:data[i].textFormat,
                 collapseId:(changesetId + data[i].id),
                 howManyComments:data[i].lineComments.length,
                 fileChangeType:data[i].changeType.name,
