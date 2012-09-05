@@ -6,7 +6,7 @@ function showFile(dataset) {
     var fileContentUrl = uri.projectFile.getFileWithContent;
     fileContentUrl += dataset.file_id;
     var fileContent;
-    if (fileChangeType != 'DELETE') {
+    if (dataset.file_change_type != 'DELETE') {
         if (toBoolean(dataset.text_format)) {
             $.getJSON(fileContentUrl, function (file) {
                 fillFileTitleTemplate(divideNameWithSlashesInTwo(file.name), dataset.changeset_id, dataset.file_id);
