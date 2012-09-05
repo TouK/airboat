@@ -14,16 +14,16 @@ class ProjectFileSpec extends Specification {
         projectFile.name = name;
 
         then:
-        projectFile.getFileType() == extension
+        projectFile.getFileType() == type
 
         where:
-        name                          | extension
+        name                          | type
         'userBupser/dhs/dd/alfa.cpp'  | 'cpp'
         'something.something.txt'     | 'txt'
         'script.js'                   | 'javascript'
     }
 
-    def "should return true if file has an extension that is known text file format"() {
+    def "should return true when file has an extension that is known text file format"() {
         expect:
         ProjectFile.build(name: "foo.$extension").isTextFormat()
 
@@ -31,7 +31,7 @@ class ProjectFileSpec extends Specification {
         extension << ["py", "html", "gsp", "groovy", "sh"]
     }
 
-    def "should return false if file has not an extension that is a known text file format"() {
+    def """should return false when file has not an extension that is a known text file format"""() {
         expect:
         ProjectFile.build(name: "foo.$extension").isTextFormat() == false
 

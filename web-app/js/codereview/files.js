@@ -1,34 +1,38 @@
 var previousExpandedForFilesChangesetId; //FIXME remove - this does not belong here, it's here for popovers setup...
 
-function showFile(changesetId, fileId, fileChangeType, fileName, textFormat) {
-    appendDiff(changesetId, fileId);
+function showFile(dataset) {
+    appendDiff(dataset.changeset_id, dataset.file_id);
 
     var fileContentUrl = uri.projectFile.getFileWithContent;
-    fileContentUrl += fileId;
+    fileContentUrl += dataset.file_id;
     var fileContent;
     if (fileChangeType != 'DELETE') {
-        if (JSON.parse(textFormat)) {
+        if (toBoolean(dataset.text_format)) {
             $.getJSON(fileContentUrl, function (file) {
-                fillFileTitleTemplate(divideNameWithSlashesInTwo(file.name), changesetId, fileId);
-                renderContentFileWithSyntaxHighlighter(changesetId, file, fileId);
-                showFilesContent(changesetId);
+                fillFileTitleTemplate(divideNameWithSlashesInTwo(file.name), dataset.changeset_id, dataset.file_id);
+                renderContentFileWithSyntaxHighlighter(dataset.changeset_id, file, dataset.file_id);
+                showFilesContent(dataset.changeset_id);
             } );
         }
         else {
-            showMessageAboutNonTextFile(changesetId);
+            showMessageAboutNonTextFile(dataset.changeset_id);
         }
     }
     else {
-        cleanPreviousFilesContent(changesetId);
-        fillFileTitleTemplate(fileName, changesetId, fileId);
-        showMessageAboutRemovedFile(changesetId);
-        showFilesContent(changesetId);
+        cleanPreviousFilesContent(dataset.changeset_id);
+        fillFileTitleTemplate(dataset.file_name_slice, dataset.changeset_id, dataset.file_id);
+        showMessageAboutRemovedFile(dataset.changeset_id);
+        showFilesContent(dataset.changeset_id);
     }
 
     if (previousExpandedForFilesChangesetId != null) {
         hidePopovers(previousExpandedForFilesChangesetId);
     }
-    previousExpandedForFilesChangesetId = changesetId;
+    previousExpandedForFilesChangesetId = dataset.changeset_id;
+}
+
+function toBoolean(toConvert) {
+    return JSON.parse(toConvert);
 }
 
 function hideFile(changesetId) {

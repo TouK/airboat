@@ -87,7 +87,7 @@ function appendAccordion(changesetId, fileIdentifier) {
 
         $('#accordion-' + changesetId + ' .accordion-body.collapse').on('shown', function () {
             $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
-            showFile(this.dataset.changeset_id, this.dataset.file_id, this.dataset.file_change_type, this.dataset.file_name_slice, this.dataset.text_format);
+            showFile(this.dataset);
         })
     });
 }
@@ -184,18 +184,18 @@ function showChangesetDetails(identifier) {
     $("#more-button-" + identifier).hide();
 }
 
-function showLessAboutChangeset(identifier) {
+function hideChangesetDetails(identifier) {
     hideFile(identifier);
     $('#changesetDetails-' + identifier).hide(50);
     $('#more-button-' + identifier).show();
 }
 
-function showLessAboutChangesetAndScroll(identifier) {
+function hideChangesetDetailsAndScroll(identifier) {
     $('#accordion-' + identifier + ' .accordion-body.collapse').parents('.changeset').ScrollTo({
         onlyIfOutside:true,
         offsetTop:codeReview.initialFirstChangesetOffset,
-        callback:function () {
-            showLessAboutChangeset(identifier)
+        callback:function() {
+            hideChangesetDetails(identifier)
         }
     });
 }

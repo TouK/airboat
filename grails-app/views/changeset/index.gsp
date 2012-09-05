@@ -225,7 +225,7 @@
             <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small">
 
                 <a id="less-button-topChangeset-{{>identifier}}" class="wideButton"
-                   onclick="showLessAboutChangeset('{{>identifier}}')">
+                   onclick="hideChangesetDetailsAndScroll('{{>identifier}}')">
                     <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
                 </a>
 
@@ -236,7 +236,7 @@
                 <div id="comment-form-{{>identifier}}"></div>
 
                 <a id="less-button-downChangeset-{{>identifier}}" class="wideButton"
-                   onclick="showLessAboutChangesetAndScroll('{{>identifier}}')">
+                   onclick="hideChangesetDetailsAndScroll('{{>identifier}}')">
                     <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
                 </a>
             </div>

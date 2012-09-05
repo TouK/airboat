@@ -38,7 +38,7 @@ class ChangesetController {
     }
 
     private def getFileJSONProperties(ProjectFile file) {
-        def fileProperties = file.properties +[
+        def fileProperties = file.properties + [
                 id: file.id
         ]
         fileProperties
