@@ -225,7 +225,7 @@
     $.fn.tooltip.Constructor = Tooltip
 
     $.fn.tooltip.defaults = {
-        animation:true, placement:'bottom', selector:false, template:'<div class="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>', trigger:'hover', title:'', delay:0
+        animation:true, placement:'top', selector:false, template:'<div class="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>', trigger:'hover', title:'', delay:0
     }
 
 }(window.jQuery);
