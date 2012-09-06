@@ -19,11 +19,11 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         controller.getNextFewChangesetsOlderThan(latestChangesetId, null)
 
         then:
-        def responseChangesets = controller.response.json
+        def responseChangesets = controller.response.json.collect{day, changesetsForDay -> changesetsForDay}.flatten()
         responseChangesets*.identifier == ['2', '1']
     }
 
-    def 'getNextFewChangesetsOlderThan() should return few next changesets older one with given revision id as JSON'() {
+    def 'should return next few changesets older than given, within given project as JSON'() {
         given:
         String latestChangesetId = '3'
         Project project = Project.build(name: 'foo')
@@ -36,7 +36,7 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         controller.getNextFewChangesetsOlderThan(latestChangesetId, project.name)
 
         then:
-        def responseChangesets = controller.response.json
+        def responseChangesets = controller.response.json.collect{day, changesetsForDay -> changesetsForDay}.flatten()
         responseChangesets*.identifier == ['2', '0']
     }
 

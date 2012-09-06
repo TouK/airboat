@@ -3,7 +3,7 @@ var projectName = ''
 function showProject(projectId) {
     projectName = projectId
     $('#content').html("");
-    $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:projectName}), appendChangesets)
+    $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:projectName}), appendChangesetsBottom)
 }
 
 function onScrollThroughBottomAttempt() {
@@ -13,33 +13,52 @@ function onScrollThroughBottomAttempt() {
 function loadMoreChangesets() {
     if (!changesetsLoading) {
         changesetsLoading = true;
-        $.getJSON(uri.changeset.getNextFewChangesetsOlderThan + '?' + $.param({projectName:projectName, changesetId:lastChangesetId}), appendChangesets)
+        $.getJSON(uri.changeset.getNextFewChangesetsOlderThan + '?' + $.param({projectName:projectName, changesetId:lastChangesetId}), appendChangesetsBottom)
     }
 }
 
 var lastChangesetId;
 var changesetsLoading;
 
-function appendChangesets(changesets) {
-    if (changesets.length > 0) {
-        lastChangesetId = $(changesets).last()[0].identifier //TODO find a better way
-        for (i = 0; i < changesets.length; i++) {
-            appendChangeset(changesets[i]);
+function appendChangesetsTop(changestets) {
+    //TODO when there will be needed (when new changsets will be pushed from server to application)
+}
+
+function appendChangesetsBottom(changesets) {
+    for (group in changesets) {
+        lastChangesetId = changesets[group][changesets[group].length-1].identifier;
+
+        //find or create day container
+        var dayElement = getDayContainer(group);
+        if (dayElement.length == 0) {
+            //create new day element
+            $('#content').append($("#dayTemplate").render({date:group}));
         }
+        dayElement = getDayContainer(group);
+        for (i = 0; i < changesets[group].length; i++) {
+            appendChangeset(changesets[group][i], dayElement);
+        }
+
     }
     changesetsLoading = false;
 }
 
-function appendChangeset(changeset) {
+function getDayContainer(date) {
+    return $(".day[data-date="+date+"]");
+}
+
+function appendChangeset(changeset, dayElement) {
     var shortIdentifier = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
     changeset = $.extend({shortIdentifier:shortIdentifier}, changeset)
-    $('#content').append($("#changesetTemplate").render(changeset));
+    dayElement.children('.changesets').append($("#changesetTemplate").render(changeset));
+    var changesetElement = $(".changeset[data-identifier="+changeset.identifier+"]");
     showCommentsToChangeset(changeset.identifier);
     $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render({identifier:changeset.identifier}));
     appendAccordion(changeset.identifier, null);
 
-    $('#hash-' + changeset.identifier).tooltip({title:changeset.identifier + ", click to copy", trigger:"hover", placement:"bottom"});
-    $('#hash-' + changeset.identifier).zclip({
+    changesetElement.find('.changeset-date').tooltip({title:changeset.date, trigger:"hover", placement:"bottom"});
+    changesetElement.find('.changeset-hash').tooltip({title:"click to copy", trigger:"hover", placement:"bottom"});
+    changesetElement.find('.changeset-hash').zclip({
         path:uri.libs.zclip.swf,
         copy:changeset.identifier,
         afterCopy:function () {

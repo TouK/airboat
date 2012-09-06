@@ -30,7 +30,7 @@ class ChangesetControllerSpec extends Specification {
 
         then:
         response.getContentType().startsWith('application/json')
-        response.json.size() == changesets.size()
+        response.json.collect {date, changesetsForDay -> changesetsForDay.size()}.sum() == changesets.size()
     }
 
     def 'getChangeset should return one specific changeset '() {
@@ -73,9 +73,10 @@ class ChangesetControllerSpec extends Specification {
 
         when:
         controller.getLastChangesets()
+        println(response.json)
 
         then:
-        response.json*.belongsToCurrentUser == [false, true]
+        response.json.collect {day, changesetsForDay -> changesetsForDay.collect {it.belongsToCurrentUser}}.flatten() == [false, true]
     }
 
     def 'changeset without user should not belong to anonymous user'() {
