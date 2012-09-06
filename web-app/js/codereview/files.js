@@ -1,7 +1,8 @@
 var previousExpandedForFilesChangesetId; //FIXME remove - this does not belong here, it's here for popovers setup...
 
-function showFile(dataset) {
-    appendDiff(dataset.changeset_id, dataset.file_id);
+function showFile(changesetId, fileId, fileChangeType, fileName, textFormat) {
+    appendSnippetToFileInAccordion(fileId, changesetId)
+    appendDiff(changesetId, fileId);
 
     var fileContentUrl = uri.projectFile.getFileWithContent;
     fileContentUrl += dataset.file_id;

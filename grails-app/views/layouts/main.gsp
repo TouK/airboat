@@ -10,11 +10,9 @@
             changeset:{
                 getLastChangesets:"${createLink(uri:'/changeset/getLastChangesets/')}",
                 getNextFewChangesetsOlderThan:"${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}",
-                getChangesetFiles:"${createLink(uri:'/changeset/getChangesetFiles/')}"
             },
             userComment:{
                 addComment:"${createLink(uri: '/userComment/addComment')}",
-                returnCommentsToChangeset:"${createLink(uri:'/userComment/returnCommentsToChangeset/')}"
             },
             lineComment:{
                 addComment:"${createLink(uri: '/lineComment/addComment')}"
@@ -36,11 +34,7 @@
         }
 
         var codeReview = {
-            colorboxSettings: {transition:"fade", iframe:true, width:640, height:420}
-
-            , loggedInUserName:'<sec:username/>'
-            , isAdmin: "<sec:ifAnyGranted roles="ROLE_ADMIN">true</sec:ifAnyGranted>" ? true : false
-            , isAuthenticated:function(){
+            colorboxSettings:{transition:"fade", iframe:true, width:640, height:420}, loggedInUserName:'<sec:username/>', isAdmin:"<sec:ifAnyGranted roles="ROLE_ADMIN">true</sec:ifAnyGranted>" ? true : false, isAuthenticated:function () {
                 return this.loggedInUserName !== '';
             }
         }
@@ -73,7 +67,8 @@
     <script src="${createLink(uri: '/libs/jquery.observable.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/jquery.views.js')}" type="text/javascript"></script>
 
-    <link href=" ${createLink(uri: '/libs/bootstrap/themes/default/bootstrap-default.css')}" type="text/css" rel="stylesheet" media="screen" id="skin"/>
+    <link href=" ${createLink(uri: '/libs/bootstrap/themes/default/bootstrap-default.css')}" type="text/css"
+          rel="stylesheet" media="screen" id="skin"/>
     <link href=" ${createLink(uri: '/libs/bootstrap/bootstrap-responsive.css')}" type="text/css" rel="stylesheet"
           media="screen"/>
 
@@ -85,18 +80,21 @@
     <r:layoutResources/>
 
     <g:if test='${System.getProperty('codereview.googleAnalyticsAccountKey')}'>
-    <script id='googleAnalytics' type="text/javascript">
+        <script id='googleAnalytics' type="text/javascript">
 
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', '${System.getProperty('codereview.googleAnalyticsAccountKey')}']);
-        _gaq.push(['_trackPageview']);
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', '${System.getProperty('codereview.googleAnalyticsAccountKey')}']);
+            _gaq.push(['_trackPageview']);
 
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
+            (function () {
+                var ga = document.createElement('script');
+                ga.type = 'text/javascript';
+                ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(ga, s);
+            })();
+        </script>
     </g:if>
 </head>
 
