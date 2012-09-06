@@ -18,7 +18,7 @@ function showFile(dataset) {
                 fillFileTitleTemplate(divideNameWithSlashesInTwo(file.name), changesetIdentifier, projectFileId);
                 renderContentFileWithSyntaxHighlighter(changesetIdentifier, file, projectFileId);
                 showFilesContent(changesetIdentifier);
-            } );
+            });
         }
         else {
             showMessageAboutNonTextFile(changesetIdentifier);

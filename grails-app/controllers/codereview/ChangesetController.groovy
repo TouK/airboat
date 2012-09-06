@@ -8,6 +8,7 @@ import com.google.common.annotations.VisibleForTesting
 class ChangesetController {
 
     ScmAccessService scmAccessService
+    ReturnCommentsService returnCommentsService
 
     def index() {
         render(view: 'index', model: [projects: Project.all])
@@ -30,11 +31,10 @@ class ChangesetController {
         authenticatedUser != null && authenticatedUser == changeset.commiter?.user
     }
 
-    def getChangesetFiles = {
-        def changeset = Changeset.findByIdentifier(params.id)
+    private List<Map> getChangesetFiles(Changeset changeset) {
         def files = changeset.projectFilesInChangeset
         def fileProperties = files.collect this.&getFileJSONProperties
-        render fileProperties as JSON
+        fileProperties
     }
 
     //FIXME adapte front-end to new object structure
@@ -84,7 +84,9 @@ class ChangesetController {
                 commentsCount: changeset.commentsCount,
                 projectName: changeset.project.name,
                 belongsToCurrentUser: belongsToCurrentUser(changeset),
-                allComments: allCommentsCount(changeset)
+                allComments: allCommentsCount(changeset),
+                changesetFiles: getChangesetFiles(changeset),
+                commentsToChangeset: returnCommentsToChangeset(changeset.identifier)
         ]
     }
 
@@ -98,6 +100,13 @@ class ChangesetController {
                 [changeset: changeset]
         )
         return (allLineComments.size() + changeset.commentsCount)
+    }
+
+    def returnCommentsToChangeset(String changesetIdentifier) {
+        def changeset = Changeset.findByIdentifier(changesetIdentifier) //TODO check that only one query is executed, refactor otherwise
+        def comments = UserComment.findAllByChangeset(changeset)
+        def commentsProperties = comments.collect returnCommentsService.&getCommentJSONproperties
+        commentsProperties
     }
 
     private List<Changeset> getLastChagesetsFromProject(String projectName) {

@@ -26,7 +26,7 @@ function appendChangesetsTop(changestets) {
 
 function appendChangesetsBottom(changesets) {
     for (group in changesets) {
-        lastChangesetId = changesets[group][changesets[group].length-1].identifier;
+        lastChangesetId = changesets[group][changesets[group].length - 1].identifier;
 
         //find or create day container
         var dayElement = getDayContainer(group);
@@ -44,17 +44,17 @@ function appendChangesetsBottom(changesets) {
 }
 
 function getDayContainer(date) {
-    return $(".day[data-date="+date+"]");
+    return $(".day[data-date=" + date + "]");
 }
 
 function appendChangeset(changeset, dayElement) {
     var shortIdentifier = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
     changeset = $.extend({shortIdentifier:shortIdentifier}, changeset)
     dayElement.children('.changesets').append($("#changesetTemplate").render(changeset));
-    var changesetElement = $(".changeset[data-identifier="+changeset.identifier+"]");
-    showCommentsToChangeset(changeset.identifier);
+    var changesetElement = $(".changeset[data-identifier=" + changeset.identifier + "]");
+    showCommentsToChangeset(changeset);
     $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render({identifier:changeset.identifier}));
-    appendAccordion(changeset.identifier);
+    appendAccordion(changeset);
 
     changesetElement.find('.changeset-date').tooltip({title:changeset.date, trigger:"hover", placement:"bottom"});
     changesetElement.find('.changeset-hash').tooltip({title:"click to copy", trigger:"hover", placement:"bottom"});
@@ -82,33 +82,28 @@ textForChangeType = {
     COPY:'copied'
 }
 
-function appendAccordion(changesetId) {
-    $('#accordion-' + changesetId).html("");
+function appendAccordion(changeset) {
+    $('#accordion-' + changeset.identifier).html("");
 
-    $.getJSON(uri.changeset.getChangesetFiles + changesetId, function (data) {
+    for (var i = 0; i < changeset.changesetFiles.length; i++) {
+        var projectFile = changeset.changesetFiles[i];
+        var accordionRow = $("#accordionFilesTemplate").render({
+            name:sliceName(projectFile.name, lineBoundary),
+            changesetId:changeset.identifier,
+            fileId:projectFile.id,
+            textFormat:projectFile.textFormat,
+            collapseId:(changeset.identifier + projectFile.id),
+            howManyComments:projectFile.commentCount,
+            fileChangeType:projectFile.changeType.name,
+            textForChangeType:textForChangeType,
+            iconForChangeType:iconForChangeType
+        });
+        $('#accordion-' + changeset.identifier).append(accordionRow);
+    }
 
-        for (i = 0; i < data.length; i++) {
-            var projectFile = data[i];
-            var accordionRow = $("#accordionFilesTemplate").render({
-                name:sliceName(projectFile.name, lineBoundary),
-                changesetId:changesetId,
-                fileId:projectFile.id,
-                textFormat:projectFile.textFormat,
-                collapseId:(changesetId + projectFile.id),
-                howManyComments: projectFile.commentCount,
-                fileChangeType:projectFile.changeType.name,
-                textForChangeType:textForChangeType,
-                iconForChangeType:iconForChangeType
-            });
-
-            $('#accordion-' + changesetId).append(accordionRow);
-            appendSnippetToFileInAccordion(changesetId, projectFile.id)
-        }
-
-        $('#accordion-' + changesetId + ' .accordion-body.collapse').on('shown', function () {
-            $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
-            showFile(this.dataset);
-        })
+    $('#accordion-' + changeset.identifier + ' .accordion-body.collapse').on('shown', function () {
+        $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
+        showFile(this.dataset);
     });
 }
 

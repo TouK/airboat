@@ -13,6 +13,7 @@ class ChangesetControllerSpec extends Specification {
     def setup() {
         controller.metaClass.mixin(SpringSecurityControllerMethodsMock)
         controller.scmAccessService = Mock(ScmAccessService)
+        controller.returnCommentsService = Mock(ReturnCommentsService)
     }
 
     def 'getChangeset should return one specific changeset '() {

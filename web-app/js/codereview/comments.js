@@ -68,7 +68,7 @@ function addReply(projectFileId, changesetIdentifier, lineNumber){
                     .render(" Your comment is too long!"))
                     .hide().fadeIn();
             }
-            else if(commentGroupsWithSnippetsForCommentedFile.errors.code == "blank") {
+            else if (commentGroupsWithSnippetsForCommentedFile.errors.code == "blank") {
                 $('#reply-info-'+ projectFileId+'-'+lineNumber)
                     .html($('#longCommentTemplate')
                     .render("Comment can't be empty!"))
@@ -94,12 +94,12 @@ function expandCommentForm(changesetId) {
 }
 
 function expandReplyForm(fileId, lineNumber) {
-    $('#replyFormButtons-' + fileId +'-' + lineNumber).slideDown(100);
+    $('#replyFormButtons-' + fileId + '-' + lineNumber).slideDown(100);
     $("#add-reply-" + fileId + "-" + lineNumber).attr('rows', 3);
 }
 
-function cancelReply(fileId,lineNumber) {
-    $('#replyFormButtons-' + fileId +'-' + lineNumber).hide();
+function cancelReply(fileId, lineNumber) {
+    $('#replyFormButtons-' + fileId + '-' + lineNumber).hide();
     $("#add-reply-" + fileId + "-" + lineNumber).attr('rows', 1);
     $("#add-reply-" + fileId + "-" + lineNumber).val("");
 
@@ -111,14 +111,10 @@ function resetCommentForm(changesetId) {
     $('#commentFormButtons-' + changesetId).hide();
 }
 
-function showCommentsToChangeset(id) {
-    $('#comments-' + id).html("");
-    var fileUrl = uri.userComment.returnCommentsToChangeset
-    fileUrl += id;
-    $.getJSON(fileUrl, function (data) {
-        for (i = 0; i < data.length; i++) {
-            var comment = $("#commentTemplate").render(data[i]);
-            $('#comments-' + id).append(comment);
-        }
-    });
+function showCommentsToChangeset(changeset) {
+    $('#comments-' + changeset.identifier).html("");
+    for (var i = 0; i < changeset.commentsToChangeset.length; i++) {
+        var comment = $("#commentTemplate").render(changeset.commentsToChangeset[i]);
+        $('#comments-' + changeset.identifier).append(comment);
+    }
 }

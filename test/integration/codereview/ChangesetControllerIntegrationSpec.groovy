@@ -6,7 +6,14 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
 
     def springSecurityService
     def scmAccessService
-    ChangesetController controller = new ChangesetController(scmAccessService: scmAccessService)
+    def returnCommentsService
+
+    ChangesetController controller = new ChangesetController()
+
+    def setup() {
+        controller.scmAccessService = scmAccessService
+        controller.returnCommentsService = returnCommentsService
+    }
 
     def 'getLastChangesets should return JSON'() {
         given:
@@ -30,12 +37,11 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         ProjectFileInChangeset.build(changeset: changeset, projectFile: projectFile)
 
         when:
-        controller.params.id = changeset.identifier
-        controller.getChangesetFiles()
+        List<Map> projectFilesProperties = controller.getChangesetFiles(changeset)
 
         then:
-        controller.response.json.size() == 1
-        controller.response.json.first().name == projectFile.name
+        projectFilesProperties.size() == 1
+        projectFilesProperties.first().name == projectFile.name
     }
 
     def "should mark logged in user's changesets as theirs"() {
@@ -60,6 +66,9 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         buildChangelogEntry(2)
         buildChangelogEntry(1)
 
+        expect:
+        controller.returnCommentsService != null
+
         when:
         controller.getNextFewChangesetsOlderThan(latestChangesetId, null)
 
@@ -76,11 +85,14 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         buildChangelogEntry(1, Project.build(name: 'bar'))
         buildChangelogEntry(0, project)
 
+        expect:
+        controller.returnCommentsService != null
+
         when:
         controller.getNextFewChangesetsOlderThan(latestChangesetId, project.name)
 
         then:
-        def responseChangesets = controller.response.json.collect{day, changesetsForDay -> changesetsForDay}.flatten()
+        def responseChangesets = controller.response.json.collect {day, changesetsForDay -> changesetsForDay}.flatten()
         responseChangesets*.identifier == ['2', '0']
     }
 
