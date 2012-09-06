@@ -26,7 +26,7 @@ function appendChangesetsTop(changestets) {
 
 function appendChangesetsBottom(changesets) {
     for (group in changesets) {
-        lastChangesetId = changesets[group][changesets[group].length-1].identifier;
+        lastChangesetId = changesets[group][changesets[group].length - 1].identifier;
 
         //find or create day container
         var dayElement = getDayContainer(group);
@@ -44,14 +44,14 @@ function appendChangesetsBottom(changesets) {
 }
 
 function getDayContainer(date) {
-    return $(".day[data-date="+date+"]");
+    return $(".day[data-date=" + date + "]");
 }
 
 function appendChangeset(changeset, dayElement) {
     var shortIdentifier = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
     changeset = $.extend({shortIdentifier:shortIdentifier}, changeset)
     dayElement.children('.changesets').append($("#changesetTemplate").render(changeset));
-    var changesetElement = $(".changeset[data-identifier="+changeset.identifier+"]");
+    var changesetElement = $(".changeset[data-identifier=" + changeset.identifier + "]");
     showCommentsToChangeset(changeset);
     $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render({identifier:changeset.identifier}));
     appendAccordion(changeset);
@@ -102,7 +102,7 @@ function appendAccordion(changeset) {
 
     $('#accordion-' + changeset.identifier + ' .accordion-body.collapse').on('shown', function () {
         $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
-        showFile(this.dataset.changeset_id, this.dataset.file_id, this.dataset.file_change_type, this.dataset.file_name_slice, this.dataset.text_format);
+        showFile(this.dataset);
     });
 }
 
@@ -209,7 +209,7 @@ function hideChangesetDetailsAndScroll(identifier) {
     $('#accordion-' + identifier + ' .accordion-body.collapse').parents('.changeset').ScrollTo({
         onlyIfOutside:true,
         offsetTop:codeReview.initialFirstChangesetOffset,
-        callback:function() {
+        callback:function () {
             hideChangesetDetails(identifier)
         }
     });

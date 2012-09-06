@@ -1,8 +1,8 @@
 var previousExpandedForFilesChangesetId; //FIXME remove - this does not belong here, it's here for popovers setup...
 
-function showFile(changesetId, fileId, fileChangeType, fileName, textFormat) {
-    appendSnippetToFileInAccordion(fileId, changesetId)
-    appendDiff(changesetId, fileId);
+function showFile(dataset) {
+    appendSnippetToFileInAccordion(dataset.file_id), dataset.changeset_id
+    appendDiff(dataset.changeset_id, dataset.file_id);
 
     var fileContentUrl = uri.projectFile.getFileWithContent;
     fileContentUrl += dataset.file_id;
@@ -13,7 +13,7 @@ function showFile(changesetId, fileId, fileChangeType, fileName, textFormat) {
                 fillFileTitleTemplate(divideNameWithSlashesInTwo(file.name), dataset.changeset_id, dataset.file_id);
                 renderContentFileWithSyntaxHighlighter(dataset.changeset_id, file, dataset.file_id);
                 showFilesContent(dataset.changeset_id);
-            } );
+            });
         }
         else {
             showMessageAboutNonTextFile(dataset.changeset_id);
