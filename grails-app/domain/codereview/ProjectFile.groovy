@@ -3,31 +3,32 @@ package codereview
 class ProjectFile {
 
     String name
-    ChangeType changeType
     Project project
 
-    static belongsTo = [Changeset, Project]
-    static hasMany = [changesets: Changeset]
+    static belongsTo = [Project]
+    static hasMany = [projectFileInChangesets: ProjectFileInChangeset]
 
-    ProjectFile(String name, ChangeType changeType) {
+    ProjectFile(String name) {
         this.name = name
-        this.changeType = changeType
     }
 
     String getFileType() {
         def extensionToFiletype = [js: 'javascript', htm: 'html']
+        extensionToFiletype.get(extension, extension)
+    }
+
+    private String getExtension() {
         def extension
-        if(name.contains('.')) {
+        if (name.contains('.')) {
             extension = name[name.lastIndexOf('.') + 1..name.length() - 1]
-        }
-        else  {
+        } else {
             extension = ""
         }
-
-        extensionToFiletype.get(extension, extension)
+        extension
     }
 
     static constraints = {
         name blank: false
+        projectFileInChangesets minSize: 1
     }
 }

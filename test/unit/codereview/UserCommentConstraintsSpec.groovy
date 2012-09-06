@@ -14,20 +14,19 @@ class UserCommentConstraintsSpec extends Specification {
     def 'UserComment should have well defined constraints:'() {
 
         when:
-        def userComment = new UserComment("$field": violatingValue)
+        def userComment = UserComment.build()
+        userComment."$field" = violatingValue
 
         then:
         userComment.validate() == false
         userComment.errors.getFieldError(field).code == constraint
-
-        true
+        userComment.errors.allErrors.size() == 1
 
         where:
         field    | constraint | violatingValue
         'text'   | 'blank'    | ''
         'text'   | 'nullable' | null
         'author' | 'nullable' | null
-
     }
     //TODO write a more compound validation test where objects are valid in general and only tested field is incorrect
 

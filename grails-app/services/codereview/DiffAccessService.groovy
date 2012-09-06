@@ -13,6 +13,7 @@ class DiffAccessService {
 
     def infrastructureService
 
+    //TODO wherever a pair (changeset, projectFile) is used, consider using ProjectFileInChangeset
     String getDiffWithPreviousRevisionFor(Changeset changeset, ProjectFile projectFile) {
         File projectRoot = infrastructureService.getProjectRoot(changeset.project.url)
         String changesetDiff = getDiffWithPreviousCommit(projectRoot, changeset.identifier)

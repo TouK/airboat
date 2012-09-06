@@ -19,8 +19,7 @@ class Project {
         name size: 2..80
         url blank:  false
         url unique: true
-        url url: true
-
+        //url url: true //FIXME restore this constraint after extending it with allowance for file:// protocol (in test environment only, use http://grails.org/plugin/constraints)
     }
 
     boolean hasChangesets() {

@@ -15,56 +15,45 @@ class ScmAccessService {
     }
 
     void importAllChangesets(String projectScmUrl) {
-        def changesets = convertToChangesets(gitRepositoryService.getAllChangesets(projectScmUrl))
-        saveChangesets(projectScmUrl, changesets)
+        importChangesets(projectScmUrl, gitRepositoryService.getAllChangesets(projectScmUrl))
     }
 
     void importNewChangesets(String projectScmUrl, String hashOfLastChangeset) {
-        def changesets = convertToChangesets(gitRepositoryService.getNewChangesets(projectScmUrl, hashOfLastChangeset))
-        saveChangesets(projectScmUrl, changesets)
+        importChangesets(projectScmUrl, gitRepositoryService.getNewChangesets(projectScmUrl, hashOfLastChangeset))
     }
 
-    private void saveChangesets(String projectScmUrl, List<Changeset> changesets) {
+    private void importChangesets(String projectScmUrl, List<GitChangeset> gitChangesets) {
         def project = Project.findByUrl(projectScmUrl)
-        changesets.each { saveChangeset(it, project) }
-        project.save(failOnError: true, flush: true)
+        gitChangesets.each { importChangeset(it, project) }
+        project.save()
     }
 
-    private void saveChangeset(Changeset changesetToSave, Project project) {
-        def commiter = Commiter.findOrCreateWhere(cvsCommiterId: changesetToSave.commiter.cvsCommiterId)
-        def email = commiter.cvsCommiterId
-        def user = email ? User.findByEmail(email) : null
-        commiter.addToChangesets(changesetToSave)
-        if (user != null) {
-            user.addToCommitters(commiter)
-        }
-        project.addToChangesets(changesetToSave)
-        changesetToSave.projectFiles.each { it.project = project }
-        commiter.save(failOnError: true, flush: true)
-        if (user != null) {
-            user.save(failOnError: true, flush: true)
-        }
-    }
+    //FIXME boost performance with entity chaches
+    private void importChangeset(GitChangeset gitChangeset, Project project) {
+        Commiter commiter = Commiter.findOrCreateWhere(cvsCommiterId: gitChangeset.gitCommitterId)
 
-    private List<Changeset> convertToChangesets(gitChangesets) {
-        if (gitChangesets == null) {
-            return []
-        } else {
-            gitChangesets.collect { buildChangeset(it) }
-        }
-    }
-
-    private Changeset buildChangeset(GitChangeset gitChangeset) {
-        Commiter commiter = new Commiter(gitChangeset.authorEmail)
+        //TODO make all domain classes' constructors take as parameters all instances the class belongsTo
         Changeset changeset = new Changeset(gitChangeset.rev, gitChangeset.fullMessage, gitChangeset.date)
         commiter.addToChangesets(changeset)
-        if (gitChangeset?.files != null) {
-            gitChangeset.files.each { GitChangedFile file ->
-                changeset.addToProjectFiles(new ProjectFile(file.name, convertChangeType(file.changeType)))
-            }
+        project.addToChangesets(changeset)
+
+        commiter.save() //FIXME ask someone why this line is necessary here
+
+        gitChangeset.files.each { GitChangedFile file ->
+            //FIXME verify why no constraints are violated here (learning test?)
+            ProjectFile projectFile = ProjectFile.findOrSaveWhere(name: file.name, project: project)
+            new ProjectFileInChangeset(changeset, projectFile, convertChangeType(file.changeType))
         }
-        return changeset
+
+        changeset.save()
+//        project.save() //FIXME check that files are associated with changesets
+
+        def email = commiter.cvsCommiterId
+        def user = User.findByEmail(email)
+        user?.addToCommitters(commiter)        //FIXME what if commmitter exists in this user?
+        user?.save()
     }
+
 
     ChangeType convertChangeType(DiffEntry.ChangeType changeType) {
         ChangeType.valueOf(ChangeType, changeType.toString())

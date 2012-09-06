@@ -60,6 +60,9 @@ grails.web.disable.multipart = false
 // request parameters to mask when logging exceptions
 grails.exceptionresolver.params.exclude = ['password']
 
+//default value of save's failOnError
+grails.gorm.failOnError = true
+
 // enable query caching by default
 grails.hibernate.cache.queries = true
 
@@ -106,11 +109,21 @@ log4j = {
             'org.codehaus.groovy.grails.commons', // core / classloading
             'org.codehaus.groovy.grails.plugins', // plugins
             //'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
-            'org.springframework'
-    //'org.hibernate',
-    //'net.sf.ehcache.hibernate'
+            'org.springframework',
+            //'org.hibernate',
+            //'net.sf.ehcache.hibernate',
+            'codereview',
+            'grails.app'
 
-    debug 'codereview'
+//    trace 'org.hibernate.engine.Cascade'
+            //'org.hibernate.type'
+
+    debug 'codereview',
+            'grails.app'
+//            'org.hibernate.engine',
+//            'org.hibernate.SQL',
+//            'org.hibernate.event',
+
 
     environments {
         production {
@@ -123,7 +136,7 @@ log4j = {
         }
         development {
             root {
-                info 'stdout'
+                debug 'stdout'
                 error 'stacktrace'
             }
             all additivity: false
@@ -131,7 +144,7 @@ log4j = {
         }
         test {
             root {
-                info 'stdout'
+                debug 'stdout'
                 error 'stacktrace'
             }
             all additivity: false

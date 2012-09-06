@@ -27,9 +27,9 @@ class ProjectUpdateJob {
         Project.withTransaction({ DefaultTransactionStatus ignoredStatus ->
             time("update of project $project.url") {
                 scmAccessService.updateOrCheckOutRepository(projectRepositoryUrl)
-                if (project.hasChangesets()) {
-                    String lastChangesetHash = project.changesets.sort {it.date}.last().identifier
-                    scmAccessService.importNewChangesets(projectRepositoryUrl, lastChangesetHash)
+                Changeset lastChangeset = Changeset.findByProject(project, [sort: 'date', order: 'desc'])
+                if (lastChangeset != null) {
+                    scmAccessService.importNewChangesets(projectRepositoryUrl, lastChangeset.identifier)
                 } else {
                     scmAccessService.importAllChangesets(projectRepositoryUrl)
                 }

@@ -23,8 +23,8 @@ class ProjectUpdateJobSpec extends Specification {
         project.addToChangesets(changeset)
         committer.addToChangesets(changeset)
 
-        project.save(failOnError: true)
-        committer.save(failOnError: true)
+        project.save()
+        committer.save()
         def job = new ProjectUpdateJob()
         job.scmAccessService = scmAccessServiceMock
 

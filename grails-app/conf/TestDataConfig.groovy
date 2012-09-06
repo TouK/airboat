@@ -1,4 +1,8 @@
 import grails.plugins.springsecurity.SpringSecurityService
+import codereview.ProjectFile
+import codereview.CommentThread
+import codereview.ProjectFileInChangeset
+import codereview.ChangeType
 
 def encodePasswordMock = { password, salt = null -> "#encoded#password=${password}#salt=${salt}" }
 
@@ -30,6 +34,17 @@ testDataConfig {
                 "Committer ${i}<committer_${i}@test.com>"
             }
         }
+
+        'codereview.ProjectFileInChangeset' {
+            changeType = ChangeType.ADD
+        }
+
+        //FIXME file a bug/enhancement request for same top of a diamond (in this case: Project in ThreadPositionInFile)
+        'codereview.ThreadPositionInFile' {
+            projectFileInChangeset = ProjectFileInChangeset.&build
+            thread = CommentThread.&build
+        }
+
     }
 }
 

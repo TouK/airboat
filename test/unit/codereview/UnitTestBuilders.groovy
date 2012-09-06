@@ -11,6 +11,6 @@ class UnitTestBuilders {
             user = User.buildWithoutSave(username: parameters.username)
         }
         user.metaClass.mixin(IsDirtyMock)
-        user.save(failOnError: true)
+        user.save()
     }
 }

@@ -15,6 +15,7 @@ class LineCommentController {
     def addComment(String changesetIdentifier, Long projectFileId, Integer lineNumber, String text) {
         def changeset = Changeset.findByIdentifier(changesetIdentifier)
         def projectFile = ProjectFile.findById(projectFileId)
+        def projectFileInChangeset = ProjectFileInChangeset.findByChangesetAndProjectFile(changeset, projectFile)
         def fileContent = scmAccessService.getFileContent(changeset, projectFile)
 
         //TODO write own, groovy assertion methods using a closure argument to defer (often costly) message evaluation
@@ -26,13 +27,13 @@ class LineCommentController {
 
         //TODO ask someone about making idea know the mixins being used here
         def lineComment = new LineComment(authenticatedUser, text)
-        def position = new LineCommentPosition(projectFile, lineComment, lineNumber)
-        changeset.addToLineCommentsPositions(position)
-        lineComment.validate()
-        if (lineComment.hasErrors()) {
-            render([errors: lineComment.errors.fieldError] as JSON)
+        def thread = new CommentThread(lineComment)
+        def position = new ThreadPositionInFile(projectFileInChangeset, thread, lineNumber)
+        position.validate()
+        if (position.hasErrors()) {
+            render(position.errors as JSON)
         } else {
-            lineComment.save(failOnError: true)
+            thread.save()
             redirect(controller: 'projectFile', action: 'getLineCommentsWithSnippetsToFile',
                     params: [changesetIdentifier: changeset.identifier, projectFileId: projectFile.id])
         }

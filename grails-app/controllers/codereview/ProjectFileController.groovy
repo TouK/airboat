@@ -63,20 +63,23 @@ class ProjectFileController {
     }
 
     private List<Map<String, Object>> getLineComments(Changeset changeset, ProjectFile projectFile) {
-        checkArgument(changeset.projectFiles.contains(projectFile), "${projectFile} is not in ${changeset}")
-        def commentPositions = LineCommentPosition.findAllByChangesetAndProjectFile(changeset, projectFile)
-        def commentsProperties = commentPositions.collect { LineCommentPosition commentPosition ->
-            def comment = commentPosition.comment
-            def properties = comment.properties + [
-                    fromRevision: getRevisionType(changeset, changeset), //FIXME count changesets between original comment posting changeset and changeset its displayed in
-                    belongsToCurrentUser: comment.author == authenticatedUser,
-                    author: comment.author.email,
-                    lineNumber: commentPosition.lineNumber
-            ]
-            properties.keySet().retainAll('id', 'author', 'dateCreated', 'lineNumber', 'projectFile', 'text', 'fromRevision', 'belongsToCurrentUser')
-            properties
+        def projectFileInChangeset = ProjectFileInChangeset.findByChangesetAndProjectFile(changeset, projectFile)
+        checkArgument(projectFileInChangeset != null, "${projectFile} is not associated with ${changeset}")
+        def threadPositions = projectFileInChangeset.commentThreadsPositions
+        def commentsProperties = threadPositions.collect { ThreadPositionInFile threadPosition ->
+            def comments = threadPosition.thread.comments
+            comments.collect { LineComment comment ->
+                def properties = comment.properties + [
+                        fromRevision: getRevisionType(changeset, changeset), //FIXME count changesets between original comment posting changeset and changeset its displayed in
+                        belongsToCurrentUser: comment.author == authenticatedUser,
+                        author: comment.author.email,
+                        lineNumber: threadPosition.lineNumber
+                ]
+                properties.keySet().retainAll('id', 'author', 'dateCreated', 'lineNumber', 'projectFile', 'text', 'fromRevision', 'belongsToCurrentUser')
+                properties
+            }
         }
-        commentsProperties
+        commentsProperties.flatten()
     }
 
     String getRevisionType(Changeset currentCommentChangesetDate, Changeset commentChangeset) {

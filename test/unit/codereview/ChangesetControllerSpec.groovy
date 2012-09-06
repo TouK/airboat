@@ -7,7 +7,7 @@ import mixins.SpringSecurityControllerMethodsMock
 import spock.lang.Ignore
 
 @TestFor(ChangesetController)
-@Build([ProjectFile, User, Changeset])
+@Build([ProjectFileInChangeset, User])
 class ChangesetControllerSpec extends Specification {
 
     def setup() {
@@ -50,7 +50,8 @@ class ChangesetControllerSpec extends Specification {
         given:
         Project project = Project.build()
         ProjectFile projectFile = ProjectFile.buildWithoutSave(name: 'kickass!', project: project)
-        Changeset changeset = Changeset.build(projectFiles: [projectFile], project: project)
+        Changeset changeset = Changeset.build(project: project)
+        ProjectFileInChangeset.build(changeset: changeset, projectFile: projectFile)
 
         when:
         controller.params.id = changeset.identifier

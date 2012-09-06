@@ -1,9 +1,10 @@
 package codereview
 
 class LineComment {
+
     String text
     Date dateCreated
-    static belongsTo = [author: User]
+    static belongsTo = [author: User, thread: CommentThread]
 
     LineComment(User author, String text) {
         this.text = text

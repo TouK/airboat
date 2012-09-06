@@ -6,11 +6,10 @@ class Changeset {
     String commitComment
     Date date
 
-    static hasMany = [projectFiles: ProjectFile, userComments: UserComment, lineCommentsPositions: LineCommentPosition]
-    static belongsTo = [
-            project: Project,
-            commiter: Commiter
-    ]
+    static hasMany = [projectFilesInChangeset: ProjectFileInChangeset, userComments: UserComment]
+    static belongsTo = [project: Project, commiter: Commiter]
+
+    Commiter commiter
 
     Changeset(String identifier, String commitComment, Date date) {
         this.identifier = identifier
@@ -25,12 +24,6 @@ class Changeset {
     static constraints = {
         identifier blank: false, unique: ['project']
         commitComment blank: true, maxSize: 4096
-        projectFiles validator: { Set<ProjectFile> files, Changeset that ->
-            def offendingFiles = files.findAll { it.project != that.project }
-            if (!offendingFiles.isEmpty()) {
-                def offendingFilesAndTheirProjectsNames = [offendingFiles*.name, offendingFiles*.project*.name].transpose()
-                ['changesetsProjectFilesMustBeInSameProject', that.project.name, offendingFilesAndTheirProjectsNames]
-            }
-        }
+        projectFilesInChangeset minSize: 1
     }
 }

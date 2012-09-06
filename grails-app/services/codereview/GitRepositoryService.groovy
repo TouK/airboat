@@ -24,7 +24,7 @@ class GitRepositoryService {
         try {
             repository = diffAccessService.openGitRepository(projectRoot)
         } catch (RepositoryNotFoundException e) {
-            log.info("Could not find git repository at $projectRoot.absolutePath, creating one", e)
+            log.info("Could not find git repository at $projectRoot.absolutePath, creating one")
             repository = cloneRepository(scmUrl, projectRoot)
         }
         Git git = new Git(repository)

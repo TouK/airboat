@@ -10,13 +10,15 @@ import testFixture.JgitFixture
 
 import org.eclipse.jgit.errors.RepositoryNotFoundException
 
-import static testFixture.Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL
 import spock.lang.Ignore
 
-@Build([ProjectFile, Changeset])
+import static testFixture.Fixture.PROJECT_CODEREVIEW_ON_THIS_MACHINE_URL
+
+@Build(ProjectFileInChangeset)
 class DiffAccessServiceSpec extends Specification {
 
     def diffAccessService = new DiffAccessService()
+    static GString projectUrl = PROJECT_CODEREVIEW_ON_THIS_MACHINE_URL
     String firstCodereviewHash = "ac464172cd45551eac74f4e5b19234ac4c77e3d7"
     String secondCodereviewHash = "7c7b0e3401dbfe52a4d51c44f92bc930a8b34f56"
     String projectWithoutRepositoryCloneUrl = "git://git.neverland.org/ohnoes"
@@ -25,7 +27,7 @@ class DiffAccessServiceSpec extends Specification {
     def setup() {
         diffAccessService.infrastructureService = Mock(InfrastructureService)
         def currentDirectory = new File(".")
-        diffAccessService.infrastructureService.getProjectRoot(PROJECT_CODEREVIEW_REPOSITORY_URL) >> currentDirectory
+        diffAccessService.infrastructureService.getProjectRoot(projectUrl) >> currentDirectory
         diffAccessService.infrastructureService.getProjectRoot(projectWithoutRepositoryCloneUrl) >> new File('notReallyAFile')
         assert new File(currentDirectory, ".git").isDirectory()
     }
@@ -64,10 +66,8 @@ class DiffAccessServiceSpec extends Specification {
 
     def "should get diff to project file"() {
         when:
-        def project = Project.build(url: PROJECT_CODEREVIEW_REPOSITORY_URL)
-        def changeset = Changeset.build(identifier: secondCodereviewHash, project: project)
-        def projectFile = ProjectFile.build(changesets: [changeset], name: "grails-app/views/changeset/index.gsp")
-        String fileDiff = diffAccessService.getDiffWithPreviousRevisionFor(changeset, projectFile)
+        def projectFileInChangeset = buildProjectFileInProject(projectUrl, "grails-app/views/changeset/index.gsp")
+        String fileDiff = diffAccessService.getDiffWithPreviousRevisionFor(projectFileInChangeset.changeset, projectFileInChangeset.projectFile)
 
         then:
         fileDiff != null
@@ -78,10 +78,8 @@ class DiffAccessServiceSpec extends Specification {
 
     def "what will happen if wrong directory path?" () {
         when:
-        def project = Project.build(url: projectWithoutRepositoryCloneUrl)
-        def changeset = Changeset.build(identifier: secondCodereviewHash, project: project)
-        def projectFile = ProjectFile.build(changesets: [changeset], name: "grails-app/views/changeset/index.gsp")
-        diffAccessService.getDiffWithPreviousRevisionFor(changeset, projectFile)
+        def projectFileInChangeset = buildProjectFileInProject(projectWithoutRepositoryCloneUrl, "grails-app/views/changeset/index.gsp")
+        diffAccessService.getDiffWithPreviousRevisionFor(projectFileInChangeset.changeset, projectFileInChangeset.projectFile)
 
         then:
         thrown(RepositoryNotFoundException)
@@ -89,20 +87,25 @@ class DiffAccessServiceSpec extends Specification {
 
     def "what will happen if given project file with incorrect file name?"() {
         when:
-        def project = Project.build(url: PROJECT_CODEREVIEW_REPOSITORY_URL)
-        def changeset = Changeset.build(identifier: secondCodereviewHash, project: project)
-        def projectFile = ProjectFile.build(changesets: [changeset], name: "grails-app/nothing")
-        String fileDiff = diffAccessService.getDiffWithPreviousRevisionFor(changeset, projectFile)
+        def projectFileInChangeset = buildProjectFileInProject(projectUrl, "grails-app/nothing")
+        String fileDiff = diffAccessService.getDiffWithPreviousRevisionFor(projectFileInChangeset.changeset, projectFileInChangeset.projectFile)
 
         then:
         fileDiff == ""
+    }
+
+    ProjectFileInChangeset buildProjectFileInProject(String repositoryUrl, String pathWithinRepository) {
+        def project = Project.build(url: repositoryUrl)
+        def changeset = Changeset.build(identifier: secondCodereviewHash, project: project)
+        def projectFile = ProjectFile.build(name: pathWithinRepository, project: project)
+        ProjectFileInChangeset.build(changeset: changeset, projectFile: projectFile)
     }
 
     //TODO check why it works differently in different environments
     @Ignore
     def "what will happen if given project file with incorrect changeset hash?"() {
         given:
-        def project = Project.build(url: PROJECT_CODEREVIEW_REPOSITORY_URL)
+        def project = Project.build(url: projectUrl)
         def changeset = Changeset.build(identifier: "what?", project: project)
         def projectFile = ProjectFile.build(changesets: [changeset], name: "grails-app/views/changeset/index.gsp")
 

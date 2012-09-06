@@ -1,12 +1,16 @@
 package codereview
 
 import static codereview.TestHelpers.nLinesOfSampleText
-import org.spockframework.missing.ControllerIntegrationSpec
+import grails.converters.JSON
+import grails.plugin.spock.IntegrationSpec
+import spock.lang.Ignore
 
-class LineCommentControllerIntegrationSpec extends ControllerIntegrationSpec {
+class LineCommentControllerIntegrationSpec extends IntegrationSpec {
 
     int numberOfLinesInProjectFile = 12
     def springSecurityService
+
+    def controller = new LineCommentController()
 
     def setup() {
         controller.scmAccessService = Mock(ScmAccessService)
@@ -15,11 +19,12 @@ class LineCommentControllerIntegrationSpec extends ControllerIntegrationSpec {
 
     def 'should add comment correctly to db'() {
         given:
-        User loggedInUser = User.build(username: 'logged.in@codereview.com')
+        User loggedInUser = User.build()
         springSecurityService.reauthenticate(loggedInUser.username)
         Project project = Project.build()
         Changeset changeset = Changeset.build(project: project)
-        ProjectFile projectFile = ProjectFile.build(changesets: [changeset], project: project)
+        ProjectFile projectFile = ProjectFile.build(project: project)
+        def projectFileInChangeset = ProjectFileInChangeset.build(changeset: changeset, projectFile: projectFile)
         def lineNumber = numberOfLinesInProjectFile
         String text = "comment text"
 
@@ -28,11 +33,36 @@ class LineCommentControllerIntegrationSpec extends ControllerIntegrationSpec {
 
         then:
         LineComment.count() == 1
-        LineCommentPosition.count() == 1
-        def lineComment = LineCommentPosition.findAllByChangesetAndProjectFile(changeset, projectFile)
-        lineComment*.comment*.author == [controller.authenticatedUser]
-        lineComment*.comment*.text == [text]
-        lineComment.lineNumber == [lineNumber]
+        ThreadPositionInFile.count() == 1
+        def commentPositions = ThreadPositionInFile.findAllByProjectFileInChangeset(projectFileInChangeset)
+        def comments = commentPositions*.thread*.comments.flatten()
+        comments*.author == [controller.authenticatedUser]
+        comments*.text == [text]
+        commentPositions.lineNumber == [lineNumber]
+    }
+
+    def 'should return an error when adding a comment to revision other than newest'() {
+        given:
+        User loggedInUser = User.build()
+        springSecurityService.reauthenticate(loggedInUser.username)
+
+        Project project = Project.build()
+        List<Changeset> changesets = (1 .. 2).collect { Changeset.build(project: project) }
+        ProjectFile projectFile = ProjectFile.build(project: project)
+        changesets.each { ProjectFileInChangeset.build(changeset: it, projectFile: projectFile) }
+
+        when:
+        def lineNumber = numberOfLinesInProjectFile
+        def olderChangeset = changesets[0]
+        controller.addComment(olderChangeset.identifier, projectFile.id, lineNumber, "comment text")
+        def errors = controller.response.json.errors
+        println()
+
+
+        then:
+//        def errors = controller.response.json.errors
+        errors.size() == 1
+        errors.first().message.contains('a newer changeset with this file exists in this project')
     }
 
 }

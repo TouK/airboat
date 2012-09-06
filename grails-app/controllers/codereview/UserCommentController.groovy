@@ -22,7 +22,7 @@ class UserCommentController {
             render(userComment.errors as JSON)
         }
         else {
-            userComment.save(failOnError: true)
+            userComment.save()
             render getCommentJSONproperties(userComment) as JSON
         }
     }

@@ -16,12 +16,11 @@ class UserConstraintsSpec extends Specification {
         User.build(username: existingUserEmail)
     }
 
-
     @Unroll("Field '#field' of class User should have validation error '#error' caused by value '#violatingValue'")
     def 'User should have well defined constraints:'() {
 
         when: //TODO make constraints tests use build-test-data's .build() method
-        def user = new User("$field": violatingValue, springSecurityService: Mock(SpringSecurityService))
+        def user = new User("$field": violatingValue)
 
         then:
         user.validate() == false

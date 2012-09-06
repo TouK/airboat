@@ -5,7 +5,7 @@ import codereview.Constants
 class Fixture {
 
     static final String PROJECT_CODEREVIEW_NAME = 'codereview'
-    static final String PROJECT_CODEREVIEW_REPOSITORY_URL = Constants.PROJECT_CODEREVIEW_REPOSITORY_URL
+    public static final GString PROJECT_CODEREVIEW_ON_THIS_MACHINE_URL = "file://${new File(".").absolutePath}"
 
     static final String FIRST_COMMIT_HASH = 'bc01b629a766616b16d32109c90a16bede93bdb3'
     static final String FIRST_COMMIT_AUTHOR = 'Kacper Pietrasik <kpt@touk.pl>'

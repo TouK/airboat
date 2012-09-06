@@ -68,7 +68,7 @@ class UserController {
         Commiter.findAllByCvsCommiterIdIlike("%${user.email}%").each {
             user.addToCommitters(it)
         }
-        user.save(failOnError: true)
+        user.save()
     }
 
 

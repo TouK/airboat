@@ -49,7 +49,7 @@ class InfrastructureServiceSpec extends Specification {
 
     def 'getDirectoryNameForTheProject() should return project name'() {
         given:
-        def testProject = new Project('Project', Fixture.PROJECT_CODEREVIEW_REPOSITORY_URL).save()
+        def testProject = Project.build()
 
         when:
         def returnProjectName = service.directoryNameForProject(testProject.url)

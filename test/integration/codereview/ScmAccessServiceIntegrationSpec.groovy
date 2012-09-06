@@ -2,11 +2,9 @@ package codereview
 
 import grails.plugin.spock.IntegrationSpec
 
-import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.springframework.dao.InvalidDataAccessApiUsageException
-import spock.lang.Ignore
-import testFixture.Fixture
-import org.eclipse.jgit.diff.DiffEntry
+
+import util.DbPurger
 
 //TODO maybe this spec tests too much. There's a service injected with two others underneath, a git repo is cloned...
 class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
@@ -17,42 +15,12 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
     static transactional = false
 
     def setup() {
-        verifyDbIsClean()
+        DbPurger.verifyDbIsClean()
     }
 
     def cleanup() {
-        purgeDb()
-        verifyDbIsClean()
-    }
-
-    static void verifyDbIsClean() {
-        Project.withNewSession {
-            domainClasses().each {
-                if (it.count() != 0) {
-                    throw new IllegalStateException("Db is not clean - ${it}.count() is ${it.count()}")
-                }
-            }
-        }
-    }
-
-    private static List<Class<?>> domainClasses() {
-        ApplicationHolder.application.domainClasses*.clazz
-    }
-
-    static void purgeDb() {
-        Project.withNewSession {
-            Project.all.each { Project project ->
-                project.delete(flush: true)
-            }
-            User.all.each { User user ->
-                user.committers*.user = null
-                user.committers = [] as Set
-                user.delete(flush: true)
-            }
-            Commiter.all.each {
-                it.delete(flush: true)
-            }
-        }
+        DbPurger.purgeDb()
+        DbPurger.verifyDbIsClean()
     }
 
     def 'should fetch and save changesets in db'() {
@@ -81,20 +49,6 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         1 * gitRepositoryService.getAllChangesets(url) >> [gitChangeset]
 
         scmAccessService.gitRepositoryService = gitRepositoryService
-    }
-
-
-    def 'should convert git ChangeSet to ChangeSet and add commiter'() {
-        given:
-        GitChangeset jGitChangeset = new GitChangeset('Refactoring', "jil@touk.pl", "someday123", new Date())
-
-        when:
-        def changeset = scmAccessService.buildChangeset(jGitChangeset)
-        def changesetCommiter = changeset.commiter
-
-        then:
-        changeset != null
-        changesetCommiter != null
     }
 
     def 'should save Changeset to db and add commiter if it is not yet in db'() {
@@ -133,11 +87,14 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
     def 'should add a changeset for existing committer when saving changeset by them'() {
         given:
         String commitId = 'hash23'
-        Project project = Project.build()
+        Project project
         Commiter previouslySavedCommitter
         Project.withNewSession {
+            project = Project.build()
             previouslySavedCommitter = Commiter.build(cvsCommiterId: 'Artur Gajowy <agj@touk.pl>')
-            Changeset previousChangeset = Changeset.build(commiter: previouslySavedCommitter)
+            Changeset previousChangeset = Changeset.build(commiter: previouslySavedCommitter, project: project)
+            ProjectFile projectFile = ProjectFile.build(project: project)
+            ProjectFileInChangeset.build(changeset: previousChangeset, projectFile: projectFile)
         }
         prepareGitScmService('commitin', previouslySavedCommitter.cvsCommiterId, commitId, project.url)
 

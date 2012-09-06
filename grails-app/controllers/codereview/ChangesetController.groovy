@@ -31,7 +31,7 @@ class ChangesetController {
 
     def getFileNamesForChangeset = {
         def changeset = Changeset.findByIdentifier(params.id)
-        render changeset.projectFiles as JSON
+        render changeset.projectFilesInChangeset*.projectFile as JSON
     }
 
 
@@ -53,7 +53,6 @@ class ChangesetController {
     }
 
     private def convertToChangesetProperties(Changeset changeset) {
-
         [
                 id: changeset.id,
                 identifier: changeset.identifier,
