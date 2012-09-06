@@ -21,6 +21,7 @@ class ChangesetController {
             changesets = getLastChagesetsFromProject(params.projectName)
         }
         def changesetsProperties = changesets.collect this.&convertToChangesetProperties
+        changesetsProperties = groupChangesetPropertiesByDay(changesetsProperties)
         render changesetsProperties as JSON
     }
 
@@ -64,7 +65,12 @@ class ChangesetController {
             nextFewChangesets = getNextFewChangesetsFromProject(projectName, changesetId)
         }
         def changesetsProperties = nextFewChangesets.collect this.&convertToChangesetProperties
+        changesetsProperties = groupChangesetPropertiesByDay(changesetsProperties)
         render changesetsProperties as JSON
+    }
+
+    private def groupChangesetPropertiesByDay(changesetsProperties) {
+        changesetsProperties.groupBy { it.date.substring(0, 10) }
     }
 
     private def convertToChangesetProperties(Changeset changeset) {

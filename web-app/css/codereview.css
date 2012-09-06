@@ -14,6 +14,35 @@ textarea {
     white-space: pre-line;
 }
 
+.dayLabel {
+    background-color: #dddddd;
+    text-align: end;
+    margin-bottom: 14px;
+    padding-right: 10px;
+
+}
+
+.changeset-hash {
+    color: gray;
+}
+
+.pull-right {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.changeset.current-user {
+    /*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.20);*/
+}
+
+.changeset.current-user .author {
+    color: #0074CC;
+}
+
+.author {
+    font-weight:bold;
+}
+
 .changeset.well {
     margin-bottom: 14px;
 }

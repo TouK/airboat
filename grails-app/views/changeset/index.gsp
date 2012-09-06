@@ -192,23 +192,36 @@
     </div>
 </script>
 
+<script id="dayTemplate" type="text/x-jsrender">
+    <div class="day"
+        data-date='{{:date}}'>
+        <div class="row-fluid">
+            <h3 class="dayLabel well-small span5">
+                {{>date}}
+            </h3>
+        </div>
+        <div class="changesets">
+            <!-- here will be changestes for given day -->
+        </div>
+    </div>
+</script>
 
 <script id="changesetTemplate" type="text/x-jsrender">
 
     <div class='row-fluid'>
 
-        <div class="span5 well well-small changeset">
+        <div class="span5 well well-small changeset {{if belongsToCurrentUser}}current-user{{/if}}" data-identifier='{{>identifier}}'>
             <div class="row-fluid">
                 <img class="pull-left" src='{{>~getGravatar(email)}}'/>
 
                 <div class="nextToGravatar">
                     <div>
-                        <span class="badge {{if belongsToCurrentUser}}badge-success{{/if}}">{{>author}}</span>
+                        <span class='author' >{{>author}}</span>
                         commited to <span class="badge"
                                           style="background-color: {{>~colorForProjectName(projectName)}}">{{>projectName}}</span>
 
-                        <span class="pull-right badge badge-info">{{>date}}</span>
-                        <span class="pull-right badge badge-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
+                        <span class="pull-right changeset-date"> <i class="icon-time"/> {{:date.substring(11)}} </span>
+                        <span class="pull-right changeset-hash"> {{>shortIdentifier}} </span>
                     </div>
 
                     <div class="pull-right">
@@ -375,7 +388,7 @@
 
     <div class="alert {{>fromRevision}}">
         <img src="{{>~getGravatar(author)}}"/>
-        <span class="label {{if belongsToCurrentUser}}label-success{{/if}}">{{>author}}</span>
+        <span class="author">{{>author}}</span>
         <span class="label label-info pull-right">{{>dateCreated}}</span>
 
         <div class="comment-content">{{>text}}</div>

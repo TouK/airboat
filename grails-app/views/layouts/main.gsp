@@ -48,7 +48,7 @@
         }
 
         //TODO move to codeReview object
-        var hashAbbreviationLength = 8;
+        var hashAbbreviationLength = 6;
         var lineBoundary = 60; //TODO rename
     </script>
 

@@ -1,6 +1,5 @@
 package codereview
 
-import grails.converters.JSON
 import grails.plugin.spock.IntegrationSpec
 
 class ChangesetControllerIntegrationSpec extends IntegrationSpec {
@@ -20,7 +19,7 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
 
         then:
         controller.response.getContentType().startsWith('application/json')
-        controller.response.json.size() == changesets.size()
+        responseChangesets.size() == changesets.size()
     }
 
     def 'getChangesetFiles should return file names from changeset'() {
@@ -51,7 +50,7 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         controller.getLastChangesets()
 
         then:
-        controller.response.json*.belongsToCurrentUser == [false, true]
+        responseChangesets*.belongsToCurrentUser == [false, true]
     }
 
     def 'should return few next changesets older than one with given revision id as JSON'() {
@@ -65,11 +64,10 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         controller.getNextFewChangesetsOlderThan(latestChangesetId, null)
 
         then:
-        def responseChangesets = controller.response.json
         responseChangesets*.identifier == ['2', '1']
     }
 
-    def 'getNextFewChangesetsOlderThan() should return few next changesets older one with given revision id as JSON'() {
+    def 'should return next few changesets older than given, within given project as JSON'() {
         given:
         String latestChangesetId = '3'
         Project project = Project.build(name: 'foo')
@@ -82,7 +80,7 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         controller.getNextFewChangesetsOlderThan(latestChangesetId, project.name)
 
         then:
-        def responseChangesets = controller.response.json
+        def responseChangesets = controller.response.json.collect{day, changesetsForDay -> changesetsForDay}.flatten()
         responseChangesets*.identifier == ['2', '0']
     }
 
@@ -97,5 +95,9 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
     //default time format is accurate to minutes, so for dates to be distinguishable in error logs, use this:
     private Date minutesSinceEpoch(int minutes) {
         new Date(minutes * 1000 * 60)
+    }
+
+    private Collection<?> getResponseChangesets() {
+        controller.response.json.collect {day, changesetsForDay -> changesetsForDay}.flatten()
     }
 }
