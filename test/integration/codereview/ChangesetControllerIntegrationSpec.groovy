@@ -5,8 +5,54 @@ import grails.plugin.spock.IntegrationSpec
 
 class ChangesetControllerIntegrationSpec extends IntegrationSpec {
 
+    def springSecurityService
     def scmAccessService
     ChangesetController controller = new ChangesetController(scmAccessService: scmAccessService)
+
+    def 'getLastChangesets should return JSON'() {
+        given:
+        Project project = Project.build()
+        def changesets = (1..3).collect { Changeset.build(project: project) }
+
+        when:
+        controller.params.projectName = project.name
+        controller.getLastChangesets()
+
+        then:
+        controller.response.getContentType().startsWith('application/json')
+        controller.response.json.size() == changesets.size()
+    }
+
+    def 'getChangesetFiles should return file names from changeset'() {
+        given:
+        Project project = Project.build()
+        ProjectFile projectFile = ProjectFile.buildWithoutSave(name: 'kickass!', project: project)
+        Changeset changeset = Changeset.build(project: project)
+        ProjectFileInChangeset.build(changeset: changeset, projectFile: projectFile)
+
+        when:
+        controller.params.id = changeset.identifier
+        controller.getChangesetFiles()
+
+        then:
+        controller.response.json.size() == 1
+        controller.response.json.first().name == projectFile.name
+    }
+
+    def "should mark logged in user's changesets as theirs"() {
+        given:
+        def authenticatedUser = User.build(username: 'agj@touk.pl')
+        springSecurityService.reauthenticate(authenticatedUser.username)
+        def loggedInUsersCommitter = Commiter.build(user: controller.authenticatedUser)
+        Changeset.build(commiter: loggedInUsersCommitter)
+        Changeset.build(commiter: Commiter.build(user: User.build(username: 'kpt@touk.pl')))
+
+        when:
+        controller.getLastChangesets()
+
+        then:
+        controller.response.json*.belongsToCurrentUser == [false, true]
+    }
 
     def 'should return few next changesets older than one with given revision id as JSON'() {
         given:

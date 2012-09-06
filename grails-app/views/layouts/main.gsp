@@ -10,14 +10,15 @@
             changeset:{
                 getLastChangesets:"${createLink(uri:'/changeset/getLastChangesets/')}",
                 getNextFewChangesetsOlderThan:"${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}",
-                getFileNamesForChangeset:"${createLink(uri:'/changeset/getFileNamesForChangeset/')}"
+                getChangesetFiles:"${createLink(uri:'/changeset/getChangesetFiles/')}"
             },
             userComment:{
                 addComment:"${createLink(uri: '/userComment/addComment')}",
                 returnCommentsToChangeset:"${createLink(uri:'/userComment/returnCommentsToChangeset/')}"
             },
             lineComment:{
-                addComment:"${createLink(uri: '/lineComment/addComment')}"
+                addComment:"${createLink(uri: '/lineComment/addComment')}",
+                addReply:"${createLink(uri: '/lineComment/addReply')}"
             },
             projectFile:{
                 getFileWithContent:"${createLink(uri:'/projectFile/getFileWithContent/')}",

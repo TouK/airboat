@@ -4,7 +4,7 @@ import grails.plugin.spock.IntegrationSpec
 
 import grails.validation.ValidationException
 
-class GormCascadeLearningSpec extends IntegrationSpec {
+class GormIntegrationLearningSpec extends IntegrationSpec {
 
     def 'should fail on errors when it is said so in config (it should be)'() {
         when:

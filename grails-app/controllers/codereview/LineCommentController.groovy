@@ -1,4 +1,4 @@
-package codereview
+    package codereview
 
 import grails.plugins.springsecurity.Secured
 
@@ -34,6 +34,25 @@ class LineCommentController {
             render(position.errors as JSON)
         } else {
             thread.save()
+            redirect(controller: 'projectFile', action: 'getLineCommentsWithSnippetsToFile',
+                    params: [changesetIdentifier: changeset.identifier, projectFileId: projectFile.id])
+        }
+    }
+
+    @Secured('isAuthenticated()')
+    def addReply(String changesetIdentifier, Long projectFileId, Integer lineNumber, String text) {
+        def changeset = Changeset.findByIdentifier(changesetIdentifier)
+        def projectFile = ProjectFile.findById(projectFileId)
+        def projectFileInChangeset = ProjectFileInChangeset.findByChangesetAndProjectFile(changeset, projectFile)
+        def position = ThreadPositionInFile.findByProjectFileInChangesetAndLineNumber(projectFileInChangeset, lineNumber)
+
+        checkArgument(position != null, "No such thread found")
+        //FIXME make this method take only Long threadId as parameter
+        position.thread.addToComments(new LineComment(authenticatedUser, text))
+        if (position.hasErrors()) {
+            render(position.errors as JSON)
+        } else {
+            position.save()
             redirect(controller: 'projectFile', action: 'getLineCommentsWithSnippetsToFile',
                     params: [changesetIdentifier: changeset.identifier, projectFileId: projectFile.id])
         }

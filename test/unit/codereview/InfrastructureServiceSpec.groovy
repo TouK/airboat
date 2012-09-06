@@ -5,8 +5,9 @@ import spock.lang.Specification
 import testFixture.Fixture
 
 import static codereview.Constants.CODEREVIEW_WORKING_DIRECTORY_PROPERTY
+import grails.buildtestdata.mixin.Build
 
-@Mock(Project)
+@Build(Project)
 class InfrastructureServiceSpec extends Specification {
 
     InfrastructureService service = new InfrastructureService()

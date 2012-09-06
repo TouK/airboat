@@ -52,16 +52,8 @@ textarea {
     background-color: rgba(255, 255, 255, 0.5);;
 }
 
-.future {
-
-}
-
-.current {
-
-}
-
-.past {
-
+.commentsCount {
+    padding-left: 0.4em;
 }
 
 .navbar.logonavbar .brand {

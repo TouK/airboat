@@ -29,11 +29,26 @@ class ChangesetController {
         authenticatedUser != null && authenticatedUser == changeset.commiter?.user
     }
 
-    def getFileNamesForChangeset = {
+    def getChangesetFiles = {
         def changeset = Changeset.findByIdentifier(params.id)
-        render changeset.projectFilesInChangeset*.projectFile as JSON
+        def files = changeset.projectFilesInChangeset
+        def fileProperties = files.collect this.&getFileJSONProperties
+        render fileProperties as JSON
     }
 
+    //FIXME adapte front-end to new object structure
+    private def getFileJSONProperties(ProjectFileInChangeset projectFileInChangeset) {
+        def projectFile = projectFileInChangeset.projectFile
+        def projectFileProperties = projectFile.properties + [
+                id: projectFile.id,
+                commentCount: projectFileInChangeset.commentThreadsPositions*.thread*.comments?.flatten()?.size(),
+                changeType: projectFileInChangeset.changeType
+        ]
+        projectFileProperties.keySet().retainAll(
+                'id', 'name', 'textFormat', 'commentsCount', 'changeType'
+        )
+        projectFileProperties
+    }
 
     def getChangeset = {
         def changeset = Changeset.findByIdentifier(params.id)
@@ -63,22 +78,20 @@ class ChangesetController {
                 commentsCount: changeset.commentsCount,
                 projectName: changeset.project.name,
                 belongsToCurrentUser: belongsToCurrentUser(changeset),
+                allComments: allCommentsCount(changeset)
         ]
-    }
-
-    def generateRandomPastelColor() {
-        Random random = new Random();
-        int red = random.nextInt(256);
-        int green = random.nextInt(256);
-        int blue = random.nextInt(256);
-        red = (red + 255) / 2;
-        green = (green + 255) / 2;
-        blue = (blue + 255) / 2;
-        return [red: red, green: green, blue: blue];
     }
 
     private String getEmail(Commiter commiter) {
         commiter.user?.email ?: commiter.email
+    }
+
+    private int allCommentsCount(Changeset changeset) {
+        def allLineComments = ThreadPositionInFile.executeQuery(
+                'select position.thread.comments from ThreadPositionInFile as position where position.projectFileInChangeset.changeset = :changeset',
+                [changeset: changeset]
+        )
+        return (allLineComments.size() + changeset.commentsCount)
     }
 
     private List<Changeset> getLastChagesetsFromProject(String projectName) {

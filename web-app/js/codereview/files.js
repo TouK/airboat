@@ -1,27 +1,32 @@
 var previousExpandedForFilesChangesetId; //FIXME remove - this does not belong here, it's here for popovers setup...
 
-function showFile(changesetIdentifier, projectFileId, fileChangeType, fileName) {
+function showFile(dataset) {
+    var changesetIdentifier = dataset.changeset_id;
+    var projectFileId = dataset.file_id;
+    var changeType = dataset.file_change_type;
+    var textFormat = dataset.text_format;
+    var fileNameSlice = dataset.file_name_slice;
+
     appendDiff(changesetIdentifier, projectFileId);
 
     var fileContentUrl = uri.projectFile.getFileWithContent + '?' + $.param({
         changesetIdentifier:changesetIdentifier, projectFileId:projectFileId
     });
-
-    if (fileChangeType != 'DELETE') {
-        $.getJSON(fileContentUrl, function (file) {
-            if (file.isText) {
+    if (changeType != 'DELETE') {
+        if (toBoolean(textFormat)) {
+            $.getJSON(fileContentUrl, function (file) {
                 fillFileTitleTemplate(divideNameWithSlashesInTwo(file.name), changesetIdentifier, projectFileId);
                 renderContentFileWithSyntaxHighlighter(changesetIdentifier, file, projectFileId);
                 showFilesContent(changesetIdentifier);
-            }
-            else {
-                showMessageAboutNonTextFile(changesetIdentifier);
-            }
-        });
+            } );
+        }
+        else {
+            showMessageAboutNonTextFile(changesetIdentifier);
+        }
     }
     else {
         cleanPreviousFilesContent(changesetIdentifier);
-        fillFileTitleTemplate(fileName, changesetIdentifier, projectFileId);
+        fillFileTitleTemplate(fileNameSlice, changesetIdentifier, projectFileId);
         showMessageAboutRemovedFile(changesetIdentifier);
         showFilesContent(changesetIdentifier);
     }
@@ -32,12 +37,13 @@ function showFile(changesetIdentifier, projectFileId, fileChangeType, fileName) 
     previousExpandedForFilesChangesetId = changesetIdentifier;
 }
 
-function hideFile(changesetId, projectFileId) {
-    $("#content-files-" + changesetId).hide();
+function toBoolean(toConvert) {
+    return JSON.parse(toConvert);
+}
+
+function hideFile(changesetId) {
     $('#content-files-span-' + changesetId).hide();
-    $('#content-files-' + changesetId + ' .linenums li').popover("hide");
     hidePopovers(changesetId);
-    $("#content-files-title-" + changesetId).hide();
 }
 
 function appendDiff(changesetIdentifier, projectFileId) {
@@ -57,7 +63,6 @@ function appendDiff(changesetIdentifier, projectFileId) {
             .html(colorizeDiff(projectDiff.rawDiff))
             .addClass("language-" + projectDiff.fileType)
             .syntaxHighlight();
-
     });
 }
 

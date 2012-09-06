@@ -10,27 +10,7 @@ class ProjectFileController {
     def scmAccessService
     def snippetWithCommentsService
     def diffAccessService
-    static def textFileFormats = [
-            "java",
-            "groovy",
-            "html",
-            "htm",
-            "jsp",
-            "gsp",
-            "py",
-            "rb",
-            "h",
-            "c",
-            "cpp",
-            "txt",
-            "md",
-            "php",
-            "",
-            "css",
-            "xml",
-            "javascript",
-            "json"
-    ]
+
 
     def index() { }
 
@@ -43,11 +23,7 @@ class ProjectFileController {
         def changeset = Changeset.findByIdentifier(changesetIdentifier)
         def projectFile = ProjectFile.findById(projectFileId)
         def fileContent = scmAccessService.getFileContent(changeset, projectFile)
-        render([content: fileContent, filetype: projectFile.fileType, name: projectFile.name, isText: isKnownTextFormat(projectFile.fileType)] as JSON)
-    }
-
-    Boolean isKnownTextFormat(String fileType) {
-        textFileFormats.contains(fileType)
+        render([content: fileContent, filetype: projectFile.fileType, name: projectFile.name, isText: projectFile.textFormat] as JSON)
     }
 
     def getLineCommentsWithSnippetsToFile(String changesetIdentifier, Long projectFileId) {

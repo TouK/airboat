@@ -5,18 +5,38 @@ import grails.buildtestdata.mixin.Build
 import grails.test.mixin.TestFor
 
 @TestFor(Changeset)
-@Build(Changeset)
+@Build([Changeset, ProjectFile])
 class ProjectFileSpec extends Specification {
 
     def "Should get type of file from name of file" () {
         when:
-        def files = ["userBupser/dhs/dd/alfa.cpp", "something.something.txt", "script.js" ].collect {
-            new ProjectFile(name: it)
-        }
+        def projectFile = ProjectFile.build()
+        projectFile.name = name;
 
         then:
-        files[0].fileType == "cpp"
-        files[1].fileType == "txt"
-        files[2].fileType == "javascript"
+        projectFile.getFileType() == type
+
+        where:
+        name                          | type
+        'userBupser/dhs/dd/alfa.cpp'  | 'cpp'
+        'something.something.txt'     | 'txt'
+        'script.js'                   | 'javascript'
     }
+
+    def "should return true when file has an extension that is known text file format"() {
+        expect:
+        ProjectFile.build(name: "foo.$extension").isTextFormat()
+
+        where:
+        extension << ["py", "html", "gsp", "groovy", "sh"]
+    }
+
+    def """should return false when file has not an extension that is a known text file format"""() {
+        expect:
+        ProjectFile.build(name: "foo.$extension").isTextFormat() == false
+
+        where:
+        extension << ["png", "img", "pdf"]
+    }
+
 }

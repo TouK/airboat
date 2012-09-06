@@ -211,6 +211,10 @@
                         <span class="pull-right badge badge-info" id="hash-{{>identifier}}">{{>shortIdentifier}}</span>
                     </div>
 
+                    <div class="pull-right">
+                        <i class="icon-comment"></i><span class='commentsCount'>{{>allComments}}</span>
+                    </div>
+
                     <div class="commitMessage margin-top-small"><h5>Commit message:</h5> {{>commitComment}}</div>
                 </div>
 
@@ -223,7 +227,7 @@
             <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small">
 
                 <a id="less-button-topChangeset-{{>identifier}}" class="wideButton"
-                   onclick="showLessAboutChangeset('{{>identifier}}')">
+                   onclick="hideChangesetDetailsAndScroll('{{>identifier}}')">
                     <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
                 </a>
 
@@ -234,7 +238,7 @@
                 <div id="comment-form-{{>identifier}}"></div>
 
                 <a id="less-button-downChangeset-{{>identifier}}" class="wideButton"
-                   onclick="showLessAboutChangeset('{{>identifier}}')">
+                   onclick="hideChangesetDetailsAndScroll('{{>identifier}}')">
                     <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
                 </a>
             </div>
@@ -276,16 +280,20 @@
             </div>
             {{if howManyComments != 0}}
             <div class="row-fluid span3">
-                <button class="btn btn disabled pull-right" style="margin:2px 5px 0px 5px"><i
-                        class="icon-comment"></i><span class='commentsCount'>{{>howManyComments}}</span></button>
+                <div class="pull-right">
+                    <i class="icon-comment"></i><span class='commentsCount'>{{>howManyComments}}</span>
+                </div>
             </div>
             {{/if}}
         </div>
     </div>
 
     <div id='collapse-inner-{{>collapseId}}' class="accordion-body collapse"
-         data-changeset_id='{{:changesetId}}' data-file_id='{{:fileId}}' data-file_change_type='{{:fileChangeType}}'
-         data-file_name_slice='{{:name}}'>
+         data-changeset_id='{{:changesetId}}'
+         data-file_id='{{:fileId}}'
+         data-file_change_type='{{:fileChangeType}}'
+         data-file_name_slice='{{:name}}'
+         data-text_format='{{:textFormat}}'>
         <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
             <div id="fileComments-{{>fileId}}"></div>
         </div>
@@ -300,7 +308,7 @@
         </div>
 
         <div class="span1">
-            <button type="button" class="btn pull-right " onClick="hideFile('{{>changesetId}}', '{{>fileId}}')">
+            <button type="button" class="btn pull-right " onClick="hideFile('{{>changesetId}}')">
                 <i class="icon-remove"></i>
             </button>
         </div>

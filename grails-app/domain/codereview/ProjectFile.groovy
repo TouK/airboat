@@ -1,21 +1,52 @@
 package codereview
 
 class ProjectFile {
-
     String name
     Project project
 
     static belongsTo = [Project]
     static hasMany = [projectFileInChangesets: ProjectFileInChangeset]
 
+    static constraints = {
+        name blank: false
+    }
+    
     ProjectFile(String name) {
         this.name = name
     }
 
+    boolean isTextFormat() {
+        textFileFormats.contains(fileType)
+    }
+
+    private static def textFileFormats = [
+            "java",
+            "groovy",
+            "html",
+            "htm",
+            "jsp",
+            "gsp",
+            "py",
+            "rb",
+            "h",
+            "c",
+            "cpp",
+            "txt",
+            "md",
+            "php",
+            "",
+            "css",
+            "xml",
+            "javascript",
+            "json",
+            "sh"
+    ]
+    
     String getFileType() {
-        def extensionToFiletype = [js: 'javascript', htm: 'html']
         extensionToFiletype.get(extension, extension)
     }
+
+    private static def extensionToFiletype = [js: 'javascript', htm: 'html']
 
     private String getExtension() {
         def extension
@@ -26,9 +57,6 @@ class ProjectFile {
         }
         extension
     }
-
-    static constraints = {
-        name blank: false
-        projectFileInChangesets minSize: 1
-    }
+    
+    
 }

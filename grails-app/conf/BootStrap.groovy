@@ -19,16 +19,16 @@ class BootStrap {
             }
             development {
                 bootstrapNonTestEnvironment(
-                    projectCodeReview(),
-                    new Project('drip', 'https://github.com/flatland/drip.git'),
-                    new Project('visibility.js', 'https://github.com/ai/visibility.js.git'),
+                        Project.findOrCreateWhere(name: 'drip', url: 'https://github.com/flatland/drip.git'),
+                        Project.findOrCreateWhere(name: 'visibility.js', url: 'https://github.com/ai/visibility.js.git'),
+                        projectCodeReview()
                 )
             }
         }
     }
 
     private Project projectCodeReview() {
-        new Project('codereview', PROJECT_CODEREVIEW_REPOSITORY_URL)
+        Project.findOrCreateWhere(name: 'codereview', url:   PROJECT_CODEREVIEW_REPOSITORY_URL)
     }
 
     private void bootstrapNonTestEnvironment(Project... projects) {

@@ -38,7 +38,7 @@ function appendChangeset(changeset) {
     $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render({identifier:changeset.identifier}));
     appendAccordion(changeset.identifier);
 
-    $('#hash-' + changeset.identifier).tooltip({title:changeset.identifier + ", click to copy", trigger:"hover"});
+    $('#hash-' + changeset.identifier).tooltip({title:changeset.identifier + ", click to copy", trigger:"hover", placement:"bottom"});
     $('#hash-' + changeset.identifier).zclip({
         path:uri.libs.zclip.swf,
         copy:changeset.identifier,
@@ -66,7 +66,7 @@ textForChangeType = {
 function appendAccordion(changesetId) {
     $('#accordion-' + changesetId).html("");
 
-    $.getJSON(uri.changeset.getFileNamesForChangeset + changesetId, function (data) {
+    $.getJSON(uri.changeset.getChangesetFiles + changesetId, function (data) {
 
         for (i = 0; i < data.length; i++) {
             var projectFile = data[i];
@@ -74,8 +74,9 @@ function appendAccordion(changesetId) {
                 name:sliceName(projectFile.name, lineBoundary),
                 changesetId:changesetId,
                 fileId:projectFile.id,
+                textFormat:projectFile.textFormat,
                 collapseId:(changesetId + projectFile.id),
-                howManyComments: projectFile.lineComments ? projectFile.lineComments.length : 0,
+                howManyComments: projectFile.commentCount,
                 fileChangeType:projectFile.changeType.name,
                 textForChangeType:textForChangeType,
                 iconForChangeType:iconForChangeType
@@ -87,7 +88,7 @@ function appendAccordion(changesetId) {
 
         $('#accordion-' + changesetId + ' .accordion-body.collapse').on('shown', function () {
             $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
-            showFile(this.dataset.changeset_id, this.dataset.file_id, this.dataset.file_change_type, this.dataset.file_name_slice);
+            showFile(this.dataset);
         })
     });
 }
@@ -120,6 +121,9 @@ function renderCommentGroupsWithSnippets(fileId, changesetId, commentGroupsWithS
             renderCommentGroupWithSnippets(commentGroupsWithSnippets[j], fileId, changesetId, fileType);
         }
     }
+    else {
+        $('#fileComments-' + fileId).html("<h5>This file has no comments.</h5>");
+    }
 }
 
 function renderCommentGroupWithSnippets(commentGroupWithSnippet, fileId, changesetId, fileType) {
@@ -132,6 +136,7 @@ function renderCommentGroupWithSnippets(commentGroupWithSnippet, fileId, changes
     });
 
     $('#fileComments-' + fileId).append(snippet);
+
     $("#snippet-" + fileId + "-" + lineNumber)
         .html("<pre class='codeViewer'/></pre>")
         .children(".codeViewer")
@@ -182,9 +187,20 @@ function showChangesetDetails(identifier) {
     $("#more-button-" + identifier).hide();
 }
 
-function showLessAboutChangeset(identifier) {
+function hideChangesetDetails(identifier) {
+    hideFile(identifier);
     $('#changesetDetails-' + identifier).hide(50);
     $('#more-button-' + identifier).show();
+}
+
+function hideChangesetDetailsAndScroll(identifier) {
+    $('#accordion-' + identifier + ' .accordion-body.collapse').parents('.changeset').ScrollTo({
+        onlyIfOutside:true,
+        offsetTop:codeReview.initialFirstChangesetOffset,
+        callback:function() {
+            hideChangesetDetails(identifier)
+        }
+    });
 }
 
 

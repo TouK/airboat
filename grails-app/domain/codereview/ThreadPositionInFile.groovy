@@ -8,7 +8,7 @@ class ThreadPositionInFile {
 
     static constraints = {
         lineNumber nullable: true
-        projectFileInChangeset unique: true
+        projectFileInChangeset unique: ['thread']
     }
 
     ThreadPositionInFile(ProjectFileInChangeset projectFileInChangeset, CommentThread thread, int lineNumber) {

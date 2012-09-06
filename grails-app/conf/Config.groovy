@@ -118,11 +118,11 @@ log4j = {
 //    trace 'org.hibernate.engine.Cascade'
             //'org.hibernate.type'
 
-    debug 'codereview',
-            'grails.app'
+//    debug 'codereview',
+//            'grails.app',
 //            'org.hibernate.engine',
 //            'org.hibernate.SQL',
-//            'org.hibernate.event',
+//            'org.hibernate.event'
 
 
     environments {

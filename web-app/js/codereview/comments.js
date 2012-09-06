@@ -56,7 +56,7 @@ function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
 function addReply(projectFileId, changesetIdentifier, lineNumber){
     var text = $("#add-reply-" + projectFileId + "-" + lineNumber).val();
 
-    $.post(uri.lineComment.addComment,
+    $.post(uri.lineComment.addReply,
         { changesetIdentifier: changesetIdentifier, projectFileId:projectFileId, text:text, lineNumber:lineNumber},
         function (commentGroupsWithSnippetsForCommentedFile) {
             if (commentGroupsWithSnippetsForCommentedFile.errors == null) {

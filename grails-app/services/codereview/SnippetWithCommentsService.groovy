@@ -2,6 +2,7 @@ package codereview
 
 import static com.google.common.base.Preconditions.checkArgument
 
+//FIXME rewrite this thing...
 class SnippetWithCommentsService {
 
     def prepareCommentGroups(comments) {
@@ -37,15 +38,16 @@ class SnippetWithCommentsService {
         def twoLines = 2
         def threeLines = 3
         while (iterator < commentGroups.size() - 1) {      //how long snippet do we need?
-
-            if (commentGroups[iterator + 1][0].lineNumber - commentGroups[iterator][0].lineNumber == 1) {
-                snippet = getSnippet(commentGroups[iterator][0], oneLine, fileContent)
+            def currentGroup = commentGroups[iterator][0]
+            def nextGroup = commentGroups[iterator + 1]
+            if (nextGroup[0].lineNumber - currentGroup.lineNumber == 1) {
+                snippet = getSnippet(currentGroup, oneLine, fileContent)
             }
-            else if (commentGroups[iterator + 1][0].lineNumber - commentGroups[iterator][0].lineNumber == 2) {
-                snippet = getSnippet(commentGroups[iterator][0], twoLines, fileContent)
+            else if (nextGroup[0].lineNumber - currentGroup.lineNumber == 2) {
+                snippet = getSnippet(currentGroup, twoLines, fileContent)
             }
             else {
-                snippet = getSnippet(commentGroups[iterator][0], threeLines, fileContent)
+                snippet = getSnippet(currentGroup, threeLines, fileContent)
             }
             commentGroupsWithSnippets[iterator] = [commentGroup: commentGroups[iterator], snippet: snippet, filetype: fileType]
             iterator++

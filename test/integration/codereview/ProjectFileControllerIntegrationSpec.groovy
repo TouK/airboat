@@ -10,7 +10,7 @@ class ProjectFileControllerIntegrationSpec extends IntegrationSpec {
 
     ProjectFileController controller = new ProjectFileController(
             scmAccessService: scmAccessService,
-            snippetWithCommentsService: snippetWithCommentsService,
+            //snippetWithCommentsService: snippetWithCommentsService, //TODO somehow this does not set the field...
             diffAccessService: diffAccessService
     )
 
@@ -20,11 +20,15 @@ class ProjectFileControllerIntegrationSpec extends IntegrationSpec {
 
     def 'should return Comments for ProjectFile with their position in given Changeset'() {
         given:
+        controller.snippetWithCommentsService = snippetWithCommentsService
         Changeset firstChangeset = Changeset.build(project: project)
         Changeset secondChangeset = Changeset.build(project: project)
 
         buildThreadWithPosition(firstChangeset, 13)
         buildThreadWithPosition(secondChangeset, 42)
+
+        expect:
+        controller.snippetWithCommentsService != null
 
         when:
         def comments = controller.getLineComments(firstChangeset, projectFile)
