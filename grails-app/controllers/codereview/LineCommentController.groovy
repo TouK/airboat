@@ -18,6 +18,11 @@ class LineCommentController {
         def projectFileInChangeset = ProjectFileInChangeset.findByChangesetAndProjectFile(changeset, projectFile)
         def fileContent = scmAccessService.getFileContent(changeset, projectFile)
 
+        def latestChangesetForProjectFile = ProjectFileInChangeset.findByProjectFile(
+                projectFile, [sort: 'changeset.date', order: 'desc']
+        ).changeset
+        checkArgument(latestChangesetForProjectFile == changeset, "New threads can be started only in latest revision of a file")
+
         //TODO write own, groovy assertion methods using a closure argument to defer (often costly) message evaluation
         checkArgument(projectFile != null, "No file with id ${projectFileId} was found")
         checkArgument(

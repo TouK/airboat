@@ -41,7 +41,7 @@ class LineCommentControllerIntegrationSpec extends IntegrationSpec {
         commentPositions.lineNumber == [lineNumber]
     }
 
-    def 'should return an error when adding a comment to revision other than newest'() {
+    def 'should throw an exception when adding a comment to revision other than newest'() {
         given:
         User loggedInUser = User.build()
         springSecurityService.reauthenticate(loggedInUser.username)
@@ -55,14 +55,9 @@ class LineCommentControllerIntegrationSpec extends IntegrationSpec {
         def lineNumber = numberOfLinesInProjectFile
         def olderChangeset = changesets[0]
         controller.addComment(olderChangeset.identifier, projectFile.id, lineNumber, "comment text")
-        def errors = controller.response.json.errors
-        println()
-
 
         then:
-//        def errors = controller.response.json.errors
-        errors.size() == 1
-        errors.first().message.contains('a newer changeset with this file exists in this project')
+        thrown(IllegalArgumentException)
     }
 
 }
