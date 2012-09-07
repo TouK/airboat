@@ -39,7 +39,8 @@ class ProjectFile {
             "xml",
             "javascript",
             "json",
-            "sh"
+            "sh",
+            "properties"
     ]
     
     String getFileType() {
