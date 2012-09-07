@@ -5,6 +5,8 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 import codereview.ProjectFile
 import codereview.User
 import codereview.Commiter
+import codereview.ThreadPositionInFile
+import codereview.CommentThread
 
 class DbPurger {
 
@@ -24,18 +26,17 @@ class DbPurger {
 
     static void purgeDb() {
         Project.withNewSession {
-            ProjectFile.all.each { it.delete(flush: true) }
-            Project.all.each { Project project ->
-                project.delete(flush: true)
-            }
+            [ThreadPositionInFile, ProjectFile, CommentThread, Project].each { deleteAll(it) }
             User.all.each { User user ->
                 user.committers*.user = null
                 user.committers = [] as Set
                 user.delete(flush: true)
             }
-            Commiter.all.each {
-                it.delete(flush: true)
-            }
+            deleteAll(Commiter)
         }
+    }
+
+    private static void deleteAll(Class domainClass) {
+        domainClass.all*.delete(flush: true)
     }
 }
