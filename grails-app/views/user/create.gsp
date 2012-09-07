@@ -44,15 +44,6 @@
     </g:form>
 </div>
 
-
-<script id="formErrorsTemplate" type="text/x-jsrender">
-    <ul class="alert-block" role="alert">
-        {{for #data}}
-        <li class="alert-error" {{if field}}data-field-id="{{:field}}"{{/if}}>{{:message}}</li>
-        {{/for}}
-    </ul>
-</script>
-
 <script type='text/javascript'>
     /*TODO can't it be done easier?*/
     (function () {
@@ -67,7 +58,7 @@
                 top.onLoggedIn(registration.username);
             } else if (registration.errors) {
                 $('#createUserForm .errors')
-                        .html($('#formErrorsTemplate').render([registration.errors]))
+                        .html($('#defaultFormErrorsTemplate').render([registration.errors]))
                         .hide().fadeIn();
                 resizeColorbox();
             } else {

@@ -23,6 +23,9 @@
                 getLineCommentsWithSnippetsToFile:"${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}",
                 getDiffWithPreviousRevision:"${createLink(uri:'/projectFile/getDiffWithPreviousRevision/')}"
             },
+            user:{
+                changePassword: "${createLink(uri: '/user/changePassword')}"
+            },
             login:"${createLink(uri: '/login/auth')}",
 
             logout:"${createLink(uri: '/logout')}",
@@ -101,6 +104,13 @@
 </head>
 
 <body>
+<script id="defaultFormErrorsTemplate" type="text/x-jsrender">
+    <ul class="alert-block" role="alert">
+        {{for #data}}
+        <li class="alert-error" {{if field}}data-field-id="{{:field}}"{{/if}}>{{:message}}</li>
+        {{/for}}
+    </ul>
+</script>
 <g:layoutBody/>
 <r:layoutResources/>
 </body>
