@@ -10,6 +10,10 @@ class ProjectFile {
     static constraints = {
         name blank: false
     }
+
+    static mapping = {
+        sort "name"
+    }
     
     ProjectFile(String name) {
         this.name = name

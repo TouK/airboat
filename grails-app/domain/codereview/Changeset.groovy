@@ -9,6 +9,10 @@ class Changeset {
     static hasMany = [projectFilesInChangeset: ProjectFileInChangeset, userComments: UserComment]
     static belongsTo = [project: Project, commiter: Commiter]
 
+    static mapping = {
+        projectFilesInChangeset sort:  "projectFile"
+    }
+
     Commiter commiter
 
     Changeset(String identifier, String commitComment, Date date) {

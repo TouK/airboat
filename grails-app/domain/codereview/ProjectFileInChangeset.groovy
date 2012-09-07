@@ -1,7 +1,6 @@
 package codereview
 
 class ProjectFileInChangeset {
-
     ChangeType changeType
 
     ProjectFileInChangeset(Changeset changeset, ProjectFile projectFile, ChangeType changeType) {

@@ -32,7 +32,7 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
     def 'getChangesetFiles should return file names from changeset'() {
         given:
         Project project = Project.build()
-        ProjectFile projectFile = ProjectFile.buildWithoutSave(name: 'kickass!', project: project)
+        ProjectFile projectFile = ProjectFile.build(name: 'kickass!', project: project)
         Changeset changeset = Changeset.build(project: project)
         ProjectFileInChangeset.build(changeset: changeset, projectFile: projectFile)
 
