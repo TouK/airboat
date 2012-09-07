@@ -6,14 +6,19 @@ import grails.plugin.spock.IntegrationSpec
 class ChangesetControllerIntegrationSpec extends IntegrationSpec {
 
     def scmAccessService
+    def returnCommentsService
     ChangesetController controller = new ChangesetController(scmAccessService: scmAccessService)
 
     def 'should return few next changesets older than one with given revision id as JSON'() {
         given:
+        controller.returnCommentsService = returnCommentsService
         String latestChangesetId = '3'
         buildChangelogEntry(latestChangesetId as Integer)
         buildChangelogEntry(2)
         buildChangelogEntry(1)
+
+        expect:
+        controller.returnCommentsService != null
 
         when:
         controller.getNextFewChangesetsOlderThan(latestChangesetId, null)
@@ -25,12 +30,16 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
 
     def 'should return next few changesets older than given, within given project as JSON'() {
         given:
+        controller.returnCommentsService = returnCommentsService
         String latestChangesetId = '3'
         Project project = Project.build(name: 'foo')
         buildChangelogEntry(latestChangesetId as Integer, project)
         buildChangelogEntry(2, project)
         buildChangelogEntry(1, Project.build(name: 'bar'))
         buildChangelogEntry(0, project)
+
+        expect:
+        controller.returnCommentsService != null
 
         when:
         controller.getNextFewChangesetsOlderThan(latestChangesetId, project.name)

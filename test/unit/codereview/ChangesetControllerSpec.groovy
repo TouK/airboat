@@ -7,14 +7,14 @@ import mixins.SpringSecurityControllerMethodsMock
 import spock.lang.Ignore
 
 @TestFor(ChangesetController)
-@Build([ProjectFile, User, Changeset, LineComment])
+@Build([ProjectFile, User, Changeset, LineComment, UserComment])
 class ChangesetControllerSpec extends Specification {
 
     def setup() {
         controller.metaClass.mixin(SpringSecurityControllerMethodsMock)
         controller.scmAccessService = Mock(ScmAccessService)
         controller.snippetWithCommentsService = Mock(SnippetWithCommentsService)
-
+        controller.returnCommentsService = Mock(ReturnCommentsService)
     }
 
     def 'getLastChangesets should return JSON'() {
@@ -56,12 +56,11 @@ class ChangesetControllerSpec extends Specification {
         ProjectFile projectFile = ProjectFile.build(changeset: changeset, name: 'kickass!')
 
         when:
-        controller.params.id = changeset.identifier
-        controller.getChangesetFiles()
+        def result = controller.getChangesetFiles(changeset)
 
         then:
-        response.json.size() == 1
-        response.json.first().name == projectFile.name
+        result.size() == 1
+        result.first().name == projectFile.name
     }
 
     def "should mark logged in user's changesets as theirs"() {

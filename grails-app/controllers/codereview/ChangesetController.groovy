@@ -9,6 +9,7 @@ class ChangesetController {
 
     ScmAccessService scmAccessService
     SnippetWithCommentsService snippetWithCommentsService
+    ReturnCommentsService returnCommentsService
 
     def index() {
         render(view: 'index', model: [projects: Project.all])
@@ -31,14 +32,13 @@ class ChangesetController {
         authenticatedUser != null && authenticatedUser == changeset.commiter?.user
     }
 
-    def getChangesetFiles = {
-        def changeset = Changeset.findByIdentifier(params.id)
+    private List<Map> getChangesetFiles(Changeset changeset) {
         def files = ProjectFile.findAllByChangeset(changeset)
         def fileProperties = files.collect this.&getFileJSONProperties
-        render fileProperties as JSON
+        fileProperties
     }
 
-    private def getFileJSONProperties(ProjectFile file) {
+    private Map getFileJSONProperties(ProjectFile file) {
         def fileProperties = file.properties + [
                 id: file.id
         ]
@@ -79,7 +79,9 @@ class ChangesetController {
                 commentsCount: changeset.commentsCount,
                 projectName: changeset.project.name,
                 belongsToCurrentUser: belongsToCurrentUser(changeset),
-                allComments: getAllComments(changeset)
+                allComments: getAllCommentsCount(changeset),
+                changesetFiles: getChangesetFiles(changeset),
+                commentsToChangeset: returnCommentsToChangeset(changeset.identifier)
         ]
     }
 
@@ -87,7 +89,7 @@ class ChangesetController {
         commiter.user?.email ?: commiter.email
     }
 
-    private Integer getAllComments(Changeset changeset) {
+    private int getAllCommentsCount(Changeset changeset) {
         def allLineComments = 0
         List<LineComment> lineComments
         if (changeset.projectFiles != null) {
@@ -102,6 +104,13 @@ class ChangesetController {
             allLineComments += 0
         }
         return (allLineComments + changeset.commentsCount)
+    }
+
+    def returnCommentsToChangeset(String changesetIdentifier) {
+        def changeset = Changeset.findByIdentifier(changesetIdentifier) //TODO check that only one query is executed, refactor otherwise
+        def comments = UserComment.findAllByChangeset(changeset)
+        def commentsProperties = comments.collect this.returnCommentsService.&getCommentJSONproperties
+        commentsProperties
     }
 
     private List<Changeset> getLastChagesetsFromProject(String projectName) {
