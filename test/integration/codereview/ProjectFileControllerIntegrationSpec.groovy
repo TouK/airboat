@@ -1,6 +1,7 @@
 package codereview
 
 import grails.plugin.spock.IntegrationSpec
+import util.DbPurger
 
 class ProjectFileControllerIntegrationSpec extends IntegrationSpec {
 
@@ -14,9 +15,15 @@ class ProjectFileControllerIntegrationSpec extends IntegrationSpec {
             diffAccessService: diffAccessService
     )
 
-    Project project = Project.build()
-    ProjectFile projectFile = ProjectFile.buildWithoutSave(name: 'groovy.groovy', project: project)
-    LineComment comment = LineComment.build(text: 'first comment')
+    Project project
+    ProjectFile projectFile
+    LineComment comment
+
+    def setup() {
+        project = Project.build()
+        projectFile = ProjectFile.buildWithoutSave(name: 'groovy.groovy', project: project)
+        comment = LineComment.build(text: 'first comment')
+    }
 
     def 'should return Comments for ProjectFile with their position in given Changeset'() {
         given:
