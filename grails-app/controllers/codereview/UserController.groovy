@@ -2,12 +2,15 @@ package codereview
 
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
+import org.springframework.security.core.AuthenticationException
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 
 class UserController {
 
     static allowedMethods = [save: 'POST']
 
     def springSecurityService
+    def authenticationManager
 
     def create() {
     }
@@ -25,6 +28,41 @@ class UserController {
         } else {
             validateDbDependentConstraintsAndSaveUser(command)
         }
+    }
+
+    @Secured('isAuthenticated()')
+    def changePassword() {
+    }
+
+    def saveNewPassword(ChangePasswordCommand command) {
+        command.validate()
+        if (command.hasErrors()) {
+            render(command.errors as JSON)
+        } else {
+            validateOldPasswordAndSetNewPassword(command)
+        }
+    }
+
+    private void validateOldPasswordAndSetNewPassword(ChangePasswordCommand command) {
+        if (isPasswordValid(command.oldPassword)) {
+            authenticatedUser.password = command.newPassword
+            authenticatedUser.save()
+            render([success: true, message: message(code:'passwordChanged')] as JSON)
+        } else {
+            command.errors['oldPassword'] = 'invalidPassword'
+            render(command.errors as JSON)
+        }
+    }
+
+    private boolean isPasswordValid(password) {
+        def isPasswordValid
+        try {
+            authenticationManager.authenticate new UsernamePasswordAuthenticationToken(authenticatedUser.username, password)
+            isPasswordValid = true
+        } catch (AuthenticationException e) {
+            isPasswordValid = false;
+        }
+        isPasswordValid
     }
 
     @Secured('isAuthenticated()')
@@ -61,8 +99,6 @@ class UserController {
     }
 
     //FIXME move to service
-
-
     private void saveUser(User user) {
         user.enabled = true
         Commiter.findAllByCvsCommiterIdIlike("%${user.email}%").each {
