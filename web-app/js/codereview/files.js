@@ -21,7 +21,9 @@ function showFile(dataset) {
             });
         }
         else {
+            fillFileTitleTemplate(divideNameWithSlashesInTwo(fileNameSlice), changesetIdentifier, projectFileId);
             showMessageAboutNonTextFile(changesetIdentifier);
+            showFilesContent(changesetIdentifier);
         }
     }
     else {
