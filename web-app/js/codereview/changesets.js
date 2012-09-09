@@ -108,13 +108,13 @@ function appendAccordion(changeset) {
         appendSnippetToFileInAccordion(this.dataset.changeset_id, this.dataset.file_id)
         showFile(this.dataset);
     }).on('shown', function () {
+        $('#collapse-inner-' + changesetIdentifier + projectFileId).collapse('reset')
         $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
     });
 }
 
 function updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, projectFileId) {
-    renderCommentGroupsWithSnippets(projectFileId, changesetId, commentGroupsWithSnippetsForCommentedFile);
-    $('#collapse-inner-' + changesetId + projectFileId).removeAttr('style');
+    renderCommentGroupsWithSnippets(changesetId, projectFileId, commentGroupsWithSnippetsForCommentedFile);
     $('#accordion-group-' + changesetId + projectFileId + ' .commentsCount')
         .text(commentGroupsWithSnippetsForCommentedFile.commentsCount)
 }
@@ -124,39 +124,39 @@ function appendSnippetToFileInAccordion(changesetIdentifier, projectFileId) {
         changesetIdentifier:changesetIdentifier, projectFileId:projectFileId
     }),
         function (commentGroupsWithSnippetsForFile) {
-            renderCommentGroupsWithSnippets(projectFileId, changesetIdentifier, commentGroupsWithSnippetsForFile);
+            renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippetsForFile);
         }
     );
 }
 
-function renderCommentGroupsWithSnippets(fileId, changesetId, commentGroupsWithSnippetsForFile) {
+function renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippetsForFile) {
     var fileType = commentGroupsWithSnippetsForFile.fileType;
     var commentGroupsWithSnippets = commentGroupsWithSnippetsForFile.commentGroupsWithSnippets;
 
     if (commentGroupsWithSnippets.length > 0) {
-        $('#fileComments-' + fileId).html("");
+        $('#fileComments-' + changesetIdentifier + projectFileId).html("");
 
         for (j = 0; j < commentGroupsWithSnippets.length; j++) {
-            renderCommentGroupWithSnippets(commentGroupsWithSnippets[j], fileId, changesetId, fileType);
+            renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippets[j], fileType);
         }
     }
     else {
-        $('#fileComments-' + fileId).html("<h5>This file has no comments.</h5>");
+        $('#fileComments-' + changesetIdentifier + projectFileId).html("<h5>This file has no comments.</h5>");
     }
 }
 
-function renderCommentGroupWithSnippets(commentGroupWithSnippet, fileId, changesetId, fileType) {
+function renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, commentGroupWithSnippet, fileType) {
     var lineNumber = commentGroupWithSnippet.commentGroup[0].lineNumber;
 
     var snippet = $("#snippetTemplate").render({
-        fileId:fileId,
+        fileId:projectFileId,
         lineNumber:lineNumber,
-        changesetId:changesetId
+        changesetId:changesetIdentifier
     });
 
-    $('#fileComments-' + fileId).append(snippet);
+    $('#fileComments-' + changesetIdentifier + projectFileId).append(snippet);
 
-    $("#snippet-" + fileId + "-" + lineNumber)
+    $("#snippet-" + projectFileId + "-" + lineNumber)
         .html("<pre class='codeViewer'/></pre>")
         .children(".codeViewer")
         .text(commentGroupWithSnippet.snippet)
@@ -164,13 +164,13 @@ function renderCommentGroupWithSnippets(commentGroupWithSnippet, fileId, changes
         .addClass("language-" + fileType)
         .syntaxHighlight();
 
-    renderCommentGroup(commentGroupWithSnippet.commentGroup, fileId, lineNumber);
+    renderCommentGroup(changesetIdentifier, projectFileId, commentGroupWithSnippet.commentGroup, lineNumber);
 }
 
-function renderCommentGroup(commentGroup, fileId, lineNumber) {
+function renderCommentGroup(changesetIdentifier, projectFileId, commentGroup, lineNumber) {
     for (var k = 0; k < commentGroup.length; k++) {
         var comment = $("#commentTemplate").render(commentGroup[k]);
-        $('#div-comments-' + fileId + "-" + lineNumber).append(comment);
+        $('#div-comments-' + changesetIdentifier + projectFileId + "-" + lineNumber).append(comment);
     }
 }
 
