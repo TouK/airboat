@@ -70,7 +70,7 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         controller.returnCommentsService != null
 
         when:
-        controller.getNextFewChangesetsOlderThan(latestChangesetId, null)
+        controller.getNextFewChangesetsOlderThan(latestChangesetId)
 
         then:
         responseChangesets*.identifier == ['2', '1']
@@ -89,7 +89,7 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         controller.returnCommentsService != null
 
         when:
-        controller.getNextFewChangesetsOlderThan(latestChangesetId, project.name)
+        controller.getNextFewChangesetsOlderThanFromSameProject(latestChangesetId)
 
         then:
         def responseChangesets = controller.response.json.collect {day, changesetsForDay -> changesetsForDay}.flatten()

@@ -13,32 +13,37 @@ function onScrollThroughBottomAttempt() {
 function loadMoreChangesets() {
     if (!changesetsLoading) {
         changesetsLoading = true;
-        $.getJSON(uri.changeset.getNextFewChangesetsOlderThan + '?' + $.param({projectName:projectName, changesetId:lastChangesetId}), appendChangesetsBottom)
+        var controllerAction;
+        if (projectName == '') {
+            controllerAction = uri.changeset.getNextFewChangesetsOlderThan
+        } else {
+            controllerAction = uri.changeset.getNextFewChangesetsOlderThanFromSameProject
+        }
+        $.getJSON(controllerAction + '?' + $.param({changesetId:lastLoadedChangesetId}), appendChangesetsBottom)
     }
 }
 
-var lastChangesetId;
+var lastLoadedChangesetId;
 var changesetsLoading;
 
 function appendChangesetsTop(changestets) {
     //TODO when there will be needed (when new changsets will be pushed from server to application)
 }
 
-function appendChangesetsBottom(changesets) {
-    for (group in changesets) {
-        lastChangesetId = changesets[group][changesets[group].length - 1].identifier;
-
+function appendChangesetsBottom(changesetsByDay) {
+    for (day in changesetsByDay) {
         //find or create day container
-        var dayElement = getDayContainer(group);
+        var dayElement = getDayContainer(day);
         if (dayElement.length == 0) {
             //create new day element
-            $('#content').append($("#dayTemplate").render({date:group}));
+            $('#content').append($("#dayTemplate").render({date:day}));
         }
-        dayElement = getDayContainer(group);
-        for (i = 0; i < changesets[group].length; i++) {
-            appendChangeset(changesets[group][i], dayElement);
+        dayElement = getDayContainer(day);
+        var changesetsForDay = changesetsByDay[day];
+        for (i = 0; i < changesetsForDay.length; i++) {
+            appendChangeset(changesetsForDay[i], dayElement);
+            lastLoadedChangesetId = changesetsForDay[i].id;
         }
-
     }
     changesetsLoading = false;
 }
