@@ -88,8 +88,6 @@ textForChangeType = {
 }
 
 function appendAccordion(changeset) {
-    $('#accordion-' + changeset.identifier).html("");
-
     for (var i = 0; i < changeset.changesetFiles.length; i++) {
         var projectFile = changeset.changesetFiles[i];
         var accordionRow = $("#accordionFilesTemplate").render({
@@ -106,9 +104,11 @@ function appendAccordion(changeset) {
         $('#accordion-' + changeset.identifier).append(accordionRow);
     }
 
-    $('#accordion-' + changeset.identifier + ' .accordion-body.collapse').on('shown', function () {
-        $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
+    $('#accordion-' + changeset.identifier + ' .accordion-body.collapse').on('show', function() {
+        appendSnippetToFileInAccordion(this.dataset.changeset_id, this.dataset.file_id)
         showFile(this.dataset);
+    }).on('shown', function () {
+        $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
     });
 }
 
