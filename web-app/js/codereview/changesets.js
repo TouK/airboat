@@ -108,7 +108,6 @@ function appendAccordion(changeset) {
         appendSnippetToFileInAccordion(this.dataset.changeset_id, this.dataset.file_id)
         showFile(this.dataset);
     }).on('shown', function () {
-        $('#collapse-inner-' + changesetIdentifier + projectFileId).collapse('reset')
         $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
     });
 }
@@ -125,6 +124,7 @@ function appendSnippetToFileInAccordion(changesetIdentifier, projectFileId) {
     }),
         function (commentGroupsWithSnippetsForFile) {
             renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippetsForFile);
+            $('#collapse-inner-' + changesetIdentifier + projectFileId).collapse('reset')
         }
     );
 }
