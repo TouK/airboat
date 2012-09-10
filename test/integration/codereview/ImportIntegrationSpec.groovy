@@ -36,7 +36,7 @@ class ImportIntegrationSpec extends IntegrationSpec {
         DbPurger.verifyDbIsClean()
     }
 
-    def "should import project meta-data to db"() {
+    def "should import changesets and "() {
         when:
         Project.withNewSession {
             scmAccessService.importAllChangesets(projectUrl)

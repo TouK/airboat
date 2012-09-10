@@ -18,7 +18,7 @@ class ScmAccessService {
         importChangesets(projectScmUrl, gitRepositoryService.getAllChangesets(projectScmUrl))
     }
 
-    void importNewChangesets(String projectScmUrl, String hashOfLastChangeset) {
+    void importNewChangesetsSince(String projectScmUrl, String hashOfLastChangeset) {
         importChangesets(projectScmUrl, gitRepositoryService.getNewChangesets(projectScmUrl, hashOfLastChangeset))
     }
 
@@ -28,7 +28,7 @@ class ScmAccessService {
         project.save()
     }
 
-    //FIXME boost performance with entity chaches
+    //FIXME boost performance with entity caches
     private void importChangeset(GitChangeset gitChangeset, Project project) {
         Commiter commiter = Commiter.findOrCreateWhere(cvsCommiterId: gitChangeset.gitCommitterId)
 
@@ -42,15 +42,18 @@ class ScmAccessService {
         gitChangeset.files.each { GitChangedFile file ->
             //FIXME verify why no constraints are violated here (learning test?)
             ProjectFile projectFile = ProjectFile.findOrSaveWhere(name: file.name, project: project)
-            new ProjectFileInChangeset(changeset, projectFile, convertChangeType(file.changeType))
+            def projectFileInChangeset = new ProjectFileInChangeset(changeset, projectFile, convertChangeType(file.changeType))
+            def threadPositionsInPreviousChangeset = ProjectFileInChangeset
+                    .findByProjectFile(projectFile, [sort: 'changeset.date', order: 'desc'])
+                    .commentThreadsPositions
+            projectFileInChangeset.commentThreadsPositions = threadPositionsInPreviousChangeset
         }
 
         changeset.save()
-//        project.save() //FIXME check that files are associated with changesets
 
         def email = commiter.cvsCommiterId
         def user = User.findByEmail(email)
-        user?.addToCommitters(commiter)        //FIXME what if commmitter exists in this user?
+        user?.addToCommitters(commiter)
         user?.save()
     }
 
