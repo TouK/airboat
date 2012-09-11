@@ -14,12 +14,12 @@ class ScmAccessService {
         gitRepositoryService.updateOrCheckOutRepository(scmUrl)
     }
 
-    void importAllChangesets(String projectScmUrl) {
-        importChangesets(projectScmUrl, gitRepositoryService.getAllChangesets(projectScmUrl))
+    void importChangesetsSinceBegining(String projectScmUrl, int maxChangesetsToImport = Integer.MAX_VALUE) {
+        importChangesets(projectScmUrl, gitRepositoryService.getAllChangesets(projectScmUrl, maxChangesetsToImport))
     }
 
-    void importNewChangesetsSince(String projectScmUrl, String hashOfLastChangeset) {
-        importChangesets(projectScmUrl, gitRepositoryService.getNewChangesets(projectScmUrl, hashOfLastChangeset))
+    void importChangesetsSince(String projectScmUrl, String hashOfLastChangeset, int maxChangesetsToImport = Integer.MAX_VALUE) {
+        importChangesets(projectScmUrl, gitRepositoryService.getNewChangesets(projectScmUrl, hashOfLastChangeset, maxChangesetsToImport))
     }
 
     private void importChangesets(String projectScmUrl, List<GitChangeset> gitChangesets) {
@@ -50,6 +50,7 @@ class ScmAccessService {
         }
 
         changeset.save()
+        project.save()
 
         def email = commiter.cvsCommiterId
         def user = User.findByEmail(email)

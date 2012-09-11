@@ -34,7 +34,7 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
         when:
         Project.withNewSession {
-            scmAccessService.importAllChangesets(project.url)
+            scmAccessService.importChangesetsSinceBegining(project.url)
         }
 
         then:
@@ -46,7 +46,7 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         GitChangeset gitChangeset = new GitChangeset(commitComment, changesetAuthor, changesetId, new Date())
 
         GitRepositoryService gitRepositoryService = Mock()
-        1 * gitRepositoryService.getAllChangesets(url) >> [gitChangeset]
+        1 * gitRepositoryService.getAllChangesets(url, _) >> [gitChangeset]
 
         scmAccessService.gitRepositoryService = gitRepositoryService
     }
@@ -73,7 +73,7 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
         when:
         Project.withNewSession {
-            scmAccessService.importAllChangesets(project.url)
+            scmAccessService.importChangesetsSinceBegining(project.url)
         }
 
         then:
@@ -100,7 +100,7 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
         when:
         Project.withNewSession {
-            scmAccessService.importAllChangesets(project.url)
+            scmAccessService.importChangesetsSinceBegining(project.url)
         }
 
         then:
@@ -129,7 +129,7 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
         when:
         Changeset.withNewSession {
-            scmAccessService.importAllChangesets(project.url)
+            scmAccessService.importChangesetsSinceBegining(project.url)
         }
 
         then:
