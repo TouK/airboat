@@ -41,23 +41,32 @@ class GitRepositoryService {
         return git.repository
     }
 
-    def getAllChangesets(String scmUrl) {
+    def getAllChangesets(String scmUrl, int maxChangesetsToImport = Integer.MAX_VALUE) {
         Git git = prepareGit(scmUrl)
-        Iterable<RevCommit> logOutput = git.log().call()
-        prepareGitChangesets(logOutput, git.repository.workTree)
+        def logOutput = []
+        for (RevCommit commit : git.log().call()) {
+            logOutput << commit
+        }
+        logOutput.sort { it.commitTime }
+        prepareGitChangesets(logOutput, git.repository.workTree, maxChangesetsToImport)
     }
 
-    def getNewChangesets(String scmUrl, String lastChangesetPathSpec) {
+    def getNewChangesets(String scmUrl, String lastChangesetPathSpec, int maxChangesetsToImport = Integer.MAX_VALUE) {
         Git git = prepareGit(scmUrl)
         def lastChangesetId = git.repository.resolve(lastChangesetPathSpec)
-        def logOutput = git.log().not(lastChangesetId).call()
-        prepareGitChangesets(logOutput, git.repository.workTree)
+
+        def logOutput = []
+        for (RevCommit commit : git.log().not(lastChangesetId).call()) {
+            logOutput << commit
+        }
+        logOutput.sort { it.commitTime }
+        prepareGitChangesets(logOutput, git.repository.workTree, maxChangesetsToImport)
     }
 
-    private List<GitChangeset> prepareGitChangesets(Iterable<RevCommit> logOutput, File workTree) {
+    private List<GitChangeset> prepareGitChangesets(Iterable<RevCommit> logOutput, File workTree, int maxChangesetsToImport) {
         def logIterator = logOutput.iterator()
         def changesets = []
-        while (logIterator.hasNext()) {
+        while (logIterator.hasNext() && changesets.size() < maxChangesetsToImport) {
             def commit = logIterator.next()
             def commitHash = commit.toString().split(" ")[1]
             GitChangeset gitChangeset = new GitChangeset(

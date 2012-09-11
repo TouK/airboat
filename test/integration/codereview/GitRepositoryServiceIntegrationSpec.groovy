@@ -3,8 +3,9 @@ package codereview
 import grails.plugin.spock.IntegrationSpec
 
 import static testFixture.Fixture.*
-import testFixture.Fixture
+
 import org.eclipse.jgit.diff.DiffEntry
+import testFixture.Fixture
 
 class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
 
@@ -36,17 +37,15 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     }
 
     def "should get only newer changesets"() {
+        given:
+        def changesets = gitRepositoryService.getAllChangesets(projectUrl, (int) Fixture.LOWER_BOUND_FOR_NUMBER_OF_COMMITS / 2)
+
         when:
-        def changesets = gitRepositoryService.getAllChangesets(projectUrl)
-        int index = changesets.size() / 10
-        String hash = changesets[index].rev
-        def newerChangesets = gitRepositoryService.getNewChangesets(projectUrl, hash)
+        def newerChangesets = gitRepositoryService.getNewChangesets(projectUrl, changesets.last().rev)
 
         then:
         !newerChangesets.isEmpty()
-        newerChangesets.size() < changesets.size()
-        newerChangesets.last().gitCommitterId
-        newerChangesets.last().fullMessage
+        changesets.collect { it.date }.max() < newerChangesets.collect { it.date }.min()
     }
 
     def "should get arbitrary changeset's file content"() {
@@ -115,13 +114,13 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
         thrown(IllegalArgumentException)
     }
 
-    def "should get changesets in reverse chronological order"() {
+    def "should get changesets in chronological order"() {
         when:
         def changesets = gitRepositoryService.getAllChangesets(projectUrl)
 
         then:
-        def changesetsInReverseChronology = changesets.sort(false) { -it.date.time }
-        changesets == changesetsInReverseChronology
+        def changesetsInChronologicalOrder = changesets.sort(false) { it.date.time }
+        changesets == changesetsInChronologicalOrder
     }
 
     def "should read changeset types from git repository"() {
@@ -129,7 +128,7 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
         def changesets = gitRepositoryService.getAllChangesets(projectUrl)
 
         then:
-        def firstCommit = changesets.last()
+        def firstCommit = changesets.first()
         firstCommit.files.every { it.changeType == DiffEntry.ChangeType.ADD }
     }
 }

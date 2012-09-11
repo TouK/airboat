@@ -8,6 +8,9 @@ import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.lib.RepositoryBuilder
 import org.eclipse.jgit.treewalk.CanonicalTreeParser
 import org.eclipse.jgit.errors.RepositoryNotFoundException
+import org.eclipse.jgit.treewalk.EmptyTreeIterator
+
+import static com.google.common.base.Preconditions.checkArgument
 
 class DiffAccessService {
 
@@ -49,23 +52,21 @@ class DiffAccessService {
     List<GitChangedFile> getFilesChangedInCommit(File workTree, String pathSpec) {
         Repository repository = openGitRepository(workTree)
         Git git = new Git(repository);
-        def oldTree = getTreeIterator(repository, pathSpec + "^1")
+        def oldTree = getTreeIterator(repository, pathSpec + "^") ?: new EmptyTreeIterator()
         def newTree = getTreeIterator(repository, pathSpec)
-        if (newTree != null && oldTree != null) {
-            List<DiffEntry> diffs = git.diff()
-                    .setOldTree(oldTree)
-                    .setNewTree(newTree)
-                    .call()
-            diffs.collect { changedFile ->
-                if (!changedFile.newPath.contains("null")) {
-                    new GitChangedFile(name: changedFile.newPath, changeType: changedFile.changeType)
-                }
-                else {
-                    new GitChangedFile(name: changedFile.oldPath, changeType: changedFile.changeType)
-                }
+        checkArgument(newTree != null, "Could not find pathSpec in repository $workTree.absolutePath: \$pathSpec")
+
+        List<DiffEntry> diffs = git.diff()
+                .setOldTree(oldTree)
+                .setNewTree(newTree)
+                .call()
+        diffs.collect { changedFile ->
+            if (!changedFile.newPath.contains("null")) {
+                new GitChangedFile(name: changedFile.newPath, changeType: changedFile.changeType)
             }
-        } else {
-            return null
+            else {
+                new GitChangedFile(name: changedFile.oldPath, changeType: changedFile.changeType)
+            }
         }
     }
 
@@ -73,7 +74,7 @@ class DiffAccessService {
         return new RepositoryBuilder().setWorkTree(workTree).setMustExist(true).build()
     }
 
-    private def getTreeIterator(Repository repository, String hash) {
+    private CanonicalTreeParser getTreeIterator(Repository repository, String hash) {
         ObjectId commitId = repository.resolve(hash + "^{tree}");
         CanonicalTreeParser treeIterator = new CanonicalTreeParser();
         ObjectReader reader = repository.newObjectReader();

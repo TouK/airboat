@@ -29,9 +29,9 @@ class ProjectUpdateJob {
                 scmAccessService.updateOrCheckOutRepository(projectRepositoryUrl)
                 Changeset lastChangeset = Changeset.findByProject(project, [sort: 'date', order: 'desc'])
                 if (lastChangeset != null) {
-                    scmAccessService.importNewChangesets(projectRepositoryUrl, lastChangeset.identifier)
+                    scmAccessService.importChangesetsSince(projectRepositoryUrl, lastChangeset.identifier)
                 } else {
-                    scmAccessService.importAllChangesets(projectRepositoryUrl)
+                    scmAccessService.importChangesetsSinceBegining(projectRepositoryUrl)
                 }
             }
         })

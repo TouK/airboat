@@ -77,10 +77,10 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
 
     def 'should return next few changesets older than given, within given project as JSON'() {
         given:
-        Project project = Project.build(name: 'foo')
+        Project project = Project.build()
         def latestChangeset = buildChangelogEntry(3, project)
         buildChangelogEntry(2, project)
-        buildChangelogEntry(1, Project.build(name: 'bar'))
+        buildChangelogEntry(1, Project.build())
         buildChangelogEntry(0, project)
 
         expect:

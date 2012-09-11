@@ -13,6 +13,10 @@ import org.eclipse.jgit.errors.RepositoryNotFoundException
 import spock.lang.Ignore
 
 import static testFixture.Fixture.PROJECT_CODEREVIEW_ON_THIS_MACHINE_URL
+import static testFixture.Fixture.FIRST_COMMIT_HASH
+import org.eclipse.jgit.diff.DiffEntry
+
+import static testFixture.Fixture.PROJECT_CODEREVIEW_NAME
 
 @Build(ProjectFileInChangeset)
 class DiffAccessServiceSpec extends Specification {
@@ -116,4 +120,13 @@ class DiffAccessServiceSpec extends Specification {
         fileDiff == ""
     }
 
+
+    def 'should get files changed in first commit'() {
+        when:
+        def changedFiles = diffAccessService.getFilesChangedInCommit(projectRoot, FIRST_COMMIT_HASH)
+
+        then:
+        changedFiles.size() == 56
+        changedFiles*.changeType.unique() == [DiffEntry.ChangeType.ADD]
+    }
 }
