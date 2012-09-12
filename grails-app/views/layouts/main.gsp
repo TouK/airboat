@@ -16,6 +16,7 @@
                 addComment:"${createLink(uri: '/userComment/addComment')}"
             },
             lineComment:{
+                checkCanAddComment:"${createLink(uri: '/lineComment/checkCanAddComment')}",
                 addComment:"${createLink(uri: '/lineComment/addComment')}",
                 addReply:"${createLink(uri: '/lineComment/addReply')}"
             },
