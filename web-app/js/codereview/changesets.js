@@ -13,32 +13,37 @@ function onScrollThroughBottomAttempt() {
 function loadMoreChangesets() {
     if (!changesetsLoading) {
         changesetsLoading = true;
-        $.getJSON(uri.changeset.getNextFewChangesetsOlderThan + '?' + $.param({projectName:projectName, changesetId:lastChangesetId}), appendChangesetsBottom)
+        var controllerAction;
+        if (projectName == '') {
+            controllerAction = uri.changeset.getNextFewChangesetsOlderThan
+        } else {
+            controllerAction = uri.changeset.getNextFewChangesetsOlderThanFromSameProject
+        }
+        $.getJSON(controllerAction + '?' + $.param({changesetId:lastLoadedChangesetId}), appendChangesetsBottom)
     }
 }
 
-var lastChangesetId;
+var lastLoadedChangesetId;
 var changesetsLoading;
 
 function appendChangesetsTop(changestets) {
     //TODO when there will be needed (when new changsets will be pushed from server to application)
 }
 
-function appendChangesetsBottom(changesets) {
-    for (group in changesets) {
-        lastChangesetId = changesets[group][changesets[group].length - 1].identifier;
-
+function appendChangesetsBottom(changesetsByDay) {
+    for (day in changesetsByDay) {
         //find or create day container
-        var dayElement = getDayContainer(group);
+        var dayElement = getDayContainer(day);
         if (dayElement.length == 0) {
             //create new day element
-            $('#content').append($("#dayTemplate").render({date:group}));
+            $('#content').append($("#dayTemplate").render({date:day}));
         }
-        dayElement = getDayContainer(group);
-        for (i = 0; i < changesets[group].length; i++) {
-            appendChangeset(changesets[group][i], dayElement);
+        dayElement = getDayContainer(day);
+        var changesetsForDay = changesetsByDay[day];
+        for (i = 0; i < changesetsForDay.length; i++) {
+            appendChangeset(changesetsForDay[i], dayElement);
+            lastLoadedChangesetId = changesetsForDay[i].id;
         }
-
     }
     changesetsLoading = false;
 }
@@ -83,8 +88,6 @@ textForChangeType = {
 }
 
 function appendAccordion(changeset) {
-    $('#accordion-' + changeset.identifier).html("");
-
     for (var i = 0; i < changeset.changesetFiles.length; i++) {
         var projectFile = changeset.changesetFiles[i];
         var accordionRow = $("#accordionFilesTemplate").render({
@@ -101,15 +104,16 @@ function appendAccordion(changeset) {
         $('#accordion-' + changeset.identifier).append(accordionRow);
     }
 
-    $('#accordion-' + changeset.identifier + ' .accordion-body.collapse').on('shown', function () {
-        $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
+    $('#accordion-' + changeset.identifier + ' .accordion-body.collapse').on('show', function() {
+        appendSnippetToFileInAccordion(this.dataset.changeset_id, this.dataset.file_id)
         showFile(this.dataset);
+    }).on('shown', function () {
+        $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
     });
 }
 
 function updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, projectFileId) {
-    renderCommentGroupsWithSnippets(projectFileId, changesetId, commentGroupsWithSnippetsForCommentedFile);
-    $('#collapse-inner-' + changesetId + projectFileId).removeAttr('style');
+    renderCommentGroupsWithSnippets(changesetId, projectFileId, commentGroupsWithSnippetsForCommentedFile);
     $('#accordion-group-' + changesetId + projectFileId + ' .commentsCount')
         .text(commentGroupsWithSnippetsForCommentedFile.commentsCount)
 }
@@ -119,39 +123,40 @@ function appendSnippetToFileInAccordion(changesetIdentifier, projectFileId) {
         changesetIdentifier:changesetIdentifier, projectFileId:projectFileId
     }),
         function (commentGroupsWithSnippetsForFile) {
-            renderCommentGroupsWithSnippets(projectFileId, changesetIdentifier, commentGroupsWithSnippetsForFile);
+            renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippetsForFile);
+            $('#collapse-inner-' + changesetIdentifier + projectFileId).collapse('reset')
         }
     );
 }
 
-function renderCommentGroupsWithSnippets(fileId, changesetId, commentGroupsWithSnippetsForFile) {
+function renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippetsForFile) {
     var fileType = commentGroupsWithSnippetsForFile.fileType;
     var commentGroupsWithSnippets = commentGroupsWithSnippetsForFile.commentGroupsWithSnippets;
 
     if (commentGroupsWithSnippets.length > 0) {
-        $('#fileComments-' + fileId).html("");
+        $('#fileComments-' + changesetIdentifier + projectFileId).html("");
 
         for (j = 0; j < commentGroupsWithSnippets.length; j++) {
-            renderCommentGroupWithSnippets(commentGroupsWithSnippets[j], fileId, changesetId, fileType);
+            renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippets[j], fileType);
         }
     }
     else {
-        $('#fileComments-' + fileId).html("<h5>This file has no comments.</h5>");
+        $('#fileComments-' + changesetIdentifier + projectFileId).html("<h5>This file has no comments.</h5>");
     }
 }
 
-function renderCommentGroupWithSnippets(commentGroupWithSnippet, fileId, changesetId, fileType) {
+function renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, commentGroupWithSnippet, fileType) {
     var lineNumber = commentGroupWithSnippet.commentGroup[0].lineNumber;
 
     var snippet = $("#snippetTemplate").render({
-        fileId:fileId,
+        fileId:projectFileId,
         lineNumber:lineNumber,
-        changesetId:changesetId
+        changesetId:changesetIdentifier
     });
 
-    $('#fileComments-' + fileId).append(snippet);
+    $('#fileComments-' + changesetIdentifier + projectFileId).append(snippet);
 
-    $("#snippet-" + fileId + "-" + lineNumber)
+    $("#snippet-" + projectFileId + "-" + lineNumber)
         .html("<pre class='codeViewer'/></pre>")
         .children(".codeViewer")
         .text(commentGroupWithSnippet.snippet)
@@ -159,13 +164,13 @@ function renderCommentGroupWithSnippets(commentGroupWithSnippet, fileId, changes
         .addClass("language-" + fileType)
         .syntaxHighlight();
 
-    renderCommentGroup(commentGroupWithSnippet.commentGroup, fileId, lineNumber);
+    renderCommentGroup(changesetIdentifier, projectFileId, commentGroupWithSnippet.commentGroup, lineNumber);
 }
 
-function renderCommentGroup(commentGroup, fileId, lineNumber) {
+function renderCommentGroup(changesetIdentifier, projectFileId, commentGroup, lineNumber) {
     for (var k = 0; k < commentGroup.length; k++) {
         var comment = $("#commentTemplate").render(commentGroup[k]);
-        $('#div-comments-' + fileId + "-" + lineNumber).append(comment);
+        $('#div-comments-' + changesetIdentifier + projectFileId + "-" + lineNumber).append(comment);
     }
 }
 

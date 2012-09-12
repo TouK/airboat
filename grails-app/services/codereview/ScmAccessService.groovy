@@ -14,12 +14,12 @@ class ScmAccessService {
         gitRepositoryService.updateOrCheckOutRepository(scmUrl)
     }
 
-    void importAllChangesets(String projectScmUrl) {
-        importChangesets(projectScmUrl, gitRepositoryService.getAllChangesets(projectScmUrl))
+    void importChangesetsSinceBegining(String projectScmUrl, int maxChangesetsToImport = Integer.MAX_VALUE) {
+        importChangesets(projectScmUrl, gitRepositoryService.getAllChangesets(projectScmUrl, maxChangesetsToImport))
     }
 
-    void importNewChangesets(String projectScmUrl, String hashOfLastChangeset) {
-        importChangesets(projectScmUrl, gitRepositoryService.getNewChangesets(projectScmUrl, hashOfLastChangeset))
+    void importChangesetsSince(String projectScmUrl, String hashOfLastChangeset, int maxChangesetsToImport = Integer.MAX_VALUE) {
+        importChangesets(projectScmUrl, gitRepositoryService.getNewChangesets(projectScmUrl, hashOfLastChangeset, maxChangesetsToImport))
     }
 
     private void importChangesets(String projectScmUrl, List<GitChangeset> gitChangesets) {
@@ -28,7 +28,7 @@ class ScmAccessService {
         project.save()
     }
 
-    //FIXME boost performance with entity chaches
+    //FIXME boost performance with entity caches
     private void importChangeset(GitChangeset gitChangeset, Project project) {
         Commiter commiter = Commiter.findOrCreateWhere(cvsCommiterId: gitChangeset.gitCommitterId)
 
@@ -42,15 +42,19 @@ class ScmAccessService {
         gitChangeset.files.each { GitChangedFile file ->
             //FIXME verify why no constraints are violated here (learning test?)
             ProjectFile projectFile = ProjectFile.findOrSaveWhere(name: file.name, project: project)
-            new ProjectFileInChangeset(changeset, projectFile, convertChangeType(file.changeType))
+            def projectFileInItsPreviousChangeset = ProjectFileInChangeset
+                    .findByProjectFile(projectFile, [sort: 'changeset.date', order: 'desc'])
+            def projectFileInChangeset = new ProjectFileInChangeset(changeset, projectFile, convertChangeType(file.changeType))
+            projectFileInItsPreviousChangeset?.commentThreadsPositions?.each {
+                new ThreadPositionInFile(projectFileInChangeset, it.thread, it.lineNumber)
+            }
         }
 
         changeset.save()
-//        project.save() //FIXME check that files are associated with changesets
 
         def email = commiter.cvsCommiterId
         def user = User.findByEmail(email)
-        user?.addToCommitters(commiter)        //FIXME what if commmitter exists in this user?
+        user?.addToCommitters(commiter)
         user?.save()
     }
 

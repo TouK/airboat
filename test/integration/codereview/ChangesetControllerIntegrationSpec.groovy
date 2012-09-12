@@ -32,7 +32,7 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
     def 'getChangesetFiles should return file names from changeset'() {
         given:
         Project project = Project.build()
-        ProjectFile projectFile = ProjectFile.buildWithoutSave(name: 'kickass!', project: project)
+        ProjectFile projectFile = ProjectFile.build(name: 'kickass!', project: project)
         Changeset changeset = Changeset.build(project: project)
         ProjectFileInChangeset.build(changeset: changeset, projectFile: projectFile)
 
@@ -61,8 +61,7 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
 
     def 'should return few next changesets older than one with given revision id as JSON'() {
         given:
-        String latestChangesetId = '3'
-        buildChangelogEntry(latestChangesetId as Integer)
+        def latestChangeset = buildChangelogEntry(3)
         buildChangelogEntry(2)
         buildChangelogEntry(1)
 
@@ -70,7 +69,7 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         controller.returnCommentsService != null
 
         when:
-        controller.getNextFewChangesetsOlderThan(latestChangesetId, null)
+        controller.getNextFewChangesetsOlderThan(latestChangeset.id)
 
         then:
         responseChangesets*.identifier == ['2', '1']
@@ -78,25 +77,24 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
 
     def 'should return next few changesets older than given, within given project as JSON'() {
         given:
-        String latestChangesetId = '3'
-        Project project = Project.build(name: 'foo')
-        buildChangelogEntry(latestChangesetId as Integer, project)
+        Project project = Project.build()
+        def latestChangeset = buildChangelogEntry(3, project)
         buildChangelogEntry(2, project)
-        buildChangelogEntry(1, Project.build(name: 'bar'))
+        buildChangelogEntry(1, Project.build())
         buildChangelogEntry(0, project)
 
         expect:
         controller.returnCommentsService != null
 
         when:
-        controller.getNextFewChangesetsOlderThan(latestChangesetId, project.name)
+        controller.getNextFewChangesetsOlderThanFromSameProject(latestChangeset.id)
 
         then:
         def responseChangesets = controller.response.json.collect {day, changesetsForDay -> changesetsForDay}.flatten()
         responseChangesets*.identifier == ['2', '0']
     }
 
-    private void buildChangelogEntry(int positionCountingFromOldest, Project project = Project.build()) {
+    private Changeset buildChangelogEntry(int positionCountingFromOldest, Project project = Project.build()) {
         Changeset.build(
                 project: project,
                 identifier: "$positionCountingFromOldest",

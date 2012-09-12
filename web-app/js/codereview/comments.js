@@ -53,7 +53,7 @@ function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
     );
 }
 
-function addReply(projectFileId, changesetIdentifier, lineNumber){
+function addReply(changesetIdentifier, projectFileId, lineNumber){
     var text = $("#add-reply-" + projectFileId + "-" + lineNumber).val();
 
     $.post(uri.lineComment.addReply,

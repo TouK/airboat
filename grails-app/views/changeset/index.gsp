@@ -308,7 +308,7 @@
          data-file_name_slice='{{:name}}'
          data-text_format='{{:textFormat}}'>
         <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
-            <div id="fileComments-{{>fileId}}"></div>
+            <div id="fileComments-{{>collapseId}}"></div>
         </div>
     </div>
 </script>
@@ -329,7 +329,7 @@
 </script>
 
 <script id="snippetTemplate" type="text/x-jsrender">
-    <div id="div-comments-{{>fileId}}-{{>lineNumber}}"></div>
+    <div id="div-comments-{{>changesetId}}{{>fileId}}-{{>lineNumber}}"></div>
     <textarea id="add-reply-{{>fileId}}-{{>lineNumber}}" placeholder="Reply..."
               onfocus="expandReplyForm('{{>fileId}}', '{{>lineNumber}}')"
               class="span12" rows="1"></textarea>
@@ -339,7 +339,9 @@
     <div class="btn-group pull-right" id="replyFormButtons-{{>fileId}}-{{>lineNumber}}"
          style="display: none; margin-bottom:10px">
         <button type="button" class="btn btn-primary" id="replyButton-{{>fileId}}-{{>lineNumber}}"
-                onClick="addReply('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Reply</button>
+                onClick="addReply('{{>changesetId}}', '{{>fileId}}', '{{>lineNumber}}')">Reply</button>
+        %{--FIXME this function NEEEDS both changesetIdentifier and projectFileId to work in all cases--}%
+        %{--amend parameters and corresponding markup--}%
         <button type="button" class="btn btn-primary"
                 onClick="cancelReply('{{>fileId}}', '{{>lineNumber}}')">Cancel</button>
     </div>

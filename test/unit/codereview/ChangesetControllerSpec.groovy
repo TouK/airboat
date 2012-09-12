@@ -16,23 +16,6 @@ class ChangesetControllerSpec extends Specification {
         controller.returnCommentsService = Mock(ReturnCommentsService)
     }
 
-    def 'getChangeset should return one specific changeset '() {
-        given:
-        def specificChangesetId = 'hash24'
-        Changeset.build(identifier: specificChangesetId)
-        Changeset.build()
-        Changeset.build()
-
-        when:
-        controller.params.id = specificChangesetId
-        controller.getChangeset()
-
-        then:
-        response.json.size() == 1
-        def responseSpecificChangeset = response.json.first()
-        responseSpecificChangeset.identifier == 'hash24'
-    }
-
     def 'changeset without user should not belong to anonymous user'() {
         given:
         controller.authenticatedUser = null

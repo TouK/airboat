@@ -9,7 +9,8 @@
         var uri = { //TODO de-duplicate
             changeset:{
                 getLastChangesets:"${createLink(uri:'/changeset/getLastChangesets/')}",
-                getNextFewChangesetsOlderThan:"${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}"
+                getNextFewChangesetsOlderThan:"${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}",
+                getNextFewChangesetsOlderThanFromSameProject:"${createLink(uri:'/changeset/getNextFewChangesetsOlderThanFromSameProject/')}"
             },
             userComment:{
                 addComment:"${createLink(uri: '/userComment/addComment')}"
