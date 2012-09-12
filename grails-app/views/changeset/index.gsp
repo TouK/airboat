@@ -368,6 +368,12 @@
     </form>
 </script>
 
+<script id="cannotAddLineCommentMessageTepmlate" type="text/x-jsrender">
+    <p class="alert alert-block">
+        Adding comments to this version of file is disabled - a newer changeset with this file exists in this project.
+    </p>
+</script>
+
 <script id="commentFormTemplate" type="text/x-jsrender">
 
     <form id="commentForm-{{>identifier}}" class="margin-bottom-small">

@@ -134,13 +134,23 @@ function showMessageAboutRemovedFile(changesetId) {
 
 function attachLineCommentPopover(changesetId, projectFileId) {
     $('#content-files-' + changesetId + ' .linenums li').each(function (i, element, ignored) {
-        $(element).click(function () {
-            $('#content-files-' + changesetId + ' .linenums li').popover("hide");
-            $(element).popover("show");
-        });
-        //TODO check if creating the content of the popover (i.e. commentForm) can be deferred to popover activation
         var commentForm = $("#addLineCommentFormTemplate").render({fileId:projectFileId, changesetId:changesetId, lineNumber:i + 1 });
         $(element).popover({content:commentForm, placement:"left", trigger:"manual" });
+
+        $(element).click(function () {
+            var url = uri.lineComment.checkCanAddComment + '?' + $.param({
+                changesetIdentifier: changesetId,  projectFileId: projectFileId
+            });
+            $.ajax({url: url}).done(function (response) {
+                if (response.canAddComment) {
+                    $('#content-files-' + changesetId + ' .linenums li').popover('hide');
+                    $(element).popover('show')
+                } else {
+                    var cannotAddCommentMessage = $('#cannotAddLineCommentMessageTepmlate').render(response);
+                    $.colorbox({html: cannotAddCommentMessage});
+                }
+            })
+        });
     });
 }
 

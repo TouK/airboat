@@ -14,7 +14,7 @@ function addComment(changesetId) {
                 $('.addLongCommentMessageToChangeset').html("");
             }
             else {
-                $('.addLongCommentMessageToChangeset')
+                $('.addLongCommentMessageToChangesoet')
                     .html($('#longCommentTemplate').render(" Your comment is too long!"))
                     .hide().fadeIn();
             }

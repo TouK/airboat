@@ -9,6 +9,19 @@ class LineCommentController {
 
     def scmAccessService
 
+    @Secured('isAuthenticated()')
+    def checkCanAddComment(String changesetIdentifier, Long projectFileId) {
+        def changeset = Changeset.findByIdentifier(changesetIdentifier)
+        def projectFile = ProjectFile.findById(projectFileId)
+        def latestChangesetForProjectFile = ProjectFileInChangeset.findByProjectFile(
+                projectFile, [sort: 'changeset.date', order: 'desc']
+        ).changeset
+        render([
+            canAddComment: latestChangesetForProjectFile == changeset,
+            projectFileLatestChangesetIdentifier: latestChangesetForProjectFile.identifier
+        ] as JSON)
+    }
+
     //TODO test what happens when you do not pass a parameter / pass undefined / null to controller method which has a
     // long (primitive) parameter
     @Secured('isAuthenticated()')
