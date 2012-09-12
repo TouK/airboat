@@ -4,6 +4,7 @@ import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.mail.MailSendException
 
 class UserController {
 
@@ -11,14 +12,9 @@ class UserController {
 
     def springSecurityService
     def authenticationManager
+    def mailService
 
     def create() {
-    }
-
-
-    @Secured('hasRole("ROLE_ADMIN")')
-    def admin() {
-
     }
 
     def save(CreateUserCommand command) {
@@ -30,11 +26,73 @@ class UserController {
         }
     }
 
-    @Secured('isAuthenticated()')
-    def changePassword() {
+    @Secured('hasRole("ROLE_ADMIN")')
+    def admin() {
     }
 
-    def saveNewPassword(ChangePasswordCommand command) {
+    def forgottenPassword() {
+    }
+
+    def sendMailToResetPassword(SendResetMailCommand command) {
+        command.validate()
+        if (command.hasErrors()) {
+            render(command.errors as JSON)
+        } else {
+            validateUserAndSendMail(command)
+        }
+
+    }
+
+    def resetPassword() {
+        def token = params.id
+        def resetEntry = ResetPasswordEntry.findByToken(token)
+        if (resetEntry == null) {
+            redirect(action: 'resetPasswordFail')
+        } else {
+            [username: resetEntry.user.username, token: token]
+        }
+    }
+
+    def resetPasswordFail() {
+
+    }
+
+    def saveNewPassword(NewPasswordCommand command) {
+        command.validate()
+        if (command.hasErrors()) {
+            render(command.errors as JSON)
+        } else {
+            def resetEntry = ResetPasswordEntry.findByToken(command.token)
+            if (resetEntry == null) {
+                command.errors['token'] = 'invalidToken'
+                render(command.errors as JSON)
+            } else {
+                setNewPassword(resetEntry.user, command.newPassword)
+                resetEntry.delete()
+                render([success: true, message: message(code: 'passwordChanged')] as JSON)
+            }
+        }
+    }
+
+    @Secured('isAuthenticated()')
+    def options() {
+    }
+
+    def fetchSkinOptions(String id) {
+        def skin = User.findByEmail(id).skin
+
+        render([skin: skin] as JSON)
+
+    }
+
+    def setSkinOptions(String username, String skin) {
+        User user = User.findByEmail(username)
+        user.skin = skin
+        user.save()
+        render(user as JSON)
+    }
+
+    def saveChangedPassword(ChangePasswordCommand command) {
         command.validate()
         if (command.hasErrors()) {
             render(command.errors as JSON)
@@ -43,13 +101,48 @@ class UserController {
         }
     }
 
+    private validateUserAndSendMail(SendResetMailCommand command) {
+        def user = User.findByEmail(command.email)
+        if (user == null) {
+            command.errors['email'] = 'userDoesNotExist'
+            render(command.errors as JSON)
+        }
+        else {
+            def resetEntry = ResetPasswordEntry.findByUser(user)
+            if (resetEntry == null) {
+                resetEntry = new ResetPasswordEntry(user: user)
+            }
+            resetEntry.token = generateToken()
+            def link = createLink([controller: 'user', action: 'resetPassword', id: resetEntry.token, absolute: true])
+            resetEntry.save()
+            def conf = grailsApplication.config
+            try {
+            mailService.sendMail {
+                to command.email
+                subject message(code: 'resetEmailSubject')
+                body message(code: 'resetEmailContent', args: [link])
+            }
+            } catch (MailSendException e) {
+                log.warn('The email sending failed. Check mail server configuration.', e)
+                command.errors['email'] = 'noMailServerConfigured'
+                return render(command.errors as JSON)
+            }
+            render([success: true, message: message(code: 'mailSent')] as JSON)
+        }
+    }
+
+
+    private String generateToken() {
+        return org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(Constants.RESET_PASSWORD_TOKEN_LENGTH)
+    }
+
+
     private void validateOldPasswordAndSetNewPassword(ChangePasswordCommand command) {
         if (isPasswordValid(command.oldPassword)) {
-            authenticatedUser.password = command.newPassword
-            authenticatedUser.save()
-            render([success: true, message: message(code:'passwordChanged')] as JSON)
+            setNewPassword(authenticatedUser, password)
+            render([success: true, message: message(code: 'passwordChanged')] as JSON)
         } else {
-            command.errors['oldPassword'] = 'invalidPassword'
+            command.errors['oldPassword'] = 'invalidOldPassword'
             render(command.errors as JSON)
         }
     }
@@ -65,24 +158,11 @@ class UserController {
         isPasswordValid
     }
 
-    @Secured('isAuthenticated()')
-    def options() {
-
-    }
-
-    def fetchSkinOptions(String id) {
-        def skin = User.findByEmail(id).skin
-
-        render ([skin: skin] as JSON )
-
-    }
-
-    def setSkinOptions(String username, String skin) {
-        User user = User.findByEmail(username)
-        user.skin =  skin
+    private void setNewPassword(user, password) {
+        user.password = password
         user.save()
-        render (user as JSON)
     }
+
 
     private void validateDbDependentConstraintsAndSaveUser(CreateUserCommand command) {
         def user = new User(command.properties)

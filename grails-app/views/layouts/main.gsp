@@ -9,10 +9,10 @@
         var uri = { //TODO de-duplicate
             changeset:{
                 getLastChangesets:"${createLink(uri:'/changeset/getLastChangesets/')}",
-                getNextFewChangesetsOlderThan:"${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}",
+                getNextFewChangesetsOlderThan:"${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}"
             },
             userComment:{
-                addComment:"${createLink(uri: '/userComment/addComment')}",
+                addComment:"${createLink(uri: '/userComment/addComment')}"
             },
             lineComment:{
                 addComment:"${createLink(uri: '/lineComment/addComment')}",
@@ -24,7 +24,7 @@
                 getDiffWithPreviousRevision:"${createLink(uri:'/projectFile/getDiffWithPreviousRevision/')}"
             },
             user:{
-                changePassword: "${createLink(uri: '/user/changePassword')}"
+                changePassword:"${createLink(uri: '/user/changePassword')}"
             },
             login:"${createLink(uri: '/login/auth')}",
 
@@ -39,7 +39,7 @@
         }
 
         var codeReview = {
-            colorboxSettings:{transition:"fade", iframe:true, width:640, height:420}, loggedInUserName:'<sec:username/>', isAdmin:"<sec:ifAnyGranted roles="ROLE_ADMIN">true</sec:ifAnyGranted>" ? true : false, isAuthenticated:function () {
+            colorboxSettings:{transition:"fade", iframe:true, width:640, height:450}, loggedInUserName:'<sec:username/>', isAdmin:"<sec:ifAnyGranted roles="ROLE_ADMIN">true</sec:ifAnyGranted>" ? true : false, isAuthenticated:function () {
                 return this.loggedInUserName !== '';
             }
         }
@@ -110,6 +110,10 @@
         <li class="alert-error" {{if field}}data-field-id="{{:field}}"{{/if}}>{{:message}}</li>
         {{/for}}
     </ul>
+</script>
+
+<script id="defaultFormSuccessTemplate" type='text/x-jsrender'>
+    <div class='alert alert-block alert-success'>{{: #data.message }}</div>
 </script>
 <g:layoutBody/>
 <r:layoutResources/>

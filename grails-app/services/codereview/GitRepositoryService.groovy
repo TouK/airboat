@@ -12,6 +12,7 @@ import org.eclipse.jgit.treewalk.TreeWalk
 
 import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Preconditions.checkState
+import org.eclipse.jgit.api.errors.GitAPIException
 
 class GitRepositoryService {
 
@@ -28,29 +29,48 @@ class GitRepositoryService {
             repository = cloneRepository(scmUrl, projectRoot)
         }
         Git git = new Git(repository)
-        def pullResult = git.pull().call()
+        def pullResult
+        try {
+            pullResult = git.pull().call()
+        } catch (GitAPIException e) {
+            throw new RuntimeException("Failed to pull changes to project $scmUrl", e)
+        }
         checkState(pullResult.successful, "Failed to update ${scmUrl}")
     }
 
     private Repository cloneRepository(String scmUrl, File projectRoot) {
         Git git = new Git(new FileRepositoryBuilder().setWorkTree(projectRoot).build())
-        git.cloneRepository()
-                .setURI(scmUrl)
-                .setDirectory(projectRoot)
-                .call()
+        try {
+            git.cloneRepository()
+                    .setURI(scmUrl)
+                    .setDirectory(projectRoot)
+                    .call()
+        } catch (GitAPIException e) {
+            throw new RuntimeException("Failed to pull changes to project $scmUrl", e)
+        }
         return git.repository
     }
 
     def getAllChangesets(String scmUrl) {
         Git git = prepareGit(scmUrl)
-        Iterable<RevCommit> logOutput = git.log().call()
+        Iterable<RevCommit> logOutput
+        try {
+            logOutput = git.log().call()
+        } catch (GitAPIException e) {
+            throw new RuntimeException("Failed to pull changes to project $scmUrl", e)
+        }
         prepareGitChangesets(logOutput, git.repository.workTree)
     }
 
     def getNewChangesets(String scmUrl, String lastChangesetPathSpec) {
         Git git = prepareGit(scmUrl)
         def lastChangesetId = git.repository.resolve(lastChangesetPathSpec)
-        def logOutput = git.log().not(lastChangesetId).call()
+        def logOutput
+        try {
+            logOutput = git.log().not(lastChangesetId).call()
+        } catch (GitAPIException e) {
+            throw new RuntimeException("Failed to pull changes to project $scmUrl", e)
+        }
         prepareGitChangesets(logOutput, git.repository.workTree)
     }
 

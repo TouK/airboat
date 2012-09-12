@@ -41,6 +41,7 @@
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">${message(code: "springSecurity.login.button")}</button>
         </div>
+        <g:link class='colorbox' url='../user/forgottenPassword'>Forgot password?</g:link>
     </form>
 </div>
 

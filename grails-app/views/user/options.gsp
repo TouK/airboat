@@ -81,7 +81,7 @@
 
             <div class="span6 well-large well change-password-form">
                 <h2>Change password</h2>
-                <g:form name='createChangePasswordForm' action="saveNewPassword" class="form-horizontal">
+                <g:form name='changePasswordForm' action="saveChangedPassword" class="form-horizontal">
                     <div class="form-messages"></div>
                     <fieldset>
                         <div class="control-group">
@@ -110,33 +110,29 @@
                     </fieldset>
 
                     <div class="form-actions">
-                        <g:submitButton name="change-password" class="btn btn-primary" value="Change Password"/>
+                        <g:submitButton name="change-password" class="btn btn-primary" value="Change password"/>
                     </div>
 
                 </g:form>
             </div>
 
-            <script id="formSuccessTemplate" type='text/x-jsrender'>
-                <div class='alert alert-block alert-success'>{{: #data.message }}</div>
-            </script>
-
             <script type='text/javascript'>
                 /*TODO can't it be done easier?*/
                 (function () {
-                    document.forms['createChangePasswordForm'].elements['oldPassword'].focus();
+                    document.forms['changePasswordForm'].elements['oldPassword'].focus();
                 })();
 
-                $('#createChangePasswordForm').submit(changePasswordViaAjax);
+                $('#changePasswordForm').submit(changePasswordViaAjax);
 
                 function changePasswordViaAjax() {
                     $.post(this.action, $(this).serialize(), function (passwordChange) {
                         if (passwordChange.success) {
-                            $('#createChangePasswordForm .form-messages')
-                                    .html($('#formSuccessTemplate').render([passwordChange]))
+                            $('#changePasswordForm .form-messages')
+                                    .html($('#defaultFormSuccessTemplate').render([passwordChange]))
                                     .hide().fadeIn();
                             resizeColorbox();
                         } else if (passwordChange.errors) {
-                            $('#createChangePasswordForm .form-messages')
+                            $('#changePasswordForm .form-messages')
                                     .html($('#defaultFormErrorsTemplate').render([passwordChange.errors]))
                                     .hide().fadeIn();
                             resizeColorbox();
