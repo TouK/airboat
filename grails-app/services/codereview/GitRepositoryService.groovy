@@ -54,7 +54,13 @@ class GitRepositoryService {
     def getAllChangesets(String scmUrl, int maxChangesetsToImport = Integer.MAX_VALUE) {
         Git git = prepareGit(scmUrl)
         def logOutput = []
-        for (RevCommit commit : git.log().call()) {
+        def commits
+        try {
+            commits = git.log().call()
+        } catch (GitAPIException e) {
+            throw new RuntimeException("Failed to pull changes to project $scmUrl", e)
+        }
+        for (RevCommit commit : commits) {
             logOutput << commit
         }
         logOutput.sort { it.commitTime }
@@ -66,7 +72,13 @@ class GitRepositoryService {
         def lastChangesetId = git.repository.resolve(lastChangesetPathSpec)
 
         def logOutput = []
-        for (RevCommit commit : git.log().not(lastChangesetId).call()) {
+        def commits
+        try {
+            commits = git.log().not(lastChangesetId).call()
+        } catch (GitAPIException e) {
+            throw new RuntimeException("Failed to pull changes to project $scmUrl", e)
+        }
+        for (RevCommit commit : commits) {
             logOutput << commit
         }
         logOutput.sort { it.commitTime }
