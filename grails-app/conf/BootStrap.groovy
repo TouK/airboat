@@ -8,6 +8,7 @@ import codereview.ProjectUpdateJob
 import codereview.User
 import codereview.Role
 import codereview.UserRole
+import codereview.ResetPasswordEntriesDeleteJob
 
 class BootStrap {
 
@@ -34,6 +35,7 @@ class BootStrap {
     private void bootstrapNonTestEnvironment(Project... projects) {
         projects.each { it.save(flush: true) }
         ProjectUpdateJob.triggerNow()
+        ResetPasswordEntriesDeleteJob.triggerNow()
         createAdmin()
     }
 
