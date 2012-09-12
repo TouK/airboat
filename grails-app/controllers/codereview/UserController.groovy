@@ -115,7 +115,6 @@ class UserController {
             resetEntry.token = generateToken()
             def link = createLink([controller: 'user', action: 'resetPassword', id: resetEntry.token, absolute: true])
             resetEntry.save()
-            def conf = grailsApplication.config
             try {
             mailService.sendMail {
                 to command.email
