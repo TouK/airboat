@@ -264,15 +264,16 @@
 
             <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small">
 
+                <h5>Comments:</h5>
                 <div class="comments" id="comments-{{>identifier}}">
                     {{for comments tmpl='#commentTemplate' /}}
                 </div>
-
                 <div id="comment-form-{{>identifier}}"></div>
+
+                <h5>Changed files:</h5>
                 <div class="accordion margin-bottom-small changesetFiles" id="accordion-{{>identifier}}">
                     {{for projectFiles tmpl='#projectFileRowTemplate' /}}
                 </div>
-
 
                 <a id="less-button-downChangeset-{{>identifier}}" class="wideButton"
                    onclick="hideChangesetDetailsAndScroll('{{>identifier}}')">
