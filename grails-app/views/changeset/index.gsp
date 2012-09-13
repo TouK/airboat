@@ -84,14 +84,9 @@
 
 <script type="text/javascript">
 
-    $('#content').on('click', '.changeset.contracted .basicInfo', function() {
+    $('body').on('click', '.changeset .basicInfo, .changeset .details .lessButton', function() {
         var changeset = $(this).parents('.changeset').first();
-        showChangesetDetails(changeset[0].dataset.identifier);
-    });
-
-    $('#content').on('click', '.changeset.expanded .basicInfo', function() {
-        var changeset = $(this).parents('.changeset').first();
-        hideChangesetDetailsAndScroll(changeset[0].dataset.identifier);
+        toggleChangesetDetails(changeset[0].dataset.identifier);
     });
 
     $.views.helpers({
@@ -109,7 +104,6 @@
         }, textForChangeType:function (changeType) {
             return textForChangeType[changeType]
         }
-
     });
 
     iconForChangeType = {
@@ -161,7 +155,7 @@
         $(".colorbox").colorbox(codeReview.colorboxSettings);
         $('.dropdown-toggle').dropdown();
 
-        $('body').bind('codeReview-pageStructureChanged', repositionZclips)
+        $('body').on('codeReview-pageStructureChanged', repositionZclips)
     });
 
     $(document)
@@ -234,7 +228,7 @@
 
     <div class='row-fluid'>
 
-        <div class="span5 well well-small changeset {{if belongsToCurrentUser}} current-user {{/if}} contracted"
+        <div class="span5 well well-small changeset {{if belongsToCurrentUser}} current-user {{/if}}"
              data-identifier='{{>identifier}}'>
             <div class="row-fluid basicInfo">
                 <img class="pull-left" src='{{>~getGravatar(email)}}'/>
@@ -263,7 +257,7 @@
                 <div class="clearfix"></div>
             </div>
 
-            <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small">
+            <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small details">
 
                 <h5>Comments:</h5>
                 <div class="comments" id="comments-{{>identifier}}">
@@ -276,11 +270,9 @@
                     {{for projectFiles tmpl='#projectFileRowTemplate' /}}
                 </div>
 
-                <a id="less-button-downChangeset-{{>identifier}}" class="wideButton"
-                   onclick="hideChangesetDetailsAndScroll('{{>identifier}}')">
+                <a class="wideButton lessButton">
                     <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
                 </a>
-
             </div>
         </div>
 
@@ -416,6 +408,7 @@
         <button type="button" class="btn btn-primary" id="cancellButton-{{>identifier}}"
                 onClick="resetCommentForm('{{>identifier}}')">Cancel</button>
     </div>
+    <div class="clearfix"></div>
 </script>
 
 <script id="commentTemplate" type="text/x-jsrender">

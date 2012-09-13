@@ -189,30 +189,19 @@ function sliceName(name, lineWidth) {
     return newName.substr(0, newName.length - 1);
 }
 
-function showChangesetDetails(identifier) {
-    $('#changesetDetails-' + identifier).show();
-    var changeset = $(".changeset[data-identifier=" + identifier + "]");
-    changeset.removeClass('contracted');
-    changeset.addClass('expanded');
+function toggleChangesetDetails(identifier) {
+    var changesetDetails = $('#changesetDetails-' + identifier);
+    if (changesetDetails.is(':visible')) {
+        hideFile(identifier);
+        changesetDetails.parents('.changeset').ScrollTo({
+            onlyIfOutside:true,
+            offsetTop:codeReview.initialFirstChangesetOffset,
+            callback:function() {
+                changesetDetails.slideUp()
+            }
+        });
+    } else {
+        changesetDetails.slideDown();
+    }
 }
-
-function hideChangesetDetails(identifier) {
-    hideFile(identifier);
-    $('#changesetDetails-' + identifier).hide();
-    var changeset = $(".changeset[data-identifier=" + identifier + "]");
-    changeset.addClass('contracted');
-    changeset.removeClass('expanded');
-}
-
-function hideChangesetDetailsAndScroll(identifier) {
-    $('#accordion-' + identifier + ' .accordion-body.collapse').parents('.changeset').ScrollTo({
-        onlyIfOutside:true,
-        offsetTop:codeReview.initialFirstChangesetOffset,
-        callback:function() {
-            hideChangesetDetails(identifier)
-        }
-    });
-}
-
-
 
