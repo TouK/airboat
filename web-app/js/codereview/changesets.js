@@ -1,9 +1,7 @@
-var projectName = ''
-
-function showProject(projectId) {
-    projectName = projectId
+function showProject(projectName) {
+    codeReview.displayedProjectName = projectName
     $('#content').html("");
-    $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:projectName}), appendChangesetsBottom)
+    $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:codeReview.displayedProjectName}), appendChangesetsBottom)
 }
 
 function onScrollThroughBottomAttempt() {
@@ -14,7 +12,7 @@ function loadMoreChangesets() {
     if (!changesetsLoading) {
         changesetsLoading = true;
         var controllerAction;
-        if (projectName == '') {
+        if (displayedProjectName == '') {
             controllerAction = uri.changeset.getNextFewChangesetsOlderThan
         } else {
             controllerAction = uri.changeset.getNextFewChangesetsOlderThanFromSameProject
@@ -51,24 +49,37 @@ function appendChangesetsBottom(changesetsByDay) {
 function getDayContainer(date) {
     return $(".day[data-date=" + date + "]");
 }
+$('.changeset-date').livequery(function() {
+    $(this).tooltip({title: this.dataset.date, trigger:"hover", placement:"bottom"});
+})
+
+$('.changeset-hash').livequery(function () {
+    $(this)
+        .tooltip({title:"click to copy", trigger:"hover", placement:"bottom"})
+        .zclip({
+            path:uri.libs.zclip.swf,
+            copy:this.dataset.changeset_identifier,
+            afterCopy:function () {
+            }
+        });
+})
 
 function appendChangeset(changeset, dayElement) {
-    var shortIdentifier = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
-    changeset = $.extend({shortIdentifier:shortIdentifier}, changeset)
-    dayElement.children('.changesets').append($("#changesetTemplate").render(changeset));
-    var changesetElement = $(".changeset[data-identifier=" + changeset.identifier + "]");
-    showCommentsToChangeset(changeset);
-    $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render({identifier:changeset.identifier}));
-    appendAccordion(changeset);
+    changeset['shortIdentifier'] = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
+    changeset['allComments'] = function() {
+        var projectFilesComments = 0
+        $(this.changesetFiles).each(function() { projectFilesComments += this.commentsCount})
+        return this.commentsToChangeset.length + projectFilesComments
+    }
 
-    changesetElement.find('.changeset-date').tooltip({title:changeset.date, trigger:"hover", placement:"bottom"});
-    changesetElement.find('.changeset-hash').tooltip({title:"click to copy", trigger:"hover", placement:"bottom"});
-    changesetElement.find('.changeset-hash').zclip({
-        path:uri.libs.zclip.swf,
-        copy:changeset.identifier,
-        afterCopy:function () {
-        }
-    });
+    codeReview.displayedChangesets[changeset.id] = changeset
+
+    dayElement.children('.changesets').append($("<span id='templatePlaceholder'></span>"));
+    $.link.changesetTemplate('#templatePlaceholder', changeset, {target: 'replace'})
+
+    renderCommentsForChangeset(changeset);
+    $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render({identifier:changeset.identifier}));
+    appendProjectFilesList(changeset);
 }
 
 iconForChangeType = {
@@ -87,7 +98,7 @@ textForChangeType = {
     COPY:'copied'
 }
 
-function appendAccordion(changeset) {
+function appendProjectFilesList(changeset) {
     for (var i = 0; i < changeset.changesetFiles.length; i++) {
         var projectFile = changeset.changesetFiles[i];
         var accordionRow = $("#accordionFilesTemplate").render({
@@ -96,7 +107,7 @@ function appendAccordion(changeset) {
             fileId:projectFile.id,
             textFormat:projectFile.textFormat,
             collapseId:(changeset.identifier + projectFile.id),
-            howManyComments:projectFile.commentCount,
+            howManyComments:projectFile.commentsCount,
             fileChangeType:projectFile.changeType.name,
             textForChangeType:textForChangeType,
             iconForChangeType:iconForChangeType

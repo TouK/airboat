@@ -119,7 +119,7 @@ class ChangesetController {
         def projectFile = projectFileInChangeset.projectFile
         def projectFileProperties = projectFile.properties + [
                 id: projectFile.id,
-                commentCount: projectFileInChangeset.commentThreadsPositions*.thread*.comments?.flatten()?.size(),
+                commentsCount: projectFileInChangeset.commentThreadsPositions*.thread*.comments?.flatten()?.size(),
                 changeType: projectFileInChangeset.changeType
         ]
         projectFileProperties.keySet().retainAll(

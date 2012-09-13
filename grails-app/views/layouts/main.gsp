@@ -44,6 +44,37 @@
             colorboxSettings:{transition:"fade", iframe:true, width:640, height:450}, loggedInUserName:'<sec:username/>', isAdmin:"<sec:ifAnyGranted roles="ROLE_ADMIN">true</sec:ifAnyGranted>" ? true : false, isAuthenticated:function () {
                 return this.loggedInUserName !== '';
             }
+            , displayedProjectName: ''
+            , displayedChangesets: []
+
+            , debugMode: true
+
+            , error: function(message) {
+                if (debugMode) {
+                    $.error(message)
+                }
+            }
+
+            , templates: {
+                compileAll: function() {
+                    $(arguments).each(function () {
+                        codeReview.templates.compile(this);
+                    })
+                }
+
+                , compile:function (templateName) {
+                    templateName += 'Template'
+                    var templateId = '#' + templateName;
+                    if ($(templateId).size() != 1) {
+                        $.error('Template ' + templateId + ' not found')
+                    } else {
+                        var map = {}
+                        map[templateName] = templateId
+                        $.templates(map)
+                    }
+                }
+
+            }
         }
 
         //TODO move to codeReview object
@@ -52,6 +83,7 @@
     </script>
 
     <script src="${createLink(uri: '/libs/jquery-1.8.0.min.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/jquery.livequery.js')}" type="text/javascript"></script>
     <link href=" ${createLink(uri: '/libs/jquery.colorbox/colorbox.css')}"
           type="text/css" rel="stylesheet" media="screen"/>
     <script src="${createLink(uri: '/libs/jquery.colorbox/jquery.colorbox-min.js')}" type="text/javascript"></script>

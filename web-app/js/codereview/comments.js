@@ -111,7 +111,7 @@ function resetCommentForm(changesetId) {
     $('#commentFormButtons-' + changesetId).hide();
 }
 
-function showCommentsToChangeset(changeset) {
+function renderCommentsForChangeset(changeset) {
     $('#comments-' + changeset.identifier).html("");
     for (var i = 0; i < changeset.commentsToChangeset.length; i++) {
         var comment = $("#commentTemplate").render(changeset.commentsToChangeset[i]);
