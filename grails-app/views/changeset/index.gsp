@@ -86,6 +86,16 @@
 
 <script type="text/javascript">
 
+    $('#content').on('click','.changeset.contracted .commitMessage', function(event) {
+        var changeset = $(this).parents('.changeset').first();
+        showChangesetDetails(changeset[0].dataset.identifier);
+    });
+
+    $('#content').on('click','.changeset.expanded .commitMessage', function(event) {
+        var changeset = $(this).parents('.changeset').first();
+        hideChangesetDetailsAndScroll(changeset[0].dataset.identifier);
+    });
+
     $.views.helpers({
         getGravatar:function (email, size) {
             var size = size || 40;
@@ -211,40 +221,30 @@
 
     <div class='row-fluid'>
 
-        <div class="span5 well well-small changeset {{if belongsToCurrentUser}}current-user{{/if}}"
+        <div class="span5 well well-small changeset {{if belongsToCurrentUser}}current-user{{/if}} contracted"
              data-identifier='{{>identifier}}'>
             <div class="row-fluid">
                 <img class="pull-left" src='{{>~getGravatar(email)}}'/>
 
+                <div class="pull-right">
+                    <i class="icon-comment"></i><span class='commentsCount'>{{>allComments}}</span>
+                </div>
                 <div class="nextToGravatar">
+
+                    <div class="commitMessage"><h5> {{>commitComment}}</h5></div>
                     <div>
-                        <span class='author'>{{>author}}</span>
-                        commited to <span class="badge"
+                        <span class='author'>{{>author}}</span> in
+                        <span class="badge"
                                           style="background-color: {{>~colorForProjectName(projectName)}}">{{>projectName}}</span>
 
                         <span class="pull-right changeset-date"><i class="icon-time"/> {{:date.substring(11)}}</span>
                         <span class="pull-right changeset-hash">{{>shortIdentifier}}</span>
-                    </div>
 
-                    <div class="pull-right">
-                        <i class="icon-comment"></i><span class='commentsCount'>{{>allComments}}</span>
                     </div>
-
-                    <div class="commitMessage margin-top-small"><h5>Commit message:</h5> {{>commitComment}}</div>
                 </div>
-
-                <a id="more-button-{{>identifier}}" class="wideButton"
-                   onclick="showChangesetDetails('{{>identifier}}')">
-                    <div class="center sizeOfIcon"><i class="icon-chevron-down"></i></div>
-                </a>
             </div>
 
             <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small">
-
-                <a id="less-button-topChangeset-{{>identifier}}" class="wideButton"
-                   onclick="hideChangesetDetailsAndScroll('{{>identifier}}')">
-                    <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
-                </a>
 
                 <div class="accordion margin-bottom-small" id="accordion-{{>identifier}}"></div>
 
@@ -256,6 +256,7 @@
                    onclick="hideChangesetDetailsAndScroll('{{>identifier}}')">
                     <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
                 </a>
+
             </div>
         </div>
 

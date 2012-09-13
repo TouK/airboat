@@ -34,7 +34,11 @@ textarea {
 }
 
 .author {
-    font-weight:bold;
+    font-style: oblique;
+}
+
+.changeset .commitMessage:hover {
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
 .changeset.well {

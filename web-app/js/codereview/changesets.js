@@ -202,14 +202,18 @@ function sliceName(name, lineWidth) {
 }
 
 function showChangesetDetails(identifier) {
-    $('#changesetDetails-' + identifier).show(50);
-    $("#more-button-" + identifier).hide();
+    $('#changesetDetails-' + identifier).show();
+    var changeset = $(".changeset[data-identifier=" + identifier + "]");
+    changeset.removeClass('contracted');
+    changeset.addClass('expanded');
 }
 
 function hideChangesetDetails(identifier) {
     hideFile(identifier);
-    $('#changesetDetails-' + identifier).hide(50);
-    $('#more-button-' + identifier).show();
+    $('#changesetDetails-' + identifier).hide();
+    var changeset = $(".changeset[data-identifier=" + identifier + "]");
+    changeset.addClass('contracted');
+    changeset.removeClass('expanded');
 }
 
 function hideChangesetDetailsAndScroll(identifier) {
