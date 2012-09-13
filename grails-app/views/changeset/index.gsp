@@ -241,7 +241,7 @@
 
             <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small">
 
-                <div class="accordion margin-bottom-small" id="accordion-{{>identifier}}"></div>
+                <div class="accordion margin-bottom-small changesetFiles" id="accordion-{{>identifier}}"></div>
 
                 <div class="comments" id="comments-{{>identifier}}">
                     {{for comments tmpl='#commentTemplate' /}}
@@ -274,7 +274,7 @@
 </script>
 
 <script id="accordionFilesTemplate" type="text/x-jsrender">
-    <div class="accordion-group" id="accordion-group-{{>collapseId}}">
+    <div class="accordion-group changesetFile" id="accordion-group-{{>collapseId}}">
         {{for [#data] tmpl='#accordionFileBodyTemplate'}}{{/for}}
     </div>
 </script>
@@ -301,7 +301,7 @@
         </div>
     </div>
 
-    <div id='collapse-inner-{{>collapseId}}' class="accordion-body collapse"
+    <div id='collapse-inner-{{>collapseId}}' class="accordion-body collapse changesetFileDetails"
          data-changeset_id='{{:changesetId}}'
          data-file_id='{{:fileId}}'
          data-file_change_type='{{:fileChangeType}}'

@@ -30,7 +30,7 @@ textarea {
 }
 
 .changeset.current-user .author {
-    color: #0074CC;
+    font-weight: bold;
 }
 
 .author {
