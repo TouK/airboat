@@ -164,9 +164,10 @@
         $('body').bind('codeReview-pageStructureChanged', repositionZclips)
     });
 
-    $(document).ajaxStart(function () {
-        $('#loading').show();
-    }).ajaxStop(function () {
+    $(document)
+            .ajaxStart(function () {
+                $('#loading').show();
+            }).ajaxStop(function () {
                 $('#loading').hide();
                 $('body').trigger('codeReview-pageStructureChanged') //most probably
             });

@@ -59,6 +59,7 @@ $('.changeset-hash').livequery(function () {
         .zclip({
             path:uri.libs.zclip.swf,
             copy:this.dataset.changeset_identifier,
+            clickAfter: false,
             afterCopy:function () {
             }
         });
