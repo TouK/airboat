@@ -236,9 +236,6 @@
                         <span class="pull-right changeset-hash" data-changeset_identifier='{{:identifier}}'>{{>shortIdentifier}}</span>
                     </div>
 
-                    <div class="pull-right">
-                        <i class="icon-comment"></i><span class='commentsCount'>{{>allComments}}</span>
-                    </div>
                 </div>
             </div>
 
