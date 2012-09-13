@@ -227,7 +227,7 @@
                 <div class="nextToGravatar">
 
                     <div class="commitMessage"><h5> {{>commitComment}}</h5></div>
-                    <div>
+                    <div class="commitFooter">
                         <span class='author'>{{>author}}</span> in
                         <span class="badge"
                                           style="background-color: {{>~colorForProjectName(projectName)}}">{{>projectName}}</span>
