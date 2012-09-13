@@ -46,7 +46,6 @@
                 return this.loggedInUserName !== '';
             }
             , displayedProjectName: ''
-            , displayedChangesets: []
 
             , debugMode: true
 
@@ -75,6 +74,10 @@
                     }
                 }
 
+            }
+
+            , getModel:function (selector) {
+                return $.view($(selector)[0]).data
             }
         }
 

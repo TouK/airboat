@@ -315,7 +315,7 @@
 
             <div class="row-fluid span3" data-link="visible{: commentsCount != 0 }">
                 <div class="pull-right">
-                    <i class="icon-comment"></i><span class='commentsCount'>{{>commentsCount}}</span>
+                    <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
                 </div>
             </div>
         </div>

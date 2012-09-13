@@ -81,8 +81,6 @@ function appendChangeset(changeset, dayElement) {
         })
     })
 
-    codeReview.displayedChangesets[changeset.id] = changeset
-
     dayElement.children('.changesets').append($("<span id='templatePlaceholder'></span>"));
     $.link.changesetTemplate('#templatePlaceholder', changeset, {target: 'replace'})
 
@@ -100,10 +98,11 @@ $('.accordion-body.collapse').livequery(function () {
         });
 })
 
-function updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, projectFileId) {
-    renderCommentGroupsWithSnippets(changesetId, projectFileId, commentGroupsWithSnippetsForCommentedFile);
-    $('#accordion-group-' + changesetId + projectFileId + ' .commentsCount')
-        .text(commentGroupsWithSnippetsForCommentedFile.commentsCount)
+function updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId) {
+    renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippetsForCommentedFile);
+    var projectFile = codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + '] .projectFile[data-id=' + projectFileId + ']');
+    $.observable(projectFile).setProperty('commentsCount', commentGroupsWithSnippetsForCommentedFile.commentsCount)
+    $.observable(codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + ']')).setProperty('allComments')
 }
 
 function appendSnippetToFileInAccordion(changesetIdentifier, projectFileId) {

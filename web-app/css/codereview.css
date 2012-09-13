@@ -11,7 +11,7 @@ textarea {
 }
 
 .commitMessage {
-    white-space: pre-line;
+    white-space: pre-wrap;
 }
 
 .dayLabel {

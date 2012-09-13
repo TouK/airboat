@@ -9,7 +9,7 @@ function addComment(changesetId, changesetIdentifier) {
         { changesetIdentifier:changesetIdentifier, text:text },
         function (comment) {
             if (comment.errors == null) {
-                var changeset = codeReview.displayedChangesets[changesetId];
+                var changeset = codeReview.getModel('.changeset[data-id=' + changesetId + ']');
                 var changesetComments = changeset.comments
                 $.observable(changesetComments).insert(changesetComments.length, comment)
                 $.observable(changeset).setProperty('allComments')
