@@ -86,12 +86,12 @@
 
 <script type="text/javascript">
 
-    $('#content').on('click','.changeset.contracted .commitMessage', function(event) {
+    $('#content').on('click', '.changeset.contracted .basicInfo', function() {
         var changeset = $(this).parents('.changeset').first();
         showChangesetDetails(changeset[0].dataset.identifier);
     });
 
-    $('#content').on('click','.changeset.expanded .commitMessage', function(event) {
+    $('#content').on('click', '.changeset.expanded .basicInfo', function() {
         var changeset = $(this).parents('.changeset').first();
         hideChangesetDetailsAndScroll(changeset[0].dataset.identifier);
     });
@@ -239,9 +239,9 @@
 
     <div class='row-fluid'>
 
-        <div class="span5 well well-small changeset {{if belongsToCurrentUser}}current-user{{/if}} contracted"
+        <div class="span5 well well-small changeset {{if belongsToCurrentUser}} current-user {{/if}} contracted"
              data-identifier='{{>identifier}}'>
-            <div class="row-fluid">
+            <div class="row-fluid basicInfo">
                 <img class="pull-left" src='{{>~getGravatar(email)}}'/>
 
                 <div class="pull-right">
@@ -260,6 +260,7 @@
                     </div>
 
                 </div>
+                <div class="clearfix"></div>
             </div>
 
             <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small">
@@ -417,7 +418,7 @@
 
 <script id="commentTemplate" type="text/x-jsrender">
 
-    <div class="comment {{>fromRevision}}">
+    <div class="comment {{>fromRevision}} {{if belongsToCurrentUser}} current-user {{/if}}">
         <img src="{{>~getGravatar(author, 35)}}"/>
 
         <div class="nextToGravatar">

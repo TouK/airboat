@@ -96,7 +96,7 @@ class ChangesetController {
     }
 
     private boolean belongsToCurrentUser(Changeset changeset) {
-        authenticatedUser != null && authenticatedUser == changeset.commiter?.user
+        authenticatedUser != null && authenticatedUser == changeset.commiter.user
     }
 
     private int allCommentsCount(Changeset changeset) {

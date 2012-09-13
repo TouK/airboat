@@ -33,11 +33,20 @@ textarea {
     font-weight: bold;
 }
 
+.changeset.current-user .comment .author {
+    font-weight: normal;
+}
+
+.changeset .comment.current-user .author {
+    font-weight: bold;
+}
+
+
 .author {
     font-style: oblique;
 }
 
-.changeset .commitMessage:hover {
+.changeset .basicInfo:hover {
     background-color: rgba(255, 255, 255, 0.9);
 }
 
