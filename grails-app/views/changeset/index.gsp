@@ -88,7 +88,7 @@
 
     $.views.helpers({
         getGravatar:function (email, size) {
-            var size = size || 60;
+            var size = size || 40;
             return 'http://www.gravatar.com/avatar/' + $.md5(email) + '.jpg?' + $.param({
                 s:size,
                 d:'identicon'
@@ -194,12 +194,13 @@
 
 <script id="dayTemplate" type="text/x-jsrender">
     <div class="day"
-        data-date='{{:date}}'>
+         data-date='{{:date}}'>
         <div class="row-fluid">
             <h3 class="dayLabel well-small span5">
                 {{>date}}
             </h3>
         </div>
+
         <div class="changesets">
             <!-- here will be changestes for given day -->
         </div>
@@ -210,18 +211,19 @@
 
     <div class='row-fluid'>
 
-        <div class="span5 well well-small changeset {{if belongsToCurrentUser}}current-user{{/if}}" data-identifier='{{>identifier}}'>
+        <div class="span5 well well-small changeset {{if belongsToCurrentUser}}current-user{{/if}}"
+             data-identifier='{{>identifier}}'>
             <div class="row-fluid">
                 <img class="pull-left" src='{{>~getGravatar(email)}}'/>
 
                 <div class="nextToGravatar">
                     <div>
-                        <span class='author' >{{>author}}</span>
+                        <span class='author'>{{>author}}</span>
                         commited to <span class="badge"
                                           style="background-color: {{>~colorForProjectName(projectName)}}">{{>projectName}}</span>
 
-                        <span class="pull-right changeset-date"> <i class="icon-time"/> {{:date.substring(11)}} </span>
-                        <span class="pull-right changeset-hash"> {{>shortIdentifier}} </span>
+                        <span class="pull-right changeset-date"><i class="icon-time"/> {{:date.substring(11)}}</span>
+                        <span class="pull-right changeset-hash">{{>shortIdentifier}}</span>
                     </div>
 
                     <div class="pull-right">
@@ -394,12 +396,18 @@
 
 <script id="commentTemplate" type="text/x-jsrender">
 
-    <div class="alert {{>fromRevision}}">
-        <img src="{{>~getGravatar(author)}}"/>
-        <span class="author">{{>author}}</span>
-        <span class="label label-info pull-right">{{>dateCreated}}</span>
+    <div class="comment {{>fromRevision}}">
+        <img src="{{>~getGravatar(author, 35)}}"/>
 
-        <div class="comment-content">{{>text}}</div>
+        <div class="nextToGravatar">
+            <div class="comment-content">{{>text}}</div>
+
+            <div class="comment-footer">
+                <span class="comment-date pull-right"><i class="icon-time"/> {{:dateCreated}}</span>
+                <span class="author pull-left">{{>author}}</span>
+            </div>
+        </div>
+
     </div>
 </script>
 

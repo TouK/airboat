@@ -42,7 +42,7 @@ textarea {
 }
 
 .nextToGravatar {
-    margin-left: 69px; /*gravatar width (60) + gravatar container's padding (9) */
+    margin-left: 49px; /*gravatar width (40) + gravatar container's padding (9) */
 }
 
 .padding {
@@ -113,6 +113,7 @@ textarea {
     color: #333;
 }
 
+
 .navbar.logonavbar ul.dropdown-menu a:hover {
     color: white;
 }
@@ -130,4 +131,31 @@ textarea {
 
 #loading-image {
     padding-right: 5px
+}
+
+.comment img {
+    vertical-align: text-top;
+    float: left;
+}
+
+.comment .comment-content {
+    white-space: pre-wrap;
+    display: block;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+.comment .nextToGravatar {
+    margin-left: 44px;
+}
+
+.comment .author {
+    font-weight: normal;
+}
+
+.comment {
+    overflow: hidden;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    margin-bottom: 5px;
 }
