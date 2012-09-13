@@ -118,7 +118,7 @@
             }
         }
 
-        codeReview.templates.compileAll('changeset', 'loginStatus')
+        codeReview.templates.compileAll('loginStatus', 'changeset', 'comment')
 
         $.link.loginStatusTemplate('#loginStatus', codeReview);
 
@@ -243,7 +243,9 @@
 
                 <div class="accordion margin-bottom-small" id="accordion-{{>identifier}}"></div>
 
-                <div class="comments" id="comments-{{>identifier}}"></div>
+                <div class="comments" id="comments-{{>identifier}}">
+                    {{for comments tmpl='#commentTemplate' /}}
+                </div>
 
                 <div id="comment-form-{{>identifier}}"></div>
 
@@ -383,7 +385,7 @@
 
     <div id="commentFormButtons-{{>identifier}}" class="btn-group pull-right" style="display: none;">
         <button type="button" class="btn btn-primary btnWarningBackground" id="addCommentButton-{{>identifier}}"
-                onClick="addComment('{{>identifier}}')">Add comment</button>
+                onClick="addComment('{{:id}}', '{{:identifier}}')">Add comment</button>
         <button type="button" class="btn btn-primary" id="cancellButton-{{>identifier}}"
                 onClick="resetCommentForm('{{>identifier}}')">Cancel</button>
     </div>

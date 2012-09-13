@@ -12,7 +12,7 @@ function loadMoreChangesets() {
     if (!changesetsLoading) {
         changesetsLoading = true;
         var controllerAction;
-        if (displayedProjectName == '') {
+        if (codeReview.displayedProjectName == '') {
             controllerAction = uri.changeset.getNextFewChangesetsOlderThan
         } else {
             controllerAction = uri.changeset.getNextFewChangesetsOlderThanFromSameProject
@@ -69,7 +69,7 @@ function appendChangeset(changeset, dayElement) {
     changeset['allComments'] = function() {
         var projectFilesComments = 0
         $(this.changesetFiles).each(function() { projectFilesComments += this.commentsCount})
-        return this.commentsToChangeset.length + projectFilesComments
+        return this.comments.length + projectFilesComments
     }
 
     codeReview.displayedChangesets[changeset.id] = changeset
@@ -77,8 +77,7 @@ function appendChangeset(changeset, dayElement) {
     dayElement.children('.changesets').append($("<span id='templatePlaceholder'></span>"));
     $.link.changesetTemplate('#templatePlaceholder', changeset, {target: 'replace'})
 
-    renderCommentsForChangeset(changeset);
-    $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render({identifier:changeset.identifier}));
+    $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render(changeset));
     appendProjectFilesList(changeset);
 }
 
