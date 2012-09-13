@@ -1,53 +1,53 @@
 <!doctype html>
 <html>
 <head>
-  <title>Admin page</title>
+    <title>Admin page</title>
     <meta name="layout" content="main"/>
     <script src="${createLink(uri: '/libs/jquery.cookie/jquery.cookies.js')}" type="text/javascript"></script>
-    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet"
+          type="text/css"/>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 
-
-
 </head>
+
 <body>
 
-    <div class="span12 well-large" >
-        <div class='container'>
-            <div class="span6 offset4 well well-large">
-                <h1>You're on Admin page, think twice!</h1>
+<div class="span12 well-large">
+    <div class='container'>
+        <div class="span6 offset4 well well-large">
+            <div class="well-small">
+                <h2>Projects:</h2>
 
-                <div class="well-small">
-                    <h2>Projects:</h2>
-                    <div class="alert-success" id="removalSuccess"></div>
-                    <ul id="nameSelect"></ul>
-                </div>
-
-
-                <div class="well-small">
-                    <h2>Add project:</h2>
-                    <div class="errors"></div>
-                    <div class="alert-success" id="addingSuccess"></div>
-                    <form action='${postUrl}' class="form-inline" method='POST' id='addProjectForm'>
-                        <div class="errors"></div>
-                        <fieldset>
-                            <div class="control-group">
-
-
-                                <div class="controls">
-                                    <input id="urlInput" type="text" name="url" placeholder="git url">
-                                    <input id="nameInput" type="text" name="name" placeholder="name">
-                                    <button type="submit" class="btn btn-primary" >Add</button>
-                                </div>
-                            </div>
-                        </fieldset>
-
-                    </form>
-                </div>
-                <a type="button" href="./" class="btn btn-primary">Ok</a>
+                <div class="alert-success" id="removalSuccess"></div>
+                <ul id="nameSelect"></ul>
             </div>
+
+            <div class="well-small">
+                <h2>Add project:</h2>
+
+                <div class="errors"></div>
+
+                <div class="alert-success" id="addingSuccess"></div>
+
+                <form action='${postUrl}' class="form-inline" method='POST' id='addProjectForm'>
+                    <div class="errors"></div>
+                    <fieldset>
+                        <div class="control-group">
+
+                            <div class="controls">
+                                <input id="urlInput" type="text" name="url" placeholder="git url">
+                                <input id="nameInput" type="text" name="name" placeholder="name">
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                </form>
+            </div>
+            <a type="button" href="./" class="btn btn-primary">Ok</a>
         </div>
     </div>
+</div>
 
 
 
@@ -67,13 +67,13 @@
 
 <script type="text/javascript">
 
-    if($.cookies.get( 'skin' )) {
-        $("#skin").attr("href", $.cookies.get( 'skin').href);
+    if ($.cookies.get('skin')) {
+        $("#skin").attr("href", $.cookies.get('skin').href);
     }
     $('#addProjectForm').submit(addProject);
 
-    $(document).ready( function(){
-       appendProjectOptionsToSelection("#nameSelect");
+    $(document).ready(function () {
+        appendProjectOptionsToSelection("#nameSelect");
     });
 
     function appendProjectOptionsToSelection(id) {
@@ -87,9 +87,9 @@
         var name = $("#nameInput").val();
         var url = $("#urlInput").val();
 
-        $.post("${createLink(uri: '/project/create')}", {url: url, name: name}, function (project) {
+        $.post("${createLink(uri: '/project/create')}", {url:url, name:name}, function (project) {
             appendProjectOptionsToSelection("#nameSelect");
-            if(!project.errors){
+            if (!project.errors) {
                 eraseForms();
                 var message = project.message;
                 $("#addingSuccess").text(message).hide().fadeIn();
@@ -107,16 +107,16 @@
     }
 
     function removeProject(name) {
-        $.post("${createLink(uri: '/project/remove')}", {name: name}, function (project) {
+        $.post("${createLink(uri: '/project/remove')}", {name:name},function (project) {
             var removalNotice = "Project " + name + project.message;
             $("#removalSuccess").text(removalNotice);
-        }, 'json').then(function() {
+        }, 'json').then(function () {
                     eraseForms();
                     appendProjectOptionsToSelection("#nameSelect");
                 })
     }
 
-    function eraseForms(){
+    function eraseForms() {
         $("#nameSelect").select("");
         $("#nameInput").val("");
         $("#urlInput").val("");

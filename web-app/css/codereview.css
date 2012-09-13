@@ -29,6 +29,10 @@ textarea {
     margin-right: 3px;
 }
 
+.author {
+    font-style: oblique;
+}
+
 .changeset.current-user .author {
     font-weight: bold;
 }
@@ -41,13 +45,12 @@ textarea {
     font-weight: bold;
 }
 
-
-.author {
-    font-style: oblique;
-}
-
 .changeset .basicInfo:hover {
     background-color: rgba(255, 255, 255, 0.9);
+}
+
+.commitFooter {
+    padding-top: 10px;
 }
 
 .changeset.well {

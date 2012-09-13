@@ -67,9 +67,6 @@
 <div class="span12 well-large">
     <div class='container'>
         <div class="span7 offset4">
-            Hello, <sec:username/>!
-            <h1>Set your preferences:</h1>
-
             <div class="span6 well-large well">
 
                 <h2>Choose the skin you like:</h2>
@@ -77,7 +74,6 @@
                 <ul id="options">
                 </ul>
             </div>
-
 
             <div class="span6 well-large well change-password-form">
                 <h2>Change password</h2>
