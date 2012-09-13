@@ -41,8 +41,6 @@
             <a class="brand" href="#">
                 CodeReview
             </a>
-            <img src="${createLink(uri: '/images/cereal_guy.png')}" height="80" class="pull-left" style="padding: 5px;">
-
             <ul class="nav">
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project<b class="caret"></b></a>
@@ -86,12 +84,12 @@
 
 <script type="text/javascript">
 
-    $('#content').on('click','.changeset.contracted .commitMessage', function(event) {
+    $('#content').on('click', '.changeset.contracted .commitMessage', function (event) {
         var changeset = $(this).parents('.changeset').first();
         showChangesetDetails(changeset[0].dataset.identifier);
     });
 
-    $('#content').on('click','.changeset.expanded .commitMessage', function(event) {
+    $('#content').on('click', '.changeset.expanded .commitMessage', function (event) {
         var changeset = $(this).parents('.changeset').first();
         hideChangesetDetailsAndScroll(changeset[0].dataset.identifier);
     });
@@ -103,15 +101,12 @@
                 s:size,
                 d:'identicon'
             });
-        }
-        , colorForProjectName:function (projectName) {
+        }, colorForProjectName:function (projectName) {
             var md5hash = $.md5(projectName);
             return  colorFromMd5Hash(md5hash.substr(0, 12));
-        }
-        , iconForChangeType:function (changeType) {
+        }, iconForChangeType:function (changeType) {
             return iconForChangeType[changeType]
-        }
-        , textForChangeType:function (changeType) {
+        }, textForChangeType:function (changeType) {
             return textForChangeType[changeType]
         }
 
@@ -205,17 +200,16 @@
     <div class="textInNavbar">
         <div data-link="visible{: loggedInUserName !== '' }">
             %{--TODO use uri global variable when referencing a controller--}%
-            Yo <a data-link="{:loggedInUserName} href{: 'user/options/'}"></a>!
-        Wanna <g:link controller='logout'>log out</g:link>?
-
+            <a data-link="{:loggedInUserName} href{: 'user/options/'}"></a>
             <span data-link="visible{: isAdmin }">
                 <g:link controller='user' action='admin'>Admin page</g:link>
             </span>
+            <g:link controller='logout'>Log out</g:link>
         </div>
 
         <div data-link="visible{: loggedInUserName === '' }">
-            Hello, Unknown Wanderer! <g:link class='colorbox' url='login'>Login</g:link>
-            or <g:link class='colorbox' url='register'>register</g:link>, maybe?
+            <g:link class='colorbox' url='login'>Login</g:link>
+            <g:link class='colorbox' url='register'>Register</g:link>
         </div>
     </div>
 </script>
@@ -245,18 +239,23 @@
                 <img class="pull-left" src='{{>~getGravatar(email)}}'/>
 
                 <div class="pull-right">
-                    <i class="icon-comment"></i><span class='commentsCount' data-link="allComments">{{>allComments}}</span>
+                    <i class="icon-comment"></i><span class='commentsCount'
+                                                      data-link="allComments">{{>allComments}}</span>
                 </div>
+
                 <div class="nextToGravatar">
 
-                    <div class="commitMessage"><h5> {{>commitComment}}</h5></div>
+                    <div class="commitMessage"><h5>{{>commitComment}}</h5></div>
+
                     <div class="commitFooter">
                         <span class='author'>{{>author}}</span> in
                         <span class="badge"
                               style="background-color: {{>~colorForProjectName(projectName)}}">{{>projectName}}</span>
 
-                        <span class="pull-right changeset-date" data-date='{{:date}}'><i class="icon-time"/> {{:date.substring(11)}}</span>
-                        <span class="pull-right changeset-hash" data-changeset_identifier='{{:identifier}}'>{{>shortIdentifier}}</span>
+                        <span class="pull-right changeset-date" data-date='{{:date}}'><i
+                                class="icon-time"/> {{:date.substring(11)}}</span>
+                        <span class="pull-right changeset-hash"
+                              data-changeset_identifier='{{:identifier}}'>{{>shortIdentifier}}</span>
                     </div>
 
                 </div>
@@ -316,6 +315,7 @@
                     {{>name}}
                 </a>
             </div>
+
             <div class="row-fluid span3" data-link="visible{: commentsCount != 0 }">
                 <div class="pull-right">
                     <i class="icon-comment"></i><span class='commentsCount'>{{>commentsCount}}</span>
