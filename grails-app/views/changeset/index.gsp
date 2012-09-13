@@ -108,7 +108,30 @@
             var md5hash = $.md5(projectName);
             return  colorFromMd5Hash(md5hash.substr(0, 12));
         }
+        , iconForChangeType:function (changeType) {
+            return iconForChangeType[changeType]
+        }
+        , textForChangeType:function (changeType) {
+            return textForChangeType[changeType]
+        }
+
     });
+
+    iconForChangeType = {
+        ADD:'icon-plus',
+        DELETE:'icon-minus',
+        MODIFY:'icon-edit',
+        RENAME:'icon-pencil',
+        COPY:'icon-move'
+    }
+
+    textForChangeType = {
+        ADD:'added',
+        DELETE:'deleted',
+        MODIFY:'modified',
+        RENAME:'renamed',
+        COPY:'copied'
+    }
 
     function colorFromMd5Hash(md5hash) {
         var colorCount = 18
@@ -230,7 +253,7 @@
                     <div class="commitFooter">
                         <span class='author'>{{>author}}</span> in
                         <span class="badge"
-                                          style="background-color: {{>~colorForProjectName(projectName)}}">{{>projectName}}</span>
+                              style="background-color: {{>~colorForProjectName(projectName)}}">{{>projectName}}</span>
 
                         <span class="pull-right changeset-date" data-date='{{:date}}'><i class="icon-time"/> {{:date.substring(11)}}</span>
                         <span class="pull-right changeset-hash" data-changeset_identifier='{{:identifier}}'>{{>shortIdentifier}}</span>
@@ -241,7 +264,9 @@
 
             <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small">
 
-                <div class="accordion margin-bottom-small changesetFiles" id="accordion-{{>identifier}}"></div>
+                <div class="accordion margin-bottom-small changesetFiles" id="accordion-{{>identifier}}">
+                    {{for projectFiles tmpl='#projectFileRowTemplate' /}}
+                </div>
 
                 <div class="comments" id="comments-{{>identifier}}">
                     {{for comments tmpl='#commentTemplate' /}}
@@ -273,7 +298,7 @@
     </div>
 </script>
 
-<script id="accordionFilesTemplate" type="text/x-jsrender">
+<script id="projectFileRowTemplate" type="text/x-jsrender">
     <div class="accordion-group changesetFile" id="accordion-group-{{>collapseId}}">
         {{for [#data] tmpl='#accordionFileBodyTemplate'}}{{/for}}
     </div>
@@ -284,30 +309,28 @@
     <div class="accordion-heading">
         <div class="row-fluid">
             <div class="row-fluid span9">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>changesetId}}"
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>changeset.identifier}}"
                    href="#collapse-inner-{{>collapseId}}">
-                    <i title="{{: textForChangeType[fileChangeType] }}"
-                       class="{{: iconForChangeType[fileChangeType] }}"></i>
+                    <i title="{{: ~textForChangeType(changeType.name) }}"
+                       class="{{: ~iconForChangeType(changeType.name) }}"></i>
                     {{>name}}
                 </a>
             </div>
-            {{if howManyComments != 0}}
-            <div class="row-fluid span3">
+            <div class="row-fluid span3" data-link="visible{: commentsCount != 0 }">
                 <div class="pull-right">
-                    <i class="icon-comment"></i><span class='commentsCount'>{{>howManyComments}}</span>
+                    <i class="icon-comment"></i><span class='commentsCount'>{{>commentsCount}}</span>
                 </div>
             </div>
-            {{/if}}
         </div>
     </div>
 
     <div id='collapse-inner-{{>collapseId}}' class="accordion-body collapse changesetFileDetails"
-         data-changeset_id='{{:changesetId}}'
-         data-file_id='{{:fileId}}'
-         data-file_change_type='{{:fileChangeType}}'
+         data-changeset_id='{{:changeset.identifier}}'
+         data-file_id='{{:id}}'
+         data-file_change_type='{{:changeType.name}}'
          data-file_name_slice='{{:name}}'
          data-text_format='{{:textFormat}}'>
-        <div class="accordion-inner" id="accordion-inner-{{>fileId}}">
+        <div class="accordion-inner" id="accordion-inner-{{>id}}">
             <div id="fileComments-{{>collapseId}}"></div>
         </div>
     </div>

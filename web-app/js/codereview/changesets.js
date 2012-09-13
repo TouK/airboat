@@ -68,9 +68,17 @@ function appendChangeset(changeset, dayElement) {
     changeset['shortIdentifier'] = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
     changeset['allComments'] = function() {
         var projectFilesComments = 0
-        $(this.changesetFiles).each(function() { projectFilesComments += this.commentsCount})
+        $(this.projectFiles).each(function() { projectFilesComments += this.commentsCount})
         return this.comments.length + projectFilesComments
     }
+
+    $(changeset.projectFiles).each(function() {
+        $.extend(this, {
+            changeset:changeset,
+            collapseId:(changeset.identifier + this.id),
+            name:sliceName(this.name, lineBoundary)
+        })
+    })
 
     codeReview.displayedChangesets[changeset.id] = changeset
 
@@ -78,49 +86,18 @@ function appendChangeset(changeset, dayElement) {
     $.link.changesetTemplate('#templatePlaceholder', changeset, {target: 'replace'})
 
     $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render(changeset));
-    appendProjectFilesList(changeset);
 }
 
-iconForChangeType = {
-    ADD:'icon-plus',
-    DELETE:'icon-minus',
-    MODIFY:'icon-edit',
-    RENAME:'icon-pencil',
-    COPY:'icon-move'
-}
-
-textForChangeType = {
-    ADD:'added',
-    DELETE:'deleted',
-    MODIFY:'modified',
-    RENAME:'renamed',
-    COPY:'copied'
-}
-
-function appendProjectFilesList(changeset) {
-    for (var i = 0; i < changeset.changesetFiles.length; i++) {
-        var projectFile = changeset.changesetFiles[i];
-        var accordionRow = $("#accordionFilesTemplate").render({
-            name:sliceName(projectFile.name, lineBoundary),
-            changesetId:changeset.identifier,
-            fileId:projectFile.id,
-            textFormat:projectFile.textFormat,
-            collapseId:(changeset.identifier + projectFile.id),
-            howManyComments:projectFile.commentsCount,
-            fileChangeType:projectFile.changeType.name,
-            textForChangeType:textForChangeType,
-            iconForChangeType:iconForChangeType
+/*TODO move it somewhere near the template definition*/
+$('.accordion-body.collapse').livequery(function () {
+    $(this)
+        .on('show', function() {
+            appendSnippetToFileInAccordion(this.dataset.changeset_id, this.dataset.file_id)
+            showFile(this.dataset);
+        }).on('shown', function () {
+            $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
         });
-        $('#accordion-' + changeset.identifier).append(accordionRow);
-    }
-
-    $('#accordion-' + changeset.identifier + ' .accordion-body.collapse').on('show', function() {
-        appendSnippetToFileInAccordion(this.dataset.changeset_id, this.dataset.file_id)
-        showFile(this.dataset);
-    }).on('shown', function () {
-        $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
-    });
-}
+})
 
 function updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, projectFileId) {
     renderCommentGroupsWithSnippets(changesetId, projectFileId, commentGroupsWithSnippetsForCommentedFile);

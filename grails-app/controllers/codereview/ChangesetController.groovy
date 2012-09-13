@@ -86,7 +86,7 @@ class ChangesetController {
                 projectName: changeset.project.name,
                 belongsToCurrentUser: belongsToCurrentUser(changeset),
                 allComments: allCommentsCount(changeset),
-                changesetFiles: getChangesetFiles(changeset),
+                projectFiles: getChangesetFiles(changeset),
                 comments: returnCommentsToChangeset(changeset.identifier)
         ]
     }
