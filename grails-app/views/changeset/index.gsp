@@ -228,9 +228,10 @@
 
     <div class='row-fluid'>
 
-        <div class="span5 well well-small changeset {{if belongsToCurrentUser}} current-user {{/if}}"
-             data-identifier='{{>identifier}}'>
-            <div class="row-fluid basicInfo">
+        <div class="changeset {{if belongsToCurrentUser}} current-user {{/if}} span5 well well-small"
+             data-identifier='{{:identifier}}' data-id='{{:id}}'>
+
+            <div class="basicInfo row-fluid">
                 <img class="pull-left" src='{{>~getGravatar(email)}}'/>
 
                 <div class="pull-right">
@@ -240,7 +241,7 @@
 
                 <div class="nextToGravatar">
 
-                    <div class="commitMessage"><h5>{{>commitComment}}</h5></div>
+                    <div class="commitMessage"><h5>{{>commitMessage}}</h5></div>
 
                     <div class="commitFooter">
                         <span class='author'>{{>author}}</span> in
@@ -257,7 +258,7 @@
                 <div class="clearfix"></div>
             </div>
 
-            <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small details">
+            <div id="changesetDetails-{{>identifier}}" style="display:none;" class="details row-fluid margin-top-small">
 
                 <h5>Comments:</h5>
                 <div class="comments" id="comments-{{>identifier}}">
@@ -266,7 +267,7 @@
                 <div id="comment-form-{{>identifier}}"></div>
 
                 <h5>Changed files:</h5>
-                <div class="accordion margin-bottom-small changesetFiles" id="accordion-{{>identifier}}">
+                <div class="projectFiles accordion margin-bottom-small" id="accordion-{{>identifier}}">
                     {{for projectFiles tmpl='#projectFileRowTemplate' /}}
                 </div>
 
@@ -293,7 +294,8 @@
 </script>
 
 <script id="projectFileRowTemplate" type="text/x-jsrender">
-    <div class="accordion-group changesetFile" id="accordion-group-{{>collapseId}}">
+    <div class="projectFile accordion-group" id="accordion-group-{{>collapseId}}"
+         data-id={{:id}}>
         {{for [#data] tmpl='#accordionFileBodyTemplate'}}{{/for}}
     </div>
 </script>
@@ -319,7 +321,7 @@
         </div>
     </div>
 
-    <div id='collapse-inner-{{>collapseId}}' class="accordion-body collapse changesetFileDetails"
+    <div id='collapse-inner-{{>collapseId}}' class="details accordion-body collapse"
          data-changeset_id='{{:changeset.identifier}}'
          data-file_id='{{:id}}'
          data-file_change_type='{{:changeType.name}}'

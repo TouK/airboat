@@ -81,7 +81,7 @@ class ChangesetController {
                 author: changeset.commiter.cvsCommiterId,
                 email: getEmail(changeset.commiter),
                 date: changeset.date.format('yyyy-MM-dd HH:mm'),
-                commitComment: changeset.commitComment,
+                commitMessage: changeset.commitMessage,
                 commentsCount: changeset.commentsCount,
                 projectName: changeset.project.name,
                 belongsToCurrentUser: belongsToCurrentUser(changeset),
