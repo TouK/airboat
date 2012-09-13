@@ -1,20 +1,23 @@
-function addComment(changesetId) {
+function addComment(changesetId, changesetIdentifier) {
 
-    var text = $('#add-comment-' + changesetId).val();
+    var text = $('#add-comment-' + changesetIdentifier).val();
     if (text == "") {
         return false
     }
 
     $.post(uri.userComment.addComment,
-        { changesetId:changesetId, text:text },
+        { changesetIdentifier:changesetIdentifier, text:text },
         function (comment) {
             if (comment.errors == null) {
-                $('#comments-' + changesetId).append($('#commentTemplate').render(comment));
-                resetCommentForm(changesetId);
+                var changeset = codeReview.displayedChangesets[changesetId];
+                var changesetComments = changeset.comments
+                $.observable(changesetComments).insert(changesetComments.length, comment)
+                $.observable(changeset).setProperty('allComments')
+
+                resetCommentForm(changesetIdentifier);
                 $('.addLongCommentMessageToChangeset').html("");
-            }
-            else {
-                $('.addLongCommentMessageToChangesoet')
+            } else {
+                $('.addLongCommentMessageToChangeset')
                     .html($('#longCommentTemplate').render(" Your comment is too long!"))
                     .hide().fadeIn();
             }
@@ -109,12 +112,4 @@ function resetCommentForm(changesetId) {
     $('#add-comment-' + changesetId).attr('rows', 1);
     $('.longComment').remove();
     $('#commentFormButtons-' + changesetId).hide();
-}
-
-function showCommentsToChangeset(changeset) {
-    $('#comments-' + changeset.identifier).html("");
-    for (var i = 0; i < changeset.commentsToChangeset.length; i++) {
-        var comment = $("#commentTemplate").render(changeset.commentsToChangeset[i]);
-        $('#comments-' + changeset.identifier).append(comment);
-    }
 }

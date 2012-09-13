@@ -104,6 +104,10 @@
                 d:'identicon'
             });
         }
+        , colorForProjectName:function (projectName) {
+            var md5hash = $.md5(projectName);
+            return  colorFromMd5Hash(md5hash.substr(0, 12));
+        }
     });
 
     function colorFromMd5Hash(md5hash) {
@@ -112,13 +116,6 @@
         var color = (numberOfHuesInHSL / colorCount) * (parseInt(md5hash, 16) % colorCount)
         return "hsl(" + color + ", 50%, 50%)"
     }
-
-    $.views.helpers({
-        colorForProjectName:function (projectName) {
-            var md5hash = $.md5(projectName);
-            return  colorFromMd5Hash(md5hash.substr(0, 12));
-        }
-    });
 
     $().ready(function () {
         codeReview.initialFirstChangesetOffset = $('#content').position().top
@@ -131,9 +128,7 @@
             }
         }
 
-        $.templates({
-            loginStatusTemplate:"#loginStatusTemplate"
-        });
+        codeReview.templates.compileAll('loginStatus', 'changeset', 'comment')
 
         $.link.loginStatusTemplate('#loginStatus', codeReview);
 
@@ -227,7 +222,7 @@
                 <img class="pull-left" src='{{>~getGravatar(email)}}'/>
 
                 <div class="pull-right">
-                    <i class="icon-comment"></i><span class='commentsCount'>{{>allComments}}</span>
+                    <i class="icon-comment"></i><span class='commentsCount' data-link="allComments">{{>allComments}}</span>
                 </div>
                 <div class="nextToGravatar">
 
@@ -237,9 +232,12 @@
                         <span class="badge"
                                           style="background-color: {{>~colorForProjectName(projectName)}}">{{>projectName}}</span>
 
-                        <span class="pull-right changeset-date"><i class="icon-time"/> {{:date.substring(11)}}</span>
-                        <span class="pull-right changeset-hash">{{>shortIdentifier}}</span>
+                        <span class="pull-right changeset-date" data-date='{{:date}}'><i class="icon-time"/> {{:date.substring(11)}}</span>
+                        <span class="pull-right changeset-hash" data-changeset_identifier='{{:identifier}}'>{{>shortIdentifier}}</span>
+                    </div>
 
+                    <div class="pull-right">
+                        <i class="icon-comment"></i><span class='commentsCount'>{{>allComments}}</span>
                     </div>
                 </div>
             </div>
@@ -248,7 +246,9 @@
 
                 <div class="accordion margin-bottom-small" id="accordion-{{>identifier}}"></div>
 
-                <div class="comments" id="comments-{{>identifier}}"></div>
+                <div class="comments" id="comments-{{>identifier}}">
+                    {{for comments tmpl='#commentTemplate' /}}
+                </div>
 
                 <div id="comment-form-{{>identifier}}"></div>
 
@@ -389,7 +389,7 @@
 
     <div id="commentFormButtons-{{>identifier}}" class="btn-group pull-right" style="display: none;">
         <button type="button" class="btn btn-primary btnWarningBackground" id="addCommentButton-{{>identifier}}"
-                onClick="addComment('{{>identifier}}')">Add comment</button>
+                onClick="addComment('{{:id}}', '{{:identifier}}')">Add comment</button>
         <button type="button" class="btn btn-primary" id="cancellButton-{{>identifier}}"
                 onClick="resetCommentForm('{{>identifier}}')">Cancel</button>
     </div>

@@ -87,7 +87,7 @@ class ChangesetController {
                 belongsToCurrentUser: belongsToCurrentUser(changeset),
                 allComments: allCommentsCount(changeset),
                 changesetFiles: getChangesetFiles(changeset),
-                commentsToChangeset: returnCommentsToChangeset(changeset.identifier)
+                comments: returnCommentsToChangeset(changeset.identifier)
         ]
     }
 
@@ -119,7 +119,7 @@ class ChangesetController {
         def projectFile = projectFileInChangeset.projectFile
         def projectFileProperties = projectFile.properties + [
                 id: projectFile.id,
-                commentCount: projectFileInChangeset.commentThreadsPositions*.thread*.comments?.flatten()?.size(),
+                commentsCount: projectFileInChangeset.commentThreadsPositions*.thread*.comments?.flatten()?.size(),
                 changeType: projectFileInChangeset.changeType
         ]
         projectFileProperties.keySet().retainAll(
