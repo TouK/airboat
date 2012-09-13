@@ -41,8 +41,6 @@
             <a class="brand" href="#">
                 CodeReview
             </a>
-            <img src="${createLink(uri: '/images/cereal_guy.png')}" height="80" class="pull-left" style="padding: 5px;">
-
             <ul class="nav">
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project<b class="caret"></b></a>
@@ -205,17 +203,16 @@
     <div class="textInNavbar">
         <div data-link="visible{: loggedInUserName !== '' }">
             %{--TODO use uri global variable when referencing a controller--}%
-            Yo <a data-link="{:loggedInUserName} href{: 'user/options/'}"></a>!
-        Wanna <g:link controller='logout'>log out</g:link>?
-
+            User: <a data-link="{:loggedInUserName} href{: 'user/options/'}"></a>
             <span data-link="visible{: isAdmin }">
                 <g:link controller='user' action='admin'>Admin page</g:link>
             </span>
+            <g:link controller='logout'>Log out</g:link>
         </div>
 
         <div data-link="visible{: loggedInUserName === '' }">
-            Hello, Unknown Wanderer! <g:link class='colorbox' url='login'>Login</g:link>
-            or <g:link class='colorbox' url='register'>register</g:link>, maybe?
+            <g:link class='colorbox' url='login'>Login</g:link>
+            <g:link class='colorbox' url='register'>Register</g:link>
         </div>
     </div>
 </script>
