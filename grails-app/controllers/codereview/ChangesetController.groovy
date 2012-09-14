@@ -109,7 +109,7 @@ class ChangesetController {
     }
 
     private List<Map> getChangesetFiles(Changeset changeset) {
-        def files = changeset.projectFilesInChangeset
+        def files = changeset.projectFilesInChangeset?.sort { it.projectFile.name }
         def fileProperties = files.collect this.&getFileJSONProperties
         fileProperties
     }

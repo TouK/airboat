@@ -10,7 +10,7 @@ class Changeset {
     static belongsTo = [project: Project, commiter: Commiter]
 
     static mapping = {
-        projectFilesInChangeset sort:  "projectFile"
+        userComments sort: 'dateCreated', order: 'asc'
     }
 
     Commiter commiter
