@@ -59,6 +59,7 @@ $('.changeset-hash').livequery(function () {
         .zclip({
             path:uri.libs.zclip.swf,
             copy:this.dataset.changeset_identifier,
+            clickAfter: false,
             afterCopy:function () {
             }
         });
@@ -80,8 +81,6 @@ function appendChangeset(changeset, dayElement) {
         })
     })
 
-    codeReview.displayedChangesets[changeset.id] = changeset
-
     dayElement.children('.changesets').append($("<span id='templatePlaceholder'></span>"));
     $.link.changesetTemplate('#templatePlaceholder', changeset, {target: 'replace'})
 
@@ -99,10 +98,11 @@ $('.accordion-body.collapse').livequery(function () {
         });
 })
 
-function updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetId, projectFileId) {
-    renderCommentGroupsWithSnippets(changesetId, projectFileId, commentGroupsWithSnippetsForCommentedFile);
-    $('#accordion-group-' + changesetId + projectFileId + ' .commentsCount')
-        .text(commentGroupsWithSnippetsForCommentedFile.commentsCount)
+function updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId) {
+    renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippetsForCommentedFile);
+    var projectFile = codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + '] .projectFile[data-id=' + projectFileId + ']');
+    $.observable(projectFile).setProperty('commentsCount', commentGroupsWithSnippetsForCommentedFile.commentsCount)
+    $.observable(codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + ']')).setProperty('allComments')
 }
 
 function appendSnippetToFileInAccordion(changesetIdentifier, projectFileId) {
@@ -166,30 +166,19 @@ function sliceName(name) {
     return name.toString().replace(/\//g, '/&#8203;');
 }
 
-function showChangesetDetails(identifier) {
-    $('#changesetDetails-' + identifier).show();
-    var changeset = $(".changeset[data-identifier=" + identifier + "]");
-    changeset.removeClass('contracted');
-    changeset.addClass('expanded');
+function toggleChangesetDetails(identifier) {
+    var changesetDetails = $('#changesetDetails-' + identifier);
+    if (changesetDetails.is(':visible')) {
+        hideFile(identifier);
+        changesetDetails.parents('.changeset').ScrollTo({
+            onlyIfOutside:true,
+            offsetTop:codeReview.initialFirstChangesetOffset,
+            callback:function() {
+                changesetDetails.slideUp()
+            }
+        });
+    } else {
+        changesetDetails.slideDown();
+    }
 }
-
-function hideChangesetDetails(identifier) {
-    hideFile(identifier);
-    $('#changesetDetails-' + identifier).hide();
-    var changeset = $(".changeset[data-identifier=" + identifier + "]");
-    changeset.addClass('contracted');
-    changeset.removeClass('expanded');
-}
-
-function hideChangesetDetailsAndScroll(identifier) {
-    $('#accordion-' + identifier + ' .accordion-body.collapse').parents('.changeset').ScrollTo({
-        onlyIfOutside:true,
-        offsetTop:codeReview.initialFirstChangesetOffset,
-        callback:function() {
-            hideChangesetDetails(identifier)
-        }
-    });
-}
-
-
 

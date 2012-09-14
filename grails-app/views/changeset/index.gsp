@@ -84,14 +84,9 @@
 
 <script type="text/javascript">
 
-    $('#content').on('click', '.changeset.contracted .commitMessage', function (event) {
+    $('body').on('click', '.changeset .basicInfo, .changeset .details .lessButton', function() {
         var changeset = $(this).parents('.changeset').first();
-        showChangesetDetails(changeset[0].dataset.identifier);
-    });
-
-    $('#content').on('click', '.changeset.expanded .commitMessage', function (event) {
-        var changeset = $(this).parents('.changeset').first();
-        hideChangesetDetailsAndScroll(changeset[0].dataset.identifier);
+        toggleChangesetDetails(changeset[0].dataset.identifier);
     });
 
     $.views.helpers({
@@ -109,7 +104,6 @@
         }, textForChangeType:function (changeType) {
             return textForChangeType[changeType]
         }
-
     });
 
     iconForChangeType = {
@@ -161,12 +155,13 @@
         $(".colorbox").colorbox(codeReview.colorboxSettings);
         $('.dropdown-toggle').dropdown();
 
-        $('body').bind('codeReview-pageStructureChanged', repositionZclips)
+        $('body').on('codeReview-pageStructureChanged', repositionZclips)
     });
 
-    $(document).ajaxStart(function () {
-        $('#loading').show();
-    }).ajaxStop(function () {
+    $(document)
+            .ajaxStart(function () {
+                $('#loading').show();
+            }).ajaxStop(function () {
                 $('#loading').hide();
                 $('body').trigger('codeReview-pageStructureChanged') //most probably
             });
@@ -233,9 +228,10 @@
 
     <div class='row-fluid'>
 
-        <div class="span5 well well-small changeset {{if belongsToCurrentUser}}current-user{{/if}} contracted"
-             data-identifier='{{>identifier}}'>
-            <div class="row-fluid">
+        <div class="changeset {{if belongsToCurrentUser}} current-user {{/if}} span5 well well-small"
+             data-identifier='{{:identifier}}' data-id='{{:id}}'>
+
+            <div class="basicInfo row-fluid">
                 <img class="pull-left" src='{{>~getGravatar(email)}}'/>
 
                 <div class="pull-right">
@@ -245,7 +241,7 @@
 
                 <div class="nextToGravatar">
 
-                    <div class="commitMessage"><h5>{{>commitComment}}</h5></div>
+                    <div class="commitMessage"><h5>{{>commitMessage}}</h5></div>
 
                     <div class="commitFooter">
                         <span class='author'>{{>author}}</span> in
@@ -259,25 +255,25 @@
                     </div>
 
                 </div>
+                <div class="clearfix"></div>
             </div>
 
-            <div id="changesetDetails-{{>identifier}}" style="display:none;" class="row-fluid margin-top-small">
+            <div id="changesetDetails-{{>identifier}}" style="display:none;" class="details row-fluid margin-top-small">
 
+                <h5>Comments:</h5>
                 <div class="comments" id="comments-{{>identifier}}">
                     {{for comments tmpl='#commentTemplate' /}}
                 </div>
-
                 <div id="comment-form-{{>identifier}}"></div>
-                <div class="accordion margin-bottom-small changesetFiles" id="accordion-{{>identifier}}">
+
+                <h5>Changed files:</h5>
+                <div class="projectFiles accordion margin-bottom-small" id="accordion-{{>identifier}}">
                     {{for projectFiles tmpl='#projectFileRowTemplate' /}}
                 </div>
 
-
-                <a id="less-button-downChangeset-{{>identifier}}" class="wideButton"
-                   onclick="hideChangesetDetailsAndScroll('{{>identifier}}')">
+                <a class="wideButton lessButton">
                     <div class="center sizeOfIcon"><i class="icon-chevron-up"></i></div>
                 </a>
-
             </div>
         </div>
 
@@ -298,7 +294,8 @@
 </script>
 
 <script id="projectFileRowTemplate" type="text/x-jsrender">
-    <div class="accordion-group changesetFile" id="accordion-group-{{>collapseId}}">
+    <div class="projectFile accordion-group" id="accordion-group-{{>collapseId}}"
+         data-id={{:id}}>
         {{for [#data] tmpl='#accordionFileBodyTemplate'}}{{/for}}
     </div>
 </script>
@@ -318,13 +315,13 @@
 
             <div class="row-fluid span3" data-link="visible{: commentsCount != 0 }">
                 <div class="pull-right">
-                    <i class="icon-comment"></i><span class='commentsCount'>{{>commentsCount}}</span>
+                    <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id='collapse-inner-{{>collapseId}}' class="accordion-body collapse changesetFileDetails"
+    <div id='collapse-inner-{{>collapseId}}' class="details accordion-body collapse"
          data-changeset_id='{{:changeset.identifier}}'
          data-file_id='{{:id}}'
          data-file_change_type='{{:changeType.name}}'
@@ -369,7 +366,7 @@
                 onClick="cancelReply('{{>fileId}}', '{{>lineNumber}}')">Cancel</button>
     </div>
 
-  <div id="snippet-{{>fileId}}-{{>lineNumber}}"></div>
+    <div id="snippet-{{>fileId}}-{{>lineNumber}}"></div>
 </script>
 
 <!-- FIXME reuse comment form template for both types of comments -->
@@ -413,11 +410,12 @@
         <button type="button" class="btn btn-primary" id="cancellButton-{{>identifier}}"
                 onClick="resetCommentForm('{{>identifier}}')">Cancel</button>
     </div>
+    <div class="clearfix"></div>
 </script>
 
 <script id="commentTemplate" type="text/x-jsrender">
 
-    <div class="comment {{>fromRevision}}">
+    <div class="comment {{>fromRevision}} {{if belongsToCurrentUser}} current-user {{/if}}">
         <img src="{{>~getGravatar(author, 35)}}"/>
 
         <div class="nextToGravatar">

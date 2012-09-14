@@ -81,7 +81,7 @@ class ChangesetController {
                 author: changeset.commiter.cvsCommiterId,
                 email: getEmail(changeset.commiter),
                 date: changeset.date.format('yyyy-MM-dd HH:mm'),
-                commitComment: changeset.commitComment,
+                commitMessage: changeset.commitMessage,
                 commentsCount: changeset.commentsCount,
                 projectName: changeset.project.name,
                 belongsToCurrentUser: belongsToCurrentUser(changeset),
@@ -96,7 +96,7 @@ class ChangesetController {
     }
 
     private boolean belongsToCurrentUser(Changeset changeset) {
-        authenticatedUser != null && authenticatedUser == changeset.commiter?.user
+        authenticatedUser != null && authenticatedUser == changeset.commiter.user
     }
 
     private int allCommentsCount(Changeset changeset) {
@@ -109,7 +109,7 @@ class ChangesetController {
     }
 
     private List<Map> getChangesetFiles(Changeset changeset) {
-        def files = changeset.projectFilesInChangeset
+        def files = changeset.projectFilesInChangeset?.sort { it.projectFile.name }
         def fileProperties = files.collect this.&getFileJSONProperties
         fileProperties
     }

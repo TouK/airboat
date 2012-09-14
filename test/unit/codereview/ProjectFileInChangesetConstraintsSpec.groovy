@@ -28,7 +28,7 @@ class ProjectFileInChangesetConstraintsSpec extends Specification {
         field           | constraint | violatingValue
         'identifier'    | 'blank'    | ''
         'identifier'    | 'nullable' | null
-        'commitComment' | 'nullable' | null
+        'commitMessage' | 'nullable' | null
         'date'          | 'nullable' | null
     }
 

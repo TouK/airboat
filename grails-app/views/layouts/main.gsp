@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script type="text/javascript">
-
         var uri = { //TODO de-duplicate
             changeset:{
                 getLastChangesets:"${createLink(uri:'/changeset/getLastChangesets/')}",
@@ -46,7 +45,6 @@
                 return this.loggedInUserName !== '';
             }
             , displayedProjectName: ''
-            , displayedChangesets: []
 
             , debugMode: true
 
@@ -75,6 +73,10 @@
                     }
                 }
 
+            }
+
+            , getModel:function (selector) {
+                return $.view($(selector)[0]).data
             }
         }
 

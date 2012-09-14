@@ -9,7 +9,7 @@ function addComment(changesetId, changesetIdentifier) {
         { changesetIdentifier:changesetIdentifier, text:text },
         function (comment) {
             if (comment.errors == null) {
-                var changeset = codeReview.displayedChangesets[changesetId];
+                var changeset = codeReview.getModel('.changeset[data-id=' + changesetId + ']');
                 var changesetComments = changeset.comments
                 $.observable(changesetComments).insert(changesetComments.length, comment)
                 $.observable(changeset).setProperty('allComments')
@@ -82,6 +82,7 @@ function addReply(changesetIdentifier, projectFileId, lineNumber){
     );
 
 }
+
 function hideAndClearLineCommentFrom(changesetId, fileIdentifier) {
     $('#content-files-' + changesetId + ' .linenums li').popover("hide");
     $('#add-line-comment-' + fileIdentifier).val("");
@@ -105,8 +106,8 @@ function cancelReply(fileId, lineNumber) {
     $('#replyFormButtons-' + fileId + '-' + lineNumber).hide();
     $("#add-reply-" + fileId + "-" + lineNumber).attr('rows', 1);
     $("#add-reply-" + fileId + "-" + lineNumber).val("");
-
 }
+
 function resetCommentForm(changesetId) {
     $('#add-comment-' + changesetId).val("");
     $('#add-comment-' + changesetId).attr('rows', 1);

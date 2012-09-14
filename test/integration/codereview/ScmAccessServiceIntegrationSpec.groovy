@@ -26,11 +26,11 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
     def 'should fetch and save changesets in db'() {
         given:
         Project project
-        def (changesetId, commitComment, changesetAuthor) = ['id', 'comment', 'agj@touk.pl']
+        def (changesetId, commitMessage, changesetAuthor) = ['id', 'comment', 'agj@touk.pl']
         Project.withNewSession {
             project = Project.build()
         }
-        prepareGitScmService(commitComment, changesetAuthor, changesetId, project.url)
+        prepareGitScmService(commitMessage, changesetAuthor, changesetId, project.url)
 
         when:
         Project.withNewSession {
@@ -39,11 +39,11 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         Changeset.count() == 1
-        Changeset.findAllByIdentifierAndCommitComment(changesetId, commitComment).size() == 1
+        Changeset.findAllByIdentifierAndCommitMessage(changesetId, commitMessage).size() == 1
     }
 
-    private void prepareGitScmService(String commitComment, String changesetAuthor, String changesetId, String url) {
-        GitChangeset gitChangeset = new GitChangeset(commitComment, changesetAuthor, changesetId, new Date())
+    private void prepareGitScmService(String commitMessage, String changesetAuthor, String changesetId, String url) {
+        GitChangeset gitChangeset = new GitChangeset(commitMessage, changesetAuthor, changesetId, new Date())
 
         GitRepositoryService gitRepositoryService = Mock()
         1 * gitRepositoryService.getAllChangesets(url, _) >> [gitChangeset]

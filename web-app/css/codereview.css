@@ -11,7 +11,7 @@ textarea {
 }
 
 .commitMessage {
-    white-space: pre-line;
+    white-space: pre-wrap;
 }
 
 .dayLabel {
@@ -37,12 +37,20 @@ textarea {
     font-weight: bold;
 }
 
-.changeset .commitMessage:hover {
+.changeset.current-user .comment .author {
+    font-weight: normal;
+}
+
+.changeset .comment.current-user .author {
+    font-weight: bold;
+}
+
+.changeset .basicInfo:hover {
     background-color: rgba(255, 255, 255, 0.9);
 }
 
 .commitFooter {
-    padding-top: 10px;
+    padding-top: 5px;
 }
 
 .changeset.well {

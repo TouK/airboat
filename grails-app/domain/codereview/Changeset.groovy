@@ -3,22 +3,22 @@ package codereview
 class Changeset {
 
     String identifier
-    String commitComment
+    String commitMessage
     Date date
 
     static hasMany = [projectFilesInChangeset: ProjectFileInChangeset, userComments: UserComment]
     static belongsTo = [project: Project, commiter: Commiter]
 
     static mapping = {
-        projectFilesInChangeset sort:  "projectFile"
+        userComments sort: 'dateCreated', order: 'asc'
     }
 
     Commiter commiter
 
-    Changeset(String identifier, String commitComment, Date date) {
+    Changeset(String identifier, String commitMessage, Date date) {
         this.identifier = identifier
         this.date = date
-        this.commitComment = commitComment
+        this.commitMessage = commitMessage
     }
 
     int getCommentsCount() {
@@ -27,7 +27,7 @@ class Changeset {
 
     static constraints = {
         identifier blank: false, unique: ['project']
-        commitComment blank: true, maxSize: 4096
+        commitMessage blank: true, maxSize: 4096
         projectFilesInChangeset minSize: 1
     }
 }
