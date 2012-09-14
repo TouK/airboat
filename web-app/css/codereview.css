@@ -88,7 +88,7 @@ textarea {
 }
 
 .wideButton:hover {
-    background-color: rgba(255, 255, 255, 0.5);;
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 .commentsCount {
@@ -174,4 +174,8 @@ textarea {
     padding-top: 5px;
     padding-bottom: 10px;
     margin-bottom: 5px;
+}
+
+.linkLike {
+    .well;
 }

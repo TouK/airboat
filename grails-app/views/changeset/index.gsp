@@ -21,7 +21,8 @@
 
     <script src="${createLink(uri: '/libs/jquery.scrollto.min.js')}" type="text/javascript"></script>
 
-    <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet"/>
+    <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet/less"/>
+    <script src="${createLink(uri: '/libs/less-1.3.0.min.js')}" type="text/javascript"></script>
 
     <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/files.js')}" type="text/javascript"></script>
@@ -304,20 +305,16 @@
 
     <div class="accordion-heading">
         <div class="row-fluid">
-            <div class="row-fluid span9">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>changeset.identifier}}"
+
+                <div class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>changeset.identifier}}"
                    href="#collapse-inner-{{>collapseId}}">
                     <i title="{{: ~textForChangeType(changeType.name) }}"
                        class="{{: ~iconForChangeType(changeType.name) }}"></i>
                     {{:name}}
-                </a>
-            </div>
-
-            <div class="row-fluid span3" data-link="visible{: commentsCount != 0 }">
-                <div class="pull-right">
-                    <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
+                    <span class="pull-right" data-link="visible{: commentsCount != 0 }">
+                        <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
+                    </span>
                 </div>
-            </div>
         </div>
     </div>
 
