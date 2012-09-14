@@ -312,7 +312,7 @@
                    href="#collapse-inner-{{>collapseId}}">
                     <i title="{{: ~textForChangeType(changeType.name) }}"
                        class="{{: ~iconForChangeType(changeType.name) }}"></i>
-                    {{>name}}
+                    {{:name}}
                 </a>
             </div>
 
@@ -340,7 +340,7 @@
 
     <div class="row-fluid">
         <div class="span11">
-            <h1>{{>fileName}}</h1>
+            <h1>{{:fileName}}</h1>
         </div>
 
         <div class="span1">

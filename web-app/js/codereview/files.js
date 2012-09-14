@@ -15,13 +15,13 @@ function showFile(dataset) {
     if (changeType != 'DELETE') {
         if (toBoolean(textFormat)) {
             $.getJSON(fileContentUrl, function (file) {
-                fillFileTitleTemplate(divideNameWithSlashesInTwo(file.name), changesetIdentifier, projectFileId);
+                fillFileTitleTemplate(sliceName(file.name), changesetIdentifier, projectFileId);
                 renderContentFileWithSyntaxHighlighter(changesetIdentifier, file, projectFileId);
                 showFilesContent(changesetIdentifier);
             });
         }
         else {
-            fillFileTitleTemplate(divideNameWithSlashesInTwo(fileNameSlice), changesetIdentifier, projectFileId);
+            fillFileTitleTemplate(sliceName(fileNameSlice), changesetIdentifier, projectFileId);
             showMessageAboutNonTextFile(changesetIdentifier);
             showFilesContent(changesetIdentifier);
         }

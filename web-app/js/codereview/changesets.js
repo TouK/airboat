@@ -76,7 +76,7 @@ function appendChangeset(changeset, dayElement) {
         $.extend(this, {
             changeset:changeset,
             collapseId:(changeset.identifier + this.id),
-            name:sliceName(this.name, lineBoundary)
+            name:sliceName(this.name)
         })
     })
 
@@ -161,31 +161,9 @@ function renderCommentGroup(changesetIdentifier, projectFileId, commentGroup, li
     }
 }
 
-function divideNameWithSlashesInTwo(name) {
-    var splitted, newName;
-    splitted = name.split("/");
-    newName = splitted.slice(0, Math.ceil(splitted.length / 2)).join("/");
-    newName += "/ ";
-    newName += splitted.slice(Math.ceil(splitted.length / 2), splitted.length).join("/");
-    return newName;
-}
 
-function sliceName(name, lineWidth) {
-    var newName = "";
-    var boundary = lineWidth;
-    var splitted = name.split("/");
-    var i;
-    for (i = 0; i < splitted.length; i++) {
-        if (newName.length + splitted[i].length >= boundary) {
-            boundary += lineWidth;
-            newName += " ";
-            newName += splitted[i] + "/";
-        }
-        else {
-            newName += splitted[i] + "/";
-        }
-    }
-    return newName.substr(0, newName.length - 1);
+function sliceName(name) {
+    return name.toString().replace(/\//g, '/&#8203;');
 }
 
 function showChangesetDetails(identifier) {
