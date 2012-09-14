@@ -108,13 +108,25 @@
     <script src="${createLink(uri: '/libs/jsrender.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/jquery.observable.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/jquery.views.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/jquery.cookie/jquery.cookies.js')}" type="text/javascript"></script>
 
-    <link href=" ${createLink(uri: '/libs/bootstrap/themes/default/bootstrap-default.css')}" type="text/css"
+    <link href=" ${createLink(uri: '/libs/bootstrap/less/default/swatchmaker.less')}" type="text/less"
           rel="stylesheet" media="screen" id="skin"/>
-    <link href=" ${createLink(uri: '/libs/bootstrap/bootstrap-responsive.css')}" type="text/css" rel="stylesheet"
+    <link href=" ${createLink(uri: '/libs/bootstrap/less/responsive.less')}" type="text/less" rel="stylesheet"
           media="screen"/>
 
-    <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet"/>
+    <link href="${createLink(uri: '/css/codereview.css')}" type="text/less" rel="stylesheet"/>
+    <script type="text/javascript">
+        if ($.cookies.get('skin')) {
+            $("#skin").attr("href", $.cookies.get('skin').href);
+            if (!codeReview.isAuthenticated()) {
+                $.cookies.del('skin')
+                $("#skin").attr("href", "${createLink(uri: '/libs/bootstrap/less/default/swatchmaker.less')}");
+            }
+        }
+    </script>
+    <script src="${createLink(uri: '/libs/less-1.3.0.min.js')}" type="text/javascript" id="less"></script>
+
     <link href=" ${createLink(uri: '/css/jquery.syntaxhighlighter-fontOverride.css')}"
           type="text/css" rel="stylesheet" media="screen"/>
 

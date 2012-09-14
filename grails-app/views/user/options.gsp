@@ -9,24 +9,24 @@
 <body>
 
 <script id="skinOptionTemplate" type="text/x-jsrender">
-    <li><a href="#" rel="{{>href}}" onclick="changeSkin('{{>href}}', '{{>name}}')">{{>name}}</a></li>
+    <li><a href="" rel="{{>href}}" onclick="changeSkin('{{>href}}', '{{>name}}')">{{>name}}</a></li>
 </script>
 
 <script type="text/javascript">
 
-    var baseUrl = "${createLink(uri: '/libs/bootstrap/themes/')}";
+    var baseUrl = "${createLink(uri: '/libs/bootstrap/less/')}";
 
     var skins = [
-        {href:baseUrl + 'default/bootstrap-default.css', name:"default"},
-        {href:baseUrl + "cerulean/bootstrap-cerulean.css", name:"cerulean"},
-        {href:baseUrl + "cyborg/bootstrap-cyborg.css", name:"cyborg"},
-        {href:baseUrl + "journal/bootstrap-journal.css", name:"journal"},
-        {href:baseUrl + "readable/bootstrap-readable.css", name:"readable"},
-        {href:baseUrl + "simplex/bootstrap-simplex.css", name:"simplex"},
-        {href:baseUrl + "slate/bootstrap-slate.css", name:"slate"},
-        {href:baseUrl + "spacelab/bootstrap-spacelab.css", name:"spacelab"},
-        {href:baseUrl + "united/bootstrap-united.css", name:"united"},
-        {href:baseUrl + "touk/bootstrap-touk.css", name:"touk"}
+        {href:baseUrl + 'default/swatchmaker.less', name:"default"},
+        {href:baseUrl + "cerulean/swatchmaker.less", name:"cerulean"},
+        {href:baseUrl + "cyborg/swatchmaker.less", name:"cyborg"},
+        {href:baseUrl + "journal/swatchmaker.less", name:"journal"},
+        {href:baseUrl + "readable/swatchmaker.less", name:"readable"},
+        {href:baseUrl + "simplex/swatchmaker.less", name:"simplex"},
+        {href:baseUrl + "slate/swatchmaker.less", name:"slate"},
+        {href:baseUrl + "spacelab/swatchmaker.less", name:"spacelab"},
+        {href:baseUrl + "united/swatchmaker.less", name:"united"},
+        {href:baseUrl + "superhero/swatchmaker.less", name:"superhero"}
     ]
 
     if ($.cookies.get('skin')) {
@@ -49,7 +49,7 @@
         }
         $("#skin").attr("href", skinHref);
         changeUserSkin(skinName)
-        return false;
+        return true;
     }
 
     function changeUserSkin(skinName) {

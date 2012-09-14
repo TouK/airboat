@@ -15,15 +15,8 @@
     <link href=" ${createLink(uri: '/css/jquery.syntaxhighlighter-fontOverride.css')}"
           type="text/css" rel="stylesheet" media="screen"/>
 
-
     <script src="${createLink(uri: '/libs/jquery.zclip/jquery.zclip.js')}" type="text/javascript"></script>
-    <script src="${createLink(uri: '/libs/jquery.cookie/jquery.cookies.js')}" type="text/javascript"></script>
-
     <script src="${createLink(uri: '/libs/jquery.scrollto.min.js')}" type="text/javascript"></script>
-
-    <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet/css"/>
- %{--<   <link href="${createLink(uri: '/libs/bootstrap/less/bootstrap.less')}" type="text/css" rel="stylesheet/less"/>--}%
-    %{--<script src="${createLink(uri: '/libs/less-1.3.0.min.js')}" type="text/javascript"></script>--}%
 
     <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/files.js')}" type="text/javascript"></script>
@@ -134,14 +127,6 @@
     $().ready(function () {
         codeReview.initialFirstChangesetOffset = $('#content').position().top
 
-        if ($.cookies.get('skin')) {
-            $("#skin").attr("href", $.cookies.get('skin').href);
-            if (!codeReview.isAuthenticated()) {
-                $.cookies.del('skin')
-                $("#skin").attr("href", "${createLink(uri: '/libs/bootstrap/themes/default/bootstrap-default.css')}");
-            }
-        }
-
         codeReview.templates.compileAll('loginStatus', 'changeset', 'comment')
 
         $.link.loginStatusTemplate('#loginStatus', codeReview);
@@ -179,7 +164,7 @@
     function setUserPreferences(username) {
         var url = "${createLink(uri: '/user/fetchSkinOptions/')}" + username;
         $.getJSON(url, function (skinOptions) {
-            var skinHref = "${createLink(uri: '/libs/bootstrap/themes/')}" + skinOptions.skin + "/bootstrap-" + skinOptions.skin + ".css";
+            var skinHref = "${createLink(uri: '/libs/bootstrap/less/')}" + skinOptions.skin + "/swatchmaker.less";
             var skinOptions = {username:username, href:skinHref };
             $.cookies.set('skin', skinOptions);
             $("#skin").attr("href", $.cookies.get('skin').href);
