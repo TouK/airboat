@@ -21,8 +21,9 @@
 
     <script src="${createLink(uri: '/libs/jquery.scrollto.min.js')}" type="text/javascript"></script>
 
-    <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet/less"/>
-    <script src="${createLink(uri: '/libs/less-1.3.0.min.js')}" type="text/javascript"></script>
+    <link href="${createLink(uri: '/css/codereview.css')}" type="text/css" rel="stylesheet/css"/>
+ %{--<   <link href="${createLink(uri: '/libs/bootstrap/less/bootstrap.less')}" type="text/css" rel="stylesheet/less"/>--}%
+    %{--<script src="${createLink(uri: '/libs/less-1.3.0.min.js')}" type="text/javascript"></script>--}%
 
     <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/files.js')}" type="text/javascript"></script>
@@ -36,7 +37,7 @@
 
 </div>
 
-<div class="navbar logonavbar navbar-fixed-top">
+<div class="navbar logonavbar navbar-fixed-top navbar-inverse">
     <div class="navbar-inner">
         <div class="container">
             <a class="brand" href="#">
