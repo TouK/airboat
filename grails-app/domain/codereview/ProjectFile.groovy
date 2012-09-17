@@ -36,6 +36,7 @@ class ProjectFile {
             "php",
             "",
             "css",
+            "less",
             "xml",
             "javascript",
             "json",
