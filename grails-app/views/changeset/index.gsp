@@ -38,18 +38,7 @@
                 CodeReview
                 </span>
             </a>
-            <ul class="nav">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project<b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="javascript:void(0)" data-target="#" onclick="showProject('')">All projects</a></li>
-                        <g:each in="${projects}" var="project">
-                            <li><a href="javascript:void(0)" data-target="#"
-                                   onclick="showProject('${project.name}')">${project.name}</a></li>
-                        </g:each>
-                    </ul>
-                </li>
-            </ul>
+            <span id='projectChooser'> </span>
             <ul class='nav pull-right'>
                 <span id="loginStatus"></span>
                 <li>
@@ -128,9 +117,10 @@
     $().ready(function () {
         codeReview.initialFirstChangesetOffset = $('#content').position().top
 
-        codeReview.templates.compileAll('loginStatus', 'changeset', 'comment')
+        codeReview.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser');
 
         $.link.loginStatusTemplate('#loginStatus', codeReview, {target:'replace'});
+        $.link.projectChooserTemplate('#projectChooser', codeReview, {target:'replace'});
 
         showProject('');
 
@@ -179,10 +169,26 @@
     }
 </script>
 
+<script id='projectChooserTemplate' type='text/x-jsrender'>
+
+    <ul class="nav">
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project <span data-link='displayedProjectName'></span> <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li><a href="javascript:void(0)" data-target="#" onclick="showProject('')">All projects</a></li>
+                <g:each in="${projects}" var="project">
+                    <li><a href="javascript:void(0)" data-target="#"
+                           onclick="showProject('${project.name}')">${project.name}</a></li>
+                </g:each>
+            </ul>
+        </li>
+    </ul>
+</script>
+
 <script id="loginStatusTemplate" type="text/x-jsrender">
     <li data-link="visible{: loggedInUserName !== '' }">
         %{--TODO use uri global variable when referencing a controller--}%
-        <a data-link="href{: 'user/options/'}"><span  data-link="{:loggedInUserName}"></span></a>
+        <a data-link="href{: 'user/options/'}"><span  data-link="loggedInUserName"></span></a>
     </li>
     <li data-link="visible{: isAdmin }">
         <g:link controller='user' action='admin'>Admin page</g:link>
@@ -209,7 +215,7 @@
         </div>
 
         <div class="changesets">
-            <!-- here will be changestes for given day -->
+            <!-- here will be changestes for the given day -->
         </div>
     </div>
 </script>
