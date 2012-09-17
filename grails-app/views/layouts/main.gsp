@@ -114,8 +114,6 @@
           rel="stylesheet" media="screen" id="skin"/>
     <link href=" ${createLink(uri: '/libs/bootstrap/less/responsive.less')}" type="text/less" rel="stylesheet"
           media="screen"/>
-
-    <link href="${createLink(uri: '/css/codereview.css')}" type="text/less" rel="stylesheet"/>
     <script type="text/javascript">
         if ($.cookies.get('skin')) {
             $("#skin").attr("href", $.cookies.get('skin').href);

@@ -30,11 +30,13 @@
 
 </div>
 
-<div class="navbar logonavbar navbar-fixed-top navbar-inverse">
+<div class="navbar navbar-fixed-top navbar-inverse">
     <div class="navbar-inner">
         <div class="container">
             <a class="brand" href="#">
+                <span class='brandlogo'>
                 CodeReview
+                </span>
             </a>
             <ul class="nav">
                 <li class="dropdown">
@@ -48,9 +50,8 @@
                     </ul>
                 </li>
             </ul>
-
-            <ul class="nav pull-right">
-                <li id="loginStatus"></li>
+            <ul class='nav pull-right'>
+                <span id="loginStatus"></span>
                 <li>
                     <a href="https://docs.google.com/spreadsheet/viewform?formkey=dElrejNuNVUzNEt3LTJZQnVCQ3RILWc6MQ#gid=0"
                        target="_blank">Feedback</a>
@@ -79,7 +80,7 @@
 
 <script type="text/javascript">
 
-    $('body').on('click', '.changeset .basicInfo, .changeset .details .lessButton', function() {
+    $('body').on('click', '.changeset .basicInfo, .changeset .details .lessButton', function () {
         var changeset = $(this).parents('.changeset').first();
         toggleChangesetDetails(changeset[0].dataset.identifier);
     });
@@ -129,7 +130,7 @@
 
         codeReview.templates.compileAll('loginStatus', 'changeset', 'comment')
 
-        $.link.loginStatusTemplate('#loginStatus', codeReview);
+        $.link.loginStatusTemplate('#loginStatus', codeReview, {target:'replace'});
 
         showProject('');
 
@@ -179,21 +180,23 @@
 </script>
 
 <script id="loginStatusTemplate" type="text/x-jsrender">
-    <div class="textInNavbar">
-        <div data-link="visible{: loggedInUserName !== '' }">
-            %{--TODO use uri global variable when referencing a controller--}%
-            <a data-link="{:loggedInUserName} href{: 'user/options/'}"></a>
-            <span data-link="visible{: isAdmin }">
-                <g:link controller='user' action='admin'>Admin page</g:link>
-            </span>
-            <g:link controller='logout'>Log out</g:link>
-        </div>
+    <li data-link="visible{: loggedInUserName !== '' }">
+        %{--TODO use uri global variable when referencing a controller--}%
+        <a data-link="href{: 'user/options/'}"><span  data-link="{:loggedInUserName}"></span></a>
+    </li>
+    <li data-link="visible{: isAdmin }">
+        <g:link controller='user' action='admin'>Admin page</g:link>
+    </li>
+    <li data-link="visible{: loggedInUserName !== '' }">
+        <g:link controller='logout'>Log out</g:link>
+    </li>
 
-        <div data-link="visible{: loggedInUserName === '' }">
-            <g:link class='colorbox' url='login'>Login</g:link>
-            <g:link class='colorbox' url='register'>Register</g:link>
-        </div>
-    </div>
+    <li data-link="visible{: loggedInUserName === '' }">
+        <g:link class='colorbox' url='login'>Login</g:link>
+    </li>
+    <li data-link="visible{: loggedInUserName === '' }">
+        <g:link class='colorbox' url='register'>Register</g:link>
+    </li>
 </script>
 
 <script id="dayTemplate" type="text/x-jsrender">
@@ -242,18 +245,22 @@
                     </div>
 
                 </div>
+
                 <div class="clearfix"></div>
             </div>
 
             <div id="changesetDetails-{{>identifier}}" style="display:none;" class="details row-fluid margin-top-small">
 
                 <h5>Comments:</h5>
+
                 <div class="comments" id="comments-{{>identifier}}">
                     {{for comments tmpl='#commentTemplate' /}}
                 </div>
+
                 <div id="comment-form-{{>identifier}}"></div>
 
                 <h5>Changed files:</h5>
+
                 <div class="projectFiles accordion margin-bottom-small" id="accordion-{{>identifier}}">
                     {{for projectFiles tmpl='#projectFileRowTemplate' /}}
                 </div>
@@ -292,15 +299,15 @@
     <div class="accordion-heading">
         <div class="row-fluid">
 
-                <div class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>changeset.identifier}}"
-                   href="#collapse-inner-{{>collapseId}}">
-                    <i title="{{: ~textForChangeType(changeType.name) }}"
-                       class="{{: ~iconForChangeType(changeType.name) }}"></i>
-                    {{:name}}
-                    <span class="pull-right" data-link="visible{: commentsCount != 0 }">
-                        <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
-                    </span>
-                </div>
+            <div class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>changeset.identifier}}"
+                 href="#collapse-inner-{{>collapseId}}">
+                <i title="{{: ~textForChangeType(changeType.name) }}"
+                   class="{{: ~iconForChangeType(changeType.name) }}"></i>
+                <span class='linkLike'>{{:name}}</span>
+                <span class="pull-right" data-link="visible{: commentsCount != 0 }">
+                    <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
+                </span>
+            </div>
         </div>
     </div>
 
@@ -349,7 +356,7 @@
                 onClick="cancelReply('{{>fileId}}', '{{>lineNumber}}')">Cancel</button>
     </div>
 
-    <div id="snippet-{{>fileId}}-{{>lineNumber}}"></div>
+    <div id="snippet-{{>fileId}}-{{>lineNumber}}"></div><hr/>
 </script>
 
 <!-- FIXME reuse comment form template for both types of comments -->
@@ -393,6 +400,7 @@
         <button type="button" class="btn btn-primary" id="cancellButton-{{>identifier}}"
                 onClick="resetCommentForm('{{>identifier}}')">Cancel</button>
     </div>
+
     <div class="clearfix"></div>
 </script>
 

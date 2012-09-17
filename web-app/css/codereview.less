@@ -7,7 +7,11 @@ textarea {
 }
 
 .underNavbar {
-    padding-top: 90px
+    padding-top: @navbarHeight;
+}
+
+.brandlogo {
+    color: @navbarInverseLinkColorHover;
 }
 
 .commitMessage {
@@ -95,50 +99,6 @@ textarea {
     padding-left: 0.4em;
 }
 
-.navbar.logonavbar .brand {
-    font-size: 42px;
-    line-height: 72px;
-    color: white;
-}
-
-.navbar.logonavbar .nav > li > a {
-    font-size: 18px;
-    padding: 10px 20px 12px;
-    color: #EEEEEE;
-}
-
-.navbar.logonavbar .brand, .textInNavbar {
-    padding: 10px 20px 12px;
-    line-height: 72px;
-}
-
-.textInNavbar {
-    font-size: 18px;
-}
-
-.navbar.logonavbar .nav > li > * {
-    line-height: 72px;
-    color: #DDDDDD;
-}
-
-.navbar.logonavbar .nav a {
-    color: #EEEEEE;
-}
-
-.navbar.logonavbar ul.dropdown-menu a {
-    color: #333;
-}
-
-
-.navbar.logonavbar ul.dropdown-menu a:hover {
-    color: white;
-}
-
-.navbar.logonavbar .dropdown .caret {
-    margin-top: 33px;
-    margin-left: 6px;
-}
-
 #loading {
     position: fixed;
     bottom: 0px;
@@ -174,4 +134,12 @@ textarea {
     padding-top: 5px;
     padding-bottom: 10px;
     margin-bottom: 5px;
+}
+
+.linkLike {
+    color: @linkColor;
+}
+
+.linkLike:hover {
+    color: @linkColorHover;
 }
