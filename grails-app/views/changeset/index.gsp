@@ -289,17 +289,16 @@
             </div>
         </div>
 
-        <div class="span7">
-            <div class="well" id="content-files-span-{{>identifier}}" style="display: none;">
-                <div id="content-files-title-{{>identifier}}"></div>
+        <div class="fileListings span7">
+            <div class="fileListing well" style="display: none;">
+
+                <i class="closeButton icon-remove pull-right" onclick="hideFile('{{:identifier}}')"> </i>
                 <br/>
 
                 <div id="diff-{{>identifier}}"></div>
+                <br/>
 
-                <div class="files-right">
-
-                    <div id="content-files-{{>identifier}}"></div>
-                </div>
+                <div id="content-files-{{>identifier}}"></div>
             </div>
         </div>
     </div>
@@ -317,15 +316,16 @@
     <div class="accordion-heading">
         <div class="row-fluid">
 
-            <div class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>changeset.identifier}}"
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>changeset.identifier}}"
                  href="#collapse-inner-{{>collapseId}}">
                 <i title="{{: ~textForChangeType(changeType.name) }}"
                    class="{{: ~iconForChangeType(changeType.name) }}"></i>
                 <span class='linkLike'>{{:name}}</span>
+                <i class="closeButton icon-remove" data-link="style{: 'display:' + (isDisplayed ? 'inline-block' : 'none') }"  onclick="hideFile('{{:changeset.identifier}}')"> </i>
                 <span class="pull-right" data-link="visible{: commentsCount != 0 }">
                     <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
                 </span>
-            </div>
+            </a>
         </div>
     </div>
 
@@ -337,21 +337,6 @@
          data-text_format='{{:textFormat}}'>
         <div class="accordion-inner" id="accordion-inner-{{>id}}">
             <div id="fileComments-{{>collapseId}}"></div>
-        </div>
-    </div>
-</script>
-
-<script id="fileTitleTemplate" type="text/x-jsrender">
-
-    <div class="row-fluid">
-        <div class="span11">
-            <h1>{{:fileName}}</h1>
-        </div>
-
-        <div class="span1">
-            <button type="button" class="btn pull-right " onClick="hideFile('{{>changesetId}}')">
-                <i class="icon-remove"></i>
-            </button>
         </div>
     </div>
 </script>

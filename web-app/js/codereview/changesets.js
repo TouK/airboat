@@ -78,7 +78,8 @@ function appendChangeset(changeset, dayElement) {
         $.extend(this, {
             changeset:changeset,
             collapseId:(changeset.identifier + this.id),
-            name:sliceName(this.name)
+            name:sliceName(this.name),
+            isDisplayed: false
         })
     })
 
@@ -96,6 +97,7 @@ $('.accordion-body.collapse').livequery(function () {
             showFile(this.dataset);
         }).on('shown', function () {
             $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
+            $.observable(codeReview.getModel(this)).setProperty('isDisplayed', true)
         });
 })
 

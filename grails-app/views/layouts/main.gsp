@@ -75,8 +75,14 @@
 
             }
 
-            , getModel:function (selector) {
-                return $.view($(selector)[0]).data
+            , getModel:function (selectorOrElement) {
+                var element
+                if (typeof selectorOrElement === 'string')
+                    element = $(selectorOrElement)[0];
+                else {
+                    element = selectorOrElement
+                }
+                return $.view(element).data
             }
         }
 

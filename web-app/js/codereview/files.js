@@ -15,20 +15,17 @@ function showFile(dataset) {
     if (changeType != 'DELETE') {
         if (toBoolean(textFormat)) {
             $.getJSON(fileContentUrl, function (file) {
-                fillFileTitleTemplate(sliceName(file.name), changesetIdentifier, projectFileId);
                 renderContentFileWithSyntaxHighlighter(changesetIdentifier, file, projectFileId);
                 showFilesContent(changesetIdentifier);
             });
         }
         else {
-            fillFileTitleTemplate(sliceName(fileNameSlice), changesetIdentifier, projectFileId);
             showMessageAboutNonTextFile(changesetIdentifier);
             showFilesContent(changesetIdentifier);
         }
     }
     else {
         cleanPreviousFilesContent(changesetIdentifier);
-        fillFileTitleTemplate(fileNameSlice, changesetIdentifier, projectFileId);
         showMessageAboutRemovedFile(changesetIdentifier);
         showFilesContent(changesetIdentifier);
     }
@@ -43,8 +40,13 @@ function toBoolean(toConvert) {
     return JSON.parse(toConvert);
 }
 
+
+function showFilesContent(changesetId) {
+    $('.changeset[data-identifier=' + changesetId + '] .fileListings .fileListing').show();
+}
+
 function hideFile(changesetId) {
-    $('#content-files-span-' + changesetId).hide();
+    $('.changeset[data-identifier=' + changesetId + '] .fileListings .fileListing').hide();
     hidePopovers(changesetId);
 }
 
@@ -99,31 +101,14 @@ function hideDiff(changesetId) {
     $("#button-hiding-diff-" + changesetId).hide();
 }
 
-function showFilesContent(changesetId) {
-    $('#content-files-span-' + changesetId).show();
-}
-
 function cleanPreviousFilesContent(changesetId) {
     $("#content-files-" + changesetId).html("");
-}
-
-function setContentFilesTitle(changesetId, title) {
-    $("#content-files-title-" + changesetId).html(title);
 }
 
 function showMessageAboutNonTextFile(changesetId) {
     $("#content-files-" + changesetId).html("<pre class='codeViewer'/>");
     $("#content-files-" + changesetId + " .codeViewer")
         .html("<h3>This file isn't text file.</h3>")
-}
-
-function fillFileTitleTemplate(fileName, changesetId, projectFileId) {
-    var title = $("#fileTitleTemplate").render({
-        fileName:fileName,
-        changesetId:changesetId,
-        fileId:projectFileId
-    });
-    setContentFilesTitle(changesetId, title);
 }
 
 function showMessageAboutRemovedFile(changesetId) {
