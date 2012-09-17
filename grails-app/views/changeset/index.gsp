@@ -132,7 +132,7 @@
         } else {
 
             if (toBoolean(${singleProject})) {
-                showProject("${project}");
+                showProject("${projectName}");
             } else {
                 showProject('');
             }

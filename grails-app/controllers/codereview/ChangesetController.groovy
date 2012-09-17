@@ -29,6 +29,7 @@ class ChangesetController {
         } else if (projectName != null) {
             if (Project.findByName(projectName) != null) {
                 render(view: 'index', model: [projects: Project.all, singleChangeset: 'false', singleProject: 'true', projectName: projectName])
+                return
             } else {
                 response.sendError(404, 'Project not found')
                 return
