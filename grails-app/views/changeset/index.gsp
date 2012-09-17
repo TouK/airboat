@@ -76,7 +76,7 @@
 
     $.views.helpers({
         getGravatar:function (email, size) {
-            var size = size || 40;
+            var size = size || 50;
             return 'http://www.gravatar.com/avatar/' + $.md5(email) + '.jpg?' + $.param({
                 s:size,
                 d:'identicon'
