@@ -18,6 +18,10 @@
     <script src="${createLink(uri: '/libs/jquery.zclip/jquery.zclip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/jquery.scrollto.min.js')}" type="text/javascript"></script>
 
+    <script src="${createLink(uri: '/libs/jquery.ba-throttle-debounce.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/jquery.sizes.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/jquery.floatWithin.js')}" type="text/javascript"></script>
+
     <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/files.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/changesets.js')}" type="text/javascript"></script>
@@ -220,19 +224,27 @@
     </div>
 </script>
 
+<script>
+    $.fn.floatWithin.defaults.offset = 55
+
+    $('.changeset .left.column').livequery(function() {
+        $(this).floatWithin('.changeset')
+    })
+</script>
+
 <script id="changesetTemplate" type="text/x-jsrender">
 
-    <div class='row-fluid'>
+    <div class='changeset {{if belongsToCurrentUser}} current-user {{/if}} row-fluid'
+         data-identifier='{{:identifier}}' data-id='{{:id}}'>
 
-        <div class="changeset {{if belongsToCurrentUser}} current-user {{/if}} span5 well well-small"
-             data-identifier='{{:identifier}}' data-id='{{:id}}'>
+        <div class="column left span5 well well-small">
 
             <div class="basicInfo row-fluid">
                 <img class="pull-left" src='{{>~getGravatar(email)}}'/>
 
                 <div class="pull-right">
-                    <i class="icon-comment"></i><span class='commentsCount'
-                                                      data-link="allComments">{{>allComments}}</span>
+                    <i class="icon-comment"></i>
+                    <span class='commentsCount' data-link="allComments">{{>allComments}}</span>
                 </div>
 
                 <div class="nextToGravatar">
