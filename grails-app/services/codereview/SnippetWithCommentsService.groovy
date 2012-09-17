@@ -7,24 +7,24 @@ class SnippetWithCommentsService {
 
     def prepareCommentGroups(comments) {
         def commentGroups = []
-        def i = 0
-        def j = 0
+        def iteratorOne = 0
+        def iteratorTwo = 0
         def commentsSortedByLineNumber = comments.sort { it.lineNumber }
         def lastLineNumber = comments[0].lineNumber
         commentsSortedByLineNumber.each {                              //group comments if they're talking about same line
             if (it.lineNumber == lastLineNumber) {
-                if (commentGroups[i] == null) {
-                    commentGroups[i] = []
+                if (commentGroups[iteratorOne] == null) {
+                    commentGroups[iteratorOne] = []
                 }
-                commentGroups[i][j++] = it
+                commentGroups[iteratorOne][iteratorTwo++] = it
 
             }
             else {
                 lastLineNumber = it.lineNumber
-                i++
-                commentGroups[i] = []
-                j = 0
-                commentGroups[i][j++] = it
+                iteratorOne++
+                commentGroups[iteratorOne] = []
+                iteratorTwo = 0
+                commentGroups[iteratorOne][iteratorTwo++] = it
             }
         }
         commentGroups
@@ -37,9 +37,10 @@ class SnippetWithCommentsService {
         def oneLine = 1
         def twoLines = 2
         def threeLines = 3
-        while (iterator < commentGroups.size() - 1) {      //how long snippet do we need?
-            def currentGroup = commentGroups[iterator][0]
-            def nextGroup = commentGroups[iterator + 1]
+        ArrayList sortedCommentGroups = sortCommentGroupByDateCreated(commentGroups)
+        while (iterator < sortedCommentGroups.size() - 1) {      //how long snippet do we need?
+            def currentGroup = sortedCommentGroups[iterator][0]
+            def nextGroup = sortedCommentGroups[iterator + 1]
             if (nextGroup[0].lineNumber - currentGroup.lineNumber == 1) {
                 snippet = getSnippet(currentGroup, oneLine, fileContent)
             }
@@ -49,13 +50,17 @@ class SnippetWithCommentsService {
             else {
                 snippet = getSnippet(currentGroup, threeLines, fileContent)
             }
-            commentGroupsWithSnippets[iterator] = [commentGroup: commentGroups[iterator], snippet: snippet, filetype: fileType]
+            commentGroupsWithSnippets[iterator] = [commentGroup: sortedCommentGroups[iterator], snippet: snippet, filetype: fileType]
             iterator++
         }
 
-        snippet = getSnippet(commentGroups[iterator][0], threeLines, fileContent)
-        commentGroupsWithSnippets[iterator] = [commentGroup: commentGroups[iterator], snippet: snippet, filetype: fileType]
+        snippet = getSnippet(sortedCommentGroups[iterator][0], threeLines, fileContent)
+        commentGroupsWithSnippets[iterator] = [commentGroup: sortedCommentGroups[iterator], snippet: snippet, filetype: fileType]
         commentGroupsWithSnippets
+    }
+
+    private ArrayList sortCommentGroupByDateCreated(commentGroups) {
+        commentGroups*.sort { it.dateCreated }
     }
 
     def getSnippet(comment, howManyLines, fileContent) {
