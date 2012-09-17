@@ -39,10 +39,10 @@
         <div class="container">
             <a class="brand" href="#">
                 <span class='brandlogo'>
-                CodeReview
+                    CodeReview
                 </span>
             </a>
-            <span id='projectChooser'> </span>
+            <span id='projectChooser'></span>
             <ul class='nav pull-right'>
                 <span id="loginStatus"></span>
                 <li>
@@ -66,7 +66,7 @@
     <div id="content"></div>
 </div>
 
-<div class="alert alert-info" id="loading">
+<div class="alert alert-info" id="loading" style='display: none;'>
     <div class="well-small"><img id="loading-image" src="${createLink(uri: '/css/images/ajax-loader.gif')}"/> Loading...
     </div>
 </div>
@@ -126,13 +126,24 @@
         $.link.loginStatusTemplate('#loginStatus', codeReview, {target:'replace'});
         $.link.projectChooserTemplate('#projectChooser', codeReview, {target:'replace'});
 
-        showProject('');
+        if (toBoolean(${singleChangeset})) {
+            appendChangesetsBottom(${changeset});
+            toggleChangesetDetails("${changesetId}");
+        } else {
 
-        $(window).scroll(function () {
-            if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-                onScrollThroughBottomAttempt()
+            if (toBoolean(${singleProject})) {
+                showProject("${project}");
+            } else {
+                showProject('');
             }
-        });
+
+
+            $(window).scroll(function () {
+                if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+                    onScrollThroughBottomAttempt()
+                }
+            });
+        }
 
         $(".colorbox").colorbox(codeReview.colorboxSettings);
         $('.dropdown-toggle').dropdown();
@@ -177,7 +188,8 @@
 
     <ul class="nav">
         <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project <span data-link='displayedProjectName'></span> <b class="caret"></b></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project <span
+                    data-link='displayedProjectName'></span> <b class="caret"></b></a>
             <ul class="dropdown-menu">
                 <li><a href="javascript:void(0)" data-target="#" onclick="showProject('')">All projects</a></li>
                 <g:each in="${projects}" var="project">
@@ -192,7 +204,7 @@
 <script id="loginStatusTemplate" type="text/x-jsrender">
     <li data-link="visible{: loggedInUserName !== '' }">
         %{--TODO use uri global variable when referencing a controller--}%
-        <a data-link="href{: 'user/options/'}"><span  data-link="loggedInUserName"></span></a>
+        <a data-link="href{: 'user/options/'}"><span data-link="loggedInUserName"></span></a>
     </li>
     <li data-link="visible{: isAdmin }">
         <g:link controller='user' action='admin'>Admin page</g:link>
@@ -227,7 +239,7 @@
 <script>
     $.fn.floatWithin.defaults.offset = 55
 
-    $('.changeset .left.column').livequery(function() {
+    $('.changeset .left.column').livequery(function () {
         $(this).floatWithin('.changeset')
     })
 </script>

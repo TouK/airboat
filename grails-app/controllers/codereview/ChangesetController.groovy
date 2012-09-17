@@ -10,7 +10,31 @@ class ChangesetController {
     ReturnCommentsService returnCommentsService
 
     def index() {
-        render(view: 'index', model: [projects: Project.all])
+        def projectName = params.projectName
+        def changesetId = params.changesetId
+        if (projectName != null && changesetId != null) {
+            def changeset = Changeset.findByIdentifierAndProject(changesetId, Project.findByName(projectName))
+            if (changeset != null) {
+                def changesetProperties = convertToChangesetProperties(changeset)
+                render(view: 'index', model: [projects: Project.all,
+                        changeset: groupChangesetPropertiesByDay([changesetProperties]) as JSON,
+                        changesetId: changesetId,
+                        singleChangeset: 'true',
+                        singleProject: 'false'])
+                return
+            } else {
+                response.sendError(404, 'Changeset not found')
+                return
+            }
+        } else if (projectName != null) {
+            if (Project.findByName(projectName) != null) {
+                render(view: 'index', model: [projects: Project.all, singleChangeset: 'false', singleProject: 'true', projectName: projectName])
+            } else {
+                response.sendError(404, 'Project not found')
+                return
+            }
+        }
+        render(view: 'index', model: [projects: Project.all, singleChangeset: 'false', singleProject: 'false'])
     }
 
     def getLastChangesets(String projectName) {

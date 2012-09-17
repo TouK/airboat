@@ -1,5 +1,5 @@
 function showProject(projectName) {
-    codeReview.displayedProjectName = projectName
+    $.observable(codeReview).setProperty('displayedProjectName', projectName);
     changesetsLoading = true;
     $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:codeReview.displayedProjectName}), appendChangesetsBottom)
     $('#content').html("");
