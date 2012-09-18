@@ -19,6 +19,7 @@ class ChangesetController {
                 render(view: 'index', model: [projects: Project.all,
                         changeset: groupChangesetPropertiesByDay([changesetProperties]) as JSON,
                         changesetId: changesetId,
+                        projectName:  projectName,
                         singleChangeset: 'true',
                         singleProject: 'false'])
                 return

@@ -54,6 +54,7 @@
     </div>
 </div>
 
+
 <script type="text/javascript">
     $.SyntaxHighlighter.init({
         stripEmptyStartFinishLines:false,
@@ -77,6 +78,32 @@
         var changeset = $(this).parents('.changeset').first();
         toggleChangesetDetails(changeset[0].dataset.identifier);
     });
+
+    $('body').on('click', '.projectLink', function (e) {
+        shouldLoadChangesets = true;
+        if (singleChangesetView || codeReview.displayedProjectName != this.dataset.project) {
+            singleChangesetView = false;
+            showProject(this.dataset.project);
+            history.pushState({isSingleChangeset:false, projectName:codeReview.displayedProjectName}, null, '?'+$.param({projectName: this.dataset.project}));
+        } else {
+            scrollTo(0, 0);
+        }
+        $('#projectsDropdown').removeClass('open');
+        return false;
+    });
+
+    window.onpopstate = function (e) {
+        if (e.state != null) {
+            if (e.state.isSingleChangeset) {
+                window.location.href = '?'+$.param({projectName:e.state.projectName, changesetId:e.state.changesetId});
+                shouldLoadChangesets = false;
+            } else if (!e.state.isSingleChangeset) {
+                shouldLoadChangesets = true;
+                singleChangesetView = false;
+                showProject(e.state.projectName);
+            }
+        }
+    };
 
     $.views.helpers({
         getGravatar:function (email, size) {
@@ -129,6 +156,9 @@
         if (toBoolean(${singleChangeset})) {
             appendChangesetsBottom(${changeset});
             toggleChangesetDetails("${changesetId}");
+            history.replaceState({isSingleChangeset:true, changeset: ${changeset ?: "''"}, changesetId:"${changesetId}", projectName:'${projectName}' }, null);
+            shouldLoadChangesets = false;
+            singleChangesetView = true;
         } else {
 
             if (toBoolean(${singleProject})) {
@@ -136,14 +166,16 @@
             } else {
                 showProject('');
             }
-
-
-            $(window).scroll(function () {
-                if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-                    onScrollThroughBottomAttempt()
-                }
-            });
+            history.replaceState({isSingleChangeset:false, projectName:codeReview.displayedProjectName}, null);
+            shouldLoadChangesets = false;
+            singleChangesetView = false;
         }
+
+        $(window).scroll(function () {
+            if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+                onScrollThroughBottomAttempt()
+            }
+        });
 
         $(".colorbox").colorbox(codeReview.colorboxSettings);
         $('.dropdown-toggle').dropdown();
@@ -187,14 +219,16 @@
 <script id='projectChooserTemplate' type='text/x-jsrender'>
 
     <ul class="nav">
-        <li class="dropdown">
+        <li id="projectsDropdown" class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project <span
                     data-link='displayedProjectName'></span> <b class="caret"></b></a>
             <ul class="dropdown-menu">
-                <li><a href="javascript:void(0)" data-target="#" onclick="showProject('')">All projects</a></li>
+                <li><a href="javascript:void(0)" data-target="#" data-project='' class='projectLink'>All projects</a>
+                </li>
                 <g:each in="${projects}" var="project">
                     <li><a href="javascript:void(0)" data-target="#"
-                           onclick="showProject('${project.name}')">${project.name}</a></li>
+                           data-project='${project.name}' class='projectLink'>${project.name}</a>
+                    </li>
                 </g:each>
             </ul>
         </li>

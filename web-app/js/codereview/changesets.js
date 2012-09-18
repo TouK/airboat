@@ -10,7 +10,7 @@ function onScrollThroughBottomAttempt() {
 }
 
 function loadMoreChangesets() {
-    if (!changesetsLoading) {
+    if (!changesetsLoading && shouldLoadChangesets) {
         changesetsLoading = true;
         var controllerAction;
         if (codeReview.displayedProjectName == '') {
@@ -24,6 +24,8 @@ function loadMoreChangesets() {
 
 var lastLoadedChangesetId;
 var changesetsLoading;
+var shouldLoadChangesets;
+var singleChangesetView;
 
 function appendChangesetsTop(changestets) {
     //TODO when there will be needed (when new changsets will be pushed from server to application)
