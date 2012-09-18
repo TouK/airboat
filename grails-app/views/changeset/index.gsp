@@ -167,7 +167,7 @@
                 showProject('');
             }
             history.replaceState({isSingleChangeset:false, projectName:codeReview.displayedProjectName}, null);
-            shouldLoadChangesets = false;
+            shouldLoadChangesets = true;
             singleChangesetView = false;
         }
 
