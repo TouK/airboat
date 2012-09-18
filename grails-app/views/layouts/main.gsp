@@ -41,7 +41,9 @@
         }
 
         var codeReview = {
-            colorboxSettings:{transition:"fade", iframe:true, width:640, height:450}, loggedInUserName:'<sec:username/>', isAdmin:"<sec:ifAnyGranted roles="ROLE_ADMIN">true</sec:ifAnyGranted>" ? true : false, isAuthenticated:function () {
+            navbarOffset: 55
+
+            , colorboxSettings:{transition:"fade", iframe:true, width:640, height:450}, loggedInUserName:'<sec:username/>', isAdmin:"<sec:ifAnyGranted roles="ROLE_ADMIN">true</sec:ifAnyGranted>" ? true : false, isAuthenticated:function () {
                 return this.loggedInUserName !== '';
             }
             , displayedProjectName: ''
@@ -75,8 +77,14 @@
 
             }
 
-            , getModel:function (selector) {
-                return $.view($(selector)[0]).data
+            , getModel:function (selectorOrElement) {
+                var element
+                if (typeof selectorOrElement === 'string')
+                    element = $(selectorOrElement)[0];
+                else {
+                    element = selectorOrElement
+                }
+                return $.view(element).data
             }
         }
 
