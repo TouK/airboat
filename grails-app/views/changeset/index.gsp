@@ -15,7 +15,6 @@
     <link href=" ${createLink(uri: '/css/jquery.syntaxhighlighter-fontOverride.css')}"
           type="text/css" rel="stylesheet" media="screen"/>
 
-    <script src="${createLink(uri: '/libs/jquery.zclip/jquery.zclip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/jquery.scrollto.min.js')}" type="text/javascript"></script>
 
     <script src="${createLink(uri: '/libs/jquery.ba-throttle-debounce.js')}" type="text/javascript"></script>
@@ -25,6 +24,9 @@
     <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/files.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/changesets.js')}" type="text/javascript"></script>
+
+    <script src="${createLink(uri: '/libs/clippy/jquery.clippy.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/clippy/swfobject.js')}" type="text/javascript"></script>
 </head>
 
 <body>
@@ -211,7 +213,7 @@
         $(".colorbox").colorbox(codeReview.colorboxSettings);
         $('.dropdown-toggle').dropdown();
 
-        $('body').on('codeReview-pageStructureChanged', repositionZclips)
+        $('body').on('codeReview-pageStructureChanged')
     });
 
     $(document)
@@ -247,12 +249,6 @@
             $.cookies.set('skin', skinOptions);
             $("#skin").attr("href", $.cookies.get('skin').href);
         });
-    }
-
-    function repositionZclips() {
-        for (var i = 1; i < ZeroClipboard.nextId; i++) {
-            ZeroClipboard.clients[i].reposition()
-        }
     }
 </script>
 
@@ -358,8 +354,16 @@
 
                         <span class="pull-right changeset-date" data-date='{{:date}}'><i
                                 class="icon-time"/> {{:date.substring(11)}}</span>
-                        <span class="pull-right changeset-hash"
-                              data-changeset_identifier='{{:identifier}}'>{{>shortIdentifier}}</span>
+
+                        <span class="pull-right changeset-hash" data-changeset_identifier='{{:identifier}}'>
+                            <span class='pull-right'>
+                                {{>shortIdentifier}}
+                            </span>
+                            <span class="hashForClippy-{{:identifier}} pull-right">
+                                <span class="clippy-{{:identifier}}" data-text="{{:identifier}}"></span>
+                            </span>
+                        </span>
+
                     </div>
 
                 </div>
@@ -469,6 +473,8 @@
         <button type="button" class="btn btn-primary"
                 onClick="cancelReply('{{>fileId}}', '{{>lineNumber}}')">Cancel</button>
     </div>
+
+    <div class="clearfix"></div>
 
     <div id="snippet-{{>fileId}}-{{>lineNumber}}"></div><hr/>
 </script>
