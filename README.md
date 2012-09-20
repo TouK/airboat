@@ -1,6 +1,6 @@
-# CodeReview
+# Airboat
 
-CodeReview is a no-ceremony code review app, firstly developed during summer internships (2012) at TouK.
+Airboat is a no-ceremony code review app, firstly developed during summer internships (2012) at TouK.
 
 More on the conception behind the app can be read [here] (https://github.com/TouK/codereview/wiki/Wizja) (Polish only)
 
@@ -24,7 +24,7 @@ Since there's a bug in IDEA < 11.3 in Grails support (namely: Grails 2.1.0 suppo
 
 # How do I...
  
-## ...import my project to CodeReview?
+## ...import my project to Airboat?
 First, you login as admin@codereview.pl (password: 'admin' :)). Then, you grasp the 'Admin page' near the 'log out' link.
  After that everything is straightforward. After adding a project you might need to wait a bit till it gets imported
 (We're working on showing some kind of notification during the import)
