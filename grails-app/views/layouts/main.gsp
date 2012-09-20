@@ -10,7 +10,9 @@
             changeset:{
                 getLastChangesets:"${createLink(uri:'/changeset/getLastChangesets/')}",
                 getNextFewChangesetsOlderThan:"${createLink(uri:'/changeset/getNextFewChangesetsOlderThan/')}",
-                getNextFewChangesetsOlderThanFromSameProject:"${createLink(uri:'/changeset/getNextFewChangesetsOlderThanFromSameProject/')}"
+                getNextFewChangesetsOlderThanFromSameProject:"${createLink(uri:'/changeset/getNextFewChangesetsOlderThanFromSameProject/')}",
+                getLastFilteredChangesets:"${createLink(uri:'/changeset/getLastFilteredChangesets/')}",
+                getNextFewFilteredChangesetsOlderThan: "${createLink(uri: '/changeset/getNextFewFilteredChangesetsOlderThan/')}"
             },
             userComment:{
                 addComment:"${createLink(uri: '/userComment/addComment')}"
@@ -45,6 +47,8 @@
                 return this.loggedInUserName !== '';
             }
             , displayedProjectName: ''
+
+            , currentFilter: ''
 
             , debugMode: true
 

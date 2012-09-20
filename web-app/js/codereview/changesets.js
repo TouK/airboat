@@ -1,7 +1,18 @@
 function showProject(projectName) {
+    shouldLoadChangesets = true;
+    currentViewType = VIEW_TYPE.PROJECT;
     $.observable(codeReview).setProperty('displayedProjectName', projectName);
     changesetsLoading = true;
     $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:codeReview.displayedProjectName}), appendChangesetsBottom)
+    $('#content').html("");
+}
+
+function showFiltered(filterType) {
+    shouldLoadChangesets = true;
+    currentViewType = VIEW_TYPE.FILTER;
+    $.observable(codeReview).setProperty('currentFilter', filterType);
+    changesetLoading = true;
+    $.getJSON(uri.changeset.getLastFilteredChangesets + '?' + $.param({filterType: codeReview.currentFilter}), appendChangesetsBottom);
     $('#content').html("");
 }
 
@@ -13,23 +24,26 @@ function loadMoreChangesets() {
     if (!changesetsLoading && shouldLoadChangesets) {
         changesetsLoading = true;
         var controllerAction;
-        if (codeReview.displayedProjectName == '') {
-            controllerAction = uri.changeset.getNextFewChangesetsOlderThan
-        } else {
-            controllerAction = uri.changeset.getNextFewChangesetsOlderThanFromSameProject
+        var paramsMap = {changesetId: lastLoadedChangesetId};
+        if (history.state.dataType == DATA_TYPE.PROJECT && codeReview.displayedProjectName == '') {
+            controllerAction = uri.changeset.getNextFewChangesetsOlderThan;
+        } else if (history.state.dataType == DATA_TYPE.PROJECT) {
+            controllerAction = uri.changeset.getNextFewChangesetsOlderThanFromSameProject;
+        } else if (history.state.dataType == DATA_TYPE.FILTER) {
+            controllerAction = uri.changeset.getNextFewFilteredChangesetsOlderThan;
+            paramsMap['filterType'] = codeReview.currentFilter;
         }
-        $.getJSON(controllerAction + '?' + $.param({changesetId:lastLoadedChangesetId}), appendChangesetsBottom)
+        $.getJSON(controllerAction + '?' + $.param(paramsMap), appendChangesetsBottom);
     }
 }
+
+var VIEW_TYPE = { SINGLE_CHANGESET: 'changeset', PROJECT: 'project', FILTER: 'filter'};
+var DATA_TYPE = {CHANGESET: 'changeset', PROJECT: 'project', FILTER: 'filter'};
 
 var lastLoadedChangesetId;
 var changesetsLoading;
 var shouldLoadChangesets;
-var singleChangesetView;
-
-function appendChangesetsTop(changestets) {
-    //TODO when there will be needed (when new changsets will be pushed from server to application)
-}
+var currentViewType;
 
 function appendChangesetsBottom(changesetsByDay) {
     for (day in changesetsByDay) {

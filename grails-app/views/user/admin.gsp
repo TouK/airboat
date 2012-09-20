@@ -44,7 +44,7 @@
 
                 </form>
             </div>
-            <a type="button" href="./" class="btn btn-primary">Ok</a>
+            <a type="button" href="./" class="btn btn-primary">Go back</a>
         </div>
     </div>
 </div>

@@ -38,11 +38,13 @@
     <div class="navbar-inner">
         <div class="container">
             <a class="brand" href="#">
-                <span class='brandlogo'>
+                <span class='highlighted'>
                     CodeReview
                 </span>
             </a>
             <span id='projectChooser'></span>
+            <span id='filterChooser'></span>
+
             <ul class='nav pull-right'>
                 <span id="loginStatus"></span>
                 <li>
@@ -80,30 +82,53 @@
     });
 
     $('body').on('click', '.projectLink', function (e) {
-        shouldLoadChangesets = true;
-        if (singleChangesetView || codeReview.displayedProjectName != this.dataset.project) {
-            singleChangesetView = false;
+        if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != this.dataset.project) {
             showProject(this.dataset.project);
-            history.pushState({isSingleChangeset:false, projectName:codeReview.displayedProjectName}, null, '?'+$.param({projectName: this.dataset.project}));
+            setActive('#projectsDropdown');
+            var href = this.dataset.project == '' ? '?' : '?' + $.param({projectName:this.dataset.project});
+            history.pushState({dataType: DATA_TYPE.PROJECT, projectName:codeReview.displayedProjectName}, null, href);
         } else {
-            scrollTo(0, 0);
+            $(document).scrollTop(0);
         }
         $('#projectsDropdown').removeClass('open');
         return false;
     });
 
-    window.onpopstate = function (e) {
+    $('body').on('click', '.filterLink', function (e) {
+        if (currentViewType != VIEW_TYPE.FILTER) {
+            showFiltered(this.dataset.filter);
+            setActive('#filtersDropdown');
+            history.pushState({dataType: DATA_TYPE.FILTER, filterType:codeReview.currentFilter}, null, '?' + $.param({filter:this.dataset.filter}));
+        } else {
+            $(document).scrollTop(0);
+        }
+        $('#filtersDropdown').removeClass('open');
+        return false;
+    });
+
+    window.addEventListener('popstate', function (e) {
         if (e.state != null) {
-            if (e.state.isSingleChangeset) {
-                window.location.href = '?'+$.param({projectName:e.state.projectName, changesetId:e.state.changesetId});
+            if (e.state.dataType == DATA_TYPE.CHANGESET) {
+                window.location.href = '?' + $.param({projectName:e.state.projectName, changesetId:e.state.changesetId});
                 shouldLoadChangesets = false;
-            } else if (!e.state.isSingleChangeset) {
-                shouldLoadChangesets = true;
-                singleChangesetView = false;
-                showProject(e.state.projectName);
+                setAllInactive();
+            } else if (e.state.dataType == DATA_TYPE.PROJECT) {
+                if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != e.state.projectName) {;
+                    showProject(e.state.projectName);
+                    setActive('#projectsDropdown');
+                } else {
+                    $(document).scrollTop(0);
+                }
+            } else if (e.state.dataType == DATA_TYPE.FILTER) {
+                if (currentViewType != VIEW_TYPE.FILTER || codeReview.currentFilter != e.state.filterType) {
+                    showFiltered(e.state.filterType);
+                    setActive('#filtersDropdown');
+                } else {
+                    $(document).scrollTop(0);
+                }
             }
         }
-    };
+    });
 
     $.views.helpers({
         getGravatar:function (email, size) {
@@ -148,27 +173,33 @@
     $().ready(function () {
         codeReview.initialFirstChangesetOffset = $('#content').position().top
 
-        codeReview.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser');
+        codeReview.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser', 'filterChooser');
 
         $.link.loginStatusTemplate('#loginStatus', codeReview, {target:'replace'});
         $.link.projectChooserTemplate('#projectChooser', codeReview, {target:'replace'});
+        $.link.filterChooserTemplate('#filterChooser', codeReview, {target:'replace'});
 
-        if (toBoolean(${singleChangeset})) {
+        if ('${type}' == DATA_TYPE.CHANGESET) {
             appendChangesetsBottom(${changeset});
             toggleChangesetDetails("${changesetId}");
-            history.replaceState({isSingleChangeset:true, changeset: ${changeset ?: "''"}, changesetId:"${changesetId}", projectName:'${projectName}' }, null);
+            history.replaceState({dataType:'${type}', changeset: ${changeset ?: "''"}, changesetId:"${changesetId}", projectName:'${projectName}' }, null);
             shouldLoadChangesets = false;
-            singleChangesetView = true;
-        } else {
+            currentViewType = VIEW_TYPE.SINGLE_CHANGESET; // if there will be scrolling to changeset view type might be PROJECT
+            setAllInactive();
+        } else if ('${type}' == DATA_TYPE.PROJECT) {
 
             if (toBoolean(${singleProject})) {
                 showProject("${projectName}");
             } else {
                 showProject('');
             }
-            history.replaceState({isSingleChangeset:false, projectName:codeReview.displayedProjectName}, null);
-            shouldLoadChangesets = true;
-            singleChangesetView = false;
+            history.replaceState({dataType:'${type}', projectName:codeReview.displayedProjectName}, null);
+            setActive('#projectsDropdown');
+
+        } else if ('${type}' == DATA_TYPE.FILTER) {
+            showFiltered('${filterType}')
+            history.replaceState({dataType:'${type}', filterType: codeReview.currentFilter }, null)
+            setActive('#filtersDropdown');
         }
 
         $(window).scroll(function () {
@@ -190,6 +221,15 @@
                 $('#loading').hide();
                 $('body').trigger('codeReview-pageStructureChanged') //most probably
             });
+
+    function setActive(selector) {
+        setAllInactive();
+        $(selector).css('text-decoration', 'underline');
+    }
+
+    function setAllInactive() {
+        $('.navbarToggle').css('text-decoration', 'none');
+    }
 
     function onLoggedIn(username, isAdmin) {
         isAdmin = isAdmin ? true : false;
@@ -219,7 +259,7 @@
 <script id='projectChooserTemplate' type='text/x-jsrender'>
 
     <ul class="nav">
-        <li id="projectsDropdown" class="dropdown">
+        <li id="projectsDropdown" class="dropdown navbarToggle">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project <span
                     data-link='displayedProjectName'></span> <b class="caret"></b></a>
             <ul class="dropdown-menu">
@@ -230,6 +270,20 @@
                            data-project='${project.name}' class='projectLink'>${project.name}</a>
                     </li>
                 </g:each>
+            </ul>
+        </li>
+    </ul>
+</script>
+
+<script id='filterChooserTemplate' type='text/x-jsrender'>
+    <ul class="nav">
+        <li id="filtersDropdown" class="dropdown navbarToggle">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Filters <span
+                    data-link='currentFilter'></span> <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li><a href="javascript:void(0)" data-target="#" data-filter='commentedChangesets'
+                       class='filterLink'>Commented changesets</a>
+                </li>
             </ul>
         </li>
     </ul>
