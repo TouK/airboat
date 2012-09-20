@@ -94,7 +94,8 @@ function appendChangeset(changeset, dayElement) {
         $.extend(this, {
             changeset:changeset,
             collapseId:(changeset.identifier + this.id),
-            name:sliceName(this.name)
+            name:sliceName(this.name),
+            isDisplayed: false
         })
     })
 
@@ -111,7 +112,7 @@ $('.accordion-body.collapse').livequery(function () {
             appendSnippetToFileInAccordion(this.dataset.changeset_id, this.dataset.file_id)
             showFile(this.dataset);
         }).on('shown', function () {
-            $(this).parents('.changeset').ScrollTo({offsetTop:codeReview.initialFirstChangesetOffset});
+            $.observable(codeReview.getModel(this)).setProperty('isDisplayed', true)
         });
 })
 
@@ -186,14 +187,12 @@ function sliceName(name) {
 function toggleChangesetDetails(identifier) {
     var changesetDetails = $('#changesetDetails-' + identifier);
     if (changesetDetails.is(':visible')) {
-        hideFile(identifier);
         changesetDetails.parents('.changeset').ScrollTo({
-            onlyIfOutside:true,
-            offsetTop:codeReview.initialFirstChangesetOffset,
-            callback:function() {
-                changesetDetails.slideUp()
-            }
+            offsetTop:codeReview.navbarOffset
         });
+        changesetDetails.slideUp('slow', function () {
+            hideFileAndScrollToChangesetTop(identifier)
+        })
     } else {
         changesetDetails.slideDown();
     }

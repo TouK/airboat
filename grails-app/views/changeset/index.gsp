@@ -389,17 +389,24 @@
             </div>
         </div>
 
-        <div class="span7">
-            <div class="well" id="content-files-span-{{>identifier}}" style="display: none;">
-                <div id="content-files-title-{{>identifier}}"></div>
-                <br/>
+        <div class="fileListings span7">
+            <div class="fileListing well" style="display: none;">
 
-                <div id="diff-{{>identifier}}"></div>
+                <i class="closeButton icon-remove pull-right" onclick="hideFileAndScrollToChangesetTop('{{:identifier}}')"> </i>
 
-                <div class="files-right">
-
-                    <div id="content-files-{{>identifier}}"></div>
+                <div class='pullLeft'>
+                    <button type="button" class="btn btn-primary" onClick="showDiff('{{:identifier}}')"
+                            id="button-showing-diff-{{:identifier}}">Show diff</button>
+                    <button type="button" class="btn btn-primary" onClick="hideDiff('{{:identifier}}')" style="display:none"
+                            id="button-hiding-diff-{{:identifier}}">Hide diff</button>
                 </div>
+                <div class='clearfix'/>
+
+                <br/>
+                <div id="diff-box-{{:identifier}}" style="display: none"></div>
+
+                <div id="content-files-{{>identifier}}"></div>
+
             </div>
         </div>
     </div>
@@ -417,15 +424,19 @@
     <div class="accordion-heading">
         <div class="row-fluid">
 
-            <div class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{>changeset.identifier}}"
+            <a data-link="class{: 'accordion-toggle manualLinkText ' + (isDisplayed ? 'selected' : '') }"
+               data-toggle="collapse" data-parent="#accordion-{{>changeset.identifier}}"
                  href="#collapse-inner-{{>collapseId}}">
                 <i title="{{: ~textForChangeType(changeType.name) }}"
                    class="{{: ~iconForChangeType(changeType.name) }}"></i>
-                <span class='linkLike'>{{:name}}</span>
+                <span data-link="class{: isDisplayed ? '' : 'linkText' }">{{:name}}</span>
+                <i class="closeButton icon-remove"
+                   data-link="style{: 'display:' + (isDisplayed ? 'inline-block' : 'none') }"
+                   onclick="hideFileAndScrollToChangesetTop('{{:changeset.identifier}}')"> </i>
                 <span class="pull-right" data-link="visible{: commentsCount != 0 }">
                     <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
                 </span>
-            </div>
+            </a>
         </div>
     </div>
 
@@ -437,21 +448,6 @@
          data-text_format='{{:textFormat}}'>
         <div class="accordion-inner" id="accordion-inner-{{>id}}">
             <div id="fileComments-{{>collapseId}}"></div>
-        </div>
-    </div>
-</script>
-
-<script id="fileTitleTemplate" type="text/x-jsrender">
-
-    <div class="row-fluid">
-        <div class="span11">
-            <h1>{{:fileName}}</h1>
-        </div>
-
-        <div class="span1">
-            <button type="button" class="btn pull-right " onClick="hideFile('{{>changesetId}}')">
-                <i class="icon-remove"></i>
-            </button>
         </div>
     </div>
 </script>
@@ -535,20 +531,6 @@
                 <span class="author pull-left">{{>author}}</span>
             </div>
         </div>
-
-    </div>
-</script>
-
-<script id="diffTemplate" type="text/x-jsrender">
-
-    <div>
-        <button type="button" class="btn btn-primary" onClick="showDiff('{{>changesetId}}')"
-                id="button-showing-diff-{{>changesetId}}">Show diff</button>
-        <button type="button" class="btn btn-primary" onClick="hideDiff('{{>changesetId}}')" style="display:none"
-                id="button-hiding-diff-{{>changesetId}}">Hide diff</button>
-    </div>
-
-    <div id="diff-box-{{>changesetId}}" style="display: none">
 
     </div>
 </script>

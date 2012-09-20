@@ -6,6 +6,14 @@ textarea {
     resize: none;
 }
 
+.closeButton {
+    cursor: pointer;
+}
+
+.selected {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
 .comment-content {
     padding: 10px;
 }
@@ -63,7 +71,7 @@ textarea {
 }
 
 .changeset .basicInfo:hover {
-    background-color: rgba(255, 255, 255, 0.9);
+    .selected
 }
 
 .commitFooter {
@@ -149,11 +157,16 @@ textarea {
     margin-bottom: 5px;
 }
 
-.linkLike {
-    color: @linkColor;
+a.manualLinkText {
+    text-decoration: inherit;
+    color: inherit;
+
+    .linkText {
+        color: @linkColor;
+    }
 }
 
-.accordion-toggle:hover .linkLike {
+a.manualLinkText:hover .linkText {
     color: @linkColorHover;
     text-decoration: underline;
 }

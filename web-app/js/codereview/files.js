@@ -7,6 +7,8 @@ function showFile(dataset) {
     var textFormat = dataset.text_format;
     var fileNameSlice = dataset.file_name_slice;
 
+    hideDisplayedFile(changesetIdentifier)
+
     appendDiff(changesetIdentifier, projectFileId);
 
     var fileContentUrl = uri.projectFile.getFileWithContent + '?' + $.param({
@@ -15,20 +17,17 @@ function showFile(dataset) {
     if (changeType != 'DELETE') {
         if (toBoolean(textFormat)) {
             $.getJSON(fileContentUrl, function (file) {
-                fillFileTitleTemplate(sliceName(file.name), changesetIdentifier, projectFileId);
                 renderContentFileWithSyntaxHighlighter(changesetIdentifier, file, projectFileId);
                 showFilesContent(changesetIdentifier);
             });
         }
         else {
-            fillFileTitleTemplate(sliceName(fileNameSlice), changesetIdentifier, projectFileId);
             showMessageAboutNonTextFile(changesetIdentifier);
             showFilesContent(changesetIdentifier);
         }
     }
     else {
         cleanPreviousFilesContent(changesetIdentifier);
-        fillFileTitleTemplate(fileNameSlice, changesetIdentifier, projectFileId);
         showMessageAboutRemovedFile(changesetIdentifier);
         showFilesContent(changesetIdentifier);
     }
@@ -43,8 +42,25 @@ function toBoolean(toConvert) {
     return JSON.parse(toConvert);
 }
 
-function hideFile(changesetId) {
-    $('#content-files-span-' + changesetId).hide();
+
+function showFilesContent(changesetId) {
+    $('.changeset[data-identifier=' + changesetId + '] .fileListings .fileListing').show();
+}
+
+function hideFileAndScrollToChangesetTop(changesetId) {
+    hideDisplayedFile(changesetId);
+    var changesetDetails = $('.changeset[data-identifier=' + changesetId + '] .details');
+    changesetDetails.parents('.changeset').ScrollTo({
+        offsetTop:codeReview.navbarOffset
+    });
+    return false
+}
+
+function hideDisplayedFile(changesetId) {
+    $('.changeset[data-identifier=' + changesetId + '] .fileListings .fileListing').hide();
+    $(codeReview.getModel('.changeset[data-identifier=' + changesetId + ']').projectFiles).each(function () {
+        $.observable(this).setProperty('isDisplayed', false)
+    })
     hidePopovers(changesetId);
 }
 
@@ -55,9 +71,6 @@ function appendDiff(changesetIdentifier, projectFileId) {
     });
 
     $.getJSON(diffUrl, function (projectDiff) {
-        var diff = $("#diffTemplate").render({changesetId:changesetIdentifier});
-        $("#diff-" + changesetIdentifier).html(diff);
-
         $.SyntaxHighlighter.init({lineNumbers:false});
 
         $("#diff-box-" + changesetIdentifier).html("<pre class='codeViewer'/>");
@@ -99,31 +112,14 @@ function hideDiff(changesetId) {
     $("#button-hiding-diff-" + changesetId).hide();
 }
 
-function showFilesContent(changesetId) {
-    $('#content-files-span-' + changesetId).show();
-}
-
 function cleanPreviousFilesContent(changesetId) {
     $("#content-files-" + changesetId).html("");
-}
-
-function setContentFilesTitle(changesetId, title) {
-    $("#content-files-title-" + changesetId).html(title);
 }
 
 function showMessageAboutNonTextFile(changesetId) {
     $("#content-files-" + changesetId).html("<pre class='codeViewer'/>");
     $("#content-files-" + changesetId + " .codeViewer")
         .html("<h3>This file isn't text file.</h3>")
-}
-
-function fillFileTitleTemplate(fileName, changesetId, projectFileId) {
-    var title = $("#fileTitleTemplate").render({
-        fileName:fileName,
-        changesetId:changesetId,
-        fileId:projectFileId
-    });
-    setContentFilesTitle(changesetId, title);
 }
 
 function showMessageAboutRemovedFile(changesetId) {
