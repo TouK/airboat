@@ -36,8 +36,8 @@
             register:"${createLink(uri: '/register')}",
 
             libs:{
-                zclip:{
-                    swf:"${createLink(uri: '/libs/jquery.zclip/ZeroClipboard.swf')}"
+                clippy:{
+                    swf:"${createLink(uri: '/libs/clippy/clippy.swf')}"
                 }
             }
         }
@@ -58,16 +58,12 @@
                 if (debugMode) {
                     $.error(message)
                 }
-            }
-
-            , templates: {
-                compileAll: function() {
+            }, templates:{
+                compileAll:function () {
                     $(arguments).each(function () {
                         codeReview.templates.compile(this);
                     })
-                }
-
-                , compile:function (templateName) {
+                }, compile:function (templateName) {
                     templateName += 'Template'
                     var templateId = '#' + templateName;
                     if ($(templateId).size() != 1) {

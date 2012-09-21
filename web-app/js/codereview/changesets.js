@@ -66,23 +66,49 @@ function appendChangesetsBottom(changesetsByDay) {
 function getDayContainer(date) {
     return $(".day[data-date=" + date + "]");
 }
-$('.changeset-date').livequery(function() {
-    $(this).tooltip({title: this.dataset.date, trigger:"hover", placement:"bottom"});
-})
 
 $('.changeset-hash').livequery(function () {
     $(this)
-        .tooltip({title:"click to copy", trigger:"hover", placement:"bottom"})
-        .zclip({
-            path:uri.libs.zclip.swf,
-            copy:this.dataset.changeset_identifier,
-            clickAfter: false,
-            afterCopy:function () {
-            }
+        .hover(function () {
+            $('.clippy-' + this.dataset.changeset_identifier)
+                .clippy({
+                    clippy_path:uri.libs.clippy.swf
+                });
+            showClippyAndTooltip.call(this);
+        }, function () {
+            var that = this
+            setTimeout(function () {
+                hideSpanForClippy(that);
+                removeClippyObject(that);
+                setSpanForClippy(that)
+            }, 5000)
         });
 })
 
+function hideSpanForClippy(that) {
+    $('.hashForClippy-' + that.dataset.changeset_identifier).hide()
+}
+
+function setSpanForClippy(that) {
+    $('.hashForClippy-' + that.dataset.changeset_identifier).append($('<span class=' + "clippy-" + that.dataset.changeset_identifier + '></span>'))
+}
+
+function showClippyAndTooltip() {
+    $('.hashForClippy-' + this.dataset.changeset_identifier)
+        .tooltip({title:"click to copy", trigger:"hover", placement:"bottom"})
+        .show();
+}
+
+function removeClippyObject(that) {
+    $('.hashForClippy-' + that.dataset.changeset_identifier).children().remove()
+}
+
+$('.changeset-date').livequery(function () {
+    $(this).tooltip({title:this.dataset.date, trigger:"hover", placement:"bottom"});
+})
+
 function appendChangeset(changeset, dayElement) {
+
     changeset['shortIdentifier'] = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
     changeset['allComments'] = function() {
         var projectFilesComments = 0
