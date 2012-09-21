@@ -29,7 +29,7 @@ class BootStrap {
     }
 
     private Project projectCodeReview() {
-        Project.findOrCreateWhere(name: 'codereview', url:   PROJECT_CODEREVIEW_REPOSITORY_URL)
+        Project.findOrCreateWhere(name: 'airboat', url:   PROJECT_CODEREVIEW_REPOSITORY_URL)
     }
 
     private void bootstrapNonTestEnvironment(Project... projects) {

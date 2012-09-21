@@ -1,16 +1,17 @@
 package codereview
 
 import grails.converters.JSON
-
 import static com.google.common.base.Strings.isNullOrEmpty
+import org.springframework.security.access.AccessDeniedException
 
 class ChangesetController {
 
     ScmAccessService scmAccessService
     ReturnCommentsService returnCommentsService
+    MyCommentsAndChangesetsFilterService myCommentsAndChangesetsFilterService
+    CommentedChangesetsFilterService commentedChangesetsFilterService
 
-    def filterFunctions = [commentedChangesets: this.&getCommentedChangesets]
-    def nextFilterFunctions = [commentedChangesets: this.&getNextCommentedChangesets]
+    def filterTypes = ['commentedChangesets', 'myCommentsAndChangesets']
 
     def index() {
         def projectName = params.projectName
@@ -40,7 +41,13 @@ class ChangesetController {
     }
 
     def getLastFilteredChangesets(String filterType) {
-        def changesets = filterFunctions.get(filterType)()
+        def filterServices = [commentedChangesets: commentedChangesetsFilterService, myCommentsAndChangesets: myCommentsAndChangesetsFilterService]
+        def changesets
+        try {
+            changesets = filterServices.get(filterType).getLastFilteredChangesets()
+        } catch (AccessDeniedException e) {
+            response.sendError(401)
+        }
         def changesetsProperties = changesets.collect this.&convertToChangesetProperties
         changesetsProperties = groupChangesetPropertiesByDay(changesetsProperties)
         render changesetsProperties as JSON
@@ -61,7 +68,8 @@ class ChangesetController {
     }
 
     def getNextFewFilteredChangesetsOlderThan(Long changesetId, String filterType) {
-        renderChangesetsGroups(nextFilterFunctions.get(filterType)(changesetId))
+        def filterServices = [commentedChangesets: commentedChangesetsFilterService, myCommentsAndChangesets: myCommentsAndChangesetsFilterService]
+        renderChangesetsGroups(filterServices.get(filterType).getNextFilteredChangesets(changesetId))
     }
 
     private void renderChangesetsGroups(List<Changeset> nextFewChangesets) {
@@ -97,21 +105,6 @@ class ChangesetController {
             maxResults(Constants.NEXT_LOAD_CHANGESET_NUMBER)
             order('date', 'desc')
         }
-    }
-
-    private def getCommentedChangesets() {
-        return Changeset.findAll("from Changeset c where userComments.size > 0 or \
-                                    exists (from ProjectFileInChangeset p where p.changeset = c and \
-                                    exists (from ThreadPositionInFile pos where pos.projectFileInChangeset = p and pos.thread.comments.size > 0)) \
-                                    order by c.date desc", [max: Constants.FIRST_LOAD_CHANGESET_NUMBER]);
-    }
-
-    private def getNextCommentedChangesets(Long changesetId) {
-        def lastChangeset = Changeset.get(changesetId);
-        return Changeset.findAll("from Changeset c where (userComments.size > 0 or \
-                                    exists (from ProjectFileInChangeset p where p.changeset = c and \
-                                    exists (from ThreadPositionInFile pos where pos.projectFileInChangeset = p and pos.thread.comments.size > 0))) and c.date < :lastChangesetDate \
-                                    order by c.date desc", [max: Constants.NEXT_LOAD_CHANGESET_NUMBER, lastChangesetDate: lastChangeset.date]);
     }
 
     private def convertToChangesetProperties(Changeset changeset) {
@@ -198,7 +191,7 @@ class ChangesetController {
     }
 
     private def filterResponse(filter) {
-        if (filter in filterFunctions.keySet()) {
+        if (filter in filterTypes) {
             render(view: 'index', model: [projects: Project.all, type: 'filter', filterType: filter])
         } else {
             response.sendError(404, 'There is no such filter')

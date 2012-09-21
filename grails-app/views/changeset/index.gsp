@@ -37,7 +37,7 @@
 <div class="navbar navbar-fixed-top navbar-inverse">
     <div class="navbar-inner">
         <div class="container">
-            <a class="brand" href="#">
+            <a class="brand" href="${createLink(uri:'/')}">
                 <span class='highlighted'>
                     CodeReview
                 </span>
@@ -95,7 +95,7 @@
     });
 
     $('body').on('click', '.filterLink', function (e) {
-        if (currentViewType != VIEW_TYPE.FILTER) {
+        if (currentViewType != VIEW_TYPE.FILTER || codeReview.currentFilter != this.dataset.filter) {
             showFiltered(this.dataset.filter);
             setActive('#filtersDropdown');
             history.pushState({dataType: DATA_TYPE.FILTER, filterType:codeReview.currentFilter}, null, '?' + $.param({filter:this.dataset.filter}));
@@ -283,6 +283,9 @@
             <ul class="dropdown-menu">
                 <li><a href="javascript:void(0)" data-target="#" data-filter='commentedChangesets'
                        class='filterLink'>Commented changesets</a>
+                </li>
+                <li data-link="visible{: loggedInUserName !== '' }"><a href="javascript:void(0)" data-target="#" data-filter='myCommentsAndChangesets'
+                       class='filterLink'>My comments and changesets</a>
                 </li>
             </ul>
         </li>
