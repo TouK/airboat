@@ -86,7 +86,6 @@
     $('body').on('click', '.projectLink', function (e) {
         if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != this.dataset.project) {
             showProject(this.dataset.project);
-            setActive('#projectsDropdown');
             var href = this.dataset.project == '' ? '?' : '?' + $.param({projectName:this.dataset.project});
             history.pushState({dataType: DATA_TYPE.PROJECT, projectName:codeReview.displayedProjectName}, null, href);
         } else {
@@ -99,7 +98,6 @@
     $('body').on('click', '.filterLink', function (e) {
         if (currentViewType != VIEW_TYPE.FILTER || codeReview.currentFilter != this.dataset.filter) {
             showFiltered(this.dataset.filter);
-            setActive('#filtersDropdown');
             history.pushState({dataType: DATA_TYPE.FILTER, filterType:codeReview.currentFilter}, null, '?' + $.param({filter:this.dataset.filter}));
         } else {
             $(document).scrollTop(0);
@@ -117,14 +115,12 @@
             } else if (e.state.dataType == DATA_TYPE.PROJECT) {
                 if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != e.state.projectName) {;
                     showProject(e.state.projectName);
-                    setActive('#projectsDropdown');
                 } else {
                     $(document).scrollTop(0);
                 }
             } else if (e.state.dataType == DATA_TYPE.FILTER) {
                 if (currentViewType != VIEW_TYPE.FILTER || codeReview.currentFilter != e.state.filterType) {
                     showFiltered(e.state.filterType);
-                    setActive('#filtersDropdown');
                 } else {
                     $(document).scrollTop(0);
                 }
@@ -196,12 +192,10 @@
                 showProject('');
             }
             history.replaceState({dataType:'${type}', projectName:codeReview.displayedProjectName}, null);
-            setActive('#projectsDropdown');
 
         } else if ('${type}' == DATA_TYPE.FILTER) {
             showFiltered('${filterType}')
             history.replaceState({dataType:'${type}', filterType: codeReview.currentFilter }, null)
-            setActive('#filtersDropdown');
         }
 
         $(window).scroll(function () {
@@ -223,15 +217,6 @@
                 $('#loading').hide();
                 $('body').trigger('codeReview-pageStructureChanged') //most probably
             });
-
-    function setActive(selector) {
-        setAllInactive();
-        $(selector).css('text-decoration', 'underline');
-    }
-
-    function setAllInactive() {
-        $('.navbarToggle').css('text-decoration', 'none');
-    }
 
     function onLoggedIn(username, isAdmin) {
         isAdmin = isAdmin ? true : false;

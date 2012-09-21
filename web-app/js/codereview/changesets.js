@@ -2,6 +2,7 @@ function showProject(projectName) {
     shouldLoadChangesets = true;
     currentViewType = VIEW_TYPE.PROJECT;
     $.observable(codeReview).setProperty('displayedProjectName', projectName);
+    setActive('#projectsDropdown');
     changesetsLoading = true;
     $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:codeReview.displayedProjectName}), appendChangesetsBottom)
     $('#content').html("");
@@ -11,9 +12,19 @@ function showFiltered(filterType) {
     shouldLoadChangesets = true;
     currentViewType = VIEW_TYPE.FILTER;
     $.observable(codeReview).setProperty('currentFilter', filterType);
+    setActive('#filtersDropdown');
     changesetLoading = true;
     $.getJSON(uri.changeset.getLastFilteredChangesets + '?' + $.param({filterType: codeReview.currentFilter}), appendChangesetsBottom);
     $('#content').html("");
+}
+
+function setActive(selector) {
+    setAllInactive();
+    $(selector).css('text-decoration', 'underline');
+}
+
+function setAllInactive() {
+    $('.navbarToggle').css('text-decoration', 'none');
 }
 
 function onScrollThroughBottomAttempt() {
