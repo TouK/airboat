@@ -19,6 +19,7 @@ class Fixture {
 
     public static final String APPLICATION_PROPERTIES_FILE_NAME = 'application.properties'
     public static final String SECOND_COMMIT_INCLUDING_APPLICATION_PROPERTIES = 'b31743259b8e58cf3743cda44b15a98536a2be1f'
+    public static final int SECOND_COMMIT_INCLUDINF_APPLICATION_PROPERTIES_NUMBER = 3;
     public static final String APPLICATION_PROPERTIES_SECOND_LINE_IN_FIRST_COMMIT = "#Tue Jul 03 14:08:33 CEST 2012"
     public static final String APPLICATION_PROPERTIES_SECOND_LINE_IN_SECOND_COMMIT_INCLUDING_IT = "#Wed Jul 04 12:21:42 CEST 2012"
 

@@ -11,6 +11,7 @@ class Changeset {
 
     static mapping = {
         userComments sort: 'dateCreated', order: 'asc'
+        sort 'date'
     }
 
     Commiter commiter
