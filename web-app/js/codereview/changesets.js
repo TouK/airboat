@@ -1,21 +1,23 @@
 function showProject(projectName) {
-    shouldLoadChangesets = true;
-    currentViewType = VIEW_TYPE.PROJECT;
     $.observable(codeReview).setProperty('displayedProjectName', projectName);
-    setActive('#projectsDropdown');
     changesetsLoading = true;
-    $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:codeReview.displayedProjectName}), appendChangesetsBottom)
-    $('#content').html("");
+    $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:codeReview.displayedProjectName}),
+        function(data) {clearDisplayAndAppendChangesetsBottom({changesets: data, shouldLoad: true, viewType: VIEW_TYPE.PROJECT, activeSelector: '#projectsDropdown'})});
 }
 
 function showFiltered(filterType) {
-    shouldLoadChangesets = true;
-    currentViewType = VIEW_TYPE.FILTER;
     $.observable(codeReview).setProperty('currentFilter', filterType);
-    setActive('#filtersDropdown');
     changesetLoading = true;
-    $.getJSON(uri.changeset.getLastFilteredChangesets + '?' + $.param({filterType: codeReview.currentFilter}), appendChangesetsBottom);
+    $.getJSON(uri.changeset.getLastFilteredChangesets + '?' + $.param({filterType:codeReview.currentFilter}),
+        function(data) {clearDisplayAndAppendChangesetsBottom({changesets: data, shouldLoad: true, viewType: VIEW_TYPE.FILTER, activeSelector: '#filtersDropdown'})});
+}
+
+function clearDisplayAndAppendChangesetsBottom(dataset) {
+    shouldLoadChangesets = dataset.shouldLoad;
+    currentViewType = dataset.viewType;
     $('#content').html("");
+    setActive(dataset.activeSelector)
+    appendChangesetsBottom(dataset.changesets);
 }
 
 function setActive(selector) {
@@ -35,7 +37,7 @@ function loadMoreChangesets() {
     if (!changesetsLoading && shouldLoadChangesets) {
         changesetsLoading = true;
         var controllerAction;
-        var paramsMap = {changesetId: lastLoadedChangesetId};
+        var paramsMap = {changesetId:lastLoadedChangesetId};
         if (history.state.dataType == DATA_TYPE.PROJECT && codeReview.displayedProjectName == '') {
             controllerAction = uri.changeset.getNextFewChangesetsOlderThan;
         } else if (history.state.dataType == DATA_TYPE.PROJECT) {
@@ -48,8 +50,8 @@ function loadMoreChangesets() {
     }
 }
 
-var VIEW_TYPE = { SINGLE_CHANGESET: 'changeset', PROJECT: 'project', FILTER: 'filter'};
-var DATA_TYPE = {CHANGESET: 'changeset', PROJECT: 'project', FILTER: 'filter'};
+var VIEW_TYPE = { SINGLE_CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
+var DATA_TYPE = { CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
 
 var lastLoadedChangesetId;
 var changesetsLoading;
@@ -121,23 +123,25 @@ $('.changeset-date').livequery(function () {
 function appendChangeset(changeset, dayElement) {
 
     changeset['shortIdentifier'] = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
-    changeset['allComments'] = function() {
+    changeset['allComments'] = function () {
         var projectFilesComments = 0
-        $(this.projectFiles).each(function() { projectFilesComments += this.commentsCount})
+        $(this.projectFiles).each(function () {
+            projectFilesComments += this.commentsCount
+        })
         return this.comments.length + projectFilesComments
     }
 
-    $(changeset.projectFiles).each(function() {
+    $(changeset.projectFiles).each(function () {
         $.extend(this, {
             changeset:changeset,
             collapseId:(changeset.identifier + this.id),
             name:sliceName(this.name),
-            isDisplayed: false
+            isDisplayed:false
         })
     })
 
     dayElement.children('.changesets').append($("<span id='templatePlaceholder'></span>"));
-    $.link.changesetTemplate('#templatePlaceholder', changeset, {target: 'replace'})
+    $.link.changesetTemplate('#templatePlaceholder', changeset, {target:'replace'})
 
     $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render(changeset));
 }
@@ -145,7 +149,7 @@ function appendChangeset(changeset, dayElement) {
 /*TODO move it somewhere near the template definition*/
 $('.accordion-body.collapse').livequery(function () {
     $(this)
-        .on('show', function() {
+        .on('show',function () {
             appendSnippetToFileInAccordion(this.dataset.changeset_id, this.dataset.file_id)
             showFile(this.dataset);
         }).on('shown', function () {
