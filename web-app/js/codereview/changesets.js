@@ -93,17 +93,12 @@ $('.changeset-hash').livequery(function () {
             setTimeout(function () {
                 hideSpanForClippy(that);
                 removeClippyObject(that);
-                setSpanForClippy(that)
             }, 5000)
         });
 })
 
 function hideSpanForClippy(that) {
     $('.hashForClippy-' + that.dataset.changeset_identifier).hide()
-}
-
-function setSpanForClippy(that) {
-    $('.hashForClippy-' + that.dataset.changeset_identifier).append($('<span class=' + "clippy-" + that.dataset.changeset_identifier + '></span>'))
 }
 
 function showClippyAndTooltip() {
@@ -113,7 +108,7 @@ function showClippyAndTooltip() {
 }
 
 function removeClippyObject(that) {
-    $('.hashForClippy-' + that.dataset.changeset_identifier).children().remove()
+    swfobject.removeSWF(that.dataset.changeset_identifier);
 }
 
 $('.changeset-date').livequery(function () {
