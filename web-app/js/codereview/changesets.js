@@ -22,11 +22,11 @@ function clearDisplayAndAppendChangesetsBottom(dataset) {
 
 function setActive(selector) {
     setAllInactive();
-    $(selector).css('text-decoration', 'underline');
+    $(selector + ' .dropdown-toggle').css('text-decoration', 'underline');
 }
 
 function setAllInactive() {
-    $('.navbarToggle').css('text-decoration', 'none');
+    $('.navbarToggle .dropdown-toggle').css('text-decoration', 'none');
 }
 
 function onScrollThroughBottomAttempt() {
