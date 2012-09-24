@@ -16,7 +16,7 @@ class MyCommentsAndChangesetsFilterServiceIntegrationSpec extends IntegrationSpe
 
     def cleanupSpec() {}
 
-    def "should log sql queries"() {
+    def "should call getLastFilteredChangesets"() { //created for inspecting hibernate sql log output
         given:
         def authenticatedUser = User.build(username: 'jsd@touk.pl')
         springSecurityService.reauthenticate(authenticatedUser.username)

@@ -47,12 +47,11 @@ class ProjectFileController {
             comments.collect { LineComment comment ->
                 def properties = comment.properties + [
                         fromRevision: getRevisionType(changeset, changeset), //FIXME count changesets between original comment posting changeset and changeset its displayed in
-                        belongsToCurrentUser: comment.author == authenticatedUser,
                         author: comment.author.email,
                         lineNumber: threadPosition.lineNumber,
                         dateCreated: comment.dateCreated.format('yyyy-MM-dd HH:mm')
                 ]
-                properties.keySet().retainAll('id', 'author', 'dateCreated', 'lineNumber', 'projectFile', 'text', 'fromRevision', 'belongsToCurrentUser')
+                properties.keySet().retainAll('id', 'author', 'dateCreated', 'lineNumber', 'projectFile', 'text', 'fromRevision')
                 properties
             }
         }

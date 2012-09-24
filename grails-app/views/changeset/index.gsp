@@ -318,7 +318,7 @@
 
 <script id="changesetTemplate" type="text/x-jsrender">
 
-    <div class='changeset {{if belongsToCurrentUser}} current-user {{/if}} row-fluid'
+    <div class='changeset row-fluid'
          data-identifier='{{:identifier}}' data-id='{{:id}}'>
 
         <div class="column left span5 well well-small">
@@ -514,7 +514,7 @@
 
 <script id="commentTemplate" type="text/x-jsrender">
 
-    <div class="comment {{>fromRevision}} {{if belongsToCurrentUser}} current-user {{/if}}">
+    <div class="comment {{>fromRevision}}">
         <img src="{{>~getGravatar(author, 35)}}"/>
 
         <div class="nextToGravatar">

@@ -25,27 +25,8 @@ class ReturnCommentsServiceSpec extends Specification {
         def result = returnCommentsService.getCommentJSONproperties(comment)
 
         then:
-        result.keySet() == ['text', 'author', 'dateCreated', 'belongsToCurrentUser'] as Set
+        result.keySet() == ['text', 'author', 'dateCreated'] as Set
         result.author == loggedInUser.username
         result.text == comment.text
-        result.belongsToCurrentUser == true
-    }
-
-    def "should mark logged in user UserComment as his"() {
-        given:
-        def loggedInUser = User.build(username: 'logged.in@codereview.com')
-        returnCommentsService.springSecurityService.getCurrentUser() >> loggedInUser
-        Changeset changeset = Changeset.build()
-        def comment = UserComment.build(changeset: changeset, author: loggedInUser)
-
-        expect:
-        changeset.userComments.contains(comment)
-        changeset.save()
-
-        when:
-        def result = returnCommentsService.getCommentJSONproperties(comment)
-
-        then:
-        result.belongsToCurrentUser == true
     }
 }
