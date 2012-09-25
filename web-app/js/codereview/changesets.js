@@ -144,13 +144,24 @@ function appendChangeset(changeset, dayElement) {
 /*TODO move it somewhere near the template definition*/
 $('.accordion-body.collapse').livequery(function () {
     $(this)
-        .on('show',function () {
-            appendSnippetToFileInAccordion(this.dataset.changeset_id, this.dataset.file_id)
-            showFile(this.dataset);
+        .on('show',function (event) {
+            if (this.dataset.projectfile_comments == 0) {
+                event.preventDefault();
+                appendSnippetAndShowFile.call(this);
+                $.observable(codeReview.getModel(this)).setProperty('isDisplayed', true);
+            }
+            else {
+                appendSnippetAndShowFile.call(this);
+            }
         }).on('shown', function () {
-            $.observable(codeReview.getModel(this)).setProperty('isDisplayed', true)
+            $.observable(codeReview.getModel(this)).setProperty('isDisplayed', true);
         });
-})
+});
+
+function appendSnippetAndShowFile() {
+    appendSnippetToFileInAccordion(this.dataset.changeset_id, this.dataset.file_id);
+    showFile(this.dataset);
+}
 
 function updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId) {
     renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippetsForCommentedFile);
@@ -165,7 +176,6 @@ function appendSnippetToFileInAccordion(changesetIdentifier, projectFileId) {
     }),
         function (commentGroupsWithSnippetsForFile) {
             renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippetsForFile);
-            $('#collapse-inner-' + changesetIdentifier + projectFileId).collapse('reset')
         }
     );
 }
@@ -173,16 +183,12 @@ function appendSnippetToFileInAccordion(changesetIdentifier, projectFileId) {
 function renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippetsForFile) {
     var fileType = commentGroupsWithSnippetsForFile.fileType;
     var commentGroupsWithSnippets = commentGroupsWithSnippetsForFile.commentGroupsWithSnippets;
-
     if (commentGroupsWithSnippets.length > 0) {
         $('#fileComments-' + changesetIdentifier + projectFileId).html("");
-
+        $('#collapse-inner-' + changesetIdentifier + projectFileId).collapse('reset')
         for (j = 0; j < commentGroupsWithSnippets.length; j++) {
             renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippets[j], fileType);
         }
-    }
-    else {
-        $('#fileComments-' + changesetIdentifier + projectFileId).html("<h5>This file has no comments.</h5>");
     }
 }
 
@@ -215,7 +221,6 @@ function renderCommentGroup(changesetIdentifier, projectFileId, commentGroup, li
     }
 }
 
-
 function sliceName(name) {
     return name.toString().replace(/\//g, '/&#8203;');
 }
@@ -223,9 +228,6 @@ function sliceName(name) {
 function toggleChangesetDetails(identifier) {
     var changesetDetails = $('#changesetDetails-' + identifier);
     if (changesetDetails.is(':visible')) {
-        changesetDetails.parents('.changeset').ScrollTo({
-            offsetTop:codeReview.navbarOffset
-        });
         changesetDetails.slideUp('slow', function () {
             hideFileAndScrollToChangesetTop(identifier)
         })

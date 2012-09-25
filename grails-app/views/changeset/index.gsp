@@ -314,6 +314,15 @@
     $('.changeset .left.column').livequery(function () {
         $(this).floatWithin('.changeset')
     })
+
+    $('.changeset .closeButton').livequery(function () {
+        $(this).click(function (event) {
+            event.stopImmediatePropagation();
+            var changeset = $(this).parents('.changeset').first();
+            var identifier = codeReview.getModel(changeset).identifier
+            hideFileAndScrollToChangesetTop(identifier)
+        })
+    })
 </script>
 
 <script id="changesetTemplate" type="text/x-jsrender">
@@ -423,8 +432,7 @@
                    class="{{: ~iconForChangeType(changeType.name) }}"></i>
                 <span data-link="class{: isDisplayed ? '' : 'linkText' }">{{:name}}</span>
                 <i class="closeButton icon-remove"
-                   data-link="style{: 'display:' + (isDisplayed ? 'inline-block' : 'none') }"
-                   onclick="hideFileAndScrollToChangesetTop('{{:changeset.identifier}}')"> </i>
+                   data-link="style{: 'display:' + (isDisplayed ? 'inline-block' : 'none') }"> </i>
                 <span class="pull-right" data-link="visible{: commentsCount != 0 }">
                     <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
                 </span>
@@ -436,6 +444,7 @@
          data-changeset_id='{{:changeset.identifier}}'
          data-file_id='{{:id}}'
          data-file_change_type='{{:changeType.name}}'
+         data-projectFile_comments='{{:commentsCount}}'
          data-file_name_slice='{{:name}}'
          data-text_format='{{:textFormat}}'>
         <div class="accordion-inner" id="accordion-inner-{{>id}}">

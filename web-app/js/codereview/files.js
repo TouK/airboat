@@ -53,14 +53,14 @@ function hideFileAndScrollToChangesetTop(changesetId) {
     changesetDetails.parents('.changeset').ScrollTo({
         offsetTop:codeReview.navbarOffset
     });
-    return false
+    return false;
 }
 
 function hideDisplayedFile(changesetId) {
     $('.changeset[data-identifier=' + changesetId + '] .fileListings .fileListing').hide();
     $(codeReview.getModel('.changeset[data-identifier=' + changesetId + ']').projectFiles).each(function () {
-        $.observable(this).setProperty('isDisplayed', false)
-    })
+        $.observable(this).setProperty('isDisplayed', false);
+    });
     hidePopovers(changesetId);
 }
 
