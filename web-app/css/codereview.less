@@ -75,7 +75,8 @@ textarea {
 }
 
 .padding {
-    margin: 19px;
+    margin-left: 3%;
+    margin-right: 3%;
 }
 
 .margin-top-small {
@@ -157,4 +158,9 @@ a.manualLinkText {
 a.manualLinkText:hover .linkText {
     color: @linkColorHover;
     text-decoration: underline;
+}
+
+.changeset.row-fluid>.span7 {
+    margin-left:  @fluidGridGutterWidth - 1%;
+    width: (@fluidGridColumnWidth * 7) + (@fluidGridGutterWidth * (7 - 1)) + 1%;
 }
