@@ -8,4 +8,6 @@ class Constants {
     public static final int HOURS_OF_VALID_RESET_PASSWORD_TOKEN = 24
     public static final int FIRST_LOAD_CHANGESET_NUMBER = 21;
     public static final int NEXT_LOAD_CHANGESET_NUMBER = 10;
+
+    public static final int SNIPPET_LENGTH = 3;
 }

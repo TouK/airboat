@@ -117,7 +117,6 @@ class ChangesetController {
                 commitMessage: changeset.commitMessage,
                 commentsCount: changeset.commentsCount,
                 projectName: changeset.project.name,
-                belongsToCurrentUser: belongsToCurrentUser(changeset),
                 allComments: allCommentsCount(changeset),
                 projectFiles: getChangesetFiles(changeset),
                 comments: returnCommentsToChangeset(changeset.identifier)
@@ -126,10 +125,6 @@ class ChangesetController {
 
     private String getEmail(Commiter commiter) {
         commiter.user?.email ?: commiter.email
-    }
-
-    private boolean belongsToCurrentUser(Changeset changeset) {
-        authenticatedUser != null && authenticatedUser == changeset.commiter.user
     }
 
     private int allCommentsCount(Changeset changeset) {

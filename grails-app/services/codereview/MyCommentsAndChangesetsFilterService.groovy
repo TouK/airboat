@@ -13,7 +13,7 @@ class MyCommentsAndChangesetsFilterService implements FilterServiceInterface {
         return Changeset.findAll("from Changeset changeset where \
                                         (exists (from UserComment comment where comment.changeset = changeset and comment.author = :user)) or \
                                         (changeset.commiter in (from Commiter where user = :user)) or  \
-                                        (exists (from ProjectFileInChangeset p where p.changeset = changeset and \
+                                        (exists (from ProjectFileInChangeset p where changeset.date = (select max(file.changeset.date) from ProjectFileInChangeset file where file.projectFile = p.projectFile) and \
                                             exists (from ThreadPositionInFile pos where pos.projectFileInChangeset = p and :user in (select author from LineComment where thread = pos.thread))))\
                                         order by changeset.date desc", [max: Constants.FIRST_LOAD_CHANGESET_NUMBER, user: springSecurityService.getCurrentUser()]);
     }
@@ -25,7 +25,7 @@ class MyCommentsAndChangesetsFilterService implements FilterServiceInterface {
         return Changeset.findAll("from Changeset changeset where \
                                         ((exists (from UserComment comment where comment.changeset = changeset and comment.author = :user)) or \
                                         (changeset.commiter in (from Commiter where user = :user)) or  \
-                                        (exists (from ProjectFileInChangeset p where p.changeset = changeset and \
+                                        (exists (from ProjectFileInChangeset p where changeset.date = (select max(file.changeset.date) from ProjectFileInChangeset file where file.projectFile = p.projectFile) and \
                                             exists (from ThreadPositionInFile pos where pos.projectFileInChangeset = p and :user in (select author from LineComment where thread = pos.thread))))) and changeset.date < :lastChangesetDate\
                                         order by changeset.date desc", [max: Constants.FIRST_LOAD_CHANGESET_NUMBER, user: springSecurityService.getCurrentUser(), lastChangesetDate: lastChangeset.date]);
     }

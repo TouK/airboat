@@ -4,7 +4,7 @@ import codereview.Constants
 
 class Fixture {
 
-    static final String PROJECT_CODEREVIEW_NAME = 'codereview'
+    static final String PROJECT_CODEREVIEW_NAME = 'airboat'
     public static final GString PROJECT_CODEREVIEW_ON_THIS_MACHINE_URL = "file://${new File(".").absolutePath}"
 
     static final String FIRST_COMMIT_HASH = 'bc01b629a766616b16d32109c90a16bede93bdb3'
@@ -19,6 +19,7 @@ class Fixture {
 
     public static final String APPLICATION_PROPERTIES_FILE_NAME = 'application.properties'
     public static final String SECOND_COMMIT_INCLUDING_APPLICATION_PROPERTIES = 'b31743259b8e58cf3743cda44b15a98536a2be1f'
+    public static final int SECOND_COMMIT_INCLUDINF_APPLICATION_PROPERTIES_NUMBER = 3;
     public static final String APPLICATION_PROPERTIES_SECOND_LINE_IN_FIRST_COMMIT = "#Tue Jul 03 14:08:33 CEST 2012"
     public static final String APPLICATION_PROPERTIES_SECOND_LINE_IN_SECOND_COMMIT_INCLUDING_IT = "#Wed Jul 04 12:21:42 CEST 2012"
 

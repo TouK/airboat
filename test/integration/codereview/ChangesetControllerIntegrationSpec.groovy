@@ -44,21 +44,6 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         projectFilesProperties.first().name == projectFile.name
     }
 
-    def "should mark logged in user's changesets as theirs"() {
-        given:
-        def authenticatedUser = User.build(username: 'agj@touk.pl')
-        springSecurityService.reauthenticate(authenticatedUser.username)
-        def loggedInUsersCommitter = Commiter.build(user: controller.authenticatedUser)
-        Changeset.build(commiter: loggedInUsersCommitter)
-        Changeset.build(commiter: Commiter.build(user: User.build(username: 'kpt@touk.pl')))
-
-        when:
-        controller.getLastChangesets()
-
-        then:
-        responseChangesets*.belongsToCurrentUser == [false, true]
-    }
-
     def 'should return few next changesets older than one with given revision id as JSON'() {
         given:
         def latestChangeset = buildChangelogEntry(3)

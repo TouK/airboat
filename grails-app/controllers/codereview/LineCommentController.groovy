@@ -58,21 +58,18 @@ class LineCommentController {
     }
 
     @Secured('isAuthenticated()')
-    def addReply(String changesetIdentifier, Long projectFileId, Integer lineNumber, String text) {
-        def changeset = Changeset.findByIdentifier(changesetIdentifier)
-        def projectFile = ProjectFile.findById(projectFileId)
-        def projectFileInChangeset = ProjectFileInChangeset.findByChangesetAndProjectFile(changeset, projectFile)
-        def position = ThreadPositionInFile.findByProjectFileInChangesetAndLineNumber(projectFileInChangeset, lineNumber)
+    def addReply(Long threadId, String text, String changesetIdentifier, Long projectFileId) {
+        def thread = CommentThread.findById(threadId)
 
-        checkArgument(position != null, "No such thread found")
-        //FIXME make this method take only Long threadId as parameter
-        position.thread.addToComments(new LineComment(authenticatedUser, text))
-        if (position.hasErrors()) {
-            render(position.errors as JSON)
+        checkArgument(thread != null, "No such thread found")
+        thread.addToComments(new LineComment(authenticatedUser, text))
+        thread.validate()
+        if (thread.hasErrors()) {
+            render(thread.errors as JSON)
         } else {
-            position.save()
+            thread.save()
             redirect(controller: 'projectFile', action: 'getLineCommentsWithSnippetsToFile',
-                    params: [changesetIdentifier: changeset.identifier, projectFileId: projectFile.id])
+                    params: [changesetIdentifier: changesetIdentifier, projectFileId: projectFileId])
         }
     }
 }

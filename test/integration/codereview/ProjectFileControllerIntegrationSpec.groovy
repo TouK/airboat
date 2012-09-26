@@ -38,13 +38,13 @@ class ProjectFileControllerIntegrationSpec extends IntegrationSpec {
         controller.snippetWithCommentsService != null
 
         when:
-        def comments = controller.getLineComments(firstChangeset, projectFile)
+        def comments = controller.getLineCommentsInThreads(firstChangeset, projectFile)
 
         then:
         comments*.lineNumber == firstChangeset.projectFilesInChangeset*.commentThreadsPositions.flatten()*.lineNumber
 
         when:
-        comments = controller.getLineComments(secondChangeset, projectFile)
+        comments = controller.getLineCommentsInThreads(secondChangeset, projectFile)
 
         then:
         comments*.lineNumber == secondChangeset.projectFilesInChangeset*.commentThreadsPositions.flatten()*.lineNumber

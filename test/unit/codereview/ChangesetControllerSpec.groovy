@@ -16,14 +16,6 @@ class ChangesetControllerSpec extends Specification {
         controller.returnCommentsService = Mock(ReturnCommentsService)
     }
 
-    def 'changeset without user should not belong to anonymous user'() {
-        given:
-        controller.authenticatedUser = null
-
-        expect:
-        controller.belongsToCurrentUser(changesetWithoutUser()) == false
-    }
-
     Changeset changesetWithoutUser() {
         Changeset changeset = Changeset.build()
         assert changeset.commiter.user == null

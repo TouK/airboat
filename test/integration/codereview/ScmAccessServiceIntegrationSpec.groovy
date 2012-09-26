@@ -9,7 +9,6 @@ import util.DbPurger
 //TODO maybe this spec tests too much. There's a service injected with two others underneath, a git repo is cloned...
 class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
-    def scmAccessService
     def springSecurityService
 
     static transactional = false
@@ -30,11 +29,11 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         Project.withNewSession {
             project = Project.build()
         }
-        prepareGitScmService(commitMessage, changesetAuthor, changesetId, project.url)
+        def scmAccessServiceWithMocks = prepareGitScmService(commitMessage, changesetAuthor, changesetId, project.url)
 
         when:
         Project.withNewSession {
-            scmAccessService.importChangesetsSinceBegining(project.url)
+            scmAccessServiceWithMocks.importChangesetsSinceBegining(project.url)
         }
 
         then:
@@ -42,13 +41,15 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         Changeset.findAllByIdentifierAndCommitMessage(changesetId, commitMessage).size() == 1
     }
 
-    private void prepareGitScmService(String commitMessage, String changesetAuthor, String changesetId, String url) {
+    private prepareGitScmService(String commitMessage, String changesetAuthor, String changesetId, String url) {
         GitChangeset gitChangeset = new GitChangeset(commitMessage, changesetAuthor, changesetId, new Date())
 
+        def scmAccessServiceWithMocks = new ScmAccessService()
         GitRepositoryService gitRepositoryService = Mock()
         1 * gitRepositoryService.getAllChangesets(url, _) >> [gitChangeset]
 
-        scmAccessService.gitRepositoryService = gitRepositoryService
+        scmAccessServiceWithMocks.gitRepositoryService = gitRepositoryService
+        return scmAccessServiceWithMocks
     }
 
     def 'should save Changeset to db and add commiter if it is not yet in db'() {
@@ -63,7 +64,7 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
             changeset = Changeset.buildWithoutSave(project: project, commiter: committer)
         }
 
-        prepareGitScmService('commitin', committer.cvsCommiterId, changeset.identifier, project.url)
+        def scmAccessServiceWithMocks = prepareGitScmService('commitin', committer.cvsCommiterId, changeset.identifier, project.url)
 
         expect:
         Project.count() == 1
@@ -73,7 +74,7 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
 
         when:
         Project.withNewSession {
-            scmAccessService.importChangesetsSinceBegining(project.url)
+            scmAccessServiceWithMocks.importChangesetsSinceBegining(project.url)
         }
 
         then:
@@ -96,11 +97,11 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
             ProjectFile projectFile = ProjectFile.build(project: project)
             ProjectFileInChangeset.build(changeset: previousChangeset, projectFile: projectFile)
         }
-        prepareGitScmService('commitin', previouslySavedCommitter.cvsCommiterId, commitId, project.url)
+        def scmAccessServiceWithMocks = prepareGitScmService('commitin', previouslySavedCommitter.cvsCommiterId, commitId, project.url)
 
         when:
         Project.withNewSession {
-            scmAccessService.importChangesetsSinceBegining(project.url)
+            scmAccessServiceWithMocks.importChangesetsSinceBegining(project.url)
         }
 
         then:
@@ -125,17 +126,19 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
             user.save()
         }
 
-        prepareGitScmService('commitin', cvsCommitterId, 'hash23', project.url)
+        def scmAccessServiceWithMocks = prepareGitScmService('commitin', cvsCommitterId, 'hash23', project.url)
 
         when:
-        Changeset.withNewSession {
-            scmAccessService.importChangesetsSinceBegining(project.url)
+        Project.withNewSession {
+            scmAccessServiceWithMocks.importChangesetsSinceBegining(project.url)
         }
 
         then:
-        email == 'agj@touk.pl'
-        def associatedCommiters = User.findByEmail(email).committers
-        associatedCommiters*.cvsCommiterId == [cvsCommitterId]
+        Project.withNewSession {
+            def user = User.findByEmail(email)
+            def associatedCommiters = user.committers
+            assert associatedCommiters*.cvsCommiterId == [cvsCommitterId]
+        }
     }
 
     //learning tests. TODO move to another class. These tests will fail in unit-test environment. Document it.

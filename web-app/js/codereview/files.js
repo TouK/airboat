@@ -39,7 +39,7 @@ function hideFileAndScrollToChangesetTop(changesetId) {
     changesetDetails.parents('.changeset').ScrollTo({
         offsetTop:codeReview.navbarOffset
     });
-    return false
+    return false;
 }
 
 function hideDisplayedFile(changesetId) {
@@ -48,7 +48,7 @@ function hideDisplayedFile(changesetId) {
     $(codeReview.getModel('.changeset[data-identifier=' + changesetId + ']').projectFiles).each(function () {
         $.observable(this).setProperty('isDisplayed', false)
     })
-    removeLineCommentPopovers($fileListings)
+    removeLineCommentPopover($fileListings)
 }
 
 function attachLineCommentPopover(changesetId, projectFileId) {

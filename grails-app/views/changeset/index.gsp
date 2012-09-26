@@ -41,7 +41,7 @@
 <div class="navbar navbar-fixed-top navbar-inverse">
     <div class="navbar-inner">
         <div class="container">
-            <a class="brand" href="${createLink(uri:'/')}">
+            <a class="brand" href="${createLink(uri: '/')}">
                 <span class='highlighted'>
                     CodeReview
                 </span>
@@ -89,7 +89,7 @@
         if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != this.dataset.project) {
             showProject(this.dataset.project);
             var href = this.dataset.project == '' ? '?' : '?' + $.param({projectName:this.dataset.project});
-            history.pushState({dataType: DATA_TYPE.PROJECT, projectName:codeReview.displayedProjectName}, null, href);
+            history.pushState({dataType:DATA_TYPE.PROJECT, projectName:codeReview.displayedProjectName}, null, href);
         } else {
             $(document).scrollTop(0);
         }
@@ -100,7 +100,7 @@
     $('body').on('click', '.filterLink', function (e) {
         if (currentViewType != VIEW_TYPE.FILTER || codeReview.currentFilter != this.dataset.filter) {
             showFiltered(this.dataset.filter);
-            history.pushState({dataType: DATA_TYPE.FILTER, filterType:codeReview.currentFilter}, null, '?' + $.param({filter:this.dataset.filter}));
+            history.pushState({dataType:DATA_TYPE.FILTER, filterType:codeReview.currentFilter}, null, '?' + $.param({filter:this.dataset.filter}));
         } else {
             $(document).scrollTop(0);
         }
@@ -115,7 +115,8 @@
                 shouldLoadChangesets = false;
                 setAllInactive();
             } else if (e.state.dataType == DATA_TYPE.PROJECT) {
-                if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != e.state.projectName) {;
+                if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != e.state.projectName) {
+                    ;
                     showProject(e.state.projectName);
                 } else {
                     $(document).scrollTop(0);
@@ -197,7 +198,7 @@
 
         } else if ('${type}' == DATA_TYPE.FILTER) {
             showFiltered('${filterType}')
-            history.replaceState({dataType:'${type}', filterType: codeReview.currentFilter }, null)
+            history.replaceState({dataType:'${type}', filterType:codeReview.currentFilter }, null)
         }
 
         $(window).scroll(function () {
@@ -267,8 +268,9 @@
                 <li><a href="javascript:void(0)" data-target="#" data-filter='commentedChangesets'
                        class='filterLink'>Commented changesets</a>
                 </li>
-                <li data-link="visible{: loggedInUserName !== '' }"><a href="javascript:void(0)" data-target="#" data-filter='myCommentsAndChangesets'
-                       class='filterLink'>My comments and changesets</a>
+                <li data-link="visible{: loggedInUserName !== '' }"><a href="javascript:void(0)" data-target="#"
+                                                                       data-filter='myCommentsAndChangesets'
+                                                                       class='filterLink'>My comments and changesets</a>
                 </li>
             </ul>
         </li>
@@ -316,11 +318,20 @@
     $('.changeset .left.column').livequery(function () {
         $(this).floatWithin('.changeset')
     })
+
+    $('.changeset .closeButton').livequery(function () {
+        $(this).click(function (event) {
+            event.stopImmediatePropagation();
+            var changeset = $(this).parents('.changeset').first();
+            var identifier = codeReview.getModel(changeset).identifier
+            hideFileAndScrollToChangesetTop(identifier)
+        })
+    })
 </script>
 
 <script id="changesetTemplate" type="text/x-jsrender">
 
-    <div class='changeset {{if belongsToCurrentUser}} current-user {{/if}} row-fluid'
+    <div class='changeset row-fluid'
          data-identifier='{{:identifier}}' data-id='{{:id}}'>
 
         <div class="column left span5 well well-small">
@@ -407,7 +418,7 @@
         var diffViewer = $(this).parents('.diffAndListingViewer')[0];
         var listing = codeReview.getModel(diffViewer);
         $.observable(listing).setProperty('showWholeFile', this.checked)
-        removeLineCommentPopovers($(this).parents('.fileListing'));
+        removeLineCommentPopover($(this).parents('.fileListing'));
     })
 </script>
 
@@ -425,7 +436,7 @@
 
             <a data-link="class{: 'accordion-toggle manualLinkText ' + (isDisplayed ? 'selected' : '') }"
                data-toggle="collapse" data-parent="#accordion-{{>changeset.identifier}}"
-                 href="#collapse-inner-{{>collapseId}}">
+               href="#collapse-inner-{{>collapseId}}">
                 <i title="{{: ~textForChangeType(changeType.name) }}"
                    class="{{: ~iconForChangeType(changeType.name) }}"></i>
                 <span data-link="class{: isDisplayed ? '' : 'linkText' }">{{:name}}</span>
@@ -443,6 +454,7 @@
          data-changeset_id='{{:changeset.identifier}}'
          data-file_id='{{:id}}'
          data-file_change_type='{{:changeType.name}}'
+         data-projectFile_comments='{{:commentsCount}}'
          data-file_name_slice='{{:name}}'
          data-text_format='{{:textFormat}}'>
         <div class="accordion-inner" id="accordion-inner-{{>id}}">
@@ -452,26 +464,32 @@
 </script>
 
 <script id="snippetTemplate" type="text/x-jsrender">
-    <div id="div-comments-{{>changesetId}}{{>fileId}}-{{>lineNumber}}"></div>
-    <textarea id="add-reply-{{>fileId}}-{{>lineNumber}}" placeholder="Reply..."
-              onfocus="expandReplyForm('{{>fileId}}', '{{>lineNumber}}')"
-              class="span12" rows="1"></textarea>
+    <div class='oneLineComments' data-lineNumber='{{>lineNumber}}'>
+        <div class="threads"></div>
 
-    <div class="addLongCommentMessage" id="reply-info-{{>fileId}}-{{>lineNumber}}"></div>
+        <div class='codeSnippet'></div><hr/>
+    </div>
+</script>
 
-    <div class="btn-group pull-right" id="replyFormButtons-{{>fileId}}-{{>lineNumber}}"
+<script id="threadTemplate" type="text/x-jsrender">
+    <div class="threadComments" data-identifier='{{>threadId}}'></div>
+    <textarea class="addThreadReply span 12" placeholder="Reply..."
+              onfocus="expandReplyForm('{{>threadId}}', '{{>changesetId}}')" data-identifier='{{>threadId}}'
+              rows="1"></textarea>
+
+    <div class="addLongCommentMessage threadReplyInfo" data-identifier='{{>threadId}}'></div>
+
+    <div class="btn-group pull-right threadReplyFormButtons" data-identifier='{{>threadId}}'
          style="display: none; margin-bottom:10px">
-        <button type="button" class="btn btn-primary" id="replyButton-{{>fileId}}-{{>lineNumber}}"
-                onClick="addReply('{{>changesetId}}', '{{>fileId}}', '{{>lineNumber}}')">Reply</button>
+        <button type="button" class="btn btn-primary threadReplyButton" data-identifier='{{>threadId}}'
+                onClick="addReply('{{>threadId}}', '{{>changesetId}}', '{{>projectFileId}}')">Reply</button>
         %{--FIXME this function NEEEDS both changesetIdentifier and projectFileId to work in all cases--}%
         %{--amend parameters and corresponding markup--}%
         <button type="button" class="btn btn-primary"
-                onClick="cancelReply('{{>fileId}}', '{{>lineNumber}}')">Cancel</button>
+                onClick="cancelReply('{{>threadId}}', '{{>changesetId}}')">Cancel</button>
     </div>
 
     <div class="clearfix"></div>
-
-    <div id="snippet-{{>fileId}}-{{>lineNumber}}"></div><hr/>
 </script>
 
 <script id='diffAndFileListingTemplate' type="text/x-jsrender">
@@ -531,7 +549,7 @@
                                 fileId: projectFile.id,
                                 lineNumber: getLineNumber($listingLine)
                             });
-                            removeLineCommentPopovers($listingLine.parents('.fileListing'));
+                            removeLineCommentPopover($listingLine.parents('.fileListing'));
 
                             $listingLine.popover({
                                 content:commentForm,
@@ -624,7 +642,7 @@
 
 <script id="commentTemplate" type="text/x-jsrender">
 
-    <div class="comment {{>fromRevision}} {{if belongsToCurrentUser}} current-user {{/if}}">
+    <div class="comment">
         <img src="{{>~getGravatar(author, 35)}}"/>
 
         <div class="nextToGravatar">

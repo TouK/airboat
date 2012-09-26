@@ -22,11 +22,11 @@ function clearDisplayAndAppendChangesetsBottom(dataset) {
 
 function setActive(selector) {
     setAllInactive();
-    $(selector).css('text-decoration', 'underline');
+    $(selector + ' .dropdown-toggle').css('text-decoration', 'underline');
 }
 
 function setAllInactive() {
-    $('.navbarToggle').css('text-decoration', 'none');
+    $('.navbarToggle .dropdown-toggle').css('text-decoration', 'none');
 }
 
 function onScrollThroughBottomAttempt() {
@@ -93,17 +93,12 @@ $('.changeset-hash').livequery(function () {
             setTimeout(function () {
                 hideSpanForClippy(that);
                 removeClippyObject(that);
-                setSpanForClippy(that)
             }, 5000)
         });
 })
 
 function hideSpanForClippy(that) {
     $('.hashForClippy-' + that.dataset.changeset_identifier).hide()
-}
-
-function setSpanForClippy(that) {
-    $('.hashForClippy-' + that.dataset.changeset_identifier).append($('<span class=' + "clippy-" + that.dataset.changeset_identifier + '></span>'))
 }
 
 function showClippyAndTooltip() {
@@ -113,7 +108,7 @@ function showClippyAndTooltip() {
 }
 
 function removeClippyObject(that) {
-    $('.hashForClippy-' + that.dataset.changeset_identifier).children().remove()
+    swfobject.removeSWF(that.dataset.changeset_identifier);
 }
 
 $('.changeset-date').livequery(function () {
@@ -149,18 +144,29 @@ function appendChangeset(changeset, dayElement) {
 /*TODO move it somewhere near the template definition*/
 $('.projectFile .accordion-body.collapse').livequery(function () {
     $(this)
-        .on('show',function () {
-            appendSnippetToFileInAccordion(this.dataset.changeset_id, this.dataset.file_id)
-            showFile(this.dataset);
+        .on('show',function (event) {
+            if (this.dataset.projectfile_comments == 0) {
+                event.preventDefault();
+                appendSnippetAndShowFile.call(this);
+                $.observable(codeReview.getModel(this)).setProperty('isDisplayed', true);
+            }
+            else {
+                appendSnippetAndShowFile.call(this);
+            }
         }).on('shown', function () {
-            $.observable(codeReview.getModel(this)).setProperty('isDisplayed', true)
+            $.observable(codeReview.getModel(this)).setProperty('isDisplayed', true);
         });
-})
+});
 
-function updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId) {
-    renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippetsForCommentedFile);
+function appendSnippetAndShowFile() {
+    appendSnippetToFileInAccordion(this.dataset.changeset_id, this.dataset.file_id);
+    showFile(this.dataset);
+}
+
+function updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId) {
+    renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippetsForCommentedFile);
     var projectFile = codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + '] .projectFile[data-id=' + projectFileId + ']');
-    $.observable(projectFile).setProperty('commentsCount', commentGroupsWithSnippetsForCommentedFile.commentsCount)
+    $.observable(projectFile).setProperty('commentsCount', threadGroupsWithSnippetsForCommentedFile.commentsCount)
     $.observable(codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + ']')).setProperty('allComments')
 }
 
@@ -168,31 +174,27 @@ function appendSnippetToFileInAccordion(changesetIdentifier, projectFileId) {
     $.getJSON(uri.projectFile.getLineCommentsWithSnippetsToFile + '?' + $.param({
         changesetIdentifier:changesetIdentifier, projectFileId:projectFileId
     }),
-        function (commentGroupsWithSnippetsForFile) {
-            renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippetsForFile);
-            $('#collapse-inner-' + changesetIdentifier + projectFileId).collapse('reset')
+        function (threadGroupsWithSnippetsForFile) {
+            renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippetsForFile);
         }
     );
 }
 
-function renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippetsForFile) {
-    var fileType = commentGroupsWithSnippetsForFile.fileType;
-    var commentGroupsWithSnippets = commentGroupsWithSnippetsForFile.commentGroupsWithSnippets;
+function renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippetsForFile) {
+    var fileType = threadGroupsWithSnippetsForFile.fileType;
+    var threadGroupsWithSnippets = threadGroupsWithSnippetsForFile.threadGroupsWithSnippets;
 
-    if (commentGroupsWithSnippets.length > 0) {
+    if (threadGroupsWithSnippets.length > 0) {
         $('#fileComments-' + changesetIdentifier + projectFileId).html("");
 
-        for (j = 0; j < commentGroupsWithSnippets.length; j++) {
-            renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, commentGroupsWithSnippets[j], fileType);
+        for (j = 0; j < threadGroupsWithSnippets.length; j++) {
+            renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippets[j], fileType);
         }
-    }
-    else {
-        $('#fileComments-' + changesetIdentifier + projectFileId).html("<h5>This file has no comments.</h5>");
     }
 }
 
-function renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, commentGroupWithSnippet, fileType) {
-    var lineNumber = commentGroupWithSnippet.commentGroup[0].lineNumber;
+function renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, threadGroupWithSnippet, fileType) {
+    var lineNumber = threadGroupWithSnippet.lineNumber;
 
     var snippet = $("#snippetTemplate").render({
         fileId:projectFileId,
@@ -200,26 +202,31 @@ function renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, comm
         changesetId:changesetIdentifier
     });
 
-    $('#fileComments-' + changesetIdentifier + projectFileId).append(snippet);
+    var fileComments = $('#fileComments-' + changesetIdentifier + projectFileId)
+    var snippetObject = $(snippet).appendTo(fileComments);
 
-    $("#snippet-" + projectFileId + "-" + lineNumber)
+    snippetObject.children('.codeSnippet')
         .html("<pre class='codeViewer'/></pre>")
         .children(".codeViewer")
-        .text(commentGroupWithSnippet.snippet)
+        .text(threadGroupWithSnippet.snippet)
         .addClass("linenums:" + lineNumber)
         .addClass("language-" + fileType)
         .syntaxHighlight();
 
-    renderCommentGroup(changesetIdentifier, projectFileId, commentGroupWithSnippet.commentGroup, lineNumber);
-}
-
-function renderCommentGroup(changesetIdentifier, projectFileId, commentGroup, lineNumber) {
-    for (var k = 0; k < commentGroup.length; k++) {
-        var comment = $("#commentTemplate").render(commentGroup[k]);
-        $('#div-comments-' + changesetIdentifier + projectFileId + "-" + lineNumber).append(comment);
+    for (i = 0; i < threadGroupWithSnippet.threads.length; i++) {
+        var threadTemplate = $("#threadTemplate").render({threadId: threadGroupWithSnippet.threads[i].threadId, changesetId: changesetIdentifier, projectFileId: projectFileId});
+        $(threadTemplate).appendTo(snippetObject.find('.threads'));
+        var commentsInThread = snippetObject.find('.threadComments[data-identifier=' + threadGroupWithSnippet.threads[i].threadId + ']');
+        renderCommentGroup(commentsInThread, threadGroupWithSnippet.threads[i].comments);
     }
 }
 
+function renderCommentGroup(object, commentGroup) {
+    for (var k = 0; k < commentGroup.length; k++) {
+        var comment = $("#commentTemplate").render(commentGroup[k]);
+        object.append(comment);
+    }
+}
 
 function sliceName(name) {
     return name.toString().replace(/\//g, '/&#8203;');
@@ -228,9 +235,6 @@ function sliceName(name) {
 function toggleChangesetDetails(identifier) {
     var changesetDetails = $('#changesetDetails-' + identifier);
     if (changesetDetails.is(':visible')) {
-        changesetDetails.parents('.changeset').ScrollTo({
-            offsetTop:codeReview.navbarOffset
-        });
         changesetDetails.slideUp('slow', function () {
             hideFileAndScrollToChangesetTop(identifier)
         })
