@@ -323,8 +323,10 @@
         $(this).click(function (event) {
             event.stopImmediatePropagation();
             var changeset = $(this).parents('.changeset').first();
-            var identifier = codeReview.getModel(changeset).identifier
-            hideFileAndScrollToChangesetTop(identifier)
+            var changesetIdentifier = codeReview.getModel(changeset).identifier
+            var projectFile = $(this).parents('.projectFile').first();
+            var projectFileId = codeReview.getModel(projectFile).id
+            hideFileAndScrollToChangesetTop(changesetIdentifier, projectFileId)
         })
     })
 </script>
@@ -402,7 +404,7 @@
 </script>
 
 <script id='projectFileListingTemplate' type="text/x-jsrender">
-    <div class="fileListing well" style="display: none;" data-project-file-id={{:id}}>
+    <div class="projectFile fileListing well" style="display: none;" data-id={{:id}}>
 
         <i class="closeButton icon-remove pull-right" onclick="hideFileAndScrollToChangesetTop('{{:changeset.identifier}}')"> </i>
         <br/>
@@ -441,8 +443,7 @@
                    class="{{: ~iconForChangeType(changeType.name) }}"></i>
                 <span data-link="class{: isDisplayed ? '' : 'linkText' }">{{:name}}</span>
                 <i class="closeButton icon-remove"
-                   data-link="style{: 'display:' + (isDisplayed ? 'inline-block' : 'none') }"
-                   onclick="hideFileAndScrollToChangesetTop('{{:changeset.identifier}}')"> </i>
+                   data-link="style{: 'display:' + (isDisplayed ? 'inline-block' : 'none') }"> </i>
                 <span class="pull-right" data-link="visible{: commentsCount != 0 }">
                     <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
                 </span>
@@ -514,14 +515,9 @@
 </script>
 
 <script type="text/javascript">
-    function getLineNumber($listingLine) {
-        var diffSpanStartLine = codeReview.getModel($listingLine[0]).newFileStartLine;
-        var lineIndex = $listingLine.parents('pre').find('li').index($listingLine);
-        return diffSpanStartLine + lineIndex
-    }
-
 
     $('.diff [class|=language]').livequery(function () {
+
         $.SyntaxHighlighter.init({
             load:false,
             highlight:false,
@@ -536,38 +532,12 @@
             var $listingLine = $(this);
             if ($listingLine.parents('.removed').length == 0) {
                 $listingLine.click(function () {
-                    var fileListing = $(this).parents('.fileListing')[0];
+                    var fileListing = $listingLine.parents('.fileListing')[0];
                     var projectFile = codeReview.getModel(fileListing);
-
-                    var url = uri.lineComment.checkCanAddComment + '?' + $.param({
-                        changesetIdentifier: projectFile.changeset.identifier, projectFileId: projectFile.id
-                    });
-                    $.ajax({url: url}).done(function (response) {
-                        if (response.canAddComment) {
-                            var commentForm = $("#addLineCommentFormTemplate").render({
-                                changesetId: projectFile.changeset.identifier,
-                                fileId: projectFile.id,
-                                lineNumber: getLineNumber($listingLine)
-                            });
-                            removeLineCommentPopover($listingLine.parents('.fileListing'));
-
-                            $listingLine.popover({
-                                content:commentForm,
-                                placement:"left",
-                                trigger:"click",
-                                template: '<div class="popover"><div class="arrow"></div><div class="popover-inner"><div class="popover-content"><p></p></div></div></div>'
-                            });
-                            $listingLine.popover('show')
-                        } else {
-                            var cannotAddCommentMessage = $('#cannotAddLineCommentMessageTepmlate').render(response);
-                            $.colorbox({html: cannotAddCommentMessage});
-                        }
-                    })
+                    checkCanAddLineCommentAndShowForm($listingLine, projectFile)
                 })
             }
-
         })
-
     })
 </script>
 
@@ -597,21 +567,19 @@
 
 <!-- FIXME reuse comment form template for both types of comments -->
 <script id="addLineCommentFormTemplate" type="text/x-jsrender">
+        <form>
+            <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..." class='span4' rows='3'></textarea>
 
-    <form class=".form-inline">
+            <div class="addLongCommentMessage"></div>
 
-        <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..."
-                  style="height:100px;width:95%;"></textarea>
-
-        <div class="addLongCommentMessage"></div>
-
-        <div class="btn-group pull-right">
-            <button type="button" class="btn btn-primary" id="addCommentButton-{{>fileId}}"
-                    onClick="addLineComment('{{:changesetId}}', '{{:fileId}}', '{{:lineNumber}}')">Add comment</button>
-            <button type="button" class="btn btn-primary"
-                    onClick="closeLineCommentForm('{{:changesetId}}', '{{:fileId}}')">Cancel</button>
-        </div>
-    </form>
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-primary"
+                        onClick="addLineComment('{{:changesetId}}', '{{:fileId}}', '{{:lineNumber}}')">Add comment</button>
+                <button type="button" class="btn btn-primary"
+                        onClick="closeLineCommentForm('{{:changesetId}}', '{{:fileId}}')">Cancel</button>
+            </div>
+        </form>
+        <div class='clearfix'/>
 </script>
 
 <script id="cannotAddLineCommentMessageTepmlate" type="text/x-jsrender">
@@ -622,20 +590,20 @@
 
 <script id="commentFormTemplate" type="text/x-jsrender">
 
-    <form id="commentForm-{{>identifier}}" class="margin-bottom-small">
-        <textarea onfocus="expandCommentForm('{{>identifier}}',this)"
-                  id="add-comment-{{>identifier}}" placeholder="Add comment..."
+    <form class="margin-bottom-small">
+        <textarea onfocus="expandCommentForm($(this.parentElement))" placeholder="Add comment..."
                   class="span12" rows="1"></textarea>
+
+        <div class="addLongCommentMessageToChangeset"></div>
+
+        <div class="buttons btn-group pull-right" style="display: none;">
+            <button type="button" class="btn btn-primary btnWarningBackground"
+                    onClick="addComment($(this).parents('form').first(), '{{:identifier}}')">Add comment</button>
+            <button type="button" class="btn btn-primary"
+                    onClick="resetCommentForm($(this).parents('form').first())">Cancel</button>
+        </div>
     </form>
 
-    <div class="addLongCommentMessageToChangeset"></div>
-
-    <div id="commentFormButtons-{{>identifier}}" class="btn-group pull-right" style="display: none;">
-        <button type="button" class="btn btn-primary btnWarningBackground" id="addCommentButton-{{>identifier}}"
-                onClick="addComment('{{:id}}', '{{:identifier}}')">Add comment</button>
-        <button type="button" class="btn btn-primary" id="cancellButton-{{>identifier}}"
-                onClick="resetCommentForm('{{>identifier}}')">Cancel</button>
-    </div>
 
     <div class="clearfix"></div>
 </script>

@@ -11,18 +11,24 @@ function addAdditionalContexts(hunks, fullListingText) {
             contextHunks.push(contextHunk)
         }
     }
-    var contextHunks = []
-    var listingLines = fullListingText.split('\n')
 
-    addContextHunk(1, hunks[0].newFileStartLine, 1)
-    for (var i = 0; i + 1 < hunks.length; i++) {
-        addContextHunk(hunks[i].newFileEndLine() + 1, hunks[i + 1].newFileStartLine, hunks[i].oldFileEndLine() + 1)
+    if (hunks && fullListingText) {
+        var contextHunks = []
+        var listingLines = fullListingText.split('\n')
+
+        addContextHunk(1, hunks[0].newFileStartLine, 1)
+        for (var i = 0; i + 1 < hunks.length; i++) {
+            addContextHunk(hunks[i].newFileEndLine() + 1, hunks[i + 1].newFileStartLine, hunks[i].oldFileEndLine() + 1)
+        }
+        addContextHunk(hunks[hunks.length - 1].newFileEndLine() + 1, listingLines.length, hunks[hunks.length - 1].oldFileEndLine() + 1)
+
+        return merge(hunks, contextHunks, compareBy(function (hunk) {
+            return hunk.newFileStartLine
+        }))
+    } else {
+        return hunks
     }
-    addContextHunk(hunks[hunks.length - 1].newFileEndLine() + 1, listingLines.length, hunks[hunks.length - 1].oldFileEndLine() + 1)
 
-    return merge(hunks, contextHunks, compareBy(function (hunk) {
-        return hunk.newFileStartLine
-    }))
 }
 
 function compareBy(sizeFunction) {
@@ -143,7 +149,11 @@ function getType(hunkLine) {
         case hunkLine[0] == '-': return 'oldFile';
         case hunkLine[0] == '+': return 'newFile';
         case hunkLine[0] == ' ': return 'context';
-        case hunkLine == '\\ No newline at end of file': return 'meta'
+        case startsWith('\\ No newline at end of file', hunkLine): return 'meta'
         default: $.error('The line "' + hunkLine + '" is not a hunk line')
     }
+}
+
+function startsWith(prefix, string) {
+    return string.slice(0, prefix.length) == prefix;
 }

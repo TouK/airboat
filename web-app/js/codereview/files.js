@@ -5,15 +5,13 @@ function showFile(dataset) {
     var textFormat = dataset.text_format;
     var fileNameSlice = dataset.file_name_slice;
 
-    hideDisplayedFile(changesetIdentifier)
-
     var fileListingsUrl = uri.projectFile.getFileListings + '?' + $.param({
         changesetIdentifier:changesetIdentifier, projectFileId:projectFileId
     });
 
     var fileListing = $(
         '.changeset[data-identifier=' + changesetIdentifier + '] .fileListings' +
-        ' .fileListing[data-project-file-id=' + projectFileId + ']'
+        ' .fileListing.projectFile[data-id=' + projectFileId + ']'
     );
 
     $.getJSON(fileListingsUrl, function (listings) {
@@ -33,8 +31,8 @@ function toBoolean(toConvert) {
     return JSON.parse(toConvert);
 }
 
-function hideFileAndScrollToChangesetTop(changesetId) {
-    hideDisplayedFile(changesetId);
+function hideFileAndScrollToChangesetTop(changesetId, projectFileId) {
+    hideDisplayedFile(changesetId, projectFileId);
     var changesetDetails = $('.changeset[data-identifier=' + changesetId + '] .details');
     changesetDetails.parents('.changeset').ScrollTo({
         offsetTop:codeReview.navbarOffset
@@ -42,13 +40,13 @@ function hideFileAndScrollToChangesetTop(changesetId) {
     return false;
 }
 
-function hideDisplayedFile(changesetId) {
-    var $fileListings = $('.changeset[data-identifier=' + changesetId + '] .fileListings .fileListing');
-    $fileListings.hide();
-    $(codeReview.getModel('.changeset[data-identifier=' + changesetId + ']').projectFiles).each(function () {
-        $.observable(this).setProperty('isDisplayed', false)
-    })
-    removeLineCommentPopover($fileListings)
+function hideDisplayedFile(changesetId, projectFileId) {
+    var selector = '.changeset[data-identifier=' + changesetId + ']' +
+        ' .fileListings .fileListing.projectFile[data-id=' + projectFileId + ']';
+    var $fileListing = $(selector);
+    $fileListing.hide();
+    $.observable(codeReview.getModel(selector)).setProperty('isDisplayed', false)
+    removeLineCommentPopover($fileListing)
 }
 
 function attachLineCommentPopover(changesetId, projectFileId) {
