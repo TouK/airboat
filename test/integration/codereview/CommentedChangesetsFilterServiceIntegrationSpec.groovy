@@ -2,13 +2,10 @@ package codereview
 
 import grails.plugin.spock.IntegrationSpec
 import grails.plugins.springsecurity.SpringSecurityService
-import grails.buildtestdata.mixin.Build
 import testFixture.Fixture
 
-import static testFixture.Fixture.PROJECT_CODEREVIEW_ON_THIS_MACHINE_URL
 import org.hibernate.Session
 
-import static testFixture.Fixture.PROJECT_CODEREVIEW_NAME
 import util.DbPurger
 
 class CommentedChangesetsFilterServiceIntegrationSpec extends IntegrationSpec {
@@ -19,7 +16,7 @@ class CommentedChangesetsFilterServiceIntegrationSpec extends IntegrationSpec {
 
     static transactional = false
 
-    static GString projectUrl = PROJECT_CODEREVIEW_ON_THIS_MACHINE_URL
+    static GString projectUrl = Fixture.PROJECT_CODEREVIEW_ON_THIS_MACHINE_URL
 
     ScmAccessService scmAccessService
     SpringSecurityService springSecurityService
@@ -28,7 +25,7 @@ class CommentedChangesetsFilterServiceIntegrationSpec extends IntegrationSpec {
     def setupSpec() {
         assert infrastructureService.getWorkingDirectory().deleteDir()
         Project.withNewSession { Session session ->
-            Project.build(name: PROJECT_CODEREVIEW_NAME, url: projectUrl)
+            Project.build(name: Fixture.PROJECT_CODEREVIEW_NAME, url: projectUrl)
         }
         gitRepositoryService.updateOrCheckOutRepository(projectUrl)
         DbPurger.purgeDb()
@@ -38,7 +35,7 @@ class CommentedChangesetsFilterServiceIntegrationSpec extends IntegrationSpec {
         lineCommentController.scmAccessService = scmAccessService
         DbPurger.verifyDbIsClean()
         Project.withNewSession {
-            Project.build(name: PROJECT_CODEREVIEW_NAME, url: projectUrl)
+            Project.build(name: Fixture.PROJECT_CODEREVIEW_NAME, url: projectUrl)
         }
     }
 

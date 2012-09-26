@@ -55,6 +55,7 @@ class ScmAccessService {
         def email = commiter.cvsCommiterId
         def user = User.findByEmail(email)
         user?.addToCommitters(commiter)
+        commiter.save()
         user?.save()
     }
 

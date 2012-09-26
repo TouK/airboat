@@ -29,58 +29,43 @@ class ProjectFileController {
     def getLineCommentsWithSnippetsToFile(String changesetIdentifier, Long projectFileId) {
         def changeset = Changeset.findByIdentifier(changesetIdentifier)
         def projectFile = ProjectFile.findById(projectFileId)
-        def comments = getLineComments(changeset, projectFile)
-        def commentGroupsWithSnippets = getCommentsGroupsWithSnippets(changeset, projectFile, comments)
+        def threads = getLineCommentsInThreads(changeset, projectFile)
+        def threadGroupsWithSnippets = getThreadsGroupsWithSnippets(changeset, projectFile, threads)
         render([
                 fileType: projectFile.fileType,
-                commentGroupsWithSnippets: commentGroupsWithSnippets,
-                commentsCount: comments.size()
+                threadGroupsWithSnippets: threadGroupsWithSnippets,
+                commentsCount: threads.collect{it.commentsCount}.sum()
         ] as JSON)
     }
 
-    private List<Map<String, Object>> getLineComments(Changeset changeset, ProjectFile projectFile) {
+    private getLineCommentsInThreads(Changeset changeset, ProjectFile projectFile) {
         def projectFileInChangeset = ProjectFileInChangeset.findByChangesetAndProjectFile(changeset, projectFile)
         checkArgument(projectFileInChangeset != null, "${projectFile} is not associated with ${changeset}")
         def threadPositions = projectFileInChangeset.commentThreadsPositions
-        def commentsProperties = threadPositions.collect { ThreadPositionInFile threadPosition ->
+
+        return threadPositions.collect { ThreadPositionInFile threadPosition ->
             def comments = threadPosition.thread.comments
-            comments.collect { LineComment comment ->
+            comments = comments.collect { LineComment comment ->
                 def properties = comment.properties + [
-                        fromRevision: getRevisionType(changeset, changeset), //FIXME count changesets between original comment posting changeset and changeset its displayed in
                         author: comment.author.email,
-                        lineNumber: threadPosition.lineNumber,
-                        dateCreated: comment.dateCreated.format('yyyy-MM-dd HH:mm')
+                        dateCreated: comment.dateCreated.format('yyyy-MM-dd HH:mm'),
+                        date: comment.dateCreated
                 ]
-                properties.keySet().retainAll('id', 'author', 'dateCreated', 'lineNumber', 'projectFile', 'text', 'fromRevision')
+                properties.keySet().retainAll('id', 'author', 'dateCreated', 'text', 'date')
                 properties
             }
-        }
-        commentsProperties.flatten()
-    }
-
-    String getRevisionType(Changeset currentCommentChangesetDate, Changeset commentChangeset) {
-        if (currentCommentChangesetDate.date < commentChangeset.date) {
-            'future'
-        } else if (currentCommentChangesetDate.date == commentChangeset.date) {
-            'current'
-        } else {
-            'past'
+            [threadId: threadPosition.thread.id, lineNumber: threadPosition.lineNumber, comments: comments.sort{it.date}, commentsCount: comments.size(), projectFileId: threadPosition.projectFileInChangeset.projectFile.id]
         }
     }
 
-    //FIXME modify type
-    private List<Map<String, Object>> getCommentsGroupsWithSnippets(
-            Changeset changeset,
-            ProjectFile projectFile,
-            List<Map<String, Object>> comments
+    private getThreadsGroupsWithSnippets(Changeset changeset, ProjectFile file, List<Map<String, Object>> threads
     ) {
-        def commentGroupsWithSnippets = []
-        if (!comments.isEmpty()) {
-            def fileContent = scmAccessService.getFileContent(changeset, projectFile)
-            def commentsGroupedByLineNumber = snippetWithCommentsService.prepareCommentGroups(comments)
-            commentGroupsWithSnippets = snippetWithCommentsService.prepareCommentGroupsWithSnippets(commentsGroupedByLineNumber, projectFile.fileType, fileContent)
+        if (!threads.isEmpty()) {
+            def fileContent = scmAccessService.getFileContent(changeset, file)
+
+            return snippetWithCommentsService.prepareThreadGroupsWithSnippets(threads, fileContent)
         }
-        commentGroupsWithSnippets
+        return threads
     }
 
     def getDiffWithPreviousRevision(String changesetIdentifier, Long projectFileId) {

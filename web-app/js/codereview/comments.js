@@ -36,16 +36,16 @@ function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
 
     $.post(uri.lineComment.addComment,
         { changesetIdentifier: changesetIdentifier, projectFileId:projectFileId, text:text, lineNumber:lineNumber},
-        function (commentGroupsWithSnippetsForCommentedFile) {
-            if (commentGroupsWithSnippetsForCommentedFile.errors == null) {
-                updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId);
-                hideAndClearLineCommentFrom(changesetIdentifier, projectFileId);
-            } else if (commentGroupsWithSnippetsForCommentedFile.errors.code == "maxSize.exceeded") {
+        function (threadGroupsWithSnippetsForCommentedFile) {
+            if (threadGroupsWithSnippetsForCommentedFile.errors == null) {
+                updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId);
+                hideAndClearLineCommentForm(changesetIdentifier, projectFileId);
+            } else if (threadGroupsWithSnippetsForCommentedFile.errors.code == "maxSize.exceeded") {
                 $('.addLongCommentMessage')
                     .html($('#longCommentTemplate')
                     .render(" Your comment is too long!"))
                     .hide().fadeIn();
-            } else if(commentGroupsWithSnippetsForCommentedFile.errors.code == "blank"){
+            } else if(threadGroupsWithSnippetsForCommentedFile.errors.code == "blank"){
                 $('.addLongCommentMessage')
                     .html($('#longCommentTemplate')
                     .render("Comment can't be empty"))
@@ -56,23 +56,23 @@ function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
     );
 }
 
-function addReply(changesetIdentifier, projectFileId, lineNumber){
-    var text = $("#add-reply-" + projectFileId + "-" + lineNumber).val();
+function addReply(threadId, changesetIdentifier, projectFileId){
+    var text = $('.changeset[data-identifier=' + changesetIdentifier + ']').find('.addThreadReply[data-identifier=' + threadId + ']').val();
 
     $.post(uri.lineComment.addReply,
-        { changesetIdentifier: changesetIdentifier, projectFileId:projectFileId, text:text, lineNumber:lineNumber},
-        function (commentGroupsWithSnippetsForCommentedFile) {
-            if (commentGroupsWithSnippetsForCommentedFile.errors == null) {
-                updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId);
+        { threadId: threadId, text:text, changesetIdentifier: changesetIdentifier, projectFileId: projectFileId},
+        function (threadGroupsWithSnippetsForCommentedFile) {
+            if (threadGroupsWithSnippetsForCommentedFile.errors == null) {
+                updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId);
             }
-            else if (commentGroupsWithSnippetsForCommentedFile.errors.code == "maxSize.exceeded") {
-                $('#reply-info-'+ projectFileId+'-'+lineNumber)
+            else if (threadGroupsWithSnippetsForCommentedFile.errors.code == "maxSize.exceeded") {
+                $('.threadReplyInfo[data-identifier=' + threadId + ']')
                     .html($('#longCommentTemplate')
                     .render(" Your comment is too long!"))
                     .hide().fadeIn();
             }
-            else if (commentGroupsWithSnippetsForCommentedFile.errors.code == "blank") {
-                $('#reply-info-'+ projectFileId+'-'+lineNumber)
+            else if (threadGroupsWithSnippetsForCommentedFile.errors.code == "blank") {
+                $('.threadReplyInfo[data-identifier=' + threadId + ']')
                     .html($('#longCommentTemplate')
                     .render("Comment can't be empty!"))
                     .hide().fadeIn();
@@ -83,7 +83,7 @@ function addReply(changesetIdentifier, projectFileId, lineNumber){
 
 }
 
-function hideAndClearLineCommentFrom(changesetId, fileIdentifier) {
+function hideAndClearLineCommentForm(changesetId, fileIdentifier) {
     $('#content-files-' + changesetId + ' .linenums li').popover("hide");
     $('#add-line-comment-' + fileIdentifier).val("");
 }
@@ -97,20 +97,21 @@ function expandCommentForm(changesetId) {
     $('#add-comment-' + changesetId).attr('rows', 3);
 }
 
-function expandReplyForm(fileId, lineNumber) {
-    $('#replyFormButtons-' + fileId + '-' + lineNumber).slideDown(100);
-    $("#add-reply-" + fileId + "-" + lineNumber).attr('rows', 3);
-}
-
-function cancelReply(fileId, lineNumber) {
-    $('#replyFormButtons-' + fileId + '-' + lineNumber).hide();
-    $("#add-reply-" + fileId + "-" + lineNumber).attr('rows', 1);
-    $("#add-reply-" + fileId + "-" + lineNumber).val("");
-}
-
 function resetCommentForm(changesetId) {
     $('#add-comment-' + changesetId).val("");
     $('#add-comment-' + changesetId).attr('rows', 1);
     $('.longComment').remove();
     $('#commentFormButtons-' + changesetId).hide();
 }
+
+function expandReplyForm(threadId, changesetId) {
+    $('.changeset[data-identifier=' + changesetId + ']').find('.threadReplyFormButtons[data-identifier=' + threadId + ']').slideDown(100);
+    $('.changeset[data-identifier=' + changesetId + ']').find('.addThreadReply[data-identifier=' + threadId + ']').attr('rows', 3);
+}
+
+function cancelReply(threadId, changesetId) {
+    $('.changeset[data-identifier=' + changesetId + ']').find('.threadReplyFormButtons[data-identifier=' + threadId + ']').hide();
+    $('.changeset[data-identifier=' + changesetId + ']').find('.addThreadReply[data-identifier=' + threadId + ']').attr('rows', 1);
+    $('.changeset[data-identifier=' + changesetId + ']').find('.addThreadReply[data-identifier=' + threadId + ']').val("");
+}
+
