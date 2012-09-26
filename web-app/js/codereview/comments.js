@@ -26,9 +26,12 @@ function addComment(changesetId, changesetIdentifier) {
     );
 }
 
-function cancelLineComment(fileIdentifier, changesetId, lineNumber) {
-    $('#add-line-comment-' + fileIdentifier).val("");
-    hidePopovers(changesetId);
+function closeLineCommentForm(changesetIdentifier, projectFileId) {
+    var $fileListing = $(
+        '.changeset[data-identifier=' + changesetIdentifier + ']' +
+        ' .fileListing[data-project-file-id=' + projectFileId + ']'
+    );
+    removeLineCommentPopovers($fileListing)
 }
 
 function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
@@ -39,14 +42,14 @@ function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
         function (commentGroupsWithSnippetsForCommentedFile) {
             if (commentGroupsWithSnippetsForCommentedFile.errors == null) {
                 updateAccordion(commentGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId);
-                hideAndClearLineCommentFrom(changesetIdentifier, projectFileId);
+                closeLineCommentForm(changesetIdentifier, projectFileId);
             } else if (commentGroupsWithSnippetsForCommentedFile.errors.code == "maxSize.exceeded") {
-                $('.addLongCommentMessage')
+                $(this).find('.addLongCommentMessage')
                     .html($('#longCommentTemplate')
                     .render(" Your comment is too long!"))
                     .hide().fadeIn();
             } else if(commentGroupsWithSnippetsForCommentedFile.errors.code == "blank"){
-                $('.addLongCommentMessage')
+                $(this).find('.addLongCommentMessage')
                     .html($('#longCommentTemplate')
                     .render("Comment can't be empty"))
                     .hide().fadeIn();
@@ -83,14 +86,10 @@ function addReply(changesetIdentifier, projectFileId, lineNumber){
 
 }
 
-function hideAndClearLineCommentFrom(changesetId, fileIdentifier) {
-    $('#content-files-' + changesetId + ' .linenums li').popover("hide");
-    $('#add-line-comment-' + fileIdentifier).val("");
+function removeLineCommentPopovers($fileListings) {
+    $fileListings.find('[class|=language] li').popover('destroy');
 }
 
-function hidePopovers(changesetId) {
-    $('#content-files-' + changesetId + ' .linenums li').popover("hide");
-}
 
 function expandCommentForm(changesetId) {
     $('#commentFormButtons-' + changesetId).slideDown(100);

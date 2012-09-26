@@ -22,7 +22,9 @@
     <script src="${createLink(uri: '/libs/jquery.floatWithin.js')}" type="text/javascript"></script>
 
     <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
+    <link href=" ${createLink(uri: '/css/diffs.less')}" type="text/less" rel="stylesheet" media="screen"/>
     <script src="${createLink(uri: '/js/codereview/files.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/js/codereview/diffs.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/changesets.js')}" type="text/javascript"></script>
 
     <script src="${createLink(uri: '/libs/clippy/jquery.clippy.js')}" type="text/javascript"></script>
@@ -171,7 +173,7 @@
     $().ready(function () {
         codeReview.initialFirstChangesetOffset = $('#content').position().top
 
-        codeReview.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser', 'filterChooser');
+        codeReview.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser', 'filterChooser', 'diffAndFileListing');
 
         $.link.loginStatusTemplate('#loginStatus', codeReview, {target:'replace'});
         $.link.projectChooserTemplate('#projectChooser', codeReview, {target:'replace'});
@@ -381,27 +383,32 @@
             </div>
         </div>
 
+        %{--FIXME work on structure here --}%
         <div class="fileListings span7">
-            <div class="fileListing well" style="display: none;">
-
-                <i class="closeButton icon-remove pull-right" onclick="hideFileAndScrollToChangesetTop('{{:identifier}}')"> </i>
-
-                <div class='pullLeft'>
-                    <button type="button" class="btn btn-primary" onClick="showDiff('{{:identifier}}')"
-                            id="button-showing-diff-{{:identifier}}">Show diff</button>
-                    <button type="button" class="btn btn-primary" onClick="hideDiff('{{:identifier}}')" style="display:none"
-                            id="button-hiding-diff-{{:identifier}}">Hide diff</button>
-                </div>
-                <div class='clearfix'/>
-
-                <br/>
-                <div id="diff-box-{{:identifier}}" style="display: none"></div>
-
-                <div id="content-files-{{>identifier}}"></div>
-
-            </div>
+            {{for projectFiles tmpl='#projectFileListingTemplate' /}}
         </div>
     </div>
+</script>
+
+<script id='projectFileListingTemplate' type="text/x-jsrender">
+    <div class="fileListing well" style="display: none;" data-project-file-id={{:id}}>
+
+        <i class="closeButton icon-remove pull-right" onclick="hideFileAndScrollToChangesetTop('{{:changeset.identifier}}')"> </i>
+        <br/>
+
+        <div class="diffAndFileListing">
+
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    $("body").on('change', '.fileListing input[name="showWholeFile"]', function() {
+        var diffViewer = $(this).parents('.diffAndListingViewer')[0];
+        var listing = codeReview.getModel(diffViewer);
+        $.observable(listing).setProperty('showWholeFile', this.checked)
+        removeLineCommentPopovers($(this).parents('.fileListing'));
+    })
 </script>
 
 <script id="projectFileRowTemplate" type="text/x-jsrender">
@@ -467,6 +474,109 @@
     <div id="snippet-{{>fileId}}-{{>lineNumber}}"></div><hr/>
 </script>
 
+<script id='diffAndFileListingTemplate' type="text/x-jsrender">
+    <div class='diffAndListingViewer'>
+
+        <div class='pullLeft'>
+            <label class="checkbox">
+                <input type="checkbox" name='showWholeFile' data-link="checked{:showWholeFile}">show whole file
+            </label>
+        </div>
+        <div class='clearfix'/>
+
+        %{--TODO get rid of this conditional display and make changest to undrelying collections instead--}%
+        <div data-link="visible{:showWholeFile}">
+            {{for [wholeFileHunks] tmpl='#diffTemplate' ~fileType=fileType ~showWholeFile=true/}}
+        </div>
+
+        <div data-link="visible{:!showWholeFile}">
+            {{for [diffHunks] tmpl='#diffTemplate' ~fileType=fileType ~showWholeFile=false/}}
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    function getLineNumber($listingLine) {
+        var diffSpanStartLine = codeReview.getModel($listingLine[0]).newFileStartLine;
+        var lineIndex = $listingLine.parents('pre').find('li').index($listingLine);
+        return diffSpanStartLine + lineIndex
+    }
+
+
+    $('.diff [class|=language]').livequery(function () {
+        $.SyntaxHighlighter.init({
+            load:false,
+            highlight:false,
+            lineNumbers:true,
+            stripInitialWhitespace:false,
+            stripEmptyStartFinishLines:false
+        });
+
+        $(this).syntaxHighlight()
+
+        $(this).find('li').each(function() {
+            var $listingLine = $(this);
+            if ($listingLine.parents('.removed').length == 0) {
+                $listingLine.click(function () {
+                    var fileListing = $(this).parents('.fileListing')[0];
+                    var projectFile = codeReview.getModel(fileListing);
+
+                    var url = uri.lineComment.checkCanAddComment + '?' + $.param({
+                        changesetIdentifier: projectFile.changeset.identifier, projectFileId: projectFile.id
+                    });
+                    $.ajax({url: url}).done(function (response) {
+                        if (response.canAddComment) {
+                            var commentForm = $("#addLineCommentFormTemplate").render({
+                                changesetId: projectFile.changeset.identifier,
+                                fileId: projectFile.id,
+                                lineNumber: getLineNumber($listingLine)
+                            });
+                            removeLineCommentPopovers($listingLine.parents('.fileListing'));
+
+                            $listingLine.popover({
+                                content:commentForm,
+                                placement:"left",
+                                trigger:"click",
+                                template: '<div class="popover"><div class="arrow"></div><div class="popover-inner"><div class="popover-content"><p></p></div></div></div>'
+                            });
+                            $listingLine.popover('show')
+                        } else {
+                            var cannotAddCommentMessage = $('#cannotAddLineCommentMessageTepmlate').render(response);
+                            $.colorbox({html: cannotAddCommentMessage});
+                        }
+                    })
+                })
+            }
+
+        })
+
+    })
+</script>
+
+<script id="diffTemplate" type="text/x-jsrender">
+    {{for #data ~count=#data.length }}
+    <div class='diff row-fluid'>
+        {{for diffSpans}}
+        <div class='diffRow row-fluid'>
+            {{if oldFile }}
+            <div data-link="class{:oldFile ? 'removed' : '' }">
+                <pre class="language-{{: ~fileType}} noLinenums">{{> oldFile.text }}</pre>
+            </div>
+            {{/if}}
+            {{if context || newFile }}
+            <div data-link="class{:newFile ? 'added' : '' }">
+                <pre class="language-{{: ~fileType}} linenums:{{:newFileStartLine}}">{{> context ? context.text : newFile.text }}</pre>
+            </div>
+            {{/if}}
+        </div>
+        {{/for}}
+    </div>
+    {{if !~showWholeFile && #index < ~count - 1 }}
+    <p>...</p>
+    {{/if}}
+    {{/for}}
+</script>
+
 <!-- FIXME reuse comment form template for both types of comments -->
 <script id="addLineCommentFormTemplate" type="text/x-jsrender">
 
@@ -479,9 +589,9 @@
 
         <div class="btn-group pull-right">
             <button type="button" class="btn btn-primary" id="addCommentButton-{{>fileId}}"
-                    onClick="addLineComment('{{>changesetId}}', '{{>fileId}}', '{{>lineNumber}}')">Add comment</button>
+                    onClick="addLineComment('{{:changesetId}}', '{{:fileId}}', '{{:lineNumber}}')">Add comment</button>
             <button type="button" class="btn btn-primary"
-                    onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Cancel</button>
+                    onClick="closeLineCommentForm('{{:changesetId}}', '{{:fileId}}')">Cancel</button>
         </div>
     </form>
 </script>
@@ -533,7 +643,6 @@
 
     <div class="alert alert-block">
         {{: #data }}
-
     </div>
 </script>
 </div>

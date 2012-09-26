@@ -1,0 +1,33 @@
+.diff .row-fluid [class*="span"] {
+    min-height: 0
+}
+
+.diffRow pre, .diffRow pre.prettyprint {
+    margin-bottom: 0;
+    border-radius: 0;
+    border-width: 0;
+    padding: 0;
+}
+
+.diffRow pre.prettyprint > ol, .diffRow pre.prettyprint > ul {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.diffRow .prettyprint ol.linenums li  {
+    border-left-color: #d3d3d3;
+}
+
+.diffRow .added .prettyprint ol.linenums li  {
+    border-left-color: #66ff66;
+    background-color: rgba(0, 255, 00, .1);
+}
+
+.diffRow .removed .prettyprint ol.linenums li  {
+    border-left-color: #ff6666;
+    background-color: rgba(255, 00, 00, .1);
+}
+
+pre.noLinenums li{
+    color: whiteSmoke
+}

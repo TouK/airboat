@@ -23,9 +23,8 @@
                 addReply:"${createLink(uri: '/lineComment/addReply')}"
             },
             projectFile:{
-                getFileWithContent:"${createLink(uri:'/projectFile/getFileWithContent/')}",
-                getLineCommentsWithSnippetsToFile:"${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}",
-                getDiffWithPreviousRevision:"${createLink(uri:'/projectFile/getDiffWithPreviousRevision/')}"
+                getFileListings:"${createLink(uri:'/projectFile/getFileListings/')}",
+                getLineCommentsWithSnippetsToFile:"${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}"
             },
             user:{
                 changePassword:"${createLink(uri: '/user/changePassword')}"

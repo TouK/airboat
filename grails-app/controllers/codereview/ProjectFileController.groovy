@@ -19,11 +19,17 @@ class ProjectFileController {
         render files as JSON
     }
 
-    def getFileWithContent(String changesetIdentifier, Long projectFileId) {
+    def getFileListings(String changesetIdentifier, Long projectFileId) {
         def changeset = Changeset.findByIdentifier(changesetIdentifier)
         def projectFile = ProjectFile.findById(projectFileId)
-        def fileContent = scmAccessService.getFileContent(changeset, projectFile)
-        render([content: fileContent, filetype: projectFile.fileType, name: projectFile.name, isText: projectFile.textFormat] as JSON)
+        def projectFileInChangeset = ProjectFileInChangeset.findByChangesetAndProjectFile(changeset, projectFile)
+        def fileContent = projectFileInChangeset.changeType == ChangeType.DELETE ? null : scmAccessService.getFileContent(changeset, projectFile)
+        def diff = diffAccessService.getDiffWithPreviousRevisionFor(changeset, projectFile)
+
+        render([diff: diff,
+                fileContent: fileContent,
+                fileType: projectFile.fileType,
+                isText: projectFile.textFormat] as JSON)
     }
 
     def getLineCommentsWithSnippetsToFile(String changesetIdentifier, Long projectFileId) {
@@ -82,18 +88,6 @@ class ProjectFileController {
             commentGroupsWithSnippets = snippetWithCommentsService.prepareCommentGroupsWithSnippets(commentsGroupedByLineNumber, projectFile.fileType, fileContent)
         }
         commentGroupsWithSnippets
-    }
-
-    def getDiffWithPreviousRevision(String changesetIdentifier, Long projectFileId) {
-        def changeset = Changeset.findByIdentifier(changesetIdentifier)
-        def projectFile = ProjectFile.findById(projectFileId)
-        def diff = diffAccessService.getDiffWithPreviousRevisionFor(changeset, projectFile)
-        render([
-                diff: diff.split("\n").collect() { [line: it] },
-                fileId: projectFile.id,
-                rawDiff: diff,
-                fileType: projectFile.fileType
-        ] as JSON)
     }
 
 }

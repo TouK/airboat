@@ -50,12 +50,12 @@ class SnippetWithCommentsService {
             else {
                 snippet = getSnippet(currentGroup, threeLines, fileContent)
             }
-            commentGroupsWithSnippets[iterator] = [commentGroup: sortedCommentGroups[iterator], snippet: snippet, filetype: fileType]
+            commentGroupsWithSnippets[iterator] = [commentGroup: sortedCommentGroups[iterator], snippet: snippet, fileType: fileType]
             iterator++
         }
 
         snippet = getSnippet(sortedCommentGroups[iterator][0], threeLines, fileContent)
-        commentGroupsWithSnippets[iterator] = [commentGroup: sortedCommentGroups[iterator], snippet: snippet, filetype: fileType]
+        commentGroupsWithSnippets[iterator] = [commentGroup: sortedCommentGroups[iterator], snippet: snippet, fileType: fileType]
         commentGroupsWithSnippets
     }
 

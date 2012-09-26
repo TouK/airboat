@@ -147,7 +147,7 @@ function appendChangeset(changeset, dayElement) {
 }
 
 /*TODO move it somewhere near the template definition*/
-$('.accordion-body.collapse').livequery(function () {
+$('.projectFile .accordion-body.collapse').livequery(function () {
     $(this)
         .on('show',function () {
             appendSnippetToFileInAccordion(this.dataset.changeset_id, this.dataset.file_id)

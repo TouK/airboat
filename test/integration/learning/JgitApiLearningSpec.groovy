@@ -18,6 +18,8 @@ import org.eclipse.jgit.lib.ObjectReader
 import org.eclipse.jgit.lib.AnyObjectId
 import org.eclipse.jgit.lib.ObjectId
 import spock.lang.Ignore
+import org.eclipse.jgit.revwalk.FollowFilter
+import org.eclipse.jgit.treewalk.filter.IndexDiffFilter
 
 class JgitApiLearningSpec extends Specification {
 
@@ -132,10 +134,8 @@ class JgitApiLearningSpec extends Specification {
 
         ObjectReader reader = repository.newObjectReader();
 
-        CanonicalTreeParser oldTreeIter = new CanonicalTreeParser()
-        oldTreeIter.reset(reader, oldId)
-        CanonicalTreeParser newTreeIter = new CanonicalTreeParser()
-        newTreeIter.reset(reader, headId)
+        CanonicalTreeParser oldTreeIter = new CanonicalTreeParser('grails-app/views/changeset/index.gsp'.bytes, reader, headId)
+        CanonicalTreeParser newTreeIter = new CanonicalTreeParser('grails-app/views/changeset/index.gsp'.bytes, reader, oldId)
 
         List<DiffEntry> diffs= git.diff()
                 .setNewTree(newTreeIter)
