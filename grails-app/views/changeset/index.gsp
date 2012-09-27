@@ -172,8 +172,6 @@
     }
 
     $().ready(function () {
-        codeReview.initialFirstChangesetOffset = $('#content').position().top
-
         codeReview.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser', 'filterChooser', 'diffAndFileListing');
 
         $.link.loginStatusTemplate('#loginStatus', codeReview, {target:'replace'});

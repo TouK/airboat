@@ -147,13 +147,8 @@ $('.projectFile .accordion-body.collapse').livequery(function () {
         .on('show',function (event) {
             if (this.dataset.projectfile_comments == 0) {
                 event.preventDefault();
-                appendSnippetAndShowFile.call(this);
-                $.observable(codeReview.getModel(this)).setProperty('isDisplayed', true);
             }
-            else {
-                appendSnippetAndShowFile.call(this);
-            }
-        }).on('shown', function () {
+            appendSnippetAndShowFile.call(this);
             $.observable(codeReview.getModel(this)).setProperty('isDisplayed', true);
         });
 });
