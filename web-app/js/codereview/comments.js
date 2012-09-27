@@ -48,19 +48,20 @@ function createAndShowCommentFormPopover($listingLine, projectFile) {
     });
     removeLineCommentPopover($listingLine.parents('.fileListing'));
 
+    $listingLine.parents('.fileListing').first().data('$commentedLine', $listingLine);
     $listingLine.popover({
         content:commentForm,
         placement:"left",
         trigger:"click",
         template:'<div class="popover lineCommentFormPopover"><div class="arrow"></div><div class="popover-inner"><div class="popover-content"><p></p></div></div></div>'
     });
-    $listingLine.popover('show')
+    $listingLine.popover('show');
 }
 
 function getLineNumber($listingLine) {
     var diffSpanStartLine = codeReview.getModel($listingLine[0]).newFileStartLine;
     var lineIndex = $listingLine.parents('pre').find('li').index($listingLine);
-    return diffSpanStartLine + lineIndex
+    return diffSpanStartLine + lineIndex;
 }
 
 function closeLineCommentForm(changesetIdentifier, projectFileId) {
@@ -68,7 +69,7 @@ function closeLineCommentForm(changesetIdentifier, projectFileId) {
         '.changeset[data-identifier=' + changesetIdentifier + ']' +
         ' .fileListing.projectFile[data-id=' + projectFileId + ']'
     );
-    removeLineCommentPopover($fileListing)
+    removeLineCommentPopover($fileListing);
 }
 
 function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
@@ -97,7 +98,12 @@ function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
 }
 
 function removeLineCommentPopover($fileListings) {
-    $fileListings.find('[class|=language] li').popover('destroy');
+    $fileListings.each(function () {
+        var commentedLine = $(this).data('$commentedLine');
+        if (commentedLine) {
+            commentedLine.popover('destroy');
+        }
+    });
 }
 
 function addReply(threadId, changesetIdentifier, projectFileId){
