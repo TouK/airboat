@@ -28,7 +28,6 @@
     <script src="${createLink(uri: '/js/codereview/changesets.js')}" type="text/javascript"></script>
 
     <script src="${createLink(uri: '/libs/clippy/jquery.clippy.js')}" type="text/javascript"></script>
-    <script src="${createLink(uri: '/libs/clippy/swfobject.js')}" type="text/javascript"></script>
 </head>
 
 <body>
