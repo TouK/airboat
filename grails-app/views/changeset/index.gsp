@@ -169,6 +169,10 @@
         return "hsl(" + color + ", 50%, 50%)"
     }
 
+    $.ScrollTo.configure({
+        offsetTop:codeReview.navbarOffset
+    });
+
     $().ready(function () {
         codeReview.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser', 'filterChooser', 'diffAndFileListing');
 

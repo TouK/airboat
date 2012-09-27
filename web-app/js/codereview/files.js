@@ -22,6 +22,7 @@ function showFile(dataset) {
         fileListing.children('.diffAndFileListing').html('<div id="templatePlaceholder"></div>')
         $.link.diffAndFileListingTemplate('#templatePlaceholder', listings, {target: 'replace'})
         fileListing.show();
+        fileListing.ScrollTo();
     });
 }
 
@@ -32,9 +33,7 @@ function toBoolean(toConvert) {
 function hideFileAndScrollToChangesetTop(changesetId, projectFileId) {
     hideDisplayedFile(changesetId, projectFileId);
     var changesetDetails = $('.changeset[data-identifier=' + changesetId + '] .details');
-    changesetDetails.parents('.changeset').ScrollTo({
-        offsetTop:codeReview.navbarOffset
-    });
+    changesetDetails.parents('.changeset').ScrollTo();
     return false;
 }
 

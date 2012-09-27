@@ -26,7 +26,6 @@ function addComment($form, changesetIdentifier) {
     );
 }
 
-
 function checkCanAddLineCommentAndShowForm($listingLine, projectFile) {
     var url = uri.lineComment.checkCanAddComment + '?' + $.param({
         changesetIdentifier:projectFile.changeset.identifier, projectFileId:projectFile.id
