@@ -41,6 +41,9 @@
             }
         }
 
+        var VIEW_TYPE = { SINGLE_CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
+        var DATA_TYPE = { CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
+
         var codeReview = {
             navbarOffset: 55
 
@@ -50,6 +53,8 @@
             , displayedProjectName: ''
 
             , currentFilter: ''
+            , currentViewType: null
+            , shouldLoadChangesets: true
 
             , debugMode: true
 

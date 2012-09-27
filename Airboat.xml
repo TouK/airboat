@@ -469,6 +469,9 @@
   <inspection_tool class="JBoss" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="JSHint" enabled="true" level="ERROR" enabled_by_default="true" />
   <inspection_tool class="JSLint" enabled="true" level="ERROR" enabled_by_default="true" />
+  <inspection_tool class="JSUndeclaredVariable" enabled="true" level="ERROR" enabled_by_default="true">
+    <option name="myCheckGlobalDefinitions" value="true" />
+  </inspection_tool>
   <inspection_tool class="JUnit4AnnotatedMethodInJUnit3TestCase" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="JavaDoc" enabled="false" level="WARNING" enabled_by_default="false">
     <option name="TOP_LEVEL_CLASS_OPTIONS">

@@ -112,11 +112,10 @@
         if (e.state != null) {
             if (e.state.dataType == DATA_TYPE.CHANGESET) {
                 window.location.href = '?' + $.param({projectName:e.state.projectName, changesetId:e.state.changesetId});
-                shouldLoadChangesets = false;
+                codeReview.shouldLoadChangesets = false;
                 setAllInactive();
             } else if (e.state.dataType == DATA_TYPE.PROJECT) {
                 if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != e.state.projectName) {
-                    ;
                     showProject(e.state.projectName);
                 } else {
                     $(document).scrollTop(0);
@@ -182,8 +181,8 @@
             appendChangesetsBottom(${changeset});
             toggleChangesetDetails("${changesetId}");
             history.replaceState({dataType:'${type}', changeset: ${changeset ?: "''"}, changesetId:"${changesetId}", projectName:'${projectName}' }, null);
-            shouldLoadChangesets = false;
-            currentViewType = VIEW_TYPE.SINGLE_CHANGESET; // if there will be scrolling to changeset view type might be PROJECT
+            codeReview.shouldLoadChangesets = false;
+            codeReview.currentViewType = VIEW_TYPE.SINGLE_CHANGESET; // if there will be scrolling to changeset view type might be PROJECT
             setAllInactive();
         } else if ('${type}' == DATA_TYPE.PROJECT) {
 

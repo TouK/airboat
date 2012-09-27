@@ -19,8 +19,6 @@ function showFile(dataset) {
         listings.wholeFileHunks = addAdditionalContexts(listings.diffHunks, listings.fileContent)
         listings.showWholeFile = false;
 
-        daHunks = listings.diffHunks
-
         fileListing.children('.diffAndFileListing').html('<div id="templatePlaceholder"></div>')
         $.link.diffAndFileListingTemplate('#templatePlaceholder', listings, {target: 'replace'})
         fileListing.show();

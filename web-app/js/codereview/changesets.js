@@ -7,7 +7,7 @@ function showProject(projectName) {
 
 function showFiltered(filterType) {
     $.observable(codeReview).setProperty('currentFilter', filterType);
-    changesetLoading = true;
+    codeReview.changesetLoading = true;
     $.getJSON(uri.changeset.getLastFilteredChangesets + '?' + $.param({filterType:codeReview.currentFilter}),
         function(data) {clearDisplayAndAppendChangesetsBottom({changesets: data, shouldLoad: true, viewType: VIEW_TYPE.FILTER, activeSelector: '#filtersDropdown'})});
 }
@@ -50,16 +50,13 @@ function loadMoreChangesets() {
     }
 }
 
-var VIEW_TYPE = { SINGLE_CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
-var DATA_TYPE = { CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
-
 var lastLoadedChangesetId;
 var changesetsLoading;
 var shouldLoadChangesets;
 var currentViewType;
 
 function appendChangesetsBottom(changesetsByDay) {
-    for (day in changesetsByDay) {
+    for (var day in changesetsByDay) {
         //find or create day container
         var dayElement = getDayContainer(day);
         if (dayElement.length == 0) {
@@ -68,7 +65,7 @@ function appendChangesetsBottom(changesetsByDay) {
         }
         dayElement = getDayContainer(day);
         var changesetsForDay = changesetsByDay[day];
-        for (i = 0; i < changesetsForDay.length; i++) {
+        for (var i = 0; i < changesetsForDay.length; i++) {
             appendChangeset(changesetsForDay[i], dayElement);
             lastLoadedChangesetId = changesetsForDay[i].id;
         }
@@ -182,7 +179,7 @@ function renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, thr
     if (threadGroupsWithSnippets.length > 0) {
         $('#fileComments-' + changesetIdentifier + projectFileId).html("");
 
-        for (j = 0; j < threadGroupsWithSnippets.length; j++) {
+        for (var j = 0; j < threadGroupsWithSnippets.length; j++) {
             renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippets[j], fileType);
         }
     }
@@ -208,7 +205,7 @@ function renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, thre
         .addClass("language-" + fileType)
         .syntaxHighlight();
 
-    for (i = 0; i < threadGroupWithSnippet.threads.length; i++) {
+    for (var i = 0; i < threadGroupWithSnippet.threads.length; i++) {
         var threadTemplate = $("#threadTemplate").render({threadId: threadGroupWithSnippet.threads[i].threadId, changesetId: changesetIdentifier, projectFileId: projectFileId});
         $(threadTemplate).appendTo(snippetObject.find('.threads'));
         var commentsInThread = snippetObject.find('.threadComments[data-identifier=' + threadGroupWithSnippet.threads[i].threadId + ']');
