@@ -19,7 +19,7 @@
 
     <script src="${createLink(uri: '/libs/jquery.ba-throttle-debounce.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/jquery.sizes.js')}" type="text/javascript"></script>
-    <script src="${createLink(uri: '/libs/jquery.floatWithin.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/js/jquery.floatWithin.js')}" type="text/javascript"></script>
 
     <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
     <link href=" ${createLink(uri: '/css/diffs.less')}" type="text/less" rel="stylesheet" media="screen"/>
