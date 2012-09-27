@@ -384,7 +384,9 @@
                 <h5>Changed files:</h5>
 
                 <div class="projectFiles accordion margin-bottom-small" id="accordion-{{>identifier}}">
+
                     {{for projectFiles tmpl='#projectFileRowTemplate' /}}
+
                 </div>
 
                 <a class="wideButton lessButton">
