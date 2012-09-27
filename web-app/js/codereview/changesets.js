@@ -16,7 +16,7 @@ function clearDisplayAndAppendChangesetsBottom(dataset) {
     shouldLoadChangesets = dataset.shouldLoad;
     currentViewType = dataset.viewType;
     $('#content').html("");
-    setActive(dataset.activeSelector)
+    setActive(dataset.activeSelector);
     appendChangesetsBottom(dataset.changesets);
 }
 
@@ -86,13 +86,13 @@ $('.changeset-hash').livequery(function () {
                 });
             showClippyAndTooltip.call(this);
         }, function () {
-            var that = this
+            var that = this;
             setTimeout(function () {
                 hideSpanForClippy(that);
                 removeClippyObject(that);
             }, 5000)
         });
-})
+});
 
 function hideSpanForClippy(that) {
     $('.hashForClippy-' + that.dataset.changeset_identifier).hide()
@@ -110,18 +110,18 @@ function removeClippyObject(that) {
 
 $('.changeset-date').livequery(function () {
     $(this).tooltip({title:this.dataset.date, trigger:"hover", placement:"bottom"});
-})
+});
 
 function appendChangeset(changeset, dayElement) {
 
     changeset['shortIdentifier'] = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
     changeset['allComments'] = function () {
-        var projectFilesComments = 0
+        var projectFilesComments = 0;
         $(this.projectFiles).each(function () {
             projectFilesComments += this.commentsCount
-        })
+        });
         return this.comments.length + projectFilesComments
-    }
+    };
 
     $(changeset.projectFiles).each(function () {
         $.extend(this, {
@@ -130,10 +130,10 @@ function appendChangeset(changeset, dayElement) {
             name:sliceName(this.name),
             isDisplayed:false
         })
-    })
+    });
 
     dayElement.children('.changesets').append($("<span id='templatePlaceholder'></span>"));
-    $.link.changesetTemplate('#templatePlaceholder', changeset, {target:'replace'})
+    $.link.changesetTemplate('#templatePlaceholder', changeset, {target:'replace'});
 
     $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render(changeset));
 }
@@ -158,7 +158,7 @@ function appendSnippetAndShowFile() {
 function updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId) {
     renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippetsForCommentedFile);
     var projectFile = codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + '] .projectFile[data-id=' + projectFileId + ']');
-    $.observable(projectFile).setProperty('commentsCount', threadGroupsWithSnippetsForCommentedFile.commentsCount)
+    $.observable(projectFile).setProperty('commentsCount', threadGroupsWithSnippetsForCommentedFile.commentsCount);
     $.observable(codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + ']')).setProperty('allComments')
 }
 
@@ -194,7 +194,7 @@ function renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, thre
         changesetId:changesetIdentifier
     });
 
-    var fileComments = $('#fileComments-' + changesetIdentifier + projectFileId)
+    var fileComments = $('#fileComments-' + changesetIdentifier + projectFileId);
     var snippetObject = $(snippet).appendTo(fileComments);
 
     snippetObject.children('.codeSnippet')
@@ -228,8 +228,20 @@ function toggleChangesetDetails(identifier) {
     var changesetDetails = $('#changesetDetails-' + identifier);
     if (changesetDetails.is(':visible')) {
         changesetDetails.slideUp('slow', function () {
-            hideFileListings($('.changeset[data-identifier=' + identifier + '] .fileListing'))
-        })
+            hideFileListings($('.changeset[data-identifier=' + identifier + '] .fileListing'));
+
+            //TODO make the hideFileListings give a callback after all file listings are hidden,
+            // or deal with the following. Providing the mentioned callback is not-so-straightforward, as $().hide()
+            // calls its callback for every hidden element...
+            var fileListingsWrapper = $('.changeset[data-identifier=' + identifier + '] .fileListings');
+            fileListingsWrapper.hide(0, function () {
+                $('.changeset[data-identifier=' + identifier + ']').ScrollTo({
+                    callback:function () {
+                        fileListingsWrapper.show();
+                    }
+                });
+            });
+        });
     } else {
         changesetDetails.slideDown();
     }

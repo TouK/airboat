@@ -15,12 +15,12 @@ function showFile(dataset) {
     );
 
     $.getJSON(fileListingsUrl, function (listings) {
-        listings.diffHunks = extractHunks(listings.diff)
-        listings.wholeFileHunks = addAdditionalContexts(listings.diffHunks, listings.fileContent)
+        listings.diffHunks = extractHunks(listings.diff);
+        listings.wholeFileHunks = addAdditionalContexts(listings.diffHunks, listings.fileContent);
         listings.showWholeFile = false;
 
-        fileListing.children('.diffAndFileListing').html('<div id="templatePlaceholder"></div>')
-        $.link.diffAndFileListingTemplate('#templatePlaceholder', listings, {target: 'replace'})
+        fileListing.children('.diffAndFileListing').html('<div id="templatePlaceholder"></div>');
+        $.link.diffAndFileListingTemplate('#templatePlaceholder', listings, {target:'replace'});
         fileListing.show();
         fileListing.ScrollTo();
     });
@@ -30,26 +30,27 @@ function toBoolean(toConvert) {
     return JSON.parse(toConvert);
 }
 
-function hideFileAndScrollToChangesetTop(changesetId, projectFileId) {
-    hideDisplayedFile(changesetId, projectFileId);
-    var changesetDetails = $('.changeset[data-identifier=' + changesetId + '] .details');
-    changesetDetails.parents('.changeset').ScrollTo();
+function hideFileAndScrollToPreviousFileOrChangesetTop(changesetId, projectFileId) {
+    var changeset = $('.changeset[data-identifier=' + changesetId + ']');
+    var projectFile = changeset.find('.fileListing.projectFile[data-id=' + projectFileId + ']');
+    var previousFile = projectFile.prevAll(':visible').first();
+    hideFileListings(projectFile, function () {
+        if (previousFile.size() != 0) {
+            previousFile.ScrollTo();
+        } else {
+            changeset.ScrollTo();
+        }
+    });
     return false;
 }
 
-function hideDisplayedFile(changesetId, projectFileId) {
-    var selector = '.changeset[data-identifier=' + changesetId + ']' +
-        ' .fileListings .fileListing.projectFile[data-id=' + projectFileId + ']';
-    var $fileListing = $(selector);
-    hideFileListings($fileListing);
-}
 
-function hideFileListings($fileListing) {
-    $fileListing.hide();
-    $fileListing.each(function () {
+function hideFileListings($fileListings, callback) {
+    $fileListings.hide(0, callback);
+    $fileListings.each(function () {
         $.observable(codeReview.getModel(this)).setProperty('isDisplayed', false);
     });
-    removeLineCommentPopover($fileListing);
+    removeLineCommentPopover($fileListings);
 }
 
 function attachLineCommentPopover(changesetId, projectFileId) {
@@ -59,12 +60,12 @@ function attachLineCommentPopover(changesetId, projectFileId) {
 
         $(element).click(function () {
             var url = uri.lineComment.checkCanAddComment + '?' + $.param({
-                changesetIdentifier: changesetId,  projectFileId: projectFileId
+                changesetIdentifier:changesetId, projectFileId:projectFileId
             });
             $.ajax({url: url}).done(function (response) {
                 if (response.canAddComment) {
                     $('#content-files-' + changesetId + ' .linenums li').popover('hide');
-                    $(element).popover('show')
+                    $(element).popover('show');
                 } else {
                     var cannotAddCommentMessage = $('#cannotAddLineCommentMessageTepmlate').render(response);
                     $.colorbox({html: cannotAddCommentMessage});

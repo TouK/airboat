@@ -146,31 +146,32 @@
         }
     });
 
-    iconForChangeType = {
+    var iconForChangeType = {
         ADD:'icon-plus',
         DELETE:'icon-minus',
         MODIFY:'icon-edit',
         RENAME:'icon-pencil',
         COPY:'icon-move'
-    }
+    };
 
-    textForChangeType = {
+    var textForChangeType = {
         ADD:'added',
         DELETE:'deleted',
         MODIFY:'modified',
         RENAME:'renamed',
         COPY:'copied'
-    }
+    };
 
     function colorFromMd5Hash(md5hash) {
-        var colorCount = 18
+        var colorCount = 18;
         var numberOfHuesInHSL = 360;
-        var color = (numberOfHuesInHSL / colorCount) * (parseInt(md5hash, 16) % colorCount)
+        var color = (numberOfHuesInHSL / colorCount) * (parseInt(md5hash, 16) % colorCount);
         return "hsl(" + color + ", 50%, 50%)"
     }
 
     $.ScrollTo.configure({
-        offsetTop:codeReview.navbarOffset
+        offsetTop:codeReview.navbarOffset,
+        duration:200
     });
 
     $().ready(function () {
@@ -197,7 +198,7 @@
             history.replaceState({dataType:'${type}', projectName:codeReview.displayedProjectName}, null);
 
         } else if ('${type}' == DATA_TYPE.FILTER) {
-            showFiltered('${filterType}')
+            showFiltered('${filterType}');
             history.replaceState({dataType:'${type}', filterType:codeReview.currentFilter }, null)
         }
 
@@ -218,7 +219,7 @@
                 $('#loading').show();
             }).ajaxStop(function () {
                 $('#loading').hide();
-                $('body').trigger('codeReview-pageStructureChanged') //most probably
+                $('body').trigger('codeReview-pageStructureChanged'); //most probably
             });
 
     function onLoggedIn(username, isAdmin) {
@@ -313,22 +314,22 @@
 </script>
 
 <script>
-    $.fn.floatWithin.defaults.offset = 55
+    $.fn.floatWithin.defaults.offset = 55;
 
     $('.changeset .left.column').livequery(function () {
-        $(this).floatWithin('.changeset')
-    })
+        $(this).floatWithin('.changeset');
+    });
 
     $('.changeset .closeButton').livequery(function () {
         $(this).click(function (event) {
             event.stopImmediatePropagation();
             var changeset = $(this).parents('.changeset').first();
-            var changesetIdentifier = codeReview.getModel(changeset).identifier
+            var changesetIdentifier = codeReview.getModel(changeset).identifier;
             var projectFile = $(this).parents('.projectFile').first();
-            var projectFileId = codeReview.getModel(projectFile).id
-            hideFileAndScrollToChangesetTop(changesetIdentifier, projectFileId)
-        })
-    })
+            var projectFileId = codeReview.getModel(projectFile).id;
+            hideFileAndScrollToPreviousFileOrChangesetTop(changesetIdentifier, projectFileId);
+        });
+    });
 </script>
 
 <script id="changesetTemplate" type="text/x-jsrender">
@@ -408,7 +409,7 @@
 <script id='projectFileListingTemplate' type="text/x-jsrender">
     <div class="projectFile fileListing well" style="display: none;" data-id={{:id}}>
 
-        <i class="closeButton icon-remove pull-right" onclick="hideFileAndScrollToChangesetTop('{{:changeset.identifier}}')"> </i>
+        <i class="closeButton icon-remove pull-right"> </i>
         <br/>
 
         <div class="diffAndFileListing">
@@ -421,7 +422,7 @@
     $("body").on('change', '.fileListing input[name="showWholeFile"]', function() {
         var diffViewer = $(this).parents('.diffAndListingViewer')[0];
         var listing = codeReview.getModel(diffViewer);
-        $.observable(listing).setProperty('showWholeFile', this.checked)
+        $.observable(listing).setProperty('showWholeFile', this.checked);
         removeLineCommentPopover($(this).parents('.fileListing'));
     })
 </script>
@@ -528,7 +529,7 @@
             stripEmptyStartFinishLines:false
         });
 
-        $(this).syntaxHighlight()
+        $(this).syntaxHighlight();
 
         $(this).find('li').each(function() {
             var $listingLine = $(this);
