@@ -228,7 +228,7 @@ function toggleChangesetDetails(identifier) {
     var changesetDetails = $('#changesetDetails-' + identifier);
     if (changesetDetails.is(':visible')) {
         changesetDetails.slideUp('slow', function () {
-            hideFileAndScrollToChangesetTop(identifier)
+            hideFileListings($('.changeset[data-identifier=' + identifier + '] .fileListing'))
         })
     } else {
         changesetDetails.slideDown();

@@ -42,9 +42,15 @@ function hideDisplayedFile(changesetId, projectFileId) {
     var selector = '.changeset[data-identifier=' + changesetId + ']' +
         ' .fileListings .fileListing.projectFile[data-id=' + projectFileId + ']';
     var $fileListing = $(selector);
+    hideFileListings($fileListing);
+}
+
+function hideFileListings($fileListing) {
     $fileListing.hide();
-    $.observable(codeReview.getModel(selector)).setProperty('isDisplayed', false)
-    removeLineCommentPopover($fileListing)
+    $fileListing.each(function () {
+        $.observable(codeReview.getModel(this)).setProperty('isDisplayed', false);
+    });
+    removeLineCommentPopover($fileListing);
 }
 
 function attachLineCommentPopover(changesetId, projectFileId) {
