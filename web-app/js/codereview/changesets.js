@@ -287,10 +287,11 @@ function toggleChangesetDetails(identifier) {
             // calls its callback for every hidden element...
             var fileListingsWrapper = $('.changeset[data-identifier=' + identifier + '] .fileListings');
             fileListingsWrapper.hide(0, function () {
-                $('.changeset[data-identifier=' + identifier + ']').ScrollTo({
-                    callback:function () {
+                $.scrollTo('.changeset[data-identifier=' + identifier + ']', scrollDuration, {
+                    onAfter:function () {
                         fileListingsWrapper.show();
-                    }
+                    },
+                    offset: scrollOffset
                 });
             });
         });

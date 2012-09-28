@@ -22,7 +22,7 @@ function showFile(dataset) {
         fileListing.children('.diffAndFileListing').html('<div id="templatePlaceholder"></div>');
         $.link.diffAndFileListingTemplate('#templatePlaceholder', listings, {target:'replace'});
         fileListing.show();
-        fileListing.ScrollTo();
+        $.scrollTo(fileListing, scrollDuration, {offset: scrollOffset});
     });
 }
 
@@ -36,9 +36,9 @@ function hideFileAndScrollToPreviousFileOrChangesetTop(changesetId, projectFileI
     var previousFile = projectFile.prevAll(':visible').first();
     hideFileListings(projectFile, function () {
         if (previousFile.size() != 0) {
-            previousFile.ScrollTo();
+            $.scrollTo(previousFile, scrollDuration, {offset: scrollOffset});
         } else {
-            changeset.ScrollTo();
+            $.scrollTo(changeset, scrollDuration, {offset: scrollOffset});
         }
     });
     return false;
@@ -54,7 +54,7 @@ function hideFileListings($fileListings, callback) {
 }
 
 function attachLineCommentPopover(changesetId, projectFileId) {
-    $('#content-files-' + changesetId + ' .linenums li').each(function (i, element, ignored) {
+    $('#content-files-' + changesetId + ' .linenums li').each(function (i, element) {
         var commentForm = $("#addLineCommentFormTemplate").render({fileId:projectFileId, changesetId:changesetId, lineNumber:i + 1 });
         $(element).popover({content:commentForm, placement:"left", trigger:"manual" });
 

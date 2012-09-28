@@ -15,7 +15,7 @@
     <link href=" ${createLink(uri: '/css/jquery.syntaxhighlighter-fontOverride.css')}"
           type="text/css" rel="stylesheet" media="screen"/>
 
-    <script src="${createLink(uri: '/libs/jquery.scrollto.min.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/jquery.scrollTo-1.4.3.1.js')}" type="text/javascript"></script>
 
     <script src="${createLink(uri: '/libs/jquery.ba-throttle-debounce.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/jquery.sizes.js')}" type="text/javascript"></script>
@@ -66,6 +66,11 @@
         baseUrl:'${createLink(uri: '/libs/jquery.syntaxhighlighter')}',
         prettifyBaseUrl:'${createLink(uri: '/libs/prettify')}'
     });
+</script>
+
+<script id='scrollConfig' type="text/javascript">
+    var scrollOffset = {top: -codeReview.navbarOffset};
+    var scrollDuration = 200;
 </script>
 
 <div class="padding">
@@ -172,11 +177,6 @@
         return "hsl(" + color + ", 50%, 50%)"
     }
 
-    $.ScrollTo.configure({
-        offsetTop:codeReview.navbarOffset,
-        duration:200
-    });
-
     $().ready(function () {
         codeReview.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser', 'filterChooser', 'diffAndFileListing');
 
@@ -222,13 +222,9 @@
     $(document)
             .ajaxStart(function () {
                 loadingGritter =  $.gritter.add({
-                    // (string | mandatory) the heading of the notification
                     title: 'Loading',
-                    // (string | mandatory) the text inside the notification
-                    text: 'Next changesets are currently loading.',
-                    // (string | optional) the image to display on the left
+                    text: 'New data is currently loaded.',
                     image: '${createLink(uri: '/css/images/328.gif')}',
-                    // (bool | optional) if you want it to fade out on its own or just sit there
                     sticky: true
                 });
             }).ajaxStop(function () {
