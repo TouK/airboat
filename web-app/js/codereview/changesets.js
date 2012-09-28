@@ -203,7 +203,7 @@ $('.projectFile .accordion-body.collapse').livequery(function () {
             var projectFileId = projectFile.id;
             appendSnippetToFileInAccordion(changesetIdentifier, projectFileId);
             showFile(changesetIdentifier, projectFileId, function ($fileListing) {
-                $fileListing.ScrollTo();
+                $.scrollTo($fileListing, scrollDuration, {offset: scrollOffset});
             });
             $.observable(projectFile).setProperty('isDisplayed', true);
         });
