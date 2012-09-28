@@ -85,6 +85,40 @@ class GitRepositoryService {
         prepareGitChangesets(logOutput, git.repository.workTree, maxChangesetsToImport)
     }
 
+    def getLastChangesets(String scmUrl, int maxChangesetsToImport = Integer.MAX_VALUE) {
+        Git git = prepareGit(scmUrl)
+
+        def logOutput = []
+        def commits
+        try {
+            commits = git.log().setMaxCount(maxChangesetsToImport).call()
+        } catch (GitAPIException e) {
+            throw new RuntimeException("Failed to pull changes to project $scmUrl", e)
+        }
+        for (RevCommit commit : commits) {
+            logOutput << commit
+        }
+        prepareGitChangesets(logOutput, git.repository.workTree, maxChangesetsToImport)
+    }
+
+    def getRestChangesets(String scmUrl, String oldestChangesetPathSpec, int maxChangesetsToImport = Integer.MAX_VALUE) {
+        Git git = prepareGit(scmUrl)
+        def oldestChangesetId = git.repository.resolve(oldestChangesetPathSpec)
+
+        def logOutput = []
+        def commits
+        try {
+            commits = git.log().add(oldestChangesetId).setMaxCount(maxChangesetsToImport).call()
+        } catch (GitAPIException e) {
+            throw new RuntimeException("Failed to pull changes to project $scmUrl", e)
+        }
+        for (RevCommit commit : commits) {
+            logOutput << commit
+        }
+        logOutput.sort {a , b -> b.commitTime <=> a.commitTime }
+        prepareGitChangesets(logOutput.drop(1), git.repository.workTree, maxChangesetsToImport)
+    }
+
     private List<GitChangeset> prepareGitChangesets(Iterable<RevCommit> logOutput, File workTree, int maxChangesetsToImport) {
         def logIterator = logOutput.iterator()
         def changesets = []

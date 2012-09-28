@@ -37,7 +37,7 @@ class ChangesetController {
         }
         def changesetsProperties = changesets.collect this.&convertToChangesetProperties
         changesetsProperties = groupChangesetPropertiesByDay(changesetsProperties)
-        render changesetsProperties as JSON
+        render ([changesets: changesetsProperties, isImporting: isImporting(projectName)] as JSON)
     }
 
     def getLastFilteredChangesets(String filterType) {
@@ -50,7 +50,7 @@ class ChangesetController {
         }
         def changesetsProperties = changesets.collect this.&convertToChangesetProperties
         changesetsProperties = groupChangesetPropertiesByDay(changesetsProperties)
-        render changesetsProperties as JSON
+        render ([changesets: changesetsProperties, isImporting: isImporting()] as JSON)
     }
 
     private List<Changeset> getLastChagesetsFromProject(String projectName) {
@@ -60,26 +60,29 @@ class ChangesetController {
     }
 
     def getNextFewChangesetsOlderThan(Long changesetId) {
-        renderChangesetsGroups(getNextFewChangesetsFromAllProjects(changesetId))
+        def changesetsProperties = getChangesetsGroups(getNextFewChangesetsFromAllProjects(changesetId))
+        render ([changesets: changesetsProperties, isImporting: isImporting()] as JSON)
     }
 
     def getNextFewChangesetsOlderThanFromSameProject(Long changesetId) {
-        renderChangesetsGroups(getNextFewChangesetsFromSameProject(changesetId))
+        def projectName = Changeset.findById(changesetId).project.name
+        def changesetsProperties = getChangesetsGroups(getNextFewChangesetsFromSameProject(changesetId))
+        render ([changesets: changesetsProperties, isImporting: isImporting(projectName)] as JSON)
     }
 
     def getNextFewFilteredChangesetsOlderThan(Long changesetId, String filterType) {
         def filterServices = [commentedChangesets: commentedChangesetsFilterService, myCommentsAndChangesets: myCommentsAndChangesetsFilterService]
-        renderChangesetsGroups(filterServices.get(filterType).getNextFilteredChangesets(changesetId))
+        def changesetsProperties = getChangesetsGroups(filterServices.get(filterType).getNextFilteredChangesets(changesetId))
+        render ([changesets: changesetsProperties, isImporting: isImporting()] as JSON)
     }
 
-    private void renderChangesetsGroups(List<Changeset> nextFewChangesets) {
+    private def getChangesetsGroups(List<Changeset> nextFewChangesets) {
         def changesetsProperties = nextFewChangesets.collect this.&convertToChangesetProperties
-        changesetsProperties = groupChangesetPropertiesByDay(changesetsProperties)
-        render changesetsProperties as JSON
+        return groupChangesetPropertiesByDay(changesetsProperties)
     }
 
     private def groupChangesetPropertiesByDay(changesetsProperties) {
-        changesetsProperties.groupBy { it.date.substring(0, 10) }
+        return changesetsProperties.groupBy { it.date.substring(0, 10) }
     }
 
     private List<Changeset> getNextFewChangesetsFromAllProjects(Long changesetId) {
@@ -190,6 +193,14 @@ class ChangesetController {
             render(view: 'index', model: [projects: Project.all, type: 'filter', filterType: filter])
         } else {
             response.sendError(404, 'There is no such filter')
+        }
+    }
+
+    private def isImporting(projectName = null) {
+        if (projectName) {
+            return Project.findAllByNameAndWasOnceFullyImported(projectName, false).size() > 0
+        } else {
+            return Project.findAllByWasOnceFullyImported(false).size() > 0
         }
     }
 }

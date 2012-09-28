@@ -16,10 +16,52 @@ class ProjectUpdateJob {
 
     def execute() {
         time("execution of ProjectUpdateJob") {
+            Project.all.each {Project project ->
+                try {
+                    initialImport(project)
+                } catch (RuntimeException e) {
+                    log.error(e.stackTrace.toString(), e)
+                }
+            }
+
             Project.all.each { Project project ->
-                update(project)
+                try {
+                    if (!project.wasOnceFullyImported) {
+                        fullImport(project)
+                    }
+                    update(project)
+                } catch (RuntimeException e) {
+                    log.error(e.stackTrace.toString(), e)
+                }
             }
         }
+    }
+
+    def initialImport(Project project) {
+        Project.withTransaction({DefaultTransactionStatus ignoredStatus ->
+            time("initial import of $project.url") {
+                scmAccessService.updateOrCheckOutRepository(project.url)
+                def changesetNum = Changeset.findAllByProject(project).size()
+                if(changesetNum == 0) {
+                    scmAccessService.importLastChangesets(project.url)
+                }
+            }
+        })
+    }
+
+    def fullImport(Project project) {
+        Project.withTransaction({DefaultTransactionStatus ignoredStatus ->
+            time("full import of $project.url") {
+                scmAccessService.updateOrCheckOutRepository(project.url)
+                Changeset oldestChangeset = Changeset.findByProject(project, [sort: 'date', order: 'asc'])
+                if(oldestChangeset != null) {
+                    scmAccessService.importRestChangesets(project.url, oldestChangeset.identifier)
+                    project.wasOnceFullyImported = true
+                } else {
+                    scmAccessService.importLastChangesets(project.url)
+                }
+            }
+        })
     }
 
     def update(Project project) {

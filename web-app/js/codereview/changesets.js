@@ -2,14 +2,18 @@ function showProject(projectName) {
     $.observable(codeReview).setProperty('displayedProjectName', projectName);
     changesetsLoading = true;
     $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:codeReview.displayedProjectName}),
-        function(data) {clearDisplayAndAppendChangesetsBottom({changesets: data, shouldLoad: true, viewType: VIEW_TYPE.PROJECT, activeSelector: '#projectsDropdown'})});
+        function (data) {
+            clearDisplayAndAppendChangesetsBottom({data:data, shouldLoad:true, viewType:VIEW_TYPE.PROJECT, activeSelector:'#projectsDropdown'})
+        });
 }
 
 function showFiltered(filterType) {
     $.observable(codeReview).setProperty('currentFilter', filterType);
     changesetLoading = true;
     $.getJSON(uri.changeset.getLastFilteredChangesets + '?' + $.param({filterType:codeReview.currentFilter}),
-        function(data) {clearDisplayAndAppendChangesetsBottom({changesets: data, shouldLoad: true, viewType: VIEW_TYPE.FILTER, activeSelector: '#filtersDropdown'})});
+        function (data) {
+            clearDisplayAndAppendChangesetsBottom({data:data, shouldLoad:true, viewType:VIEW_TYPE.FILTER, activeSelector:'#filtersDropdown'})
+        });
 }
 
 function clearDisplayAndAppendChangesetsBottom(dataset) {
@@ -17,7 +21,52 @@ function clearDisplayAndAppendChangesetsBottom(dataset) {
     currentViewType = dataset.viewType;
     $('#content').html("");
     setActive(dataset.activeSelector)
+    appendChangesetsBottom(dataset.data.changesets);
+    decideImportInfoAndLoadingState(dataset.data, 21); //as in Constants.FIRST_LOAD_CHANGESET_NUMBER
+}
+
+function appendNextChangesetsBottom(dataset) {
     appendChangesetsBottom(dataset.changesets);
+    decideImportInfoAndLoadingState(dataset, 10); //as in Constants.NEXT_LOAD_CHANGESET_NUMBER
+}
+
+function decideImportInfoAndLoadingState(data, maxChangesetSize) {
+    showImportGritter(data.isImporting);
+    if (countChangesets(data.changesets) < maxChangesetSize) {
+        $('#content').append($('#noMoreChangesetsTemplate').render());
+        shouldLoadChangesets = false;
+    }
+}
+
+var importGritter
+function showImportGritter(isImporting) {
+    var importInfo;
+    var shouldHide = false;
+    if (currentViewType == VIEW_TYPE.PROJECT && codeReview.displayedProjectName != '') {
+        importInfo = 'Import is in progress, older changesets may not by imported yet.'
+        shouldHide = true;
+    } else {
+        importInfo = 'Import is in progress, some changesets may not be displayed. To see all changesets wait' +
+            ' a while and refresh page or go into single project view.'
+    }
+    if (importGritter != null && (shouldHide || isImporting)) {
+        $.gritter.remove(importGritter, {fade:false});
+    }
+    if (isImporting) {
+        importGritter = $.gritter.add({
+            title:'Import in progress',
+            text:importInfo,
+            sticky:true
+        });
+    }
+}
+
+function countChangesets(changesetsByDay) {
+    var counter = 0;
+    for (day in changesetsByDay) {
+        counter += changesetsByDay[day].length;
+    }
+    return counter;
 }
 
 function setActive(selector) {
@@ -46,7 +95,9 @@ function loadMoreChangesets() {
             controllerAction = uri.changeset.getNextFewFilteredChangesetsOlderThan;
             paramsMap['filterType'] = codeReview.currentFilter;
         }
-        $.getJSON(controllerAction + '?' + $.param(paramsMap), appendChangesetsBottom);
+        $.getJSON(controllerAction + '?' + $.param(paramsMap), function (data) {
+            appendNextChangesetsBottom(data)
+        });
     }
 }
 
@@ -214,7 +265,7 @@ function renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, thre
         .syntaxHighlight();
 
     for (i = 0; i < threadGroupWithSnippet.threads.length; i++) {
-        var threadTemplate = $("#threadTemplate").render({threadId: threadGroupWithSnippet.threads[i].threadId, changesetId: changesetIdentifier, projectFileId: projectFileId});
+        var threadTemplate = $("#threadTemplate").render({threadId:threadGroupWithSnippet.threads[i].threadId, changesetId:changesetIdentifier, projectFileId:projectFileId});
         $(threadTemplate).appendTo(snippetObject.find('.threads'));
         var commentsInThread = snippetObject.find('.threadComments[data-identifier=' + threadGroupWithSnippet.threads[i].threadId + ']');
         renderCommentGroup(commentsInThread, threadGroupWithSnippet.threads[i].comments);

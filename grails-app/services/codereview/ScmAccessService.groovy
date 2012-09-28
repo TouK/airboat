@@ -22,6 +22,14 @@ class ScmAccessService {
         importChangesets(projectScmUrl, gitRepositoryService.getNewChangesets(projectScmUrl, hashOfLastChangeset, maxChangesetsToImport))
     }
 
+    void importLastChangesets(String projectScmUrl, int maxChangesetsToImport = 50) {
+        importChangesets(projectScmUrl, gitRepositoryService.getLastChangesets(projectScmUrl, maxChangesetsToImport))
+    }
+
+    void importRestChangesets(String projectScmUrl, String hashOfOldestChangeset, int maxChangesetsToImport = Integer.MAX_VALUE) {
+        importChangesets(projectScmUrl, gitRepositoryService.getRestChangesets(projectScmUrl, hashOfOldestChangeset, maxChangesetsToImport))
+    }
+
     private void importChangesets(String projectScmUrl, List<GitChangeset> gitChangesets) {
         def project = Project.findByUrl(projectScmUrl)
         gitChangesets.each { importChangeset(it, project) }

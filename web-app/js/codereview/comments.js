@@ -18,7 +18,7 @@ function addComment(changesetId, changesetIdentifier) {
                 $('.addLongCommentMessageToChangeset').html("");
             } else {
                 $('.addLongCommentMessageToChangeset')
-                    .html($('#longCommentTemplate').render(" Your comment is too long!"))
+                    .html($('#errorCommentTemplate').render(" Your comment is too long!"))
                     .hide().fadeIn();
             }
         },
@@ -42,12 +42,12 @@ function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
                 hideAndClearLineCommentForm(changesetIdentifier, projectFileId);
             } else if (threadGroupsWithSnippetsForCommentedFile.errors.code == "maxSize.exceeded") {
                 $('.addLongCommentMessage')
-                    .html($('#longCommentTemplate')
+                    .html($('#errorCommentTemplate')
                     .render(" Your comment is too long!"))
                     .hide().fadeIn();
             } else if(threadGroupsWithSnippetsForCommentedFile.errors.code == "blank"){
                 $('.addLongCommentMessage')
-                    .html($('#longCommentTemplate')
+                    .html($('#errorCommentTemplate')
                     .render("Comment can't be empty"))
                     .hide().fadeIn();
             }
@@ -67,13 +67,13 @@ function addReply(threadId, changesetIdentifier, projectFileId){
             }
             else if (threadGroupsWithSnippetsForCommentedFile.errors.code == "maxSize.exceeded") {
                 $('.threadReplyInfo[data-identifier=' + threadId + ']')
-                    .html($('#longCommentTemplate')
+                    .html($('#errorCommentTemplate')
                     .render(" Your comment is too long!"))
                     .hide().fadeIn();
             }
             else if (threadGroupsWithSnippetsForCommentedFile.errors.code == "blank") {
                 $('.threadReplyInfo[data-identifier=' + threadId + ']')
-                    .html($('#longCommentTemplate')
+                    .html($('#errorCommentTemplate')
                     .render("Comment can't be empty!"))
                     .hide().fadeIn();
             }

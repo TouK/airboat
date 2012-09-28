@@ -36,6 +36,22 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
         changesets[1].files != null
     }
 
+    def "should get fifty changesets (last)"() {
+        when:
+        def changesets = gitRepositoryService.getLastChangesets(projectUrl, 50)
+
+        then:
+        changesets.size() == 50
+    }
+
+    def 'should get older changesets than given'() {
+        when:
+        def changesets = gitRepositoryService.getRestChangesets(projectUrl, Fixture.SECOND_COMMIT_INCLUDING_APPLICATION_PROPERTIES)
+
+        then:
+        changesets.size() == Fixture.SECOND_COMMIT_INCLUDINF_APPLICATION_PROPERTIES_NUMBER -1;
+    }
+
     def "should get only newer changesets"() {
         given:
         def changesets = gitRepositoryService.getAllChangesets(projectUrl, (int) Fixture.LOWER_BOUND_FOR_NUMBER_OF_COMMITS / 2)

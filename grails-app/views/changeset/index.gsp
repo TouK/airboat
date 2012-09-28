@@ -71,11 +71,6 @@
     <div id="content"></div>
 </div>
 
-<div class="alert alert-info" id="loading" style='display: none;'>
-    <div class="well-small"><img id="loading-image" src="${createLink(uri: '/css/images/ajax-loader.gif')}"/> Loading...
-    </div>
-</div>
-
 <script type="text/javascript">
 
     $('body').on('click', '.changeset .basicInfo, .changeset .details .lessButton', function () {
@@ -84,23 +79,21 @@
     });
 
     $('body').on('click', '.projectLink', function (e) {
+        $(document).scrollTop(0);
         if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != this.dataset.project) {
             showProject(this.dataset.project);
             var href = this.dataset.project == '' ? '?' : '?' + $.param({projectName:this.dataset.project});
             history.pushState({dataType:DATA_TYPE.PROJECT, projectName:codeReview.displayedProjectName}, null, href);
-        } else {
-            $(document).scrollTop(0);
         }
         $('#projectsDropdown').removeClass('open');
         return false;
     });
 
     $('body').on('click', '.filterLink', function (e) {
+        $(document).scrollTop(0);
         if (currentViewType != VIEW_TYPE.FILTER || codeReview.currentFilter != this.dataset.filter) {
             showFiltered(this.dataset.filter);
             history.pushState({dataType:DATA_TYPE.FILTER, filterType:codeReview.currentFilter}, null, '?' + $.param({filter:this.dataset.filter}));
-        } else {
-            $(document).scrollTop(0);
         }
         $('#filtersDropdown').removeClass('open');
         return false;
@@ -113,17 +106,14 @@
                 shouldLoadChangesets = false;
                 setAllInactive();
             } else if (e.state.dataType == DATA_TYPE.PROJECT) {
+                $(document).scrollTop(0);
                 if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != e.state.projectName) {
-                    ;
                     showProject(e.state.projectName);
-                } else {
-                    $(document).scrollTop(0);
                 }
             } else if (e.state.dataType == DATA_TYPE.FILTER) {
+                $(document).scrollTop(0);
                 if (currentViewType != VIEW_TYPE.FILTER || codeReview.currentFilter != e.state.filterType) {
                     showFiltered(e.state.filterType);
-                } else {
-                    $(document).scrollTop(0);
                 }
             }
         }
@@ -211,11 +201,22 @@
         $('body').on('codeReview-pageStructureChanged')
     });
 
+    var currentGritter;
+
     $(document)
             .ajaxStart(function () {
-                $('#loading').show();
+                currentGritter =  $.gritter.add({
+                    // (string | mandatory) the heading of the notification
+                    title: 'Loading',
+                    // (string | mandatory) the text inside the notification
+                    text: 'Next changesets are currently loading.',
+                    // (string | optional) the image to display on the left
+                    image: '${createLink(uri: '/css/images/328.gif')}',
+                    // (bool | optional) if you want it to fade out on its own or just sit there
+                    sticky: true
+                });
             }).ajaxStop(function () {
-                $('#loading').hide();
+                $.gritter.remove(currentGritter, {fade: true});
                 $('body').trigger('codeReview-pageStructureChanged') //most probably
             });
 
@@ -551,13 +552,22 @@
     </div>
 </script>
 
-<script id="longCommentTemplate" type="text/x-jsrender">
+<script id="errorCommentTemplate" type="text/x-jsrender">
 
     <div class="alert alert-block">
         {{: #data }}
 
     </div>
 </script>
+
+<script id="noMoreChangesetsTemplate" type="text/x-jsrender">
+
+    <div class="row-fluid">
+        <div class='offset4 span4 well margin-top-small'><g:message code='noMoreChangesets'/></div>
+
+    </div>
+</script>
+
 </div>
 </body>
 </html>
