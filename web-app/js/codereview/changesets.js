@@ -9,7 +9,7 @@ function showProject(projectName) {
 
 function showFiltered(filterType) {
     $.observable(codeReview).setProperty('currentFilter', filterType);
-    changesetLoading = true;
+    codeReview.changesetLoading = true;
     $.getJSON(uri.changeset.getLastFilteredChangesets + '?' + $.param({filterType:codeReview.currentFilter}),
         function (data) {
             clearDisplayAndAppendChangesetsBottom({data:data, shouldLoad:true, viewType:VIEW_TYPE.FILTER, activeSelector:'#filtersDropdown'})
@@ -101,16 +101,13 @@ function loadMoreChangesets() {
     }
 }
 
-var VIEW_TYPE = { SINGLE_CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
-var DATA_TYPE = { CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
-
 var lastLoadedChangesetId;
 var changesetsLoading;
 var shouldLoadChangesets;
 var currentViewType;
 
 function appendChangesetsBottom(changesetsByDay) {
-    for (day in changesetsByDay) {
+    for (var day in changesetsByDay) {
         //find or create day container
         var dayElement = getDayContainer(day);
         if (dayElement.length == 0) {
@@ -119,7 +116,7 @@ function appendChangesetsBottom(changesetsByDay) {
         }
         dayElement = getDayContainer(day);
         var changesetsForDay = changesetsByDay[day];
-        for (i = 0; i < changesetsForDay.length; i++) {
+        for (var i = 0; i < changesetsForDay.length; i++) {
             appendChangeset(changesetsForDay[i], dayElement);
             lastLoadedChangesetId = changesetsForDay[i].id;
         }
@@ -140,13 +137,13 @@ $('.changeset-hash').livequery(function () {
                 });
             showClippyAndTooltip.call(this);
         }, function () {
-            var that = this
+            var that = this;
             setTimeout(function () {
                 hideSpanForClippy(that);
                 removeClippyObject(that);
             }, 5000)
         });
-})
+});
 
 function hideSpanForClippy(that) {
     $('.hashForClippy-' + that.dataset.changeset_identifier).hide()
@@ -164,18 +161,18 @@ function removeClippyObject(that) {
 
 $('.changeset-date').livequery(function () {
     $(this).tooltip({title:this.dataset.date, trigger:"hover", placement:"bottom"});
-})
+});
 
 function appendChangeset(changeset, dayElement) {
 
     changeset['shortIdentifier'] = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
     changeset['allComments'] = function () {
-        var projectFilesComments = 0
+        var projectFilesComments = 0;
         $(this.projectFiles).each(function () {
             projectFilesComments += this.commentsCount
-        })
+        });
         return this.comments.length + projectFilesComments
-    }
+    };
 
     $(changeset.projectFiles).each(function () {
         $.extend(this, {
@@ -184,27 +181,22 @@ function appendChangeset(changeset, dayElement) {
             name:sliceName(this.name),
             isDisplayed:false
         })
-    })
+    });
 
     dayElement.children('.changesets').append($("<span id='templatePlaceholder'></span>"));
-    $.link.changesetTemplate('#templatePlaceholder', changeset, {target:'replace'})
+    $.link.changesetTemplate('#templatePlaceholder', changeset, {target:'replace'});
 
     $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render(changeset));
 }
 
 /*TODO move it somewhere near the template definition*/
-$('.accordion-body.collapse').livequery(function () {
+$('.projectFile .accordion-body.collapse').livequery(function () {
     $(this)
         .on('show',function (event) {
             if (this.dataset.projectfile_comments == 0) {
                 event.preventDefault();
-                appendSnippetAndShowFile.call(this);
-                $.observable(codeReview.getModel(this)).setProperty('isDisplayed', true);
             }
-            else {
-                appendSnippetAndShowFile.call(this);
-            }
-        }).on('shown', function () {
+            appendSnippetAndShowFile.call(this);
             $.observable(codeReview.getModel(this)).setProperty('isDisplayed', true);
         });
 });
@@ -217,7 +209,7 @@ function appendSnippetAndShowFile() {
 function updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId) {
     renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippetsForCommentedFile);
     var projectFile = codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + '] .projectFile[data-id=' + projectFileId + ']');
-    $.observable(projectFile).setProperty('commentsCount', threadGroupsWithSnippetsForCommentedFile.commentsCount)
+    $.observable(projectFile).setProperty('commentsCount', threadGroupsWithSnippetsForCommentedFile.commentsCount);
     $.observable(codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + ']')).setProperty('allComments')
 }
 
@@ -238,7 +230,7 @@ function renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, thr
     if (threadGroupsWithSnippets.length > 0) {
         $('#fileComments-' + changesetIdentifier + projectFileId).html("");
 
-        for (j = 0; j < threadGroupsWithSnippets.length; j++) {
+        for (var j = 0; j < threadGroupsWithSnippets.length; j++) {
             renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippets[j], fileType);
         }
     }
@@ -253,7 +245,7 @@ function renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, thre
         changesetId:changesetIdentifier
     });
 
-    var fileComments = $('#fileComments-' + changesetIdentifier + projectFileId)
+    var fileComments = $('#fileComments-' + changesetIdentifier + projectFileId);
     var snippetObject = $(snippet).appendTo(fileComments);
 
     snippetObject.children('.codeSnippet')
@@ -265,7 +257,7 @@ function renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, thre
         .syntaxHighlight();
 
     for (i = 0; i < threadGroupWithSnippet.threads.length; i++) {
-        var threadTemplate = $("#threadTemplate").render({threadId:threadGroupWithSnippet.threads[i].threadId, changesetId:changesetIdentifier, projectFileId:projectFileId});
+        var threadTemplate = $("#threadTemplate").render({threadId: threadGroupWithSnippet.threads[i].threadId, changesetId: changesetIdentifier, projectFileId: projectFileId});
         $(threadTemplate).appendTo(snippetObject.find('.threads'));
         var commentsInThread = snippetObject.find('.threadComments[data-identifier=' + threadGroupWithSnippet.threads[i].threadId + ']');
         renderCommentGroup(commentsInThread, threadGroupWithSnippet.threads[i].comments);
@@ -287,8 +279,20 @@ function toggleChangesetDetails(identifier) {
     var changesetDetails = $('#changesetDetails-' + identifier);
     if (changesetDetails.is(':visible')) {
         changesetDetails.slideUp('slow', function () {
-            hideFileAndScrollToChangesetTop(identifier)
-        })
+            hideFileListings($('.changeset[data-identifier=' + identifier + '] .fileListing'));
+
+            //TODO make the hideFileListings give a callback after all file listings are hidden,
+            // or deal with the following. Providing the mentioned callback is not-so-straightforward, as $().hide()
+            // calls its callback for every hidden element...
+            var fileListingsWrapper = $('.changeset[data-identifier=' + identifier + '] .fileListings');
+            fileListingsWrapper.hide(0, function () {
+                $('.changeset[data-identifier=' + identifier + ']').ScrollTo({
+                    callback:function () {
+                        fileListingsWrapper.show();
+                    }
+                });
+            });
+        });
     } else {
         changesetDetails.slideDown();
     }

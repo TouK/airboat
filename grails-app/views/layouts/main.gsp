@@ -23,9 +23,8 @@
                 addReply:"${createLink(uri: '/lineComment/addReply')}"
             },
             projectFile:{
-                getFileWithContent:"${createLink(uri:'/projectFile/getFileWithContent/')}",
-                getLineCommentsWithSnippetsToFile:"${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}",
-                getDiffWithPreviousRevision:"${createLink(uri:'/projectFile/getDiffWithPreviousRevision/')}"
+                getFileListings:"${createLink(uri:'/projectFile/getFileListings/')}",
+                getLineCommentsWithSnippetsToFile:"${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}"
             },
             user:{
                 changePassword:"${createLink(uri: '/user/changePassword')}"
@@ -42,6 +41,9 @@
             }
         }
 
+        var VIEW_TYPE = { SINGLE_CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
+        var DATA_TYPE = { CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
+
         var codeReview = {
             navbarOffset: 55
 
@@ -51,6 +53,8 @@
             , displayedProjectName: ''
 
             , currentFilter: ''
+            , currentViewType: null
+            , shouldLoadChangesets: true
 
             , debugMode: true
 

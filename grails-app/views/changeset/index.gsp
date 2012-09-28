@@ -19,14 +19,15 @@
 
     <script src="${createLink(uri: '/libs/jquery.ba-throttle-debounce.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/jquery.sizes.js')}" type="text/javascript"></script>
-    <script src="${createLink(uri: '/libs/jquery.floatWithin.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/js/jquery.floatWithin.js')}" type="text/javascript"></script>
 
     <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
+    <link href=" ${createLink(uri: '/css/diffs.less')}" type="text/less" rel="stylesheet" media="screen"/>
     <script src="${createLink(uri: '/js/codereview/files.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/js/codereview/diffs.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/codereview/changesets.js')}" type="text/javascript"></script>
 
     <script src="${createLink(uri: '/libs/clippy/jquery.clippy.js')}" type="text/javascript"></script>
-    <script src="${createLink(uri: '/libs/clippy/swfobject.js')}" type="text/javascript"></script>
 </head>
 
 <body>
@@ -103,7 +104,7 @@
         if (e.state != null) {
             if (e.state.dataType == DATA_TYPE.CHANGESET) {
                 window.location.href = '?' + $.param({projectName:e.state.projectName, changesetId:e.state.changesetId});
-                shouldLoadChangesets = false;
+                codeReview.shouldLoadChangesets = false;
                 setAllInactive();
             } else if (e.state.dataType == DATA_TYPE.PROJECT) {
                 $(document).scrollTop(0);
@@ -136,33 +137,36 @@
         }
     });
 
-    iconForChangeType = {
+    var iconForChangeType = {
         ADD:'icon-plus',
         DELETE:'icon-minus',
         MODIFY:'icon-edit',
         RENAME:'icon-pencil',
         COPY:'icon-move'
-    }
+    };
 
-    textForChangeType = {
+    var textForChangeType = {
         ADD:'added',
         DELETE:'deleted',
         MODIFY:'modified',
         RENAME:'renamed',
         COPY:'copied'
-    }
+    };
 
     function colorFromMd5Hash(md5hash) {
-        var colorCount = 18
+        var colorCount = 18;
         var numberOfHuesInHSL = 360;
-        var color = (numberOfHuesInHSL / colorCount) * (parseInt(md5hash, 16) % colorCount)
+        var color = (numberOfHuesInHSL / colorCount) * (parseInt(md5hash, 16) % colorCount);
         return "hsl(" + color + ", 50%, 50%)"
     }
 
-    $().ready(function () {
-        codeReview.initialFirstChangesetOffset = $('#content').position().top
+    $.ScrollTo.configure({
+        offsetTop:codeReview.navbarOffset,
+        duration:200
+    });
 
-        codeReview.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser', 'filterChooser');
+    $().ready(function () {
+        codeReview.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser', 'filterChooser', 'diffAndFileListing');
 
         $.link.loginStatusTemplate('#loginStatus', codeReview, {target:'replace'});
         $.link.projectChooserTemplate('#projectChooser', codeReview, {target:'replace'});
@@ -172,8 +176,8 @@
             appendChangesetsBottom(${changeset});
             toggleChangesetDetails("${changesetId}");
             history.replaceState({dataType:'${type}', changeset: ${changeset ?: "''"}, changesetId:"${changesetId}", projectName:'${projectName}' }, null);
-            shouldLoadChangesets = false;
-            currentViewType = VIEW_TYPE.SINGLE_CHANGESET; // if there will be scrolling to changeset view type might be PROJECT
+            codeReview.shouldLoadChangesets = false;
+            codeReview.currentViewType = VIEW_TYPE.SINGLE_CHANGESET; // if there will be scrolling to changeset view type might be PROJECT
             setAllInactive();
         } else if ('${type}' == DATA_TYPE.PROJECT) {
 
@@ -185,7 +189,7 @@
             history.replaceState({dataType:'${type}', projectName:codeReview.displayedProjectName}, null);
 
         } else if ('${type}' == DATA_TYPE.FILTER) {
-            showFiltered('${filterType}')
+            showFiltered('${filterType}');
             history.replaceState({dataType:'${type}', filterType:codeReview.currentFilter }, null)
         }
 
@@ -312,20 +316,22 @@
 </script>
 
 <script>
-    $.fn.floatWithin.defaults.offset = 55
+    $.fn.floatWithin.defaults.offset = 55;
 
     $('.changeset .left.column').livequery(function () {
-        $(this).floatWithin('.changeset')
-    })
+        $(this).floatWithin('.changeset');
+    });
 
     $('.changeset .closeButton').livequery(function () {
         $(this).click(function (event) {
             event.stopImmediatePropagation();
             var changeset = $(this).parents('.changeset').first();
-            var identifier = codeReview.getModel(changeset).identifier
-            hideFileAndScrollToChangesetTop(identifier)
-        })
-    })
+            var changesetIdentifier = codeReview.getModel(changeset).identifier;
+            var projectFile = $(this).parents('.projectFile').first();
+            var projectFileId = codeReview.getModel(projectFile).id;
+            hideFileAndScrollToPreviousFileOrChangesetTop(changesetIdentifier, projectFileId);
+        });
+    });
 </script>
 
 <script id="changesetTemplate" type="text/x-jsrender">
@@ -384,7 +390,9 @@
                 <h5>Changed files:</h5>
 
                 <div class="projectFiles accordion margin-bottom-small" id="accordion-{{>identifier}}">
+
                     {{for projectFiles tmpl='#projectFileRowTemplate' /}}
+
                 </div>
 
                 <a class="wideButton lessButton">
@@ -393,31 +401,32 @@
             </div>
         </div>
 
+        %{--FIXME work on structure here --}%
         <div class="fileListings span7">
-            <div class="fileListing well" style="display: none;">
-
-                <i class="closeButton icon-remove pull-right"
-                   onclick="hideFileAndScrollToChangesetTop('{{:identifier}}')"></i>
-
-                <div class='pullLeft'>
-                    <button type="button" class="btn btn-primary" onClick="showDiff('{{:identifier}}')"
-                            id="button-showing-diff-{{:identifier}}">Show diff</button>
-                    <button type="button" class="btn btn-primary" onClick="hideDiff('{{:identifier}}')"
-                            style="display:none"
-                            id="button-hiding-diff-{{:identifier}}">Hide diff</button>
-                </div>
-
-                <div class='clearfix'/>
-
-                <br/>
-
-                <div id="diff-box-{{:identifier}}" style="display: none"></div>
-
-                <div id="content-files-{{>identifier}}"></div>
-
-            </div>
+            {{for projectFiles tmpl='#projectFileListingTemplate' /}}
         </div>
     </div>
+</script>
+
+<script id='projectFileListingTemplate' type="text/x-jsrender">
+    <div class="projectFile fileListing well" style="display: none;" data-id={{:id}}>
+
+        <i class="closeButton icon-remove pull-right"> </i>
+        <br/>
+
+        <div class="diffAndFileListing">
+
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    $("body").on('change', '.fileListing input[name="showWholeFile"]', function() {
+        var diffViewer = $(this).parents('.diffAndListingViewer')[0];
+        var listing = codeReview.getModel(diffViewer);
+        $.observable(listing).setProperty('showWholeFile', this.checked);
+        removeLineCommentPopover($(this).parents('.fileListing'));
+    })
 </script>
 
 <script id="projectFileRowTemplate" type="text/x-jsrender">
@@ -439,8 +448,7 @@
                    class="{{: ~iconForChangeType(changeType.name) }}"></i>
                 <span data-link="class{: isDisplayed ? '' : 'linkText' }">{{:name}}</span>
                 <i class="closeButton icon-remove"
-                   data-link="style{: 'display:' + (isDisplayed ? 'inline-block' : 'none') }"
-                   onclick="hideFileAndScrollToChangesetTop('{{:changeset.identifier}}')"> </i>
+                   data-link="style{: 'display:' + (isDisplayed ? 'inline-block' : 'none') }"> </i>
                 <span class="pull-right" data-link="visible{: commentsCount != 0 }">
                     <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
                 </span>
@@ -490,23 +498,93 @@
     <div class="clearfix"></div>
 </script>
 
+<script id='diffAndFileListingTemplate' type="text/x-jsrender">
+    <div class='diffAndListingViewer'>
+
+        <div class='pullLeft'>
+            <label class="checkbox">
+                <input type="checkbox" name='showWholeFile' data-link="checked{:showWholeFile}">show whole file
+            </label>
+        </div>
+        <div class='clearfix'/>
+
+        %{--TODO get rid of this conditional display and make changest to undrelying collections instead--}%
+        <div data-link="visible{:showWholeFile}">
+            {{for [wholeFileHunks] tmpl='#diffTemplate' ~fileType=fileType ~showWholeFile=true/}}
+        </div>
+
+        <div data-link="visible{:!showWholeFile}">
+            {{for [diffHunks] tmpl='#diffTemplate' ~fileType=fileType ~showWholeFile=false/}}
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+
+    $('.diff [class|=language]').livequery(function () {
+
+        $.SyntaxHighlighter.init({
+            load:false,
+            highlight:false,
+            lineNumbers:true,
+            stripInitialWhitespace:false,
+            stripEmptyStartFinishLines:false
+        });
+
+        $(this).syntaxHighlight();
+
+        $(this).find('li').each(function() {
+            var $listingLine = $(this);
+            if ($listingLine.parents('.removed').length == 0) {
+                $listingLine.click(function () {
+                    var fileListing = $listingLine.parents('.fileListing')[0];
+                    var projectFile = codeReview.getModel(fileListing);
+                    checkCanAddLineCommentAndShowForm($listingLine, projectFile)
+                })
+            }
+        })
+    })
+</script>
+
+<script id="diffTemplate" type="text/x-jsrender">
+    {{for #data ~count=#data.length }}
+    <div class='diff row-fluid'>
+        {{for diffSpans}}
+        <div class='diffRow row-fluid'>
+            {{if oldFile }}
+            <div data-link="class{:oldFile ? 'removed' : '' }">
+                <pre class="language-{{: ~fileType}} noLinenums">{{> oldFile.text }}</pre>
+            </div>
+            {{/if}}
+            {{if context || newFile }}
+            <div data-link="class{:newFile ? 'added' : '' }">
+                <pre class="language-{{: ~fileType}} linenums:{{:newFileStartLine}}">{{> context ? context.text : newFile.text }}</pre>
+            </div>
+            {{/if}}
+        </div>
+        {{/for}}
+    </div>
+    {{if !~showWholeFile && #index < ~count - 1 }}
+    <p>...</p>
+    {{/if}}
+    {{/for}}
+</script>
+
 <!-- FIXME reuse comment form template for both types of comments -->
 <script id="addLineCommentFormTemplate" type="text/x-jsrender">
+        <form>
+            <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..." class='span4' rows='3'></textarea>
 
-    <form class=".form-inline">
+            <div class="addLongCommentMessage"></div>
 
-        <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..."
-                  style="height:100px;width:95%;"></textarea>
-
-        <div class="addLongCommentMessage"></div>
-
-        <div class="btn-group pull-right">
-            <button type="button" class="btn btn-primary" id="addCommentButton-{{>fileId}}"
-                    onClick="addLineComment('{{>changesetId}}', '{{>fileId}}', '{{>lineNumber}}')">Add comment</button>
-            <button type="button" class="btn btn-primary"
-                    onClick="cancelLineComment('{{>fileId}}', '{{>changesetId}}', '{{>lineNumber}}')">Cancel</button>
-        </div>
-    </form>
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-primary"
+                        onClick="addLineComment('{{:changesetId}}', '{{:fileId}}', '{{:lineNumber}}')">Add comment</button>
+                <button type="button" class="btn btn-primary"
+                        onClick="closeLineCommentForm('{{:changesetId}}', '{{:fileId}}')">Cancel</button>
+            </div>
+        </form>
+        <div class='clearfix'/>
 </script>
 
 <script id="cannotAddLineCommentMessageTepmlate" type="text/x-jsrender">
@@ -517,20 +595,20 @@
 
 <script id="commentFormTemplate" type="text/x-jsrender">
 
-    <form id="commentForm-{{>identifier}}" class="margin-bottom-small">
-        <textarea onfocus="expandCommentForm('{{>identifier}}',this)"
-                  id="add-comment-{{>identifier}}" placeholder="Add comment..."
+    <form class="margin-bottom-small">
+        <textarea onfocus="expandCommentForm($(this.parentElement))" placeholder="Add comment..."
                   class="span12" rows="1"></textarea>
+
+        <div class="addLongCommentMessageToChangeset"></div>
+
+        <div class="buttons btn-group pull-right" style="display: none;">
+            <button type="button" class="btn btn-primary btnWarningBackground"
+                    onClick="addComment($(this).parents('form').first(), '{{:identifier}}')">Add comment</button>
+            <button type="button" class="btn btn-primary"
+                    onClick="resetCommentForm($(this).parents('form').first())">Cancel</button>
+        </div>
     </form>
 
-    <div class="addLongCommentMessageToChangeset"></div>
-
-    <div id="commentFormButtons-{{>identifier}}" class="btn-group pull-right" style="display: none;">
-        <button type="button" class="btn btn-primary btnWarningBackground" id="addCommentButton-{{>identifier}}"
-                onClick="addComment('{{:id}}', '{{:identifier}}')">Add comment</button>
-        <button type="button" class="btn btn-primary" id="cancellButton-{{>identifier}}"
-                onClick="resetCommentForm('{{>identifier}}')">Cancel</button>
-    </div>
 
     <div class="clearfix"></div>
 </script>
@@ -556,7 +634,6 @@
 
     <div class="alert alert-block">
         {{: #data }}
-
     </div>
 </script>
 

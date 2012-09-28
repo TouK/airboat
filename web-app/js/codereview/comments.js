@@ -1,20 +1,20 @@
-function addComment(changesetId, changesetIdentifier) {
+function addComment($form, changesetIdentifier) {
 
-    var text = $('#add-comment-' + changesetIdentifier).val();
+    var text = $form.find('textarea').val();
     if (text == "") {
-        return false
+        return false;
     }
 
     $.post(uri.userComment.addComment,
         { changesetIdentifier:changesetIdentifier, text:text },
         function (comment) {
             if (comment.errors == null) {
-                var changeset = codeReview.getModel('.changeset[data-id=' + changesetId + ']');
+                var changeset = codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + ']');
                 var changesetComments = changeset.comments
                 $.observable(changesetComments).insert(changesetComments.length, comment)
                 $.observable(changeset).setProperty('allComments')
 
-                resetCommentForm(changesetIdentifier);
+                resetCommentForm($form);
                 $('.addLongCommentMessageToChangeset').html("");
             } else {
                 $('.addLongCommentMessageToChangeset')
@@ -26,9 +26,50 @@ function addComment(changesetId, changesetIdentifier) {
     );
 }
 
-function cancelLineComment(fileIdentifier, changesetId, lineNumber) {
-    $('#add-line-comment-' + fileIdentifier).val("");
-    hidePopovers(changesetId);
+function checkCanAddLineCommentAndShowForm($listingLine, projectFile) {
+    var url = uri.lineComment.checkCanAddComment + '?' + $.param({
+        changesetIdentifier:projectFile.changeset.identifier, projectFileId:projectFile.id
+    });
+    $.ajax({url:url}).done(function (response) {
+        if (response.canAddComment) {
+            createAndShowCommentFormPopover($listingLine, projectFile);
+        } else {
+            var cannotAddCommentMessage = $('#cannotAddLineCommentMessageTepmlate').render(response);
+            $.colorbox({html:cannotAddCommentMessage});
+        }
+    })
+}
+
+function createAndShowCommentFormPopover($listingLine, projectFile) {
+    var commentForm = $("#addLineCommentFormTemplate").render({
+        changesetId:projectFile.changeset.identifier,
+        fileId:projectFile.id,
+        lineNumber:getLineNumber($listingLine)
+    });
+    removeLineCommentPopover($listingLine.parents('.fileListing'));
+
+    $listingLine.parents('.fileListing').first().data('$commentedLine', $listingLine);
+    $listingLine.popover({
+        content:commentForm,
+        placement:"left",
+        trigger:"click",
+        template:'<div class="popover lineCommentFormPopover"><div class="arrow"></div><div class="popover-inner"><div class="popover-content"><p></p></div></div></div>'
+    });
+    $listingLine.popover('show');
+}
+
+function getLineNumber($listingLine) {
+    var diffSpanStartLine = codeReview.getModel($listingLine[0]).newFileStartLine;
+    var lineIndex = $listingLine.parents('pre').find('li').index($listingLine);
+    return diffSpanStartLine + lineIndex;
+}
+
+function closeLineCommentForm(changesetIdentifier, projectFileId) {
+    var $fileListing = $(
+        '.changeset[data-identifier=' + changesetIdentifier + ']' +
+        ' .fileListing.projectFile[data-id=' + projectFileId + ']'
+    );
+    removeLineCommentPopover($fileListing);
 }
 
 function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
@@ -39,7 +80,7 @@ function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
         function (threadGroupsWithSnippetsForCommentedFile) {
             if (threadGroupsWithSnippetsForCommentedFile.errors == null) {
                 updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId);
-                hideAndClearLineCommentForm(changesetIdentifier, projectFileId);
+                closeLineCommentForm(changesetIdentifier, projectFileId);
             } else if (threadGroupsWithSnippetsForCommentedFile.errors.code == "maxSize.exceeded") {
                 $('.addLongCommentMessage')
                     .html($('#errorCommentTemplate')
@@ -54,6 +95,15 @@ function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
         },
         "json"
     );
+}
+
+function removeLineCommentPopover($fileListings) {
+    $fileListings.each(function () {
+        var commentedLine = $(this).data('$commentedLine');
+        if (commentedLine) {
+            commentedLine.popover('destroy');
+        }
+    });
 }
 
 function addReply(threadId, changesetIdentifier, projectFileId){
@@ -83,25 +133,15 @@ function addReply(threadId, changesetIdentifier, projectFileId){
 
 }
 
-function hideAndClearLineCommentForm(changesetId, fileIdentifier) {
-    $('#content-files-' + changesetId + ' .linenums li').popover("hide");
-    $('#add-line-comment-' + fileIdentifier).val("");
+function expandCommentForm($form) {
+    $form.find('.buttons').slideDown(100);
+    $form.find('textarea').attr('rows', 3);
 }
 
-function hidePopovers(changesetId) {
-    $('#content-files-' + changesetId + ' .linenums li').popover("hide");
-}
-
-function expandCommentForm(changesetId) {
-    $('#commentFormButtons-' + changesetId).slideDown(100);
-    $('#add-comment-' + changesetId).attr('rows', 3);
-}
-
-function resetCommentForm(changesetId) {
-    $('#add-comment-' + changesetId).val("");
-    $('#add-comment-' + changesetId).attr('rows', 1);
-    $('.longComment').remove();
-    $('#commentFormButtons-' + changesetId).hide();
+function resetCommentForm($form) {
+    $form.find('textarea').val('').attr('rows', 1)
+    $form.find('.buttons').hide()
+    $form.find('.longComment').remove()
 }
 
 function expandReplyForm(threadId, changesetId) {

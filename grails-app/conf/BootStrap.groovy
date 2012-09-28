@@ -20,9 +20,9 @@ class BootStrap {
             }
             development {
                 bootstrapNonTestEnvironment(
-                        projectCodeReview(),
                         Project.findOrCreateWhere(name: 'drip', url: 'https://github.com/flatland/drip.git'),
-                        Project.findOrCreateWhere(name: 'visibility.js', url: 'https://github.com/ai/visibility.js.git')
+                        Project.findOrCreateWhere(name: 'visibility.js', url: 'https://github.com/ai/visibility.js.git'),
+                        projectCodeReview()
                 )
             }
         }

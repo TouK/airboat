@@ -11,6 +11,8 @@ import org.eclipse.jgit.errors.RepositoryNotFoundException
 import org.eclipse.jgit.treewalk.EmptyTreeIterator
 
 import static com.google.common.base.Preconditions.checkArgument
+import org.eclipse.jgit.treewalk.filter.TreeFilter
+import org.eclipse.jgit.treewalk.filter.PathFilter
 
 class DiffAccessService {
 
@@ -43,7 +45,7 @@ class DiffAccessService {
         def fileDiff = []
         diff.split("diff --git").each {
             if (it.contains(fileName)) {
-                fileDiff.add(it.split("\n")[4..-1].join("\n") + "\n")
+                fileDiff.add("diff --git" + it)
             }
         }
         return fileDiff.join("\n")
@@ -54,7 +56,7 @@ class DiffAccessService {
         Git git = new Git(repository);
         def oldTree = getTreeIterator(repository, pathSpec + "^") ?: new EmptyTreeIterator()
         def newTree = getTreeIterator(repository, pathSpec)
-        checkArgument(newTree != null, "Could not find pathSpec in repository $workTree.absolutePath: \$pathSpec")
+        checkArgument(newTree != null, "Could not find revSpec in repository $workTree.absolutePath: $pathSpec")
 
         List<DiffEntry> diffs = git.diff()
                 .setOldTree(oldTree)
