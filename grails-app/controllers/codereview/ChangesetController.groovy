@@ -18,11 +18,11 @@ class ChangesetController {
         def changesetId = params.changesetId
         def filter = params.filter
         if (projectName != null && changesetId != null) {
-            changesetResponse(projectName, changesetId)
+            renderChangesetResponse(projectName, changesetId)
         } else if (projectName != null) {
-            projectResponse(projectName)
+            renderProjectResponse(projectName)
         } else if (filter != null) {
-            filterResponse(filter)
+            renderFilterResponse(filter)
         } else {
             render(view: 'index', model: [projects: Project.all, type: 'project', singleProject: false])
         }
@@ -31,7 +31,7 @@ class ChangesetController {
     def getLastChangesets(String projectName) {
         def changesets
         if (isNullOrEmpty(projectName)) {
-            changesets = Changeset.list(max: Constants.FIRST_LOAD_CHANGESET_NUMBER, sort: 'date', order: 'desc')
+            changesets = Changeset.list(max: Constants.FIRST_CHANGESET_LOAD_SIZE, sort: 'date', order: 'desc')
         } else {
             changesets = getLastChagesetsFromProject(projectName)
         }
@@ -47,6 +47,7 @@ class ChangesetController {
             changesets = filterServices.get(filterType).getLastFilteredChangesets()
         } catch (AccessDeniedException e) {
             response.sendError(401)
+            return
         }
         def changesetsProperties = changesets.collect this.&convertToChangesetProperties
         changesetsProperties = groupChangesetPropertiesByDay(changesetsProperties)
@@ -56,7 +57,7 @@ class ChangesetController {
     private List<Changeset> getLastChagesetsFromProject(String projectName) {
         //TODO examine number of queries and try to make it 1.
         def project = Project.findByName(projectName)
-        Changeset.findAllByProject(project, [max: Constants.FIRST_LOAD_CHANGESET_NUMBER, sort: 'date', order: 'desc'])
+        Changeset.findAllByProject(project, [max: Constants.FIRST_CHANGESET_LOAD_SIZE, sort: 'date', order: 'desc'])
     }
 
     def getNextFewChangesetsOlderThan(Long changesetId) {
@@ -88,7 +89,7 @@ class ChangesetController {
     private List<Changeset> getNextFewChangesetsFromAllProjects(Long changesetId) {
         Changeset.where {
             date < property(date).of { id == changesetId }
-        }.list(max: Constants.NEXT_LOAD_CHANGESET_NUMBER, sort: 'date', order: 'desc')
+        }.list(max: Constants.NEXT_CHANGESET_LOAD_SIZE, sort: 'date', order: 'desc')
     }
 
     private List<Changeset> getNextFewChangesetsFromSameProject(Long changesetId) {
@@ -105,7 +106,7 @@ class ChangesetController {
                     property "project"
                 }
             }
-            maxResults(Constants.NEXT_LOAD_CHANGESET_NUMBER)
+            maxResults(Constants.NEXT_CHANGESET_LOAD_SIZE)
             order('date', 'desc')
         }
     }
@@ -166,7 +167,7 @@ class ChangesetController {
         commentsProperties
     }
 
-    private def changesetResponse(projectName, changesetId) {
+    private def renderChangesetResponse(projectName, changesetId) {
         def changeset = Changeset.findByIdentifierAndProject(changesetId, Project.findByName(projectName))
         if (changeset != null) {
             def changesetProperties = convertToChangesetProperties(changeset)
@@ -180,7 +181,7 @@ class ChangesetController {
         }
     }
 
-    private def projectResponse(projectName) {
+    private def renderProjectResponse(projectName) {
         if (Project.findByName(projectName) != null) {
             render(view: 'index', model: [projects: Project.all, type: 'project', singleProject: true, projectName: projectName])
         } else {
@@ -188,7 +189,7 @@ class ChangesetController {
         }
     }
 
-    private def filterResponse(filter) {
+    private def renderFilterResponse(filter) {
         if (filter in filterTypes) {
             render(view: 'index', model: [projects: Project.all, type: 'filter', filterType: filter])
         } else {

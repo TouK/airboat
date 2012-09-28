@@ -7,26 +7,24 @@ class MyCommentsAndChangesetsFilterService implements FilterServiceInterface {
 
     SpringSecurityService springSecurityService
 
+    static private def conditions =  "from Changeset changeset where \
+                                        (exists (from UserComment comment where comment.changeset = changeset and comment.author = :user)) or \
+                                        (changeset.commiter in (from Commiter where user = :user)) or \
+                                        (exists (from ProjectFileInChangeset p where changeset.date = (select max(file.changeset.date) from ProjectFileInChangeset file where file.projectFile = p.projectFile) and \
+                                        exists (from ThreadPositionInFile pos where pos.projectFileInChangeset = p and :user in (select author from LineComment where thread = pos.thread))))"
+
+    static private def order = "order by changeset.date desc"
+
     @Override
     @PreAuthorize('isAuthenticated()')
     def getLastFilteredChangesets() {
-        return Changeset.findAll("from Changeset changeset where \
-                                        (exists (from UserComment comment where comment.changeset = changeset and comment.author = :user)) or \
-                                        (changeset.commiter in (from Commiter where user = :user)) or  \
-                                        (exists (from ProjectFileInChangeset p where changeset.date = (select max(file.changeset.date) from ProjectFileInChangeset file where file.projectFile = p.projectFile) and \
-                                            exists (from ThreadPositionInFile pos where pos.projectFileInChangeset = p and :user in (select author from LineComment where thread = pos.thread))))\
-                                        order by changeset.date desc", [max: Constants.FIRST_LOAD_CHANGESET_NUMBER, user: springSecurityService.getCurrentUser()]);
+        return Changeset.findAll(conditions + order, [max: Constants.FIRST_CHANGESET_LOAD_SIZE, user: springSecurityService.getCurrentUser()]);
     }
 
     @Override
     @PreAuthorize('isAuthenticated()')
     def getNextFilteredChangesets(Long changesetId) {
         def lastChangeset = Changeset.get(changesetId);
-        return Changeset.findAll("from Changeset changeset where \
-                                        ((exists (from UserComment comment where comment.changeset = changeset and comment.author = :user)) or \
-                                        (changeset.commiter in (from Commiter where user = :user)) or  \
-                                        (exists (from ProjectFileInChangeset p where changeset.date = (select max(file.changeset.date) from ProjectFileInChangeset file where file.projectFile = p.projectFile) and \
-                                            exists (from ThreadPositionInFile pos where pos.projectFileInChangeset = p and :user in (select author from LineComment where thread = pos.thread))))) and changeset.date < :lastChangesetDate\
-                                        order by changeset.date desc", [max: Constants.FIRST_LOAD_CHANGESET_NUMBER, user: springSecurityService.getCurrentUser(), lastChangesetDate: lastChangeset.date]);
+        return Changeset.findAll(conditions + " and changeset.date < :lastChangesetDate " + order, [max: Constants.FIRST_CHANGESET_LOAD_SIZE, user: springSecurityService.getCurrentUser(), lastChangesetDate: lastChangeset.date]);
     }
 }

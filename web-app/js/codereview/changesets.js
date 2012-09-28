@@ -20,14 +20,14 @@ function clearDisplayAndAppendChangesetsBottom(dataset) {
     shouldLoadChangesets = dataset.shouldLoad;
     currentViewType = dataset.viewType;
     $('#content').html("");
-    setActive(dataset.activeSelector)
+    setFilterActive(dataset.activeSelector);
     appendChangesetsBottom(dataset.data.changesets);
-    decideImportInfoAndLoadingState(dataset.data, 21); //as in Constants.FIRST_LOAD_CHANGESET_NUMBER
+    decideImportInfoAndLoadingState(dataset.data, 21); //as in Constants.FIRST_CHANGESET_LOAD_SIZE
 }
 
 function appendNextChangesetsBottom(dataset) {
     appendChangesetsBottom(dataset.changesets);
-    decideImportInfoAndLoadingState(dataset, 10); //as in Constants.NEXT_LOAD_CHANGESET_NUMBER
+    decideImportInfoAndLoadingState(dataset, 10); //as in Constants.NEXT_CHANGESET_LOAD_SIZE
 }
 
 function decideImportInfoAndLoadingState(data, maxChangesetSize) {
@@ -38,12 +38,12 @@ function decideImportInfoAndLoadingState(data, maxChangesetSize) {
     }
 }
 
-var importGritter
+var importGritter;
 function showImportGritter(isImporting) {
     var importInfo;
     var shouldHide = false;
     if (currentViewType == VIEW_TYPE.PROJECT && codeReview.displayedProjectName != '') {
-        importInfo = 'Import is in progress, older changesets may not by imported yet.'
+        importInfo = 'Import is in progress, older changesets may not by imported yet.';
         shouldHide = true;
     } else {
         importInfo = 'Import is in progress, some changesets may not be displayed. To see all changesets wait' +
@@ -63,18 +63,18 @@ function showImportGritter(isImporting) {
 
 function countChangesets(changesetsByDay) {
     var counter = 0;
-    for (day in changesetsByDay) {
+    for (var day in changesetsByDay) {
         counter += changesetsByDay[day].length;
     }
     return counter;
 }
 
-function setActive(selector) {
-    setAllInactive();
+function setFilterActive(selector) {
+    setAllFiltersInactive();
     $(selector + ' .dropdown-toggle').css('text-decoration', 'underline');
 }
 
-function setAllInactive() {
+function setAllFiltersInactive() {
     $('.navbarToggle .dropdown-toggle').css('text-decoration', 'none');
 }
 
@@ -85,19 +85,20 @@ function onScrollThroughBottomAttempt() {
 function loadMoreChangesets() {
     if (!changesetsLoading && shouldLoadChangesets) {
         changesetsLoading = true;
-        var controllerAction;
-        var paramsMap = {changesetId:lastLoadedChangesetId};
-        if (history.state.dataType == DATA_TYPE.PROJECT && codeReview.displayedProjectName == '') {
-            controllerAction = uri.changeset.getNextFewChangesetsOlderThan;
-        } else if (history.state.dataType == DATA_TYPE.PROJECT) {
-            controllerAction = uri.changeset.getNextFewChangesetsOlderThanFromSameProject;
-        } else if (history.state.dataType == DATA_TYPE.FILTER) {
-            controllerAction = uri.changeset.getNextFewFilteredChangesetsOlderThan;
-            paramsMap['filterType'] = codeReview.currentFilter;
-        }
-        $.getJSON(controllerAction + '?' + $.param(paramsMap), function (data) {
+        var controllerAction = getControllerAction();
+        $.getJSON(controllerAction, function (data) {
             appendNextChangesetsBottom(data)
         });
+    }
+}
+
+function getControllerAction() {
+    if (history.state.dataType == DATA_TYPE.PROJECT && codeReview.displayedProjectName == '') {
+        return uri.changeset.getNextFewChangesetsOlderThan + '?' + $.param({changesetId:lastLoadedChangesetId});
+    } else if (history.state.dataType == DATA_TYPE.PROJECT) {
+        return uri.changeset.getNextFewChangesetsOlderThanFromSameProject  + '?' + $.param({changesetId:lastLoadedChangesetId});
+    } else if (history.state.dataType == DATA_TYPE.FILTER) {
+        return uri.changeset.getNextFewFilteredChangesetsOlderThan  + '?' + $.param({changesetId:lastLoadedChangesetId, filterType: codeReview.currentFilter});
     }
 }
 

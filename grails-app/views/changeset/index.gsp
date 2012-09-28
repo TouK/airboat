@@ -103,22 +103,34 @@
     window.addEventListener('popstate', function (e) {
         if (e.state != null) {
             if (e.state.dataType == DATA_TYPE.CHANGESET) {
-                window.location.href = '?' + $.param({projectName:e.state.projectName, changesetId:e.state.changesetId});
-                codeReview.shouldLoadChangesets = false;
-                setAllInactive();
+                renderChangeset(e.state);
             } else if (e.state.dataType == DATA_TYPE.PROJECT) {
-                $(document).scrollTop(0);
-                if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != e.state.projectName) {
-                    showProject(e.state.projectName);
-                }
+                renderProject(e.state);
             } else if (e.state.dataType == DATA_TYPE.FILTER) {
-                $(document).scrollTop(0);
-                if (currentViewType != VIEW_TYPE.FILTER || codeReview.currentFilter != e.state.filterType) {
-                    showFiltered(e.state.filterType);
-                }
+                renderFilter(e.state);
             }
         }
     });
+
+    function renderChangeset(state) {
+        window.location.href = '?' + $.param({projectName: state.projectName, changesetId: state.changesetId});
+        codeReview.shouldLoadChangesets = false;
+        setAllFiltersInactive();
+    }
+
+    function renderProject(state) {
+        $(document).scrollTop(0);
+        if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != state.projectName) {
+            showProject(state.projectName);
+        }
+    }
+
+    function renderFilter(state) {
+        $(document).scrollTop(0);
+        if (currentViewType != VIEW_TYPE.FILTER || codeReview.currentFilter != state.filterType) {
+            showFiltered(state.filterType);
+        }
+    }
 
     $.views.helpers({
         getGravatar:function (email, size) {
@@ -178,7 +190,7 @@
             history.replaceState({dataType:'${type}', changeset: ${changeset ?: "''"}, changesetId:"${changesetId}", projectName:'${projectName}' }, null);
             codeReview.shouldLoadChangesets = false;
             codeReview.currentViewType = VIEW_TYPE.SINGLE_CHANGESET; // if there will be scrolling to changeset view type might be PROJECT
-            setAllInactive();
+            setAllFiltersInactive();
         } else if ('${type}' == DATA_TYPE.PROJECT) {
 
             if (toBoolean(${singleProject})) {
@@ -205,11 +217,11 @@
         $('body').on('codeReview-pageStructureChanged')
     });
 
-    var currentGritter;
+    var loadingGritter;
 
     $(document)
             .ajaxStart(function () {
-                currentGritter =  $.gritter.add({
+                loadingGritter =  $.gritter.add({
                     // (string | mandatory) the heading of the notification
                     title: 'Loading',
                     // (string | mandatory) the text inside the notification
@@ -220,8 +232,8 @@
                     sticky: true
                 });
             }).ajaxStop(function () {
-                $.gritter.remove(currentGritter, {fade: true});
-                $('body').trigger('codeReview-pageStructureChanged') //most probably
+                $.gritter.remove(loadingGritter, {fade: true});
+                $('body').trigger('codeReview-pageStructureChanged'); //most probably
             });
 
     function onLoggedIn(username, isAdmin) {
@@ -483,7 +495,7 @@
               onfocus="expandReplyForm('{{>threadId}}', '{{>changesetId}}')" data-identifier='{{>threadId}}'
               rows="1"></textarea>
 
-    <div class="addLongCommentMessage threadReplyInfo" data-identifier='{{>threadId}}'></div>
+    <div class="validationErrors" data-identifier='{{>threadId}}'></div>
 
     <div class="btn-group pull-right threadReplyFormButtons" data-identifier='{{>threadId}}'
          style="display: none; margin-bottom:10px">
@@ -575,7 +587,7 @@
         <form>
             <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..." class='span4' rows='3'></textarea>
 
-            <div class="addLongCommentMessage"></div>
+            <div class="validationErrors"></div>
 
             <div class="btn-group pull-right">
                 <button type="button" class="btn btn-primary"
@@ -599,7 +611,7 @@
         <textarea onfocus="expandCommentForm($(this.parentElement))" placeholder="Add comment..."
                   class="span12" rows="1"></textarea>
 
-        <div class="addLongCommentMessageToChangeset"></div>
+        <div class="validationErrorsToChangeset"></div>
 
         <div class="buttons btn-group pull-right" style="display: none;">
             <button type="button" class="btn btn-primary btnWarningBackground"

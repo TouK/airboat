@@ -1,6 +1,6 @@
 @gravatarSize:          50px;
 @commentGravatarSize:   35px;
-@gravatarPaddign:       9px;
+@gravatarPadding:       9px;
 
 textarea {
     resize: none;
@@ -71,7 +71,7 @@ textarea {
 }
 
 .nextToGravatar {
-    margin-left: @gravatarSize + @gravatarPaddign;
+    margin-left: @gravatarSize + @gravatarPadding;
 }
 
 .padding {
@@ -132,7 +132,7 @@ textarea {
 }
 
 .comment .nextToGravatar {
-    margin-left: @commentGravatarSize + @gravatarPaddign;
+    margin-left: @commentGravatarSize + @gravatarPadding;
 }
 
 .comment .author {
@@ -165,7 +165,7 @@ a.manualLinkText:hover .linkText {
     overflow-y: auto;
 
 }
-.changeset.row-fluid>.span7 {
+.changeset.row-fluid > .span7 {
     margin-left:  @fluidGridGutterWidth - 1%;
     width: (@fluidGridColumnWidth * 7) + (@fluidGridGutterWidth * (7 - 1)) + 1%;
 }
