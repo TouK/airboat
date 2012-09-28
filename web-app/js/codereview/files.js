@@ -1,15 +1,9 @@
-function showFile(dataset) {
-    var changesetIdentifier = dataset.changeset_id;
-    var projectFileId = dataset.file_id;
-    var changeType = dataset.file_change_type;
-    var textFormat = dataset.text_format;
-    var fileNameSlice = dataset.file_name_slice;
-
+function showFile(changesetIdentifier, projectFileId, callback) {
     var fileListingsUrl = uri.projectFile.getFileListings + '?' + $.param({
         changesetIdentifier:changesetIdentifier, projectFileId:projectFileId
     });
 
-    var fileListing = $(
+    var $fileListing = $(
         '.changeset[data-identifier=' + changesetIdentifier + '] .fileListings' +
         ' .fileListing.projectFile[data-id=' + projectFileId + ']'
     );
@@ -19,10 +13,12 @@ function showFile(dataset) {
         listings.wholeFileHunks = addAdditionalContexts(listings.diffHunks, listings.fileContent);
         listings.showWholeFile = false;
 
-        fileListing.children('.diffAndFileListing').html('<div id="templatePlaceholder"></div>');
+        $fileListing.children('.diffAndFileListing').html('<div id="templatePlaceholder"></div>');
         $.link.diffAndFileListingTemplate('#templatePlaceholder', listings, {target:'replace'});
-        fileListing.show();
-        $.scrollTo(fileListing, scrollDuration, {offset: scrollOffset});
+        $fileListing.show();
+        if (callback) {
+            callback($fileListing);
+        }
     });
 }
 
@@ -46,11 +42,20 @@ function hideFileAndScrollToPreviousFileOrChangesetTop(changesetId, projectFileI
 
 
 function hideFileListings($fileListings, callback) {
-    $fileListings.hide(0, callback);
     $fileListings.each(function () {
         $.observable(codeReview.getModel(this)).setProperty('isDisplayed', false);
     });
     removeLineCommentPopover($fileListings);
+    $fileListings.hide(0, onNthCall($fileListings.size(), callback));
+}
+
+function onNthCall(n, callback) {
+    var remainingCalls = n;
+    return function() {
+        if (--remainingCalls == 0) {
+            callback();
+        }
+    };
 }
 
 function attachLineCommentPopover(changesetId, projectFileId) {

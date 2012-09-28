@@ -177,6 +177,10 @@
         return "hsl(" + color + ", 50%, 50%)"
     }
 
+    $('[data-libs=tooltip]').livequery(function () {
+        $(this).tooltip();
+    })
+
     $().ready(function () {
         codeReview.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser', 'filterChooser', 'diffAndFileListing');
 
@@ -330,15 +334,29 @@
         $(this).floatWithin('.changeset');
     });
 
-    $('.changeset .closeButton').livequery(function () {
-        $(this).click(function (event) {
-            event.stopImmediatePropagation();
-            var changeset = $(this).parents('.changeset').first();
-            var changesetIdentifier = codeReview.getModel(changeset).identifier;
-            var projectFile = $(this).parents('.projectFile').first();
-            var projectFileId = codeReview.getModel(projectFile).id;
-            hideFileAndScrollToPreviousFileOrChangesetTop(changesetIdentifier, projectFileId);
-        });
+    $('.changeset').livequery(function () {
+        $(this)
+                .on('click', '.closeButton', function (event) {
+                    event.stopImmediatePropagation();
+                    var changeset = $(this).parents('.changeset').first();
+                    var changesetIdentifier = codeReview.getModel(changeset).identifier;
+                    var projectFile = $(this).parents('.projectFile').first();
+                    var projectFileId = codeReview.getModel(projectFile).id;
+                    hideFileAndScrollToPreviousFileOrChangesetTop(changesetIdentifier, projectFileId);
+                })
+                .on('click', '.openAllFiles', function () {
+                    var $changeset = $(this).parents('.changeset').first();
+                    $changeset.ScrollTo();
+                    var changeset = codeReview.getModel($changeset);
+                    $(changeset.projectFiles).each(function (_, projectFile) {
+                        showFile(changeset.identifier, projectFile.id)
+                    });
+                })
+                .on('click', '.closeAllFiles', function () {
+                    var changeset = $(this).parents('.changeset').first();
+                    var changesetIdentifier = codeReview.getModel(changeset).identifier;
+                    closeAllFilesAndScrollToChangesetTop(changesetIdentifier)
+                })
     });
 </script>
 
@@ -395,7 +413,12 @@
 
                 <div id="comment-form-{{>identifier}}"></div>
 
-                <h5>Changed files:</h5>
+                <h5 class="pull-left">Changed files:</h5>
+                <h5 class='pull-right'>
+                    <i class="openAllFiles icon-folder-open" title='Open all files' data-libs='tooltip'/>
+                    <i class="closeAllFiles icon-folder-close" title='Close all files' data-libs='tooltip'/>
+                </h5>
+                <div class="clearfix"></div>
 
                 <div class="projectFiles accordion margin-bottom-small" id="accordion-{{>identifier}}">
 
@@ -464,13 +487,7 @@
         </div>
     </div>
 
-    <div id='collapse-inner-{{>collapseId}}' class="details accordion-body collapse"
-         data-changeset_id='{{:changeset.identifier}}'
-         data-file_id='{{:id}}'
-         data-file_change_type='{{:changeType.name}}'
-         data-projectFile_comments='{{:commentsCount}}'
-         data-file_name_slice='{{:name}}'
-         data-text_format='{{:textFormat}}'>
+    <div id='collapse-inner-{{>collapseId}}' class="details accordion-body collapse">
         <div class="accordion-inner" id="accordion-inner-{{>id}}">
             <div id="fileComments-{{>collapseId}}"></div>
         </div>

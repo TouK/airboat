@@ -166,8 +166,8 @@ $('.changeset-date').livequery(function () {
 
 function appendChangeset(changeset, dayElement) {
 
-    changeset['shortIdentifier'] = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
-    changeset['allComments'] = function () {
+    changeset.shortIdentifier = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
+    changeset.allComments = function () {
         var projectFilesComments = 0;
         $(this.projectFiles).each(function () {
             projectFilesComments += this.commentsCount
@@ -181,7 +181,7 @@ function appendChangeset(changeset, dayElement) {
             collapseId:(changeset.identifier + this.id),
             name:sliceName(this.name),
             isDisplayed:false
-        })
+        });
     });
 
     dayElement.children('.changesets').append($("<span id='templatePlaceholder'></span>"));
@@ -194,18 +194,20 @@ function appendChangeset(changeset, dayElement) {
 $('.projectFile .accordion-body.collapse').livequery(function () {
     $(this)
         .on('show',function (event) {
-            if (this.dataset.projectfile_comments == 0) {
+            var projectFile = codeReview.getModel(this);
+
+            if (projectFile.commentsCount == 0) {
                 event.preventDefault();
             }
-            appendSnippetAndShowFile.call(this);
-            $.observable(codeReview.getModel(this)).setProperty('isDisplayed', true);
+            var changesetIdentifier = projectFile.changeset.identifier;
+            var projectFileId = projectFile.id;
+            appendSnippetToFileInAccordion(changesetIdentifier, projectFileId);
+            showFile(changesetIdentifier, projectFileId, function ($fileListing) {
+                $fileListing.ScrollTo();
+            });
+            $.observable(projectFile).setProperty('isDisplayed', true);
         });
 });
-
-function appendSnippetAndShowFile() {
-    appendSnippetToFileInAccordion(this.dataset.changeset_id, this.dataset.file_id);
-    showFile(this.dataset);
-}
 
 function updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId) {
     renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippetsForCommentedFile);
@@ -280,23 +282,16 @@ function toggleChangesetDetails(identifier) {
     var changesetDetails = $('#changesetDetails-' + identifier);
     if (changesetDetails.is(':visible')) {
         changesetDetails.slideUp('slow', function () {
-            hideFileListings($('.changeset[data-identifier=' + identifier + '] .fileListing'));
-
-            //TODO make the hideFileListings give a callback after all file listings are hidden,
-            // or deal with the following. Providing the mentioned callback is not-so-straightforward, as $().hide()
-            // calls its callback for every hidden element...
-            var fileListingsWrapper = $('.changeset[data-identifier=' + identifier + '] .fileListings');
-            fileListingsWrapper.hide(0, function () {
-                $.scrollTo('.changeset[data-identifier=' + identifier + ']', scrollDuration, {
-                    onAfter:function () {
-                        fileListingsWrapper.show();
-                    },
-                    offset: scrollOffset
-                });
-            });
+            closeAllFilesAndScrollToChangesetTop(identifier);
         });
     } else {
         changesetDetails.slideDown();
     }
+}
+
+function closeAllFilesAndScrollToChangesetTop(identifier) {
+    hideFileListings($('.changeset[data-identifier=' + identifier + '] .fileListing'), function() {
+        $.scrollTo('.changeset[data-identifier=' + identifier + ']', scrollDuration, { offset: scrollOffset })
+    });
 }
 
