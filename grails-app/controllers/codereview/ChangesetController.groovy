@@ -24,7 +24,7 @@ class ChangesetController {
         } else if (filter != null) {
             renderFilterResponse(filter)
         } else {
-            render(view: 'index', model: [projects: Project.all, type: 'project', singleProject: false])
+            render(view: 'index', model: [projects: Project.all.sort{Project it -> it.name}, type: 'project', singleProject: false])
         }
     }
 
@@ -171,7 +171,7 @@ class ChangesetController {
         def changeset = Changeset.findByIdentifierAndProject(changesetId, Project.findByName(projectName))
         if (changeset != null) {
             def changesetProperties = convertToChangesetProperties(changeset)
-            render(view: 'index', model: [projects: Project.all,
+            render(view: 'index', model: [projects: Project.all.sort{Project it -> it.name},
                     changeset: groupChangesetPropertiesByDay([changesetProperties]) as JSON,
                     changesetId: changesetId,
                     projectName: projectName,
@@ -183,7 +183,10 @@ class ChangesetController {
 
     private def renderProjectResponse(projectName) {
         if (Project.findByName(projectName) != null) {
-            render(view: 'index', model: [projects: Project.all, type: 'project', singleProject: true, projectName: projectName])
+            render(view: 'index', model: [projects:Project.all.sort{Project it -> it.name},
+                    type: 'project',
+                    singleProject: true,
+                    projectName: projectName])
         } else {
             response.sendError(404, 'Project not found')
         }
@@ -191,7 +194,9 @@ class ChangesetController {
 
     private def renderFilterResponse(filter) {
         if (filter in filterTypes) {
-            render(view: 'index', model: [projects: Project.all, type: 'filter', filterType: filter])
+            render(view: 'index', model: [projects: Project.all.sort{Project it -> it.name},
+                    type: 'filter',
+                    filterType: filter])
         } else {
             response.sendError(404, 'There is no such filter')
         }

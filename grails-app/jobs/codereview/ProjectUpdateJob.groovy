@@ -19,8 +19,8 @@ class ProjectUpdateJob {
             Project.all.each {Project project ->
                 try {
                     initialImport(project)
-                } catch (RuntimeException e) {
-                    log.error(e.stackTrace.toString(), e)
+                } catch (Exception e) {
+                    log.error("Initial import of $project.url failed", e)
                 }
             }
 
@@ -30,8 +30,8 @@ class ProjectUpdateJob {
                         fullImport(project)
                     }
                     update(project)
-                } catch (RuntimeException e) {
-                    log.error(e.stackTrace.toString(), e)
+                } catch (Exception e) {
+                    log.error("Import of next changesets for $project.url failed", e)
                 }
             }
         }
