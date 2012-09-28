@@ -10,15 +10,15 @@ function addComment($form, changesetIdentifier) {
         function (comment) {
             if (comment.errors == null) {
                 var changeset = codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + ']');
-                var changesetComments = changeset.comments
-                $.observable(changesetComments).insert(changesetComments.length, comment)
-                $.observable(changeset).setProperty('allComments')
+                var changesetComments = changeset.comments;
+                $.observable(changesetComments).insert(changesetComments.length, comment);
+                $.observable(changeset).setProperty('allComments');
 
                 resetCommentForm($form);
-                $('.addLongCommentMessageToChangeset').html("");
+                $('.validationErrorsToChangeset').html("");
             } else {
-                $('.addLongCommentMessageToChangeset')
-                    .html($('#longCommentTemplate').render(" Your comment is too long!"))
+                $('.validationErrorsToChangeset')
+                    .html($('#errorCommentTemplate').render(" Your comment is too long!"))
                     .hide().fadeIn();
             }
         },
@@ -81,16 +81,8 @@ function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
             if (threadGroupsWithSnippetsForCommentedFile.errors == null) {
                 updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId);
                 closeLineCommentForm(changesetIdentifier, projectFileId);
-            } else if (threadGroupsWithSnippetsForCommentedFile.errors.code == "maxSize.exceeded") {
-                $('.addLongCommentMessage')
-                    .html($('#longCommentTemplate')
-                    .render(" Your comment is too long!"))
-                    .hide().fadeIn();
-            } else if(threadGroupsWithSnippetsForCommentedFile.errors.code == "blank"){
-                $('.addLongCommentMessage')
-                    .html($('#longCommentTemplate')
-                    .render("Comment can't be empty"))
-                    .hide().fadeIn();
+            } else {
+                renderLineCommentErrors(threadGroupsWithSnippetsForCommentedFile.errors, '.validationErrors')
             }
         },
         "json"
@@ -115,22 +107,28 @@ function addReply(threadId, changesetIdentifier, projectFileId){
             if (threadGroupsWithSnippetsForCommentedFile.errors == null) {
                 updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId);
             }
-            else if (threadGroupsWithSnippetsForCommentedFile.errors.code == "maxSize.exceeded") {
-                $('.threadReplyInfo[data-identifier=' + threadId + ']')
-                    .html($('#longCommentTemplate')
-                    .render(" Your comment is too long!"))
-                    .hide().fadeIn();
-            }
-            else if (threadGroupsWithSnippetsForCommentedFile.errors.code == "blank") {
-                $('.threadReplyInfo[data-identifier=' + threadId + ']')
-                    .html($('#longCommentTemplate')
-                    .render("Comment can't be empty!"))
-                    .hide().fadeIn();
+            else {
+                renderLineCommentErrors(threadGroupsWithSnippetsForCommentedFile.errors, '.validationErrors[data-identifier=' + threadId + ']')
             }
         },
         "json"
     );
 
+}
+
+function renderLineCommentErrors(error, placeSelector) {
+    if (error.code == "maxSize.exceeded") {
+        $(placeSelector)
+            .html($('#errorCommentTemplate')
+            .render(" Your comment is too long!"))
+            .hide().fadeIn();
+    }
+    else if (error.code == "blank") {
+        $(placeSelector)
+            .html($('#errorCommentTemplate')
+            .render("Comment can't be empty!"))
+            .hide().fadeIn();
+    }
 }
 
 function expandCommentForm($form) {
@@ -139,9 +137,9 @@ function expandCommentForm($form) {
 }
 
 function resetCommentForm($form) {
-    $form.find('textarea').val('').attr('rows', 1)
-    $form.find('.buttons').hide()
-    $form.find('.longComment').remove()
+    $form.find('textarea').val('').attr('rows', 1);
+    $form.find('.buttons').hide();
+    $form.find('.longComment').remove();
 }
 
 function expandReplyForm(threadId, changesetId) {

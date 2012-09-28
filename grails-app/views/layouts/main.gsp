@@ -102,6 +102,8 @@
     <link href=" ${createLink(uri: '/libs/jquery.colorbox/colorbox.css')}"
           type="text/css" rel="stylesheet" media="screen"/>
     <script src="${createLink(uri: '/libs/jquery.colorbox/jquery.colorbox-min.js')}" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${createLink(uri: '/libs/jboesch-Gritter/css/jquery.gritter.css')}"/>
+    <script type="text/javascript" src="${createLink(uri: '/libs/jboesch-Gritter/js/jquery.gritter.js')}"></script>
 
     <script id="unauthorizedErrorGlobalHandler" type="text/javascript">
         $('#unauthorizedErrorGlobalHandler').ajaxError(function (event, jqXHR) {
@@ -114,6 +116,15 @@
         function showLoginForm() {
             $.colorbox($.extend(codeReview.colorboxSettings, {href:uri.login}));
         }
+    </script>
+
+    <script id="gritterOptions" type="text/javascript">
+        $.extend($.gritter.options, {
+            position: 'bottom-right', // defaults to 'top-right' but can be 'bottom-left', 'bottom-right', 'top-left', 'top-right' (added in 1.7.1)
+            fade_in_speed: 'fast', // how fast notifications fade in (string or int)
+            fade_out_speed: 500, // how fast the notices fade out
+            time: 6000 // hang on the screen for...
+        });
     </script>
 
     %{--TODO make use of <g:javascript library="library_name"/> tag? --}%

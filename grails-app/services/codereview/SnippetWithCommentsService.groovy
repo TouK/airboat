@@ -1,11 +1,11 @@
 package codereview
 
-//FIXME rewrite this thing...
 class SnippetWithCommentsService {
 
     def prepareThreadGroupsWithSnippets(threads, fileContent) {
-        def threadGroupsWithSnippets = threads.groupBy{it.lineNumber}
-        threadGroupsWithSnippets = threadGroupsWithSnippets.collect{key, value -> [lineNumber: key, threads: value.sort{it.comments[0].date}]}.sort{it.lineNumber}
+        def threadGroupsWithSnippetsMap = threads.groupBy{it.lineNumber}
+        def threadGroupsWithSnippetsUnsortedList = threadGroupsWithSnippetsMap.collect{key, value -> [lineNumber: key, threads: value.sort{it.comments[0].date}]}
+        def threadGroupsWithSnippets = threadGroupsWithSnippetsUnsortedList.sort{it.lineNumber}
         def threadGroupNumber = threadGroupsWithSnippets.size()
         def fileLines = fileContent.readLines()
 
@@ -21,8 +21,8 @@ class SnippetWithCommentsService {
     }
 
     def getSnippet(fileLines, lineNumber, length) {
-        def snippetStart = lineNumber-1
-        def snippetEnd = Math.min(lineNumber+length-1-1, fileLines.size()-1)
+        def snippetStart = lineNumber - 1
+        def snippetEnd = Math.min(snippetStart + length - 1, fileLines.size() - 1)
         fileLines[snippetStart..snippetEnd].collect{it == ''? ' ' : it}.join('\n')
     }
 }

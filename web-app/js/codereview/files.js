@@ -32,9 +32,9 @@ function hideFileAndScrollToPreviousFileOrChangesetTop(changesetId, projectFileI
     var previousFile = projectFile.prevAll(':visible').first();
     hideFileListings(projectFile, function () {
         if (previousFile.size() != 0) {
-            previousFile.ScrollTo();
+            $.scrollTo(previousFile, scrollDuration, {offset: scrollOffset});
         } else {
-            changeset.ScrollTo();
+            $.scrollTo(changeset, scrollDuration, {offset: scrollOffset});
         }
     });
     return false;
@@ -59,7 +59,7 @@ function onNthCall(n, callback) {
 }
 
 function attachLineCommentPopover(changesetId, projectFileId) {
-    $('#content-files-' + changesetId + ' .linenums li').each(function (i, element, ignored) {
+    $('#content-files-' + changesetId + ' .linenums li').each(function (i, element) {
         var commentForm = $("#addLineCommentFormTemplate").render({fileId:projectFileId, changesetId:changesetId, lineNumber:i + 1 });
         $(element).popover({content:commentForm, placement:"left", trigger:"manual" });
 

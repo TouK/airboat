@@ -2,30 +2,79 @@ function showProject(projectName) {
     $.observable(codeReview).setProperty('displayedProjectName', projectName);
     changesetsLoading = true;
     $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:codeReview.displayedProjectName}),
-        function(data) {clearDisplayAndAppendChangesetsBottom({changesets: data, shouldLoad: true, viewType: VIEW_TYPE.PROJECT, activeSelector: '#projectsDropdown'})});
+        function (data) {
+            clearDisplayAndAppendChangesetsBottom({data:data, shouldLoad:true, viewType:VIEW_TYPE.PROJECT, activeSelector:'#projectsDropdown'})
+        });
 }
 
 function showFiltered(filterType) {
     $.observable(codeReview).setProperty('currentFilter', filterType);
     codeReview.changesetLoading = true;
     $.getJSON(uri.changeset.getLastFilteredChangesets + '?' + $.param({filterType:codeReview.currentFilter}),
-        function(data) {clearDisplayAndAppendChangesetsBottom({changesets: data, shouldLoad: true, viewType: VIEW_TYPE.FILTER, activeSelector: '#filtersDropdown'})});
+        function (data) {
+            clearDisplayAndAppendChangesetsBottom({data:data, shouldLoad:true, viewType:VIEW_TYPE.FILTER, activeSelector:'#filtersDropdown'})
+        });
 }
 
 function clearDisplayAndAppendChangesetsBottom(dataset) {
     shouldLoadChangesets = dataset.shouldLoad;
     currentViewType = dataset.viewType;
     $('#content').html("");
-    setActive(dataset.activeSelector);
-    appendChangesetsBottom(dataset.changesets);
+    setFilterActive(dataset.activeSelector);
+    appendChangesetsBottom(dataset.data.changesets);
+    decideImportInfoAndLoadingState(dataset.data, 21); //as in Constants.FIRST_CHANGESET_LOAD_SIZE
 }
 
-function setActive(selector) {
-    setAllInactive();
+function appendNextChangesetsBottom(dataset) {
+    appendChangesetsBottom(dataset.changesets);
+    decideImportInfoAndLoadingState(dataset, 10); //as in Constants.NEXT_CHANGESET_LOAD_SIZE
+}
+
+function decideImportInfoAndLoadingState(data, maxChangesetSize) {
+    showImportGritter(data.isImporting);
+    if (countChangesets(data.changesets) < maxChangesetSize) {
+        $('#content').append($('#noMoreChangesetsTemplate').render());
+        shouldLoadChangesets = false;
+    }
+}
+
+var importGritter;
+function showImportGritter(isImporting) {
+    var importInfo;
+    var shouldHide = false;
+    if (currentViewType == VIEW_TYPE.PROJECT && codeReview.displayedProjectName != '') {
+        importInfo = 'Import is in progress, older changesets may not by imported yet.';
+        shouldHide = true;
+    } else {
+        importInfo = 'Import is in progress, some changesets may not be displayed. To see all changesets wait' +
+            ' a while and refresh page or go into single project view.'
+    }
+    if (importGritter != null && (shouldHide || isImporting)) {
+        $.gritter.remove(importGritter, {fade:false});
+    }
+    if (isImporting) {
+        importGritter = $.gritter.add({
+            title:'Import in progress',
+            text:importInfo,
+            sticky:true
+        });
+    }
+}
+
+function countChangesets(changesetsByDay) {
+    var counter = 0;
+    for (var day in changesetsByDay) {
+        counter += changesetsByDay[day].length;
+    }
+    return counter;
+}
+
+function setFilterActive(selector) {
+    setAllFiltersInactive();
     $(selector + ' .dropdown-toggle').css('text-decoration', 'underline');
 }
 
-function setAllInactive() {
+function setAllFiltersInactive() {
     $('.navbarToggle .dropdown-toggle').css('text-decoration', 'none');
 }
 
@@ -36,17 +85,20 @@ function onScrollThroughBottomAttempt() {
 function loadMoreChangesets() {
     if (!changesetsLoading && shouldLoadChangesets) {
         changesetsLoading = true;
-        var controllerAction;
-        var paramsMap = {changesetId:lastLoadedChangesetId};
-        if (history.state.dataType == DATA_TYPE.PROJECT && codeReview.displayedProjectName == '') {
-            controllerAction = uri.changeset.getNextFewChangesetsOlderThan;
-        } else if (history.state.dataType == DATA_TYPE.PROJECT) {
-            controllerAction = uri.changeset.getNextFewChangesetsOlderThanFromSameProject;
-        } else if (history.state.dataType == DATA_TYPE.FILTER) {
-            controllerAction = uri.changeset.getNextFewFilteredChangesetsOlderThan;
-            paramsMap['filterType'] = codeReview.currentFilter;
-        }
-        $.getJSON(controllerAction + '?' + $.param(paramsMap), appendChangesetsBottom);
+        var controllerAction = getControllerAction();
+        $.getJSON(controllerAction, function (data) {
+            appendNextChangesetsBottom(data)
+        });
+    }
+}
+
+function getControllerAction() {
+    if (history.state.dataType == DATA_TYPE.PROJECT && codeReview.displayedProjectName == '') {
+        return uri.changeset.getNextFewChangesetsOlderThan + '?' + $.param({changesetId:lastLoadedChangesetId});
+    } else if (history.state.dataType == DATA_TYPE.PROJECT) {
+        return uri.changeset.getNextFewChangesetsOlderThanFromSameProject  + '?' + $.param({changesetId:lastLoadedChangesetId});
+    } else if (history.state.dataType == DATA_TYPE.FILTER) {
+        return uri.changeset.getNextFewFilteredChangesetsOlderThan  + '?' + $.param({changesetId:lastLoadedChangesetId, filterType: codeReview.currentFilter});
     }
 }
 
@@ -207,7 +259,7 @@ function renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, thre
         .addClass("language-" + fileType)
         .syntaxHighlight();
 
-    for (var i = 0; i < threadGroupWithSnippet.threads.length; i++) {
+    for (i = 0; i < threadGroupWithSnippet.threads.length; i++) {
         var threadTemplate = $("#threadTemplate").render({threadId: threadGroupWithSnippet.threads[i].threadId, changesetId: changesetIdentifier, projectFileId: projectFileId});
         $(threadTemplate).appendTo(snippetObject.find('.threads'));
         var commentsInThread = snippetObject.find('.threadComments[data-identifier=' + threadGroupWithSnippet.threads[i].threadId + ']');
@@ -239,7 +291,7 @@ function toggleChangesetDetails(identifier) {
 
 function closeAllFilesAndScrollToChangesetTop(identifier) {
     hideFileListings($('.changeset[data-identifier=' + identifier + '] .fileListing'), function() {
-        $('.changeset[data-identifier=' + identifier + ']').ScrollTo();
+        $.scrollTo('.changeset[data-identifier=' + identifier + ']', scrollDuration, { offset: scrollOffset })
     });
 }
 

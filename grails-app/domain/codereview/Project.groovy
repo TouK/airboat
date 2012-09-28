@@ -5,8 +5,10 @@ class Project {
 
     String name //FIXME get rid of this field, since we assume in code all around that it can be computed from url
     String url
+    boolean wasOnceFullyImported
 
     Project(String name, String url) {
+        this.wasOnceFullyImported = false;
         this.name = name
         this.url = url
     }

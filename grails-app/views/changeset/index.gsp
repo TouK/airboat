@@ -15,7 +15,7 @@
     <link href=" ${createLink(uri: '/css/jquery.syntaxhighlighter-fontOverride.css')}"
           type="text/css" rel="stylesheet" media="screen"/>
 
-    <script src="${createLink(uri: '/libs/jquery.scrollto.min.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/jquery.scrollTo-1.4.3.1.js')}" type="text/javascript"></script>
 
     <script src="${createLink(uri: '/libs/jquery.ba-throttle-debounce.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/jquery.sizes.js')}" type="text/javascript"></script>
@@ -68,13 +68,13 @@
     });
 </script>
 
+<script id='scrollConfig' type="text/javascript">
+    var scrollOffset = {top: -codeReview.navbarOffset};
+    var scrollDuration = 200;
+</script>
+
 <div class="padding">
     <div id="content"></div>
-</div>
-
-<div class="alert alert-info" id="loading" style='display: none;'>
-    <div class="well-small"><img id="loading-image" src="${createLink(uri: '/css/images/ajax-loader.gif')}"/> Loading...
-    </div>
 </div>
 
 <script type="text/javascript">
@@ -85,23 +85,21 @@
     });
 
     $('body').on('click', '.projectLink', function (e) {
+        $(document).scrollTop(0);
         if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != this.dataset.project) {
             showProject(this.dataset.project);
             var href = this.dataset.project == '' ? '?' : '?' + $.param({projectName:this.dataset.project});
             history.pushState({dataType:DATA_TYPE.PROJECT, projectName:codeReview.displayedProjectName}, null, href);
-        } else {
-            $(document).scrollTop(0);
         }
         $('#projectsDropdown').removeClass('open');
         return false;
     });
 
     $('body').on('click', '.filterLink', function (e) {
+        $(document).scrollTop(0);
         if (currentViewType != VIEW_TYPE.FILTER || codeReview.currentFilter != this.dataset.filter) {
             showFiltered(this.dataset.filter);
             history.pushState({dataType:DATA_TYPE.FILTER, filterType:codeReview.currentFilter}, null, '?' + $.param({filter:this.dataset.filter}));
-        } else {
-            $(document).scrollTop(0);
         }
         $('#filtersDropdown').removeClass('open');
         return false;
@@ -110,24 +108,34 @@
     window.addEventListener('popstate', function (e) {
         if (e.state != null) {
             if (e.state.dataType == DATA_TYPE.CHANGESET) {
-                window.location.href = '?' + $.param({projectName:e.state.projectName, changesetId:e.state.changesetId});
-                codeReview.shouldLoadChangesets = false;
-                setAllInactive();
+                renderChangeset(e.state);
             } else if (e.state.dataType == DATA_TYPE.PROJECT) {
-                if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != e.state.projectName) {
-                    showProject(e.state.projectName);
-                } else {
-                    $(document).scrollTop(0);
-                }
+                renderProject(e.state);
             } else if (e.state.dataType == DATA_TYPE.FILTER) {
-                if (currentViewType != VIEW_TYPE.FILTER || codeReview.currentFilter != e.state.filterType) {
-                    showFiltered(e.state.filterType);
-                } else {
-                    $(document).scrollTop(0);
-                }
+                renderFilter(e.state);
             }
         }
     });
+
+    function renderChangeset(state) {
+        window.location.href = '?' + $.param({projectName: state.projectName, changesetId: state.changesetId});
+        codeReview.shouldLoadChangesets = false;
+        setAllFiltersInactive();
+    }
+
+    function renderProject(state) {
+        $(document).scrollTop(0);
+        if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != state.projectName) {
+            showProject(state.projectName);
+        }
+    }
+
+    function renderFilter(state) {
+        $(document).scrollTop(0);
+        if (currentViewType != VIEW_TYPE.FILTER || codeReview.currentFilter != state.filterType) {
+            showFiltered(state.filterType);
+        }
+    }
 
     $.views.helpers({
         getGravatar:function (email, size) {
@@ -169,11 +177,6 @@
         return "hsl(" + color + ", 50%, 50%)"
     }
 
-    $.ScrollTo.configure({
-        offsetTop:codeReview.navbarOffset,
-        duration:200
-    });
-
     $('[data-libs=tooltip]').livequery(function () {
         $(this).tooltip();
     })
@@ -191,7 +194,7 @@
             history.replaceState({dataType:'${type}', changeset: ${changeset ?: "''"}, changesetId:"${changesetId}", projectName:'${projectName}' }, null);
             codeReview.shouldLoadChangesets = false;
             codeReview.currentViewType = VIEW_TYPE.SINGLE_CHANGESET; // if there will be scrolling to changeset view type might be PROJECT
-            setAllInactive();
+            setAllFiltersInactive();
         } else if ('${type}' == DATA_TYPE.PROJECT) {
 
             if (toBoolean(${singleProject})) {
@@ -218,11 +221,18 @@
         $('body').on('codeReview-pageStructureChanged')
     });
 
+    var loadingGritter;
+
     $(document)
             .ajaxStart(function () {
-                $('#loading').show();
+                loadingGritter =  $.gritter.add({
+                    title: 'Loading',
+                    text: 'New data is currently loaded.',
+                    image: '${createLink(uri: '/css/images/328.gif')}',
+                    sticky: true
+                });
             }).ajaxStop(function () {
-                $('#loading').hide();
+                $.gritter.remove(loadingGritter, {fade: true});
                 $('body').trigger('codeReview-pageStructureChanged'); //most probably
             });
 
@@ -498,7 +508,7 @@
               onfocus="expandReplyForm('{{>threadId}}', '{{>changesetId}}')" data-identifier='{{>threadId}}'
               rows="1"></textarea>
 
-    <div class="addLongCommentMessage threadReplyInfo" data-identifier='{{>threadId}}'></div>
+    <div class="validationErrors" data-identifier='{{>threadId}}'></div>
 
     <div class="btn-group pull-right threadReplyFormButtons" data-identifier='{{>threadId}}'
          style="display: none; margin-bottom:10px">
@@ -590,7 +600,7 @@
         <form>
             <textarea id="add-line-comment-{{>fileId}}" placeholder="Add comment..." class='span4' rows='3'></textarea>
 
-            <div class="addLongCommentMessage"></div>
+            <div class="validationErrors"></div>
 
             <div class="btn-group pull-right">
                 <button type="button" class="btn btn-primary"
@@ -614,7 +624,7 @@
         <textarea onfocus="expandCommentForm($(this.parentElement))" placeholder="Add comment..."
                   class="span12" rows="1"></textarea>
 
-        <div class="addLongCommentMessageToChangeset"></div>
+        <div class="validationErrorsToChangeset"></div>
 
         <div class="buttons btn-group pull-right" style="display: none;">
             <button type="button" class="btn btn-primary btnWarningBackground"
@@ -645,12 +655,21 @@
     </div>
 </script>
 
-<script id="longCommentTemplate" type="text/x-jsrender">
+<script id="errorCommentTemplate" type="text/x-jsrender">
 
     <div class="alert alert-block">
         {{: #data }}
     </div>
 </script>
+
+<script id="noMoreChangesetsTemplate" type="text/x-jsrender">
+
+    <div class="row-fluid">
+        <div class='offset4 span4 well margin-top-small'><g:message code='noMoreChangesets'/></div>
+
+    </div>
+</script>
+
 </div>
 </body>
 </html>

@@ -75,7 +75,6 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         controller.getNextFewChangesetsOlderThanFromSameProject(latestChangeset.id)
 
         then:
-        def responseChangesets = controller.response.json.collect {day, changesetsForDay -> changesetsForDay}.flatten()
         responseChangesets*.identifier == ['2', '0']
     }
 
@@ -93,6 +92,6 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
     }
 
     private Collection<?> getResponseChangesets() {
-        controller.response.json.collect {day, changesetsForDay -> changesetsForDay}.flatten()
+        controller.response.json['changesets'].collect {day, changesetsForDay -> changesetsForDay}.flatten()
     }
 }

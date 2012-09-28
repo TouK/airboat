@@ -2,21 +2,21 @@ package codereview
 
 class CommentedChangesetsFilterService implements FilterServiceInterface {
 
+    static private def conditions = "from Changeset c where userComments.size > 0 or \
+                                    exists (from ProjectFileInChangeset p where c.date = (select max(file.changeset.date) from ProjectFileInChangeset file where file.projectFile = p.projectFile) and \
+                                    exists (from ThreadPositionInFile pos where pos.projectFileInChangeset = p and pos.thread.comments.size > 0))"
+
+    static private def order = "order by c.date desc"
+
     @Override
     def getLastFilteredChangesets() {
-        return Changeset.findAll("from Changeset c where userComments.size > 0 or \
-                                    exists (from ProjectFileInChangeset p where c.date = (select max(file.changeset.date) from ProjectFileInChangeset file where file.projectFile = p.projectFile) and \
-                                    exists (from ThreadPositionInFile pos where pos.projectFileInChangeset = p and pos.thread.comments.size > 0)) \
-                                    order by c.date desc", [max: Constants.FIRST_LOAD_CHANGESET_NUMBER]);
+        return Changeset.findAll(conditions + order, [max: Constants.FIRST_CHANGESET_LOAD_SIZE]);
     }
 
     @Override
     def getNextFilteredChangesets(Long changesetId) {
         def lastChangeset = Changeset.get(changesetId);
-        return Changeset.findAll("from Changeset c where (userComments.size > 0 or \
-                                    exists (from ProjectFileInChangeset p where c.date = (select max(file.changeset.date) from ProjectFileInChangeset file where file.projectFile = p.projectFile) and \
-                                    exists (from ThreadPositionInFile pos where pos.projectFileInChangeset = p and pos.thread.comments.size > 0))) and c.date < :lastChangesetDate \
-                                    order by c.date desc", [max: Constants.NEXT_LOAD_CHANGESET_NUMBER, lastChangesetDate: lastChangeset.date]);
+        return Changeset.findAll(conditions + " and c.date < :lastChangesetDate " + order, [max: Constants.NEXT_CHANGESET_LOAD_SIZE, lastChangesetDate: lastChangeset.date]);
     }
 
 }
