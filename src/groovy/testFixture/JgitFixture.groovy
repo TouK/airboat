@@ -3,7 +3,7 @@ package testFixture
 class JgitFixture {
 
     static final String CORRECT_GIT_DIF_OUTPUT = """
-        diff --git a/grails-app/controllers/codereview/ChangesetController.groovy b/grails-app/controllers/codereview/ChangesetController.groovy
+diff --git a/grails-app/controllers/codereview/ChangesetController.groovy b/grails-app/controllers/codereview/ChangesetController.groovy
 index 0879401..7df3f5b 100644
 --- a/grails-app/controllers/codereview/ChangesetController.groovy
 +++ b/grails-app/controllers/codereview/ChangesetController.groovy

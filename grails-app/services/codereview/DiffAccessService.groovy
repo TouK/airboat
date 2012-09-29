@@ -43,7 +43,10 @@ class DiffAccessService {
 
     private String extractDiffForFileFromGitDiffCommandOutput(String diff, String fileName) {
         def fileDiffs = diff.split(/(?m)^diff --git /)
-        def fileDiff = fileDiffs.find { it.split('\n').first().contains(fileName) }
+        def fileDiff = fileDiffs.find {
+            def lines = it.split('\n')
+            lines.length ? lines?.first().contains(fileName) : false
+        }
         return fileDiff ?  'diff --git ' + fileDiff : ''
     }
 
