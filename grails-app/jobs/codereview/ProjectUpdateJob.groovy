@@ -20,13 +20,15 @@ class ProjectUpdateJob {
                 try {
                     initialImport(project)
                 } catch (Exception e) {
+                    project.state = Project.ProjectState.triedToBeInitiallyImported
                     log.error("Initial import of $project.url failed", e)
                 }
             }
 
             Project.all.each { Project project ->
                 try {
-                    if (!project.wasOnceFullyImported) {
+                    if (project.state != Project.ProjectState.fullyImported &&
+                            Project.findAllByState(Project.ProjectState.notImported).size() == 0) {
                         fullImport(project)
                     }
                     update(project)
@@ -44,6 +46,9 @@ class ProjectUpdateJob {
                 def changesetNum = Changeset.findAllByProject(project).size()
                 if(changesetNum == 0) {
                     scmAccessService.importLastChangesets(project.url)
+                    project.state = Project.ProjectState.initiallyImported
+                } else {
+                    project.state = Project.ProjectState.triedToBeInitiallyImported
                 }
             }
         })
@@ -56,10 +61,10 @@ class ProjectUpdateJob {
                 Changeset oldestChangeset = Changeset.findByProject(project, [sort: 'date', order: 'asc'])
                 if(oldestChangeset != null) {
                     scmAccessService.importRestChangesets(project.url, oldestChangeset.identifier)
-                    project.wasOnceFullyImported = true
                 } else {
                     scmAccessService.importLastChangesets(project.url)
                 }
+                project.state = Project.ProjectState.fullyImported
             }
         })
     }

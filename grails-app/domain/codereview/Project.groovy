@@ -3,12 +3,15 @@ package codereview
 //FIXME add constraints tests
 class Project {
 
+    enum ProjectState {
+        notImported, triedToBeInitiallyImported, initiallyImported, fullyImported
+    }
+
     String name //FIXME get rid of this field, since we assume in code all around that it can be computed from url
     String url
-    boolean wasOnceFullyImported
+    ProjectState state = Project.ProjectState.notImported
 
     Project(String name, String url) {
-        this.wasOnceFullyImported = false;
         this.name = name
         this.url = url
     }

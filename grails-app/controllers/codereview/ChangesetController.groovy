@@ -204,9 +204,9 @@ class ChangesetController {
 
     private def isImporting(projectName = null) {
         if (projectName) {
-            return Project.findAllByNameAndWasOnceFullyImported(projectName, false).size() > 0
+            return Project.findAllByNameAndStateNotEqual(projectName, Project.ProjectState.fullyImported).size() > 0
         } else {
-            return Project.findAllByWasOnceFullyImported(false).size() > 0
+            return Project.findAllByStateNotEqual(Project.ProjectState.fullyImported).size() > 0
         }
     }
 }

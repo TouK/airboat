@@ -78,6 +78,28 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         responseChangesets*.identifier == ['2', '0']
     }
 
+    def 'should return importing=true when state of the project is less then fullyImported'() {
+        given:
+        System.out.println(state)
+        Project project = Project.build()
+        project.state = state
+
+        when:
+        def isImportingProject = controller.isImporting(project.name)
+        def isImportingAll = controller.isImporting()
+
+        then:
+        isImportingProject == importing
+        isImportingAll == importing
+
+        where:
+        state                                           | importing
+        Project.ProjectState.notImported                | true
+        Project.ProjectState.triedToBeInitiallyImported | true
+        Project.ProjectState.initiallyImported          | true
+        Project.ProjectState.fullyImported              | false
+    }
+
     private Changeset buildChangelogEntry(int positionCountingFromOldest, Project project = Project.build()) {
         Changeset.build(
                 project: project,
