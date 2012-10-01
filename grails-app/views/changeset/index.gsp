@@ -346,7 +346,7 @@
                 })
                 .on('click', '.openAllFiles', function () {
                     var $changeset = $(this).parents('.changeset').first();
-                    $changeset.ScrollTo();
+                    $.scrollTo(changeset,  scrollDuration, {offset: scrollOffset});
                     var changeset = codeReview.getModel($changeset);
                     $(changeset.projectFiles).each(function (_, projectFile) {
                         showFile(changeset.identifier, projectFile.id)
@@ -442,10 +442,12 @@
 <script id='projectFileListingTemplate' type="text/x-jsrender">
     <div class="projectFile fileListing well" style="display: none;" data-id={{:id}}>
 
-        <i class="closeButton icon-remove pull-right"> </i>
-        <br/>
+        <h4 class="pull-left noTopMargin">{{:name}}</h4>
 
-        <div class="diffAndFileListing">
+        <i class="closeButton icon-remove pull-right"> </i>
+        <div class="clearfix"></div>
+
+        <div class="diffAndFileListing margin-top-small">
 
         </div>
     </div>
@@ -534,11 +536,11 @@
         <div class='clearfix'/>
 
         %{--TODO get rid of this conditional display and make changest to undrelying collections instead--}%
-        <div data-link="visible{:showWholeFile}">
+        <div data-link="visible{:showWholeFile}" class="margin-top-small">
             {{for [wholeFileHunks] tmpl='#diffTemplate' ~fileType=fileType ~showWholeFile=true/}}
         </div>
 
-        <div data-link="visible{:!showWholeFile}">
+        <div data-link="visible{:!showWholeFile}" class="margin-top-small">
             {{for [diffHunks] tmpl='#diffTemplate' ~fileType=fileType ~showWholeFile=false/}}
         </div>
     </div>
@@ -634,8 +636,8 @@
         </div>
     </form>
 
-
     <div class="clearfix"></div>
+
 </script>
 
 <script id="commentTemplate" type="text/x-jsrender">

@@ -79,7 +79,6 @@
   <inspection_tool class="AndroidNonConstantResIdsInSwitch" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidUnknownAttribute" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="Annotator" enabled="false" level="ERROR" enabled_by_default="false" />
-  <inspection_tool class="AnonymousFunctionJS" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="AppEngineForbiddenCode" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="ArgNamesErrorsInspection" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="ArgNamesWarningsInspection" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -260,7 +259,7 @@
   <inspection_tool class="FtlTypesInspection" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="FtlWellformednessInspection" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="FunctionNamingConventionJS" enabled="true" level="WARNING" enabled_by_default="true">
-    <option name="m_regex" value="[a-z][A-Za-z]*" />
+    <option name="m_regex" value="[A-Za-z]*" />
     <option name="m_minLength" value="4" />
     <option name="m_maxLength" value="32" />
   </inspection_tool>
@@ -344,7 +343,6 @@
     <option name="m_limit" value="1" />
   </inspection_tool>
   <inspection_tool class="GroovyNegatedConditional" enabled="true" level="WARNING" enabled_by_default="true" />
-  <inspection_tool class="GroovyNegatedIf" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="GroovyNestedAssignment" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="GroovyNestedConditional" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="GroovyNestedSwitch" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -823,6 +821,9 @@
   <inspection_tool class="UnresolvedMessageChannelWarningInspection" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnresolvedPropertyKey" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="UnresolvedReference" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="UnterminatedStatementJS" enabled="true" level="WARNING" enabled_by_default="true">
+    <option name="ignoreSemicolonAtEndOfBlock" value="false" />
+  </inspection_tool>
   <inspection_tool class="UnusedAssignment" enabled="false" level="WARNING" enabled_by_default="false">
     <option name="REPORT_PREFIX_EXPRESSIONS" value="false" />
     <option name="REPORT_POSTFIX_EXPRESSIONS" value="true" />

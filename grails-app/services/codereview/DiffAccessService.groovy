@@ -33,7 +33,7 @@ class DiffAccessService {
         Repository repository = openGitRepository(projectRoot)
         Git git = new Git(repository);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream()
-        List<DiffEntry> diffs = git.diff()
+        git.diff()
                 .setOldTree(getTreeIterator(repository, oldPathSpec))
                 .setNewTree(getTreeIterator(repository, newPathSpec))
                 .setOutputStream(outputStream)
@@ -42,13 +42,12 @@ class DiffAccessService {
     }
 
     private String extractDiffForFileFromGitDiffCommandOutput(String diff, String fileName) {
-        def fileDiff = []
-        diff.split("diff --git").each {
-            if (it.contains(fileName)) {
-                fileDiff.add("diff --git" + it)
-            }
+        def fileDiffs = diff.split(/(?m)^diff --git /)
+        def fileDiff = fileDiffs.find {
+            def lines = it.split('\n')
+            lines.length ? lines?.first().contains(fileName) : false
         }
-        return fileDiff.join("\n")
+        return fileDiff ?  'diff --git ' + fileDiff : ''
     }
 
     List<GitChangedFile> getFilesChangedInCommit(File workTree, String pathSpec) {
