@@ -1,12 +1,14 @@
-function showFile(changesetIdentifier, projectFileId, callback) {
+function showFile(projectFile, callback) {
     var fileListingsUrl = uri.projectFile.getFileListings + '?' + $.param({
-        changesetIdentifier:changesetIdentifier, projectFileId:projectFileId
+        changesetIdentifier: projectFile.changeset.identifier, projectFileId:projectFile.id
     });
 
     var $fileListing = $(
-        '.changeset[data-identifier=' + changesetIdentifier + '] .fileListings' +
-        ' .fileListing.projectFile[data-id=' + projectFileId + ']'
+        '.changeset[data-identifier=' + projectFile.changeset.identifier + '] .fileListings' +
+        ' .fileListing.projectFile[data-id=' + projectFile.id + ']'
     );
+    $.observable(projectFile).setProperty('isDisplayed', true);
+
 
     $.getJSON(fileListingsUrl, function (listings) {
         listings.diffHunks = extractHunks(listings.diff);
@@ -15,7 +17,7 @@ function showFile(changesetIdentifier, projectFileId, callback) {
 
         $fileListing.children('.diffAndFileListing').html('<div id="templatePlaceholder"></div>');
         $.link.diffAndFileListingTemplate('#templatePlaceholder', listings, {target:'replace'});
-        $fileListing.show();
+        $fileListing.slideDown();
         if (callback) {
             callback($fileListing);
         }
@@ -46,7 +48,7 @@ function hideFileListings($fileListings, callback) {
         $.observable(airboat.getModel(this)).setProperty('isDisplayed', false);
     });
     removeLineCommentPopover($fileListings);
-    $fileListings.hide(0, onNthCall($fileListings.size(), callback));
+    $fileListings.slideUp(onNthCall($fileListings.size(), callback));
 }
 
 function onNthCall(n, callback) {
@@ -58,24 +60,17 @@ function onNthCall(n, callback) {
     };
 }
 
-function attachLineCommentPopover(changesetId, projectFileId) {
-    $('#content-files-' + changesetId + ' .linenums li').each(function (i, element) {
-        var commentForm = $("#addLineCommentFormTemplate").render({fileId:projectFileId, changesetId:changesetId, lineNumber:i + 1 });
-        $(element).popover({content:commentForm, placement:"left", trigger:"manual" });
+function showComments($projectFile) {
+    var projectFile = airboat.getModel($projectFile[0]);
+    projectFile.commentsDisplayed = true
+    if (projectFile.commentsCount != 0) {
+        appendSnippetToFileInAccordion(projectFile.changeset.identifier, projectFile.id);
+        $projectFile.find('.details').slideDown();
+    }
+}
 
-        $(element).click(function () {
-            var url = uri.lineComment.checkCanAddComment + '?' + $.param({
-                changesetIdentifier:changesetId, projectFileId:projectFileId
-            });
-            $.ajax({url: url}).done(function (response) {
-                if (response.canAddComment) {
-                    $('#content-files-' + changesetId + ' .linenums li').popover('hide');
-                    $(element).popover('show');
-                } else {
-                    var cannotAddCommentMessage = $('#cannotAddLineCommentMessageTepmlate').render(response);
-                    $.colorbox({html: cannotAddCommentMessage});
-                }
-            })
-        });
-    });
+function hideComments($projectFile) {
+    var projectFile = airboat.getModel($projectFile[0]);
+    projectFile.commentsDisplayed = false
+    $projectFile.find('.details').slideUp()
 }

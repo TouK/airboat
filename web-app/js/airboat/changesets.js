@@ -190,25 +190,6 @@ function appendChangeset(changeset, dayElement) {
     $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render(changeset));
 }
 
-/*TODO move it somewhere near the template definition*/
-$('.projectFile .accordion-body.collapse').livequery(function () {
-    $(this)
-        .on('show',function (event) {
-            var projectFile = airboat.getModel(this);
-
-            if (projectFile.commentsCount == 0) {
-                event.preventDefault();
-            }
-            var changesetIdentifier = projectFile.changeset.identifier;
-            var projectFileId = projectFile.id;
-            appendSnippetToFileInAccordion(changesetIdentifier, projectFileId);
-            showFile(changesetIdentifier, projectFileId, function ($fileListing) {
-                $.scrollTo($fileListing, scrollDuration, {offset: scrollOffset});
-            });
-            $.observable(projectFile).setProperty('isDisplayed', true);
-        });
-});
-
 function updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId) {
     renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippetsForCommentedFile);
     var projectFile = airboat.getModel('.changeset[data-identifier=' + changesetIdentifier + '] .projectFile[data-id=' + projectFileId + ']');
@@ -290,6 +271,9 @@ function toggleChangesetDetails(identifier) {
 }
 
 function closeAllFilesAndScrollToChangesetTop(identifier) {
+    $('.changeset[data-identifier=' + identifier + '] .left.column .projectFile').each(function () {
+        hideComments($(this));
+    });
     hideFileListings($('.changeset[data-identifier=' + identifier + '] .fileListing'), function() {
         $.scrollTo('.changeset[data-identifier=' + identifier + ']', scrollDuration, { offset: scrollOffset })
     });
