@@ -14,8 +14,6 @@ class Changeset {
         sort 'date'
     }
 
-    Commiter commiter
-
     Changeset(String identifier, String commitMessage, Date date) {
         this.identifier = identifier
         this.date = date

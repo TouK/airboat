@@ -113,7 +113,6 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         commiter.changesets.contains(Changeset.findByIdentifier(commitId))
     }
 
-    @Ignore //FIXME make this pass
     def 'should associate Changeset with corresponding user'() {
         given:
         def email = 'agj@touk.pl'
@@ -135,11 +134,9 @@ class ScmAccessServiceIntegrationSpec extends IntegrationSpec {
         }
 
         then:
-        Project.withNewSession {
             def user = User.findByEmail(email)
             def associatedCommiters = user.committers
-            assert associatedCommiters*.cvsCommiterId == [cvsCommitterId]
-        }
+            associatedCommiters*.cvsCommiterId == [cvsCommitterId]
     }
 
     //learning tests. TODO move to another class. These tests will fail in unit-test environment. Document it.

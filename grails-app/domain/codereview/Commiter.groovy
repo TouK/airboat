@@ -8,7 +8,7 @@ class Commiter {
         this.cvsCommiterId = cvsCommiterId
     }
 
-    User user
+    static belongsTo = [user: User]
 
     static hasMany = [changesets: Changeset]
 

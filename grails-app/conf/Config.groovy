@@ -115,9 +115,9 @@ log4j = {
             'codereview',
             'grails.app'
 
-//    trace 'org.hibernate.engine.Cascade'
-            //'org.hibernate.type'
-
+//    trace 'org.hibernate.type'
+//        //'org.hibernate.engine.Cascade'
+//
 //    debug 'codereview',
 //            'grails.app',
 //            'org.hibernate.engine',
