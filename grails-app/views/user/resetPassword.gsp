@@ -11,8 +11,6 @@
 <div class="span12 well-large">
     <div class='container'>
         <div class="span7 offset4">
-            Hello, ${username}!
-            <h1>Reset password:</h1>
 
             <div class="span6 well-large well set-new-password-form">
                 <h2>Set new password</h2>
@@ -69,8 +67,10 @@
                                     .hide().fadeIn();
                             resizeColorbox();
                         } else {
-                            alert("An error occured. Please file a bug using our feedback form.")
+                            alert("An error occured. Please file a bug using our feedback form.");
                         }
+                        $('.goBackButton').removeClass('disabled');
+                        $('.goBackButton').css('visibility', 'visible');
                     }, 'json');
                     return false;
                 }
@@ -79,6 +79,7 @@
                     parent.$.fn.colorbox.resize({width:"650px", height:"480px"});
                 }
             </script>
+            <a type="button" href="../../" class="btn btn-primary goBackButton" style='visibility:hidden'>Main page</a>
 
         </div>
     </div>

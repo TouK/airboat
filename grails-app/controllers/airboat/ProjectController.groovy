@@ -38,6 +38,6 @@ class ProjectController {
     }
 
     def names() {
-        render( Project.all.collect{[name: it.name]} as JSON)
+        render( Project.all.sort{Project it -> it.name}.collect{[name: it.name]} as JSON)
     }
 }

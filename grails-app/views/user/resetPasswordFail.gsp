@@ -14,6 +14,7 @@
             <div class="span6 well-large well set-new-password-form">
                 <h5><g:message code = "invalidToken" /></h5>
             </div>
+            <a type="button" href="../" class="btn btn-primary">Main page</a>
 
 
         </div>
