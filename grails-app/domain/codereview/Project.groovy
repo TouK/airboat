@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 //FIXME add constraints tests
 class Project {

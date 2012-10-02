@@ -53,7 +53,7 @@
     }
 
     function changeUserSkin(skinName) {
-        var username = codeReview.loggedInUserName
+        var username = airboat.loggedInUserName
         $.post("${createLink(uri: '/user/setSkinOptions/')}", { username:username, skin:skinName});
     }
 

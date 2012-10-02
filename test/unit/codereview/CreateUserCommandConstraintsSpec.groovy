@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 import spock.lang.Ignore
 import spock.lang.Specification

@@ -43,7 +43,7 @@ function hideFileAndScrollToPreviousFileOrChangesetTop(changesetId, projectFileI
 
 function hideFileListings($fileListings, callback) {
     $fileListings.each(function () {
-        $.observable(codeReview.getModel(this)).setProperty('isDisplayed', false);
+        $.observable(airboat.getModel(this)).setProperty('isDisplayed', false);
     });
     removeLineCommentPopover($fileListings);
     $fileListings.hide(0, onNthCall($fileListings.size(), callback));

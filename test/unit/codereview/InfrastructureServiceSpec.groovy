@@ -1,10 +1,10 @@
-package codereview
+package airboat
 
 import grails.test.mixin.Mock
 import spock.lang.Specification
 import testFixture.Fixture
 
-import static codereview.Constants.CODEREVIEW_WORKING_DIRECTORY_PROPERTY
+import static airboat.Constants.AIRBOAT_WORKING_DIRECTORY_PROPERTY
 import grails.buildtestdata.mixin.Build
 
 @Build(Project)
@@ -15,20 +15,20 @@ class InfrastructureServiceSpec extends Specification {
     String workingDirectory
 
     def setup() {
-        workingDirectory = System.getProperty(CODEREVIEW_WORKING_DIRECTORY_PROPERTY)
+        workingDirectory = System.getProperty(AIRBOAT_WORKING_DIRECTORY_PROPERTY)
     }
 
     def cleanup() {
-        System.clearProperty(CODEREVIEW_WORKING_DIRECTORY_PROPERTY)
+        System.clearProperty(AIRBOAT_WORKING_DIRECTORY_PROPERTY)
         if (workingDirectory != null) {
-            System.setProperty(CODEREVIEW_WORKING_DIRECTORY_PROPERTY, workingDirectory)
+            System.setProperty(AIRBOAT_WORKING_DIRECTORY_PROPERTY, workingDirectory)
         }
     }
 
-    def 'should use codereview.workingDirectory parameter to determine base directory name'() {
+    def 'should use airboat.workingDirectory parameter to determine base directory name'() {
         given:
         String overridenDirectory = "wherever-you-want"
-        System.setProperty(CODEREVIEW_WORKING_DIRECTORY_PROPERTY, overridenDirectory)
+        System.setProperty(AIRBOAT_WORKING_DIRECTORY_PROPERTY, overridenDirectory)
 
         when:
         def workindDirectory = service.getWorkingDirectory()
@@ -39,13 +39,13 @@ class InfrastructureServiceSpec extends Specification {
 
     def 'temporary dir path should be returned for base directory name if not configured otherwise'() {
         given:
-        System.clearProperty(CODEREVIEW_WORKING_DIRECTORY_PROPERTY)
+        System.clearProperty(AIRBOAT_WORKING_DIRECTORY_PROPERTY)
 
         when:
         def workindDirectory = service.getWorkingDirectory()
 
         then:
-        workindDirectory == new File(System.getProperty('java.io.tmpdir'), 'codereview-work')
+        workindDirectory == new File(System.getProperty('java.io.tmpdir'), 'airboat-work')
     }
 
     def 'getDirectoryNameForTheProject() should return project name'() {

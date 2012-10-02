@@ -2,7 +2,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title><g:layoutTitle default="CodeReview"/></title>
+    <title><g:layoutTitle default="Airboat"/></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script type="text/javascript">
@@ -44,7 +44,7 @@
         var VIEW_TYPE = { SINGLE_CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
         var DATA_TYPE = { CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
 
-        var codeReview = {
+        var airboat = {
             navbarOffset: 55
 
             , colorboxSettings:{transition:"fade", iframe:true, width:640, height:450}, loggedInUserName:'<sec:username/>', isAdmin:"<sec:ifAnyGranted roles="ROLE_ADMIN">true</sec:ifAnyGranted>" ? true : false, isAuthenticated:function () {
@@ -65,7 +65,7 @@
             }, templates:{
                 compileAll:function () {
                     $(arguments).each(function () {
-                        codeReview.templates.compile(this);
+                        airboat.templates.compile(this);
                     })
                 }, compile:function (templateName) {
                     templateName += 'Template'
@@ -92,7 +92,7 @@
             }
         }
 
-        //TODO move to codeReview object
+        //TODO move to airboat object
         var hashAbbreviationLength = 6;
         var lineBoundary = 60; //TODO rename
     </script>
@@ -114,7 +114,7 @@
         });
 
         function showLoginForm() {
-            $.colorbox($.extend(codeReview.colorboxSettings, {href:uri.login}));
+            $.colorbox($.extend(airboat.colorboxSettings, {href:uri.login}));
         }
     </script>
 
@@ -140,7 +140,7 @@
     <script type="text/javascript">
         if ($.cookies.get('skin')) {
             $("#skin").attr("href", $.cookies.get('skin').href);
-            if (!codeReview.isAuthenticated()) {
+            if (!airboat.isAuthenticated()) {
                 $.cookies.del('skin')
                 $("#skin").attr("href", "${createLink(uri: '/libs/bootstrap/less/default/swatchmaker.less')}");
             }

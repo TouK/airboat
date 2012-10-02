@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 import grails.converters.JSON
 import grails.plugin.spock.IntegrationSpec
@@ -12,7 +12,7 @@ class UserCommentControllerIntegrationSpec extends IntegrationSpec {
 
     def 'should add comment when there is a logged in user'() {
         given:
-        def loggedInUser = User.build(username: 'logged.in@codereview.com')
+        def loggedInUser = User.build(username: 'logged.in@airboat.com')
         springSecurityService.reauthenticate(loggedInUser.username)
 
         Changeset changeset = Changeset.build()

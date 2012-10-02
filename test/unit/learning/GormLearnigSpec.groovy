@@ -2,11 +2,11 @@ package learning
 
 import spock.lang.Ignore
 import spock.lang.Specification
-import codereview.User
-import codereview.Commiter
+import airboat.User
+import airboat.Commiter
 import grails.buildtestdata.mixin.Build
-import codereview.UserComment
-import codereview.UnitTestBuilders
+import airboat.UserComment
+import airboat.UnitTestBuilders
 
 @Build([User, Commiter, UserComment])
 class GormLearnigSpec extends Specification {

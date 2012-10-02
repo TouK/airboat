@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 import spock.lang.Specification
 import grails.buildtestdata.mixin.Build
@@ -16,7 +16,7 @@ class ReturnCommentsServiceSpec extends Specification {
 
     def 'should return comments to changeset'() {
         given:
-        def loggedInUser = User.build(username: 'logged.in@codereview.com')
+        def loggedInUser = User.build(username: 'logged.in@airboat.com')
         returnCommentsService.springSecurityService.getCurrentUser() >> loggedInUser
         Changeset changeset = Changeset.build()
         UserComment comment = UserComment.build(changeset: changeset, author: loggedInUser, text: 'Very well indeed.')

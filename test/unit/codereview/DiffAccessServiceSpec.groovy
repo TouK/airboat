@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 import grails.buildtestdata.mixin.Build
 
@@ -12,19 +12,19 @@ import org.eclipse.jgit.errors.RepositoryNotFoundException
 
 import spock.lang.Ignore
 
-import static testFixture.Fixture.PROJECT_CODEREVIEW_ON_THIS_MACHINE_URL
+import static testFixture.Fixture.PROJECT_AIRBOAT_ON_THIS_MACHINE_URL
 import static testFixture.Fixture.FIRST_COMMIT_HASH
 import org.eclipse.jgit.diff.DiffEntry
 
-import static testFixture.Fixture.PROJECT_CODEREVIEW_NAME
+import static testFixture.Fixture.PROJECT_AIRBOAT_NAME
 
 @Build(ProjectFileInChangeset)
 class DiffAccessServiceSpec extends Specification {
 
     def diffAccessService = new DiffAccessService()
-    static GString projectUrl = PROJECT_CODEREVIEW_ON_THIS_MACHINE_URL
-    String firstCodereviewHash = "ac464172cd45551eac74f4e5b19234ac4c77e3d7"
-    String secondCodereviewHash = "7c7b0e3401dbfe52a4d51c44f92bc930a8b34f56"
+    static GString projectUrl = PROJECT_AIRBOAT_ON_THIS_MACHINE_URL
+    String firstAirboatHash = "ac464172cd45551eac74f4e5b19234ac4c77e3d7"
+    String secondAirboatHash = "7c7b0e3401dbfe52a4d51c44f92bc930a8b34f56"
     String projectWithoutRepositoryCloneUrl = "git://git.neverland.org/ohnoes"
     File projectRoot = new File(".")
 
@@ -59,7 +59,7 @@ class DiffAccessServiceSpec extends Specification {
 
     def "should get difference between commit and it's parent" () {
         when:
-        String diff = diffAccessService.getDiffWithPreviousCommit(projectRoot, firstCodereviewHash)
+        String diff = diffAccessService.getDiffWithPreviousCommit(projectRoot, firstAirboatHash)
 
         then:
         diff != null
@@ -100,7 +100,7 @@ class DiffAccessServiceSpec extends Specification {
 
     ProjectFileInChangeset buildProjectFileInProject(String repositoryUrl, String pathWithinRepository) {
         def project = Project.build(url: repositoryUrl)
-        def changeset = Changeset.build(identifier: secondCodereviewHash, project: project)
+        def changeset = Changeset.build(identifier: secondAirboatHash, project: project)
         def projectFile = ProjectFile.build(name: pathWithinRepository, project: project)
         ProjectFileInChangeset.build(changeset: changeset, projectFile: projectFile)
     }

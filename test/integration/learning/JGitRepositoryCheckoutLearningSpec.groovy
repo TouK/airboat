@@ -2,7 +2,7 @@ package learning
 
 import spock.lang.Specification
 
-import codereview.GitRepositoryService
+import airboat.GitRepositoryService
 import spock.lang.Ignore
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.lib.Repository
@@ -14,7 +14,7 @@ class JGitRepositoryCheckoutLearningSpec extends Specification {
     def "should set up a new repo for me!" () {
         when:
         def jGitRepositoryService  = new GitRepositoryService()
-        String PATH = "/tmp/codereviewRepos/node1"
+        String PATH = "/tmp/airboatRepos/node1"
         def scmUrl ="https://github.com/joyent/node.git"
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         Repository repository = builder.setGitDir(new File(PATH))

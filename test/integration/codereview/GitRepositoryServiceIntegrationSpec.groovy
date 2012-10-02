@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 import grails.plugin.spock.IntegrationSpec
 
@@ -13,16 +13,16 @@ class GitRepositoryServiceIntegrationSpec extends IntegrationSpec {
     static InfrastructureService infrastructureService
 
     ScmAccessService scmAccessService
-    static GString projectUrl = PROJECT_CODEREVIEW_ON_THIS_MACHINE_URL
+    static GString projectUrl = PROJECT_AIRBOAT_ON_THIS_MACHINE_URL
 
     def setupSpec() {
         assert infrastructureService.getWorkingDirectory().deleteDir()
-        Project.build(name: PROJECT_CODEREVIEW_NAME, url: projectUrl)
+        Project.build(name: PROJECT_AIRBOAT_NAME, url: projectUrl)
         gitRepositoryService.updateOrCheckOutRepository(projectUrl)
     }
 
     def cleanupSpec() {
-        Project.findByName(PROJECT_CODEREVIEW_NAME).delete(flush: true)
+        Project.findByName(PROJECT_AIRBOAT_NAME).delete(flush: true)
         infrastructureService.getWorkingDirectory().deleteDir()
     }
 

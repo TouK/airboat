@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 
 class InfrastructureService {
@@ -8,11 +8,11 @@ class InfrastructureService {
     }
 
     private File getWorkingDirectory() {
-        def overridenWorkingDirectoryPath = System.getProperty(Constants.CODEREVIEW_WORKING_DIRECTORY_PROPERTY)
+        def overridenWorkingDirectoryPath = System.getProperty(Constants.AIRBOAT_WORKING_DIRECTORY_PROPERTY)
         if (overridenWorkingDirectoryPath != null) {
             new File(overridenWorkingDirectoryPath)
         } else {
-            new File(System.getProperty('java.io.tmpdir'), 'codereview-work')
+            new File(System.getProperty('java.io.tmpdir'), 'airboat-work')
         }
     }
 

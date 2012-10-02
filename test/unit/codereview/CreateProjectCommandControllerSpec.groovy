@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 import static org.junit.Assert.*
 

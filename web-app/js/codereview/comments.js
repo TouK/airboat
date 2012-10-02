@@ -9,7 +9,7 @@ function addComment($form, changesetIdentifier) {
         { changesetIdentifier:changesetIdentifier, text:text },
         function (comment) {
             if (comment.errors == null) {
-                var changeset = codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + ']');
+                var changeset = airboat.getModel('.changeset[data-identifier=' + changesetIdentifier + ']');
                 var changesetComments = changeset.comments;
                 $.observable(changesetComments).insert(changesetComments.length, comment);
                 $.observable(changeset).setProperty('allComments');
@@ -59,7 +59,7 @@ function createAndShowCommentFormPopover($listingLine, projectFile) {
 }
 
 function getLineNumber($listingLine) {
-    var diffSpanStartLine = codeReview.getModel($listingLine[0]).newFileStartLine;
+    var diffSpanStartLine = airboat.getModel($listingLine[0]).newFileStartLine;
     var lineIndex = $listingLine.parents('pre').find('li').index($listingLine);
     return diffSpanStartLine + lineIndex;
 }

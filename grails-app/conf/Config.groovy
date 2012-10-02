@@ -67,9 +67,9 @@ grails.gorm.failOnError = true
 grails.hibernate.cache.queries = true
 
 //Spring Security plugin configuration:
-grails.plugins.springsecurity.userLookup.userDomainClassName = 'codereview.User'
-grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'codereview.UserRole'
-grails.plugins.springsecurity.authority.className = 'codereview.Role'
+grails.plugins.springsecurity.userLookup.userDomainClassName = 'airboat.User'
+grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'airboat.UserRole'
+grails.plugins.springsecurity.authority.className = 'airboat.Role'
 
 grails.plugins.springsecurity.successHandler.defaultTargetUrl = '/login/successful'
 grails.plugins.springsecurity.successHandler.alwaysUseDefault = true
@@ -96,7 +96,7 @@ log4j = {
 
         console name: 'stdout', layout: pattern(conversionPattern: '%d{HH:mm:ss} %p %c %m%n')
         rollingFile name: 'stacktrace', layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c >>%m%n'),
-                maxFileSize: 20480, file: "${logDirectory}/CodereviewStackTrace.log"
+                maxFileSize: 20480, file: "${logDirectory}/AirboatStackTrace.log"
         rollingFile name: 'rollingFileQuartz', layout: pattern(conversionPattern: '%d{MM-dd-yyyy HH:mm:ss} %p %c >>%m%n'),
                 maxFileSize: 20480, file: "${logDirectory}/JobExecutionException.log"
     }
@@ -112,13 +112,13 @@ log4j = {
             'org.springframework',
             //'org.hibernate',
             //'net.sf.ehcache.hibernate',
-            'codereview',
+            'airboat',
             'grails.app'
 
 //    trace 'org.hibernate.type'
 //        //'org.hibernate.engine.Cascade'
 //
-//    debug 'codereview',
+//    debug 'airboat',
 //            'grails.app',
 //            'org.hibernate.engine',
 //            'org.hibernate.SQL',

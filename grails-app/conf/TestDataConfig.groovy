@@ -1,25 +1,25 @@
 import grails.plugins.springsecurity.SpringSecurityService
-import codereview.ProjectFile
-import codereview.CommentThread
-import codereview.ProjectFileInChangeset
-import codereview.ChangeType
+import airboat.ProjectFile
+import airboat.CommentThread
+import airboat.ProjectFileInChangeset
+import airboat.ChangeType
 
 def encodePasswordMock = { password, salt = null -> "#encoded#password=${password}#salt=${salt}" }
 
 testDataConfig {
     sampleData {
-        'codereview.Project' {
+        'airboat.Project' {
             def (nameCounter, urlCounter) = [1, 1]
             name = {-> "project_name_${nameCounter++}" }
             url = {-> "git://git.touk.pl/project_${urlCounter++}" }
         }
 
-        'codereview.Changeset' {
+        'airboat.Changeset' {
             def i = 1
             identifier = {-> "identifier_${i++}" }
         }
 
-        'codereview.User' {
+        'airboat.User' {
             def i = 1
             username = {-> "user_${i++}@test.com"}
             springSecurityService = {->
@@ -27,7 +27,7 @@ testDataConfig {
             }
         }
 
-        'codereview.Commiter' {
+        'airboat.Commiter' {
             def i = 0
             cvsCommiterId = {->
                 i++
@@ -35,12 +35,12 @@ testDataConfig {
             }
         }
 
-        'codereview.ProjectFileInChangeset' {
+        'airboat.ProjectFileInChangeset' {
             changeType = ChangeType.ADD
         }
 
         //FIXME file a bug/enhancement request for same top of a diamond (in this case: Project in ThreadPositionInFile)
-        'codereview.ThreadPositionInFile' {
+        'airboat.ThreadPositionInFile' {
             projectFileInChangeset = ProjectFileInChangeset.&build
             thread = CommentThread.&build
         }

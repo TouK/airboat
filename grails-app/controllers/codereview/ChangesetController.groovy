@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 import grails.converters.JSON
 import static com.google.common.base.Strings.isNullOrEmpty

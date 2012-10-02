@@ -2,11 +2,11 @@
 <project xmlns='http://maven.apache.org/POM/4.0.0' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
          xsi:schemaLocation='http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd'>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>codeReview</groupId>
-    <artifactId>codeReview</artifactId>
+    <groupId>airboat</groupId>
+    <artifactId>airboat</artifactId>
     <packaging>war</packaging>
     <version>0.1</version>
-    <name>TouK Code Review</name>
+    <name>TouK Airboat</name>
     <build>
         <sourceDirectory>grails-app</sourceDirectory>
         <plugins>

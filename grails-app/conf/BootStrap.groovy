@@ -1,14 +1,14 @@
-import codereview.Changeset
-import codereview.Constants
-import codereview.Project
+import airboat.Changeset
+import airboat.Constants
+import airboat.Project
 import grails.converters.JSON
 
-import static codereview.Constants.*
-import codereview.ProjectUpdateJob
-import codereview.User
-import codereview.Role
-import codereview.UserRole
-import codereview.ResetPasswordEntriesDeleteJob
+import static airboat.Constants.*
+import airboat.ProjectUpdateJob
+import airboat.User
+import airboat.Role
+import airboat.UserRole
+import airboat.ResetPasswordEntriesDeleteJob
 
 class BootStrap {
 
@@ -16,20 +16,20 @@ class BootStrap {
 
         environments {
             production {
-                bootstrapNonTestEnvironment(projectCodeReview())
+                bootstrapNonTestEnvironment(projectAirboat())
             }
             development {
                 bootstrapNonTestEnvironment(
                         Project.findOrCreateWhere(name: 'drip', url: 'https://github.com/flatland/drip.git'),
                         Project.findOrCreateWhere(name: 'visibility.js', url: 'https://github.com/ai/visibility.js.git'),
-                        projectCodeReview()
+                        projectAirboat()
                 )
             }
         }
     }
 
-    private Project projectCodeReview() {
-        Project.findOrCreateWhere(name: 'airboat', url:   PROJECT_CODEREVIEW_REPOSITORY_URL)
+    private Project projectAirboat() {
+        Project.findOrCreateWhere(name: 'airboat', url:   PROJECT_AIRBOAT_REPOSITORY_URL)
     }
 
     private void bootstrapNonTestEnvironment(Project... projects) {
@@ -52,12 +52,12 @@ class BootStrap {
         }
 
         User admin
-        if(!User.findByEmail("admin@codereview.pl")) {
-            admin = new User([username: "admin@codereview.pl", password: "admin", enabled: true])
+        if(!User.findByEmail("admin@airboat.pl")) {
+            admin = new User([username: "admin@airboat.pl", password: "admin", enabled: true])
             admin.save()
         }
         else {
-            admin = User.findByEmail("admin@codereview.pl")
+            admin = User.findByEmail("admin@airboat.pl")
         }
 
         if(UserRole.findByRoleAndUser(administrator, admin) == null) {

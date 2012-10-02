@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 import org.springframework.security.access.prepost.PreAuthorize
 import grails.plugins.springsecurity.SpringSecurityService

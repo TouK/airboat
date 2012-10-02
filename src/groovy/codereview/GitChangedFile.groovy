@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 import org.eclipse.jgit.diff.DiffEntry
 

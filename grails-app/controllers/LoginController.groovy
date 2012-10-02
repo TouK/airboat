@@ -10,9 +10,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.security.auth.login.AccountExpiredException
 import javax.servlet.http.HttpServletResponse
-import codereview.User
-import codereview.Role
-import codereview.UserRole
+import airboat.User
+import airboat.Role
+import airboat.UserRole
 
 class LoginController {
 

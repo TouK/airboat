@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 import grails.buildtestdata.mixin.Build
 import grails.plugins.springsecurity.SpringSecurityService

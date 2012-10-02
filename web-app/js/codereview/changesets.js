@@ -1,16 +1,16 @@
 function showProject(projectName) {
-    $.observable(codeReview).setProperty('displayedProjectName', projectName);
+    $.observable(airboat).setProperty('displayedProjectName', projectName);
     changesetsLoading = true;
-    $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:codeReview.displayedProjectName}),
+    $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:airboat.displayedProjectName}),
         function (data) {
             clearDisplayAndAppendChangesetsBottom({data:data, shouldLoad:true, viewType:VIEW_TYPE.PROJECT, activeSelector:'#projectsDropdown'})
         });
 }
 
 function showFiltered(filterType) {
-    $.observable(codeReview).setProperty('currentFilter', filterType);
-    codeReview.changesetLoading = true;
-    $.getJSON(uri.changeset.getLastFilteredChangesets + '?' + $.param({filterType:codeReview.currentFilter}),
+    $.observable(airboat).setProperty('currentFilter', filterType);
+    airboat.changesetLoading = true;
+    $.getJSON(uri.changeset.getLastFilteredChangesets + '?' + $.param({filterType:airboat.currentFilter}),
         function (data) {
             clearDisplayAndAppendChangesetsBottom({data:data, shouldLoad:true, viewType:VIEW_TYPE.FILTER, activeSelector:'#filtersDropdown'})
         });
@@ -42,7 +42,7 @@ var importGritter;
 function showImportGritter(isImporting) {
     var importInfo;
     var shouldHide = false;
-    if (currentViewType == VIEW_TYPE.PROJECT && codeReview.displayedProjectName != '') {
+    if (currentViewType == VIEW_TYPE.PROJECT && airboat.displayedProjectName != '') {
         importInfo = 'Import is in progress, older changesets may not by imported yet.';
         shouldHide = true;
     } else {
@@ -93,12 +93,12 @@ function loadMoreChangesets() {
 }
 
 function getControllerAction() {
-    if (history.state.dataType == DATA_TYPE.PROJECT && codeReview.displayedProjectName == '') {
+    if (history.state.dataType == DATA_TYPE.PROJECT && airboat.displayedProjectName == '') {
         return uri.changeset.getNextFewChangesetsOlderThan + '?' + $.param({changesetId:lastLoadedChangesetId});
     } else if (history.state.dataType == DATA_TYPE.PROJECT) {
         return uri.changeset.getNextFewChangesetsOlderThanFromSameProject  + '?' + $.param({changesetId:lastLoadedChangesetId});
     } else if (history.state.dataType == DATA_TYPE.FILTER) {
-        return uri.changeset.getNextFewFilteredChangesetsOlderThan  + '?' + $.param({changesetId:lastLoadedChangesetId, filterType: codeReview.currentFilter});
+        return uri.changeset.getNextFewFilteredChangesetsOlderThan  + '?' + $.param({changesetId:lastLoadedChangesetId, filterType: airboat.currentFilter});
     }
 }
 
@@ -194,7 +194,7 @@ function appendChangeset(changeset, dayElement) {
 $('.projectFile .accordion-body.collapse').livequery(function () {
     $(this)
         .on('show',function (event) {
-            var projectFile = codeReview.getModel(this);
+            var projectFile = airboat.getModel(this);
 
             if (projectFile.commentsCount == 0) {
                 event.preventDefault();
@@ -211,9 +211,9 @@ $('.projectFile .accordion-body.collapse').livequery(function () {
 
 function updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId) {
     renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippetsForCommentedFile);
-    var projectFile = codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + '] .projectFile[data-id=' + projectFileId + ']');
+    var projectFile = airboat.getModel('.changeset[data-identifier=' + changesetIdentifier + '] .projectFile[data-id=' + projectFileId + ']');
     $.observable(projectFile).setProperty('commentsCount', threadGroupsWithSnippetsForCommentedFile.commentsCount);
-    $.observable(codeReview.getModel('.changeset[data-identifier=' + changesetIdentifier + ']')).setProperty('allComments')
+    $.observable(airboat.getModel('.changeset[data-identifier=' + changesetIdentifier + ']')).setProperty('allComments')
 }
 
 function appendSnippetToFileInAccordion(changesetIdentifier, projectFileId) {

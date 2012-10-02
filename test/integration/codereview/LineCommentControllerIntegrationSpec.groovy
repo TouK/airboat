@@ -1,6 +1,6 @@
-package codereview
+package airboat
 
-import static codereview.TestHelpers.nLinesOfSampleText
+import static airboat.TestHelpers.nLinesOfSampleText
 import grails.converters.JSON
 import grails.plugin.spock.IntegrationSpec
 import spock.lang.Ignore

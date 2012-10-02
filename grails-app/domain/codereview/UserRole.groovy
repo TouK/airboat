@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 import org.apache.commons.lang.builder.HashCodeBuilder
 

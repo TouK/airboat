@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 import grails.plugin.spock.IntegrationSpec
 import grails.plugins.springsecurity.SpringSecurityService
@@ -16,7 +16,7 @@ class CommentedChangesetsFilterServiceIntegrationSpec extends IntegrationSpec {
 
     static transactional = false
 
-    static GString projectUrl = Fixture.PROJECT_CODEREVIEW_ON_THIS_MACHINE_URL
+    static GString projectUrl = Fixture.PROJECT_AIRBOAT_ON_THIS_MACHINE_URL
 
     ScmAccessService scmAccessService
     SpringSecurityService springSecurityService
@@ -25,7 +25,7 @@ class CommentedChangesetsFilterServiceIntegrationSpec extends IntegrationSpec {
     def setupSpec() {
         assert infrastructureService.getWorkingDirectory().deleteDir()
         Project.withNewSession { Session session ->
-            Project.build(name: Fixture.PROJECT_CODEREVIEW_NAME, url: projectUrl)
+            Project.build(name: Fixture.PROJECT_AIRBOAT_NAME, url: projectUrl)
         }
         gitRepositoryService.updateOrCheckOutRepository(projectUrl)
         DbPurger.purgeDb()
@@ -35,7 +35,7 @@ class CommentedChangesetsFilterServiceIntegrationSpec extends IntegrationSpec {
         lineCommentController.scmAccessService = scmAccessService
         DbPurger.verifyDbIsClean()
         Project.withNewSession {
-            Project.build(name: Fixture.PROJECT_CODEREVIEW_NAME, url: projectUrl)
+            Project.build(name: Fixture.PROJECT_AIRBOAT_NAME, url: projectUrl)
         }
     }
 

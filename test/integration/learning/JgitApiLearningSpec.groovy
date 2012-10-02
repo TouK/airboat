@@ -38,7 +38,7 @@ class JgitApiLearningSpec extends Specification {
     @Ignore
     def "What repository properties are?"() {
         when:
-        def gitDir = new File("/home/touk/codereview")
+        def gitDir = new File("/home/touk/airboat")
         def repositoryBuilder = new RepositoryBuilder()
         def repository = repositoryBuilder.setWorkTree(gitDir) // --git-dir if supplied, no-op if null
                 .readEnvironment() // scan environment GIT_* variables
@@ -47,13 +47,13 @@ class JgitApiLearningSpec extends Specification {
         then:
         repository.additionalHaves.toString() == "[]"
         repository.branch.toString() == "master"
-        repository.config.toString() == "FileBasedConfig[/home/touk/codereview/.git/config]"
+        repository.config.toString() == "FileBasedConfig[/home/touk/airboat/.git/config]"
     }
 
     @Ignore
     def "How to create git object"() {
         when:
-        def gitDir = new File("/home/touk/codereview/.git")
+        def gitDir = new File("/home/touk/airboat/.git")
         def outputFile2 = new File("/home/touk/diff-output2")
         def outputStream2 = new FileOutputStream(outputFile2)
 
@@ -75,7 +75,7 @@ class JgitApiLearningSpec extends Specification {
     def "should get id of commit and read files from it"() {
         when:
 
-        def gitDir = new File("/home/touk/codereview/.git")
+        def gitDir = new File("/home/touk/airboat/.git")
         def repositoryBuilder = new RepositoryBuilder()
         def repository = repositoryBuilder.setWorkTree(gitDir) // --git-dir if supplied, no-op if null
                 .readEnvironment() // scan environment GIT_* variables
@@ -115,7 +115,7 @@ class JgitApiLearningSpec extends Specification {
 
     def "how to extract diff to certain file from git command output"() {
         when:
-        def gitDir = new File("/home/touk/codereview/.git")
+        def gitDir = new File("/home/touk/airboat/.git")
         def repositoryBuilder = new RepositoryBuilder()
         def repository = repositoryBuilder.setWorkTree(gitDir) // --git-dir if supplied, no-op if null
                 .readEnvironment() // scan environment GIT_* variables

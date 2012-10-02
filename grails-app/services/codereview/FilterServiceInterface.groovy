@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 interface FilterServiceInterface {
     def getLastFilteredChangesets()

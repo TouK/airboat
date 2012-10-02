@@ -42,7 +42,7 @@
         <div class="container">
             <a class="brand" href="${createLink(uri: '/')}">
                 <span class='highlighted'>
-                    CodeReview
+                    Airboat
                 </span>
             </a>
             <span id='projectChooser'></span>
@@ -69,7 +69,7 @@
 </script>
 
 <script id='scrollConfig' type="text/javascript">
-    var scrollOffset = {top: -codeReview.navbarOffset};
+    var scrollOffset = {top: -airboat.navbarOffset};
     var scrollDuration = 200;
 </script>
 
@@ -86,10 +86,10 @@
 
     $('body').on('click', '.projectLink', function (e) {
         $(document).scrollTop(0);
-        if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != this.dataset.project) {
+        if (currentViewType != VIEW_TYPE.PROJECT || airboat.displayedProjectName != this.dataset.project) {
             showProject(this.dataset.project);
             var href = this.dataset.project == '' ? '?' : '?' + $.param({projectName:this.dataset.project});
-            history.pushState({dataType:DATA_TYPE.PROJECT, projectName:codeReview.displayedProjectName}, null, href);
+            history.pushState({dataType:DATA_TYPE.PROJECT, projectName:airboat.displayedProjectName}, null, href);
         }
         $('#projectsDropdown').removeClass('open');
         return false;
@@ -97,9 +97,9 @@
 
     $('body').on('click', '.filterLink', function (e) {
         $(document).scrollTop(0);
-        if (currentViewType != VIEW_TYPE.FILTER || codeReview.currentFilter != this.dataset.filter) {
+        if (currentViewType != VIEW_TYPE.FILTER || airboat.currentFilter != this.dataset.filter) {
             showFiltered(this.dataset.filter);
-            history.pushState({dataType:DATA_TYPE.FILTER, filterType:codeReview.currentFilter}, null, '?' + $.param({filter:this.dataset.filter}));
+            history.pushState({dataType:DATA_TYPE.FILTER, filterType:airboat.currentFilter}, null, '?' + $.param({filter:this.dataset.filter}));
         }
         $('#filtersDropdown').removeClass('open');
         return false;
@@ -119,20 +119,20 @@
 
     function renderChangeset(state) {
         window.location.href = '?' + $.param({projectName: state.projectName, changesetId: state.changesetId});
-        codeReview.shouldLoadChangesets = false;
+        airboat.shouldLoadChangesets = false;
         setAllFiltersInactive();
     }
 
     function renderProject(state) {
         $(document).scrollTop(0);
-        if (currentViewType != VIEW_TYPE.PROJECT || codeReview.displayedProjectName != state.projectName) {
+        if (currentViewType != VIEW_TYPE.PROJECT || airboat.displayedProjectName != state.projectName) {
             showProject(state.projectName);
         }
     }
 
     function renderFilter(state) {
         $(document).scrollTop(0);
-        if (currentViewType != VIEW_TYPE.FILTER || codeReview.currentFilter != state.filterType) {
+        if (currentViewType != VIEW_TYPE.FILTER || airboat.currentFilter != state.filterType) {
             showFiltered(state.filterType);
         }
     }
@@ -182,18 +182,18 @@
     })
 
     $().ready(function () {
-        codeReview.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser', 'filterChooser', 'diffAndFileListing');
+        airboat.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser', 'filterChooser', 'diffAndFileListing');
 
-        $.link.loginStatusTemplate('#loginStatus', codeReview, {target:'replace'});
-        $.link.projectChooserTemplate('#projectChooser', codeReview, {target:'replace'});
-        $.link.filterChooserTemplate('#filterChooser', codeReview, {target:'replace'});
+        $.link.loginStatusTemplate('#loginStatus', airboat, {target:'replace'});
+        $.link.projectChooserTemplate('#projectChooser', airboat, {target:'replace'});
+        $.link.filterChooserTemplate('#filterChooser', airboat, {target:'replace'});
 
         if ('${type}' == DATA_TYPE.CHANGESET) {
             appendChangesetsBottom(${changeset});
             toggleChangesetDetails("${changesetId}");
             history.replaceState({dataType:'${type}', changeset: ${changeset ?: "''"}, changesetId:"${changesetId}", projectName:'${projectName}' }, null);
-            codeReview.shouldLoadChangesets = false;
-            codeReview.currentViewType = VIEW_TYPE.SINGLE_CHANGESET; // if there will be scrolling to changeset view type might be PROJECT
+            airboat.shouldLoadChangesets = false;
+            airboat.currentViewType = VIEW_TYPE.SINGLE_CHANGESET; // if there will be scrolling to changeset view type might be PROJECT
             setAllFiltersInactive();
         } else if ('${type}' == DATA_TYPE.PROJECT) {
 
@@ -202,11 +202,11 @@
             } else {
                 showProject('');
             }
-            history.replaceState({dataType:'${type}', projectName:codeReview.displayedProjectName}, null);
+            history.replaceState({dataType:'${type}', projectName:airboat.displayedProjectName}, null);
 
         } else if ('${type}' == DATA_TYPE.FILTER) {
             showFiltered('${filterType}');
-            history.replaceState({dataType:'${type}', filterType:codeReview.currentFilter }, null)
+            history.replaceState({dataType:'${type}', filterType:airboat.currentFilter }, null)
         }
 
         $(window).scroll(function () {
@@ -215,10 +215,10 @@
             }
         });
 
-        $(".colorbox").colorbox(codeReview.colorboxSettings);
+        $(".colorbox").colorbox(airboat.colorboxSettings);
         $('.dropdown-toggle').dropdown();
 
-        $('body').on('codeReview-pageStructureChanged')
+        $('body').on('airboat-pageStructureChanged')
     });
 
     var loadingGritter;
@@ -233,14 +233,14 @@
                 });
             }).ajaxStop(function () {
                 $.gritter.remove(loadingGritter, {fade: true});
-                $('body').trigger('codeReview-pageStructureChanged'); //most probably
+                $('body').trigger('airboat-pageStructureChanged'); //most probably
             });
 
     function onLoggedIn(username, isAdmin) {
         isAdmin = isAdmin ? true : false;
         $.colorbox.close();
-        $.observable(codeReview).setProperty('loggedInUserName', username);
-        $.observable(codeReview).setProperty('isAdmin', isAdmin);
+        $.observable(airboat).setProperty('loggedInUserName', username);
+        $.observable(airboat).setProperty('isAdmin', isAdmin);
         setUserPreferences(username);
     }
 
@@ -339,22 +339,22 @@
                 .on('click', '.closeButton', function (event) {
                     event.stopImmediatePropagation();
                     var changeset = $(this).parents('.changeset').first();
-                    var changesetIdentifier = codeReview.getModel(changeset).identifier;
+                    var changesetIdentifier = airboat.getModel(changeset).identifier;
                     var projectFile = $(this).parents('.projectFile').first();
-                    var projectFileId = codeReview.getModel(projectFile).id;
+                    var projectFileId = airboat.getModel(projectFile).id;
                     hideFileAndScrollToPreviousFileOrChangesetTop(changesetIdentifier, projectFileId);
                 })
                 .on('click', '.openAllFiles', function () {
                     var $changeset = $(this).parents('.changeset').first();
                     $.scrollTo(changeset,  scrollDuration, {offset: scrollOffset});
-                    var changeset = codeReview.getModel($changeset);
+                    var changeset = airboat.getModel($changeset);
                     $(changeset.projectFiles).each(function (_, projectFile) {
                         showFile(changeset.identifier, projectFile.id)
                     });
                 })
                 .on('click', '.closeAllFiles', function () {
                     var changeset = $(this).parents('.changeset').first();
-                    var changesetIdentifier = codeReview.getModel(changeset).identifier;
+                    var changesetIdentifier = airboat.getModel(changeset).identifier;
                     closeAllFilesAndScrollToChangesetTop(changesetIdentifier)
                 })
     });
@@ -456,7 +456,7 @@
 <script type="text/javascript">
     $("body").on('change', '.fileListing input[name="showWholeFile"]', function() {
         var diffViewer = $(this).parents('.diffAndListingViewer')[0];
-        var listing = codeReview.getModel(diffViewer);
+        var listing = airboat.getModel(diffViewer);
         $.observable(listing).setProperty('showWholeFile', this.checked);
         removeLineCommentPopover($(this).parents('.fileListing'));
     })
@@ -565,7 +565,7 @@
             if ($listingLine.parents('.removed').length == 0) {
                 $listingLine.click(function () {
                     var fileListing = $listingLine.parents('.fileListing')[0];
-                    var projectFile = codeReview.getModel(fileListing);
+                    var projectFile = airboat.getModel(fileListing);
                     checkCanAddLineCommentAndShowForm($listingLine, projectFile)
                 })
             }

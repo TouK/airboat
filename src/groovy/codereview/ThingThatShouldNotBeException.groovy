@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 /**
  * An exception to throw when the (now) impossible happens

@@ -1,6 +1,6 @@
 package mixins
 
-import codereview.User
+import airboat.User
 
 @Category(Void) class SpringSecurityControllerMethodsMock {
     User authenticatedUser

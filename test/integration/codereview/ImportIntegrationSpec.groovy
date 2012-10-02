@@ -1,13 +1,13 @@
-package codereview
+package airboat
 
 import grails.plugin.spock.IntegrationSpec
 
 import testFixture.Fixture
 
-import static testFixture.Fixture.getPROJECT_CODEREVIEW_NAME
+import static testFixture.Fixture.getPROJECT_AIRBOAT_NAME
 import util.DbPurger
 
-import static testFixture.Fixture.PROJECT_CODEREVIEW_ON_THIS_MACHINE_URL
+import static testFixture.Fixture.PROJECT_AIRBOAT_ON_THIS_MACHINE_URL
 import grails.plugins.springsecurity.SpringSecurityService
 
 import static com.google.common.collect.Iterables.getOnlyElement
@@ -21,7 +21,7 @@ class ImportIntegrationSpec extends IntegrationSpec {
 
     static transactional = false
 
-    static GString projectUrl = PROJECT_CODEREVIEW_ON_THIS_MACHINE_URL
+    static GString projectUrl = PROJECT_AIRBOAT_ON_THIS_MACHINE_URL
 
     ScmAccessService scmAccessService
     SpringSecurityService springSecurityService
@@ -30,7 +30,7 @@ class ImportIntegrationSpec extends IntegrationSpec {
     def setupSpec() {
         assert infrastructureService.getWorkingDirectory().deleteDir()
         Project.withNewSession { Session session ->
-            Project.build(name: PROJECT_CODEREVIEW_NAME, url: projectUrl)
+            Project.build(name: PROJECT_AIRBOAT_NAME, url: projectUrl)
         }
         gitRepositoryService.updateOrCheckOutRepository(projectUrl)
         DbPurger.purgeDb()
@@ -40,7 +40,7 @@ class ImportIntegrationSpec extends IntegrationSpec {
         lineCommentController.scmAccessService = scmAccessService
         DbPurger.verifyDbIsClean()
         Project.withNewSession {
-            Project.build(name: PROJECT_CODEREVIEW_NAME, url: projectUrl)
+            Project.build(name: PROJECT_AIRBOAT_NAME, url: projectUrl)
         }
     }
 
@@ -61,7 +61,7 @@ class ImportIntegrationSpec extends IntegrationSpec {
 
         then:
         Changeset changeset = getOnlyElement(Changeset.all)
-        changeset.project == Project.findByName(PROJECT_CODEREVIEW_NAME)
+        changeset.project == Project.findByName(PROJECT_AIRBOAT_NAME)
         changeset.projectFilesInChangeset.size() == 56
     }
 
@@ -83,7 +83,7 @@ class ImportIntegrationSpec extends IntegrationSpec {
         }
 
         then:
-        Project.findByName(PROJECT_CODEREVIEW_NAME).changesets.size() == 1 + 12
+        Project.findByName(PROJECT_AIRBOAT_NAME).changesets.size() == 1 + 12
         LineComment.count() == 1
         ThreadPositionInFile.count() == 3
     }

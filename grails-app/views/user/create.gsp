@@ -1,4 +1,4 @@
-<%@ page import="codereview.User" %>
+<%@ page import="airboat.User" %>
 <!doctype html>
 <html>
 <head>

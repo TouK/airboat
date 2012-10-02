@@ -1,12 +1,12 @@
 package util
 
-import codereview.Project
+import airboat.Project
 import org.codehaus.groovy.grails.commons.ApplicationHolder
-import codereview.ProjectFile
-import codereview.User
-import codereview.Commiter
-import codereview.ThreadPositionInFile
-import codereview.CommentThread
+import airboat.ProjectFile
+import airboat.User
+import airboat.Commiter
+import airboat.ThreadPositionInFile
+import airboat.CommentThread
 
 class DbPurger {
 

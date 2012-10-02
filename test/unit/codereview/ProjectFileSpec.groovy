@@ -1,4 +1,4 @@
-package codereview
+package airboat
 
 import spock.lang.Specification
 import grails.buildtestdata.mixin.Build

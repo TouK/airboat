@@ -1,6 +1,6 @@
 package learning
 
-import codereview.Changeset
+import airboat.Changeset
 import grails.buildtestdata.mixin.Build
 import spock.lang.Specification
 
