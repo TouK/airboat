@@ -9,14 +9,14 @@
 <div id="ajaxContent" class="span6 well well-large">
     <h1><g:message code="springSecurity.login.header"/></h1>
 
-    <form action='${postUrl}' method='POST' id='loginForm' class='form-horizontal' autocomplete='off'>
+    <form action='${postUrl}' method='POST' id='loginForm' class='form-horizontal'>
         <div class="errors"></div>
         <fieldset>
             <div class="control-group">
                 <label for="emailInput" class="control-label">E-mail</label>
 
                 <div class="controls">
-                    <input id="emailInput" type="email" name="j_username">
+                    <input id="emailInput" type="email" name="email">
                 </div>
             </div>
 
@@ -52,7 +52,7 @@
 <script type='text/javascript'>
     /*TODO can't it be done easier?*/
     (function () {
-        document.forms['loginForm'].elements['j_username'].focus();
+        document.forms['loginForm'].elements['email'].focus();
     })();
 
     $('#loginForm').submit(authAjax);

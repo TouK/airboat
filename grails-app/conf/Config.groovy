@@ -70,6 +70,7 @@ grails.hibernate.cache.queries = true
 grails.plugins.springsecurity.userLookup.userDomainClassName = 'airboat.User'
 grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'airboat.UserRole'
 grails.plugins.springsecurity.authority.className = 'airboat.Role'
+grails.plugins.springsecurity.apf.usernameParameter = 'email'
 
 grails.plugins.springsecurity.successHandler.defaultTargetUrl = '/login/successful'
 grails.plugins.springsecurity.successHandler.alwaysUseDefault = true
