@@ -146,13 +146,14 @@
             }
         }
     </script>
-    <script src="${createLink(uri: '/libs/less-1.3.0.min.js')}" type="text/javascript" id="less"></script>
 
     <link href=" ${createLink(uri: '/css/jquery.syntaxhighlighter-fontOverride.css')}"
           type="text/css" rel="stylesheet" media="screen"/>
 
     <g:layoutHead/>
     <r:layoutResources/>
+
+    <script src="${createLink(uri: '/libs/less-1.3.0.min.js')}" type="text/javascript" id="less"></script>
 
     <g:if test='${System.getProperty('airboat.googleAnalyticsAccountKey')}'>
         <script id='googleAnalytics' type="text/javascript">
