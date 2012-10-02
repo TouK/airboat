@@ -23,7 +23,7 @@ class Fixture {
     public static final String APPLICATION_PROPERTIES_SECOND_LINE_IN_FIRST_COMMIT = "#Tue Jul 03 14:08:33 CEST 2012"
     public static final String APPLICATION_PROPERTIES_SECOND_LINE_IN_SECOND_COMMIT_INCLUDING_IT = "#Wed Jul 04 12:21:42 CEST 2012"
 
-    public static final String FILE_IN_PONGLISH = 'grails-app/services/codereview/ScmAccessService.groovy'
+    public static final String FILE_IN_PONGLISH = 'grails-app/services/airboat/ScmAccessService.groovy'
     public static final String FIRST_COMMIT_WITH_FILE_IN_PONGLISH = '4f12caaa1ea83363ed4c43d397d1f873fd4242fb'
     public static final String LINE_WITH_PONGLISH_TEXT = ' * Deleguje operacje na projekcie w SCM do odpowiedniej implementacji w zależności od rodzaju repozutorium kodu.'
     public static final int LINE_WITH_PONGLISH_NUMBER = 6

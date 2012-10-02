@@ -38,7 +38,7 @@ class DiffAccessServiceSpec extends Specification {
 
     def "should extract diff for file which name we've passed" () {
         when:
-        String fileName = "/grails-app/controllers/codereview/ChangesetController.groovy"
+        String fileName = "/grails-app/controllers/airboat/ChangesetController.groovy"
         String correctGitDiffOutput = JgitFixture.CORRECT_GIT_DIF_OUTPUT
         def fileDiff = diffAccessService.extractDiffForFileFromGitDiffCommandOutput(correctGitDiffOutput, fileName)
 

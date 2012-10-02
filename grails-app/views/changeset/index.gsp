@@ -21,11 +21,11 @@
     <script src="${createLink(uri: '/libs/jquery.sizes.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/jquery.floatWithin.js')}" type="text/javascript"></script>
 
-    <script src="${createLink(uri: '/js/codereview/comments.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/js/airboat/comments.js')}" type="text/javascript"></script>
     <link href=" ${createLink(uri: '/css/diffs.less')}" type="text/less" rel="stylesheet" media="screen"/>
-    <script src="${createLink(uri: '/js/codereview/files.js')}" type="text/javascript"></script>
-    <script src="${createLink(uri: '/js/codereview/diffs.js')}" type="text/javascript"></script>
-    <script src="${createLink(uri: '/js/codereview/changesets.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/js/airboat/files.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/js/airboat/diffs.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/js/airboat/changesets.js')}" type="text/javascript"></script>
 
     <script src="${createLink(uri: '/libs/clippy/jquery.clippy.js')}" type="text/javascript"></script>
 </head>

@@ -154,11 +154,11 @@
     <g:layoutHead/>
     <r:layoutResources/>
 
-    <g:if test='${System.getProperty('codereview.googleAnalyticsAccountKey')}'>
+    <g:if test='${System.getProperty('airboat.googleAnalyticsAccountKey')}'>
         <script id='googleAnalytics' type="text/javascript">
 
             var _gaq = _gaq || [];
-            _gaq.push(['_setAccount', '${System.getProperty('codereview.googleAnalyticsAccountKey')}']);
+            _gaq.push(['_setAccount', '${System.getProperty('airboat.googleAnalyticsAccountKey')}']);
             _gaq.push(['_trackPageview']);
 
             (function () {
