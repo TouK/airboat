@@ -337,7 +337,7 @@
     $('.changeset').livequery(function () {
         $(this)
                 .on('click', '.closeButton', function (event) {
-                    event.stopImmediatePropagation();
+                    event.stopPropagation();
                     var changeset = $(this).parents('.changeset').first();
                     var changesetIdentifier = airboat.getModel(changeset).identifier;
                     var projectFile = $(this).parents('.projectFile').first();
@@ -349,7 +349,8 @@
                     $.scrollTo(changeset,  scrollDuration, {offset: scrollOffset});
                     var changeset = airboat.getModel($changeset);
                     $(changeset.projectFiles).each(function (_, projectFile) {
-                        showFile(changeset.identifier, projectFile.id)
+                        showFile(projectFile)
+                        showComments($('.left.column .projectFile[data-id="' + projectFile.id + '"]'))
                     });
                 })
                 .on('click', '.closeAllFiles', function () {
@@ -463,37 +464,65 @@
 </script>
 
 <script id="projectFileRowTemplate" type="text/x-jsrender">
-    <div class="projectFile accordion-group" id="accordion-group-{{>collapseId}}"
-         data-id={{:id}}>
-        {{for [#data] tmpl='#accordionFileBodyTemplate'}}{{/for}}
+    <div class="projectFile" data-id={{:id}}>
+        {{for [#data] tmpl='#projectFileBodyTemplate'}}{{/for}}
     </div>
 </script>
 
-<script id="accordionFileBodyTemplate" type="text/x-jsrender">
+<script type="text/javascript">
 
-    <div class="accordion-heading">
-        <div class="row-fluid">
+    $('.changeset').livequery(function () {
+        $(this)
+                .on('click', '.left.column .projectFile .toggleCommentsAndListings',function (event) {
+                    var $projectFile = $(this).parents('.projectFile');
+                    var projectFile = airboat.getModel($projectFile[0]);
 
-            <a data-link="class{: 'accordion-toggle manualLinkText ' + (isDisplayed ? 'selected' : '') }"
-               data-toggle="collapse" data-parent="#accordion-{{>changeset.identifier}}"
-               href="#collapse-inner-{{>collapseId}}">
-                <i title="{{: ~textForChangeType(changeType.name) }}"
-                   class="{{: ~iconForChangeType(changeType.name) }}"></i>
-                <span data-link="class{: isDisplayed ? '' : 'linkText' }">{{:name}}</span>
-                <i class="closeButton icon-remove"
-                   data-link="style{: 'display:' + (isDisplayed ? 'inline-block' : 'none') }"> </i>
-                <span class="pull-right" data-link="visible{: commentsCount != 0 }">
-                    <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
-                </span>
-            </a>
+                    if (!projectFile.isDisplayed || !projectFile.commentsDisplayed) {
+                        showFile(projectFile, function ($fileListing) {
+                            $.scrollTo($fileListing, scrollDuration, {offset:scrollOffset});
+                        });
+                        showComments($projectFile);
+                    } else {
+                        hideComments($projectFile);
+                        hideFileAndScrollToPreviousFileOrChangesetTop(projectFile.changeset.identifier, projectFile.id);
+                    }
+
+                    return false;
+                })
+                .on('click', '.left.column .toggleComments', function (event) {
+                    var $projectFile = $(this).parents('.projectFile');
+                    var projectFile = airboat.getModel($projectFile[0]);
+
+                    if (!projectFile.commentsDisplayed) {
+                        showComments($projectFile);
+                    } else {
+                        hideComments($projectFile)
+                    }
+
+                    return false;
+                });
+    });
+</script>
+
+<script id="projectFileBodyTemplate" type="text/x-jsrender">
+
+        <a data-link="class{: 'toggleCommentsAndListings manualLinkText ' + (isDisplayed ? 'selected' : '') }">
+            <i title="{{: ~textForChangeType(changeType.name) }}"
+               class="{{: ~iconForChangeType(changeType.name) }}"></i>
+            <span data-link="class{: isDisplayed ? '' : 'linkText' }">{{:name}}</span>
+            <i class="closeButton icon-remove"
+               data-link="style{: 'display:' + (isDisplayed ? 'inline-block' : 'none') }"> </i>
+            <span class="toggleComments pull-right" data-link="visible{: commentsCount != 0 }" title='Show / hide comments' data-libs='tooltip'>
+                <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
+            </span>
+        </a>
+
+        <div class="details" style="display:none;">
+            <div>
+                <div id="fileComments-{{>collapseId}}"></div>
+            </div>
         </div>
-    </div>
 
-    <div id='collapse-inner-{{>collapseId}}' class="details accordion-body collapse">
-        <div class="accordion-inner" id="accordion-inner-{{>id}}">
-            <div id="fileComments-{{>collapseId}}"></div>
-        </div>
-    </div>
 </script>
 
 <script id="snippetTemplate" type="text/x-jsrender">

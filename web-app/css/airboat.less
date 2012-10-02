@@ -165,10 +165,30 @@ a.manualLinkText:hover .linkText {
 }
 
 .projectFiles {
-    max-height: 400px;
+    max-height: 500px;
     overflow-y: auto;
-
 }
+
+.left.column .projectFile {
+    border: 1px solid @tableBorder;
+    .border-radius(4px);
+    margin-top: -1px;
+
+    .toggleCommentsAndListings {
+        display: block;
+        padding: 9px;
+    }
+
+    .details {
+        padding: 9px;
+        border-top: 1px solid @tableBorder;
+    }
+}
+
+.left.column .projectFile:first-child {
+    margin-top: 0px;
+}
+
 .changeset.row-fluid > .span7 {
     margin-left:  @fluidGridGutterWidth - 1%;
     width: (@fluidGridColumnWidth * 7) + (@fluidGridGutterWidth * (7 - 1)) + 1%;
