@@ -1,1 +1,1 @@
-file[Codereview]:*/&&!file[Codereview]:.idea//*&&!file[Codereview]:logs//*&&!file[Codereview]:web-app/libs//*
+file[Airboat]:*/&&!file[Airboat]:.idea//*&&!file[Airboat]:logs//*&&!file[Airboat]:web-app/libs//*
