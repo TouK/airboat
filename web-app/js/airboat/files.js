@@ -24,10 +24,6 @@ function showFile(projectFile, callback) {
     });
 }
 
-function toBoolean(toConvert) {
-    return JSON.parse(toConvert);
-}
-
 function hideFileAndScrollToPreviousFileOrChangesetTop(changesetId, projectFileId) {
     var changeset = $('.changeset[data-identifier=' + changesetId + ']');
     var projectFile = changeset.find('.fileListing.projectFile[data-id=' + projectFileId + ']');
@@ -42,7 +38,6 @@ function hideFileAndScrollToPreviousFileOrChangesetTop(changesetId, projectFileI
     return false;
 }
 
-
 function hideFileListings($fileListings, callback) {
     $fileListings.each(function () {
         $.observable(airboat.getModel(this)).setProperty('isDisplayed', false);
@@ -51,21 +46,24 @@ function hideFileListings($fileListings, callback) {
     $fileListings.slideUp(onNthCall($fileListings.size(), callback));
 }
 
-function onNthCall(n, callback) {
-    var remainingCalls = n;
-    return function() {
-        if (--remainingCalls == 0) {
-            callback();
-        }
-    };
-}
-
 function showComments($projectFile) {
     var projectFile = airboat.getModel($projectFile[0]);
     projectFile.commentsDisplayed = true
     if (projectFile.commentsCount != 0) {
         loadCommentThreadsWithSnippets(projectFile);
         $projectFile.find('.details').slideDown();
+    }
+}
+
+function loadCommentThreadsWithSnippets(projectFile) {
+    if (!projectFile.threadPositionsLoaded) {
+        $.getJSON(uri.projectFile.getThreadPositionAggregatesForFile + '?' + $.param({
+            changesetIdentifier: projectFile.changeset.identifier, projectFileId:projectFile.id
+        }),
+            function (threadPositions) {
+                projectFile.updateCommentThreads(threadPositions);
+            }
+        );
     }
 }
 

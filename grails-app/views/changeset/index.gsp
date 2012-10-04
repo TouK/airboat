@@ -21,6 +21,9 @@
     <script src="${createLink(uri: '/libs/jquery.sizes.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/js/jquery.floatWithin.js')}" type="text/javascript"></script>
 
+    <script src="${createLink(uri: '/js/airboat/utils.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/js/airboat/models.js')}" type="text/javascript"></script>
+
     <script src="${createLink(uri: '/js/airboat/comments.js')}" type="text/javascript"></script>
     <link href=" ${createLink(uri: '/css/diffs.less')}" type="text/less" rel="stylesheet" media="screen"/>
     <script src="${createLink(uri: '/js/airboat/files.js')}" type="text/javascript"></script>

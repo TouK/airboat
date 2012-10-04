@@ -1,27 +1,22 @@
 function addComment($form) {
-
     var text = $form.find('textarea').val();
-
     var changeset = airboat.parentModel($form, '.changeset');
 
     $.post(uri.userComment.addComment,
         { changesetIdentifier:changeset.identifier, text:text },
         function (comment) {
-            if (comment.errors == null) {
-                var changesetComments = changeset.comments;
-                $.observable(changesetComments).insert(changesetComments.length, comment);
-                $.observable(changeset).setProperty('allComments');
-
-                resetCommentForm($form);
-            } else {
+            if (comment.errors) {
                 renderCommentErrors(threadGroupsWithSnippetsForCommentedFile.errors, $form);
+            } else {
+                changeset.addComment(comment);
+                resetCommentForm($form);
             }
         },
         "json"
     );
 }
 
-function addReply($form){
+function addReply($form) {
     var text = $form.find('textarea').val();
     var changeset = airboat.parentModel($form, '.changeset');
     var projectFile = airboat.parentModel($form, '.projectFile');
