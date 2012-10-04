@@ -6,21 +6,19 @@ function Changeset(data) {
         shortIdentifier: data.identifier.substr(0, hashAbbreviationLength) + "..."
     });
 
-    this.allComments = function () {
+    this.commentsCount = function () {
         return this.comments.length + sum(this.projectFiles, property('commentsCount'));
     };
 
     this.addComment = function (comment) {
         $.observable(this.comments).insert(this.comments.length, comment);
-        $.observable(this).setProperty('allComments');
+        $.observable(this).setProperty('commentsCount');
     };
 
     this.addProjectFile = function(projectFileData) {
         var projectFile = new ProjectFile(projectFileData);
         projectFile.changeset = this;
-        onChange(projectFile, 'commentsCount', function() {
-            $.observable(that).setProperty('allComments');
-        });
+        onChange(projectFile, 'commentsCount', triggerChange(that, 'commentsCount'));
         $.observable(this.projectFiles).insert(this.projectFiles.length, projectFile);
     };
 
@@ -33,7 +31,6 @@ function ProjectFile(data) {
     var that = this;
 
     $.extend(this, data, {
-        collapseId: function() { return this.changeset.identifier + this.id; },
         name:sliceName(data.name),
         isDisplayed:false,
         threadPositionsLoaded: false,
@@ -44,9 +41,7 @@ function ProjectFile(data) {
     this.updateCommentThreads = function(threadPositionsData) {
         var threadPositions = $.map(threadPositionsData, function (data) {
             var threadPosition = new ThreadPosition(data);
-            onChange(threadPosition, 'commentsCount', function () {
-                $.observable(that).setProperty('commentsCount');
-            });
+            onChange(threadPosition, 'commentsCount', triggerChange(that, 'commentsCount'));
             return threadPosition;
         });
         $.observable(this.threadPositions).refresh(threadPositions);
@@ -73,9 +68,7 @@ function ThreadPosition(data) {
     $.extend(this, data, {
         threads: $.map(data.threads, function(data) {
             var thread = new Thread(data);
-            onChange(thread, 'commentsCount', function () {
-                $.observable(that).setProperty('commentsCount');
-            });
+            onChange(thread, 'commentsCount', triggerChange(that, 'commentsCount'));
             return thread;
         })
     });
@@ -85,10 +78,22 @@ function ThreadPosition(data) {
     };
 }
 
+function triggerChange(changedObject, changedPropertyName) {
+    return function () {
+        $.observable(changedObject).setProperty(changedPropertyName);
+    };
+}
+
 function Thread(data) {
     $.extend(this, data);
 
     this.commentsCount = function () {
         return this.comments.length;
     };
+
+    this.addComment = function (commentData) {
+        $.observable(this.comments).insert(this.comments.length, commentData);
+        $.observable(this).setProperty('commentsCount');
+    };
+
 }

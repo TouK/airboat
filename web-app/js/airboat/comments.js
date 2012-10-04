@@ -24,11 +24,11 @@ function addReply($form) {
 
     $.post(uri.lineComment.addReply,
         { threadId: thread.id, text:text, changesetIdentifier: changeset.identifier, projectFileId: projectFile.id},
-        function (threadPositions) {
-            if (threadPositions.errors) {
+        function (comment) {
+            if (comment.errors) {
                 renderCommentErrors(threadPositions.errors, $form);
             } else {
-                projectFile.updateCommentThreads(threadPositions);
+                thread.addComment(comment);
             }
         },
         "json"

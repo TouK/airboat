@@ -3,7 +3,6 @@
 <head>
     <meta name="layout" content="main"/>
 
-    <script src="${createLink(uri: '/libs/bootstrap/bootstrap-collapse.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/bootstrap/bootstrap-tooltip.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/bootstrap/bootstrap-popover.js')}" type="text/javascript"></script>
     <script src="${createLink(uri: '/libs/bootstrap/bootstrap-dropdown.js')}" type="text/javascript"></script>
@@ -376,7 +375,7 @@
 
                 <div class="pull-right">
                     <i class="icon-comment"></i>
-                    <span class='commentsCount' data-link="allComments"></span>
+                    <span class='commentsCount' data-link="commentsCount"></span>
                 </div>
 
                 <div class="nextToGravatar">
@@ -709,7 +708,6 @@
 
     <div class="row-fluid">
         <div class='offset4 span4 well margin-top-small'><g:message code='noMoreChangesets'/></div>
-
     </div>
 </script>
 

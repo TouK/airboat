@@ -7,7 +7,7 @@ import org.springframework.security.access.AccessDeniedException
 class ChangesetController {
 
     ScmAccessService scmAccessService
-    ReturnCommentsService returnCommentsService
+    CommentConverterService commentConverterService
     MyCommentsAndChangesetsFilterService myCommentsAndChangesetsFilterService
     CommentedChangesetsFilterService commentedChangesetsFilterService
 
@@ -121,7 +121,7 @@ class ChangesetController {
                 commitMessage: changeset.commitMessage,
                 commentsCount: changeset.commentsCount,
                 projectName: changeset.project.name,
-                allComments: allCommentsCount(changeset),
+                commentsCount: allCommentsCount(changeset),
                 projectFiles: getChangesetFiles(changeset),
                 comments: returnCommentsToChangeset(changeset.identifier)
         ]
@@ -163,7 +163,7 @@ class ChangesetController {
     private def returnCommentsToChangeset(String changesetIdentifier) {
         def changeset = Changeset.findByIdentifier(changesetIdentifier) //TODO check that only one query is executed, refactor otherwise
         def comments = UserComment.findAllByChangeset(changeset)
-        def commentsProperties = comments.collect returnCommentsService.&getCommentJSONproperties
+        def commentsProperties = comments.collect commentConverterService.&getCommentJSONproperties
         commentsProperties
     }
 
