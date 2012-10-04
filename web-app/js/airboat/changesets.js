@@ -164,94 +164,132 @@ $('.changeset-date').livequery(function () {
     $(this).tooltip({title:this.dataset.date, trigger:"hover", placement:"bottom"});
 });
 
-function appendChangeset(changeset, dayElement) {
+function onChange(observed, observedProperty, callback) {
+    $(observed).on('propertyChange', function (_, changeDetails) {
+        if (changeDetails.path == observedProperty) {
+            callback();
+        }
+    });
+}
 
-    changeset.shortIdentifier = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
-    changeset.allComments = function () {
-        var projectFilesComments = 0;
-        $(this.projectFiles).each(function () {
-            projectFilesComments += this.commentsCount
-        });
-        return this.comments.length + projectFilesComments
+function Changeset(data) {
+    var that = this;
+
+    $.extend(this, data, {
+        projectFiles: [],
+        shortIdentifier: data.identifier.substr(0, hashAbbreviationLength) + "..."
+    });
+
+    this.allComments = function () {
+        return this.comments.length + sum(this.projectFiles, property('commentsCount'));
     };
 
-    $(changeset.projectFiles).each(function () {
-        $.extend(this, {
-            changeset:changeset,
-            collapseId:(changeset.identifier + this.id),
-            name:sliceName(this.name),
-            isDisplayed:false
+    this.addProjectFile = function(projectFileData) {
+        var projectFile = new ProjectFile(projectFileData);
+        projectFile.changeset = this;
+        onChange(projectFile, 'commentsCount', function() {
+            $.observable(that).setProperty('allComments');
         });
+        $.observable(this.projectFiles).insert(this.projectFiles.length, projectFile);
+    };
+
+    var that = this;
+    $(data.projectFiles).each(function (_, projectFileData) {
+        that.addProjectFile(projectFileData);
+    });
+}
+
+function ProjectFile(data) {
+    var that = this;
+
+    $.extend(this, data, {
+        collapseId: function() { return this.changeset.identifier + this.id; },
+        name:sliceName(data.name),
+        isDisplayed:false,
+        threadPositionsLoaded: false,
+        _commentsCount: data.commentsCount,
+        threadPositions: []
     });
 
+    this.updateCommentThreads = function(threadPositionsData) {
+        var threadPositions = $.map(threadPositionsData, function (data) {
+            var threadPosition = new ThreadPosition(data);
+            onChange(threadPosition, 'commentsCount', function () {
+                $.observable(that).setProperty('commentsCount');
+            });
+            return threadPosition;
+        });
+        $.observable(this.threadPositions).refresh(threadPositions);
+        $.observable(this).setProperty('threadPositionsLoaded', true);
+        $.observable(this).setProperty('commentsCount');
+    };
+
+    this.commentsCount = function () {
+        if (this.threadPositionsLoaded) {
+            return sum(this.threadPositions, property('commentsCount'));
+        } else {
+            return this._commentsCount;
+        }
+    };
+}
+
+function ThreadPosition(data) {
+    var that = this;
+
+    $.extend(this, data, {
+        threads: $.map(data.threads, function(data) {
+            var thread = new Thread(data);
+            onChange(thread, 'commentsCount', function () {
+                $.observable(that).setProperty('commentsCount');
+            });
+            return thread;
+        })
+    });
+
+    this.commentsCount = function() {
+        return sum(this.threads, property('commentsCount'));
+    };
+}
+
+function Thread(data) {
+    $.extend(this, data);
+
+    this.commentsCount = function () {
+        return this.comments.length;
+    };
+}
+
+function sum(collection, summedProperty) {
+    summedProperty = summedProperty || function() { return this; };
+    var result = 0;
+    $(collection).each(function () {
+        result += summedProperty.call(this);
+    });
+    return result;
+}
+
+function property(propertyName) {
+    return function() {
+        var property = this[propertyName];
+        return $.isFunction(property) ? property.call(this) : property;
+    };
+}
+
+function appendChangeset(changesetData, dayElement) {
+    var changeset = new Changeset(changesetData)
     dayElement.children('.changesets').append($("<span id='templatePlaceholder'></span>"));
     $.link.changesetTemplate('#templatePlaceholder', changeset, {target:'replace'});
-
-    $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render(changeset));
 }
 
-function updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId) {
-    renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippetsForCommentedFile);
-    var projectFile = airboat.getModel('.changeset[data-identifier=' + changesetIdentifier + '] .projectFile[data-id=' + projectFileId + ']');
-    $.observable(projectFile).setProperty('commentsCount', threadGroupsWithSnippetsForCommentedFile.commentsCount);
-    $.observable(airboat.getModel('.changeset[data-identifier=' + changesetIdentifier + ']')).setProperty('allComments')
-}
-
-function appendSnippetToFileInAccordion(changesetIdentifier, projectFileId) {
-    $.getJSON(uri.projectFile.getLineCommentsWithSnippetsToFile + '?' + $.param({
-        changesetIdentifier:changesetIdentifier, projectFileId:projectFileId
-    }),
-        function (threadGroupsWithSnippetsForFile) {
-            renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippetsForFile);
-        }
-    );
-}
-
-function renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippetsForFile) {
-    var fileType = threadGroupsWithSnippetsForFile.fileType;
-    var threadGroupsWithSnippets = threadGroupsWithSnippetsForFile.threadGroupsWithSnippets;
-
-    if (threadGroupsWithSnippets.length > 0) {
-        $('#fileComments-' + changesetIdentifier + projectFileId).html("");
-
-        for (var j = 0; j < threadGroupsWithSnippets.length; j++) {
-            renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippets[j], fileType);
-        }
-    }
-}
-
-function renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, threadGroupWithSnippet, fileType) {
-    var lineNumber = threadGroupWithSnippet.lineNumber;
-
-    var snippet = $("#snippetTemplate").render({
-        fileId:projectFileId,
-        lineNumber:lineNumber,
-        changesetId:changesetIdentifier
-    });
-
-    var fileComments = $('#fileComments-' + changesetIdentifier + projectFileId);
-    var snippetObject = $(snippet).appendTo(fileComments);
-
-    snippetObject.children('.codeSnippet')
-        .html("<pre class='codeViewer'/></pre>")
-        .children(".codeViewer")
-        .text(threadGroupWithSnippet.snippet)
-        .addClass("linenums:" + lineNumber)
-        .addClass("language-" + fileType)
-        .syntaxHighlight();
-
-    for (i = 0; i < threadGroupWithSnippet.threads.length; i++) {
-        var threadTemplate = $("#threadTemplate").render({threadId: threadGroupWithSnippet.threads[i].threadId, changesetId: changesetIdentifier, projectFileId: projectFileId});
-        $(threadTemplate).appendTo(snippetObject.find('.threads'));
-        var commentsInThread = snippetObject.find('.threadComments[data-identifier=' + threadGroupWithSnippet.threads[i].threadId + ']');
-        renderCommentGroup(commentsInThread, threadGroupWithSnippet.threads[i].comments);
-    }
-}
-
-function renderCommentGroup(object, commentGroup) {
-    for (var k = 0; k < commentGroup.length; k++) {
-        var comment = $("#commentTemplate").render(commentGroup[k]);
-        object.append(comment);
+function loadCommentThreadsWithSnippets(projectFile) {
+    if (!projectFile.threadPositionsLoaded) {
+        $.getJSON(uri.projectFile.getThreadPositionAggregatesForFile + '?' + $.param({
+            changesetIdentifier: projectFile.changeset.identifier, projectFileId:projectFile.id
+        }),
+            function (threadPositions) {
+                projectFile.updateCommentThreads(threadPositions);
+            }
+        );
     }
 }
 

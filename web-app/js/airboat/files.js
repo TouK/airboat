@@ -64,7 +64,7 @@ function showComments($projectFile) {
     var projectFile = airboat.getModel($projectFile[0]);
     projectFile.commentsDisplayed = true
     if (projectFile.commentsCount != 0) {
-        appendSnippetToFileInAccordion(projectFile.changeset.identifier, projectFile.id);
+        loadCommentThreadsWithSnippets(projectFile);
         $projectFile.find('.details').slideDown();
     }
 }

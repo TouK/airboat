@@ -373,7 +373,7 @@
 
                 <div class="pull-right">
                     <i class="icon-comment"></i>
-                    <span class='commentsCount' data-link="allComments">{{>allComments}}</span>
+                    <span class='commentsCount' data-link="allComments"></span>
                 </div>
 
                 <div class="nextToGravatar">
@@ -412,7 +412,7 @@
                     {{for comments tmpl='#commentTemplate' /}}
                 </div>
 
-                <div id="comment-form-{{>identifier}}"></div>
+                {{for [#data] tmpl='#changesetCommentFormTemplate' /}}
 
                 <h5 class="pull-left">Changed files:</h5>
                 <h5 class='pull-right'>
@@ -435,7 +435,7 @@
 
         %{--FIXME work on structure here --}%
         <div class="fileListings span7">
-            {{for projectFiles tmpl='#projectFileListingTemplate' /}}
+        {{for projectFiles tmpl='#projectFileListingTemplate' /}}
         </div>
     </div>
 </script>
@@ -465,7 +465,7 @@
 
 <script id="projectFileRowTemplate" type="text/x-jsrender">
     <div class="projectFile" data-id={{:id}}>
-        {{for [#data] tmpl='#projectFileBodyTemplate'}}{{/for}}
+        {{for [#data] tmpl='#projectFileBodyTemplate' }}{{/for}}
     </div>
 </script>
 
@@ -504,54 +504,55 @@
     });
 </script>
 
+<script type="text/javascript">
+    $('.snippet [class|=language]').livequery(function () {
+
+        $.SyntaxHighlighter.init({
+            load:false,
+            highlight:false,
+            lineNumbers:true,
+            stripInitialWhitespace:false,
+            stripEmptyStartFinishLines:false
+        });
+
+        $(this).syntaxHighlight();
+    });
+</script>
+
 <script id="projectFileBodyTemplate" type="text/x-jsrender">
+    <a data-link="class{: 'toggleCommentsAndListings manualLinkText ' + (isDisplayed ? 'selected' : '') }">
+        <i title="{{: ~textForChangeType(changeType.name) }}"
+           class="{{: ~iconForChangeType(changeType.name) }}"></i>
+        <span data-link="class{: isDisplayed ? '' : 'linkText' }">{{:name}}</span>
+        <i class="closeButton icon-remove"
+           data-link="style{: 'display:' + (isDisplayed ? 'inline-block' : 'none') }"> </i>
+        <span class="toggleComments pull-right" data-link="visible{: commentsCount != 0 }" title='Show / hide comments' data-libs='tooltip'>
+            <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
+        </span>
+    </a>
 
-        <a data-link="class{: 'toggleCommentsAndListings manualLinkText ' + (isDisplayed ? 'selected' : '') }">
-            <i title="{{: ~textForChangeType(changeType.name) }}"
-               class="{{: ~iconForChangeType(changeType.name) }}"></i>
-            <span data-link="class{: isDisplayed ? '' : 'linkText' }">{{:name}}</span>
-            <i class="closeButton icon-remove"
-               data-link="style{: 'display:' + (isDisplayed ? 'inline-block' : 'none') }"> </i>
-            <span class="toggleComments pull-right" data-link="visible{: commentsCount != 0 }" title='Show / hide comments' data-libs='tooltip'>
-                <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
-            </span>
-        </a>
+    <div class="details" style="display:none;">
+        {{for threadPositions ~fileType=fileType}}
+        <div class='threadPosition'>
+            {{for threads}}
+            <div class="thread" data-id='{{:id}}'>
+                <div class="comments">
+                    {{for comments tmpl='#commentTemplate' /}}
+                </div>
 
-        <div class="details" style="display:none;">
-            <div>
-                <div id="fileComments-{{>collapseId}}"></div>
+                {{for [#data] tmpl='#replyCommentFormTemplate' ~submitFunction='addReply' /}}
             </div>
+            {{/for}}
+
+            <div class="snippet">
+                <pre class="language-{{:~fileType}} linenums:{{:lineNumber}}">{{>snippet}}</pre>
+            </div>
+
+            <hr>
         </div>
-
-</script>
-
-<script id="snippetTemplate" type="text/x-jsrender">
-    <div class='oneLineComments' data-lineNumber='{{>lineNumber}}'>
-        <div class="threads"></div>
-
-        <div class='codeSnippet'></div><hr/>
-    </div>
-</script>
-
-<script id="threadTemplate" type="text/x-jsrender">
-    <div class="threadComments" data-identifier='{{>threadId}}'></div>
-    <textarea class="addThreadReply span 12" placeholder="Reply..."
-              onfocus="expandReplyForm('{{>threadId}}', '{{>changesetId}}')" data-identifier='{{>threadId}}'
-              rows="1"></textarea>
-
-    <div class="validationErrors" data-identifier='{{>threadId}}'></div>
-
-    <div class="btn-group pull-right threadReplyFormButtons" data-identifier='{{>threadId}}'
-         style="display: none; margin-bottom:10px">
-        <button type="button" class="btn btn-primary threadReplyButton" data-identifier='{{>threadId}}'
-                onClick="addReply('{{>threadId}}', '{{>changesetId}}', '{{>projectFileId}}')">Reply</button>
-        %{--FIXME this function NEEEDS both changesetIdentifier and projectFileId to work in all cases--}%
-        %{--amend parameters and corresponding markup--}%
-        <button type="button" class="btn btn-primary"
-                onClick="cancelReply('{{>threadId}}', '{{>changesetId}}')">Cancel</button>
+        {{/for}}
     </div>
 
-    <div class="clearfix"></div>
 </script>
 
 <script id='diffAndFileListingTemplate' type="text/x-jsrender">
@@ -652,21 +653,29 @@
 <script id="commentFormTemplate" type="text/x-jsrender">
 
     <form class="margin-bottom-small">
-        <textarea onfocus="expandCommentForm($(this.parentElement))" placeholder="Add comment..."
+        <textarea onfocus="expandCommentForm($(this.parentElement))" placeholder="{{:~actionPrompt}}..."
                   class="span12" rows="1"></textarea>
 
         <div class="validationErrorsToChangeset"></div>
 
         <div class="buttons btn-group pull-right" style="display: none;">
             <button type="button" class="btn btn-primary btnWarningBackground"
-                    onClick="addComment($(this).parents('form').first(), '{{:identifier}}')">Add comment</button>
+                    onClick="{{:~submitFunction}}($(this).parents('form').first())">{{:~actionPrompt}}</button>
             <button type="button" class="btn btn-primary"
                     onClick="resetCommentForm($(this).parents('form').first())">Cancel</button>
         </div>
+
+        <div class="clearfix"></div>
     </form>
 
-    <div class="clearfix"></div>
+</script>
 
+<script id="changesetCommentFormTemplate" type="text/x-jsrender">
+    {{for [#data] tmpl='#commentFormTemplate' ~submitFunction='addComment' ~actionPrompt='Add comment' /}}
+</script>
+
+<script id="replyCommentFormTemplate" type="text/x-jsrender">
+    {{for [#data] tmpl='#commentFormTemplate' ~submitFunction='addReply' ~actionPrompt='Add reply' /}}
 </script>
 
 <script id="commentTemplate" type="text/x-jsrender">

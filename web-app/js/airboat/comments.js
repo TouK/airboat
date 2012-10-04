@@ -1,29 +1,44 @@
-function addComment($form, changesetIdentifier) {
+function addComment($form) {
 
     var text = $form.find('textarea').val();
-    if (text == "") {
-        return false;
-    }
+
+    var changeset = airboat.parentModel($form, '.changeset');
 
     $.post(uri.userComment.addComment,
-        { changesetIdentifier:changesetIdentifier, text:text },
+        { changesetIdentifier:changeset.identifier, text:text },
         function (comment) {
             if (comment.errors == null) {
-                var changeset = airboat.getModel('.changeset[data-identifier=' + changesetIdentifier + ']');
                 var changesetComments = changeset.comments;
                 $.observable(changesetComments).insert(changesetComments.length, comment);
                 $.observable(changeset).setProperty('allComments');
 
                 resetCommentForm($form);
-                $('.validationErrorsToChangeset').html("");
             } else {
-                $('.validationErrorsToChangeset')
-                    .html($('#errorCommentTemplate').render(" Your comment is too long!"))
-                    .hide().fadeIn();
+                renderCommentErrors(threadGroupsWithSnippetsForCommentedFile.errors, $form);
             }
         },
         "json"
     );
+}
+
+function addReply($form){
+    var text = $form.find('textarea').val();
+    var changeset = airboat.parentModel($form, '.changeset');
+    var projectFile = airboat.parentModel($form, '.projectFile');
+    var thread = airboat.parentModel($form, '.thread');
+
+    $.post(uri.lineComment.addReply,
+        { threadId: thread.id, text:text, changesetIdentifier: changeset.identifier, projectFileId: projectFile.id},
+        function (threadPositions) {
+            if (threadPositions.errors) {
+                renderCommentErrors(threadPositions.errors, $form);
+            } else {
+                projectFile.updateCommentThreads(threadPositions);
+            }
+        },
+        "json"
+    );
+
 }
 
 function checkCanAddLineCommentAndShowForm($listingLine, projectFile) {
@@ -73,16 +88,19 @@ function closeLineCommentForm(changesetIdentifier, projectFileId) {
 }
 
 function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
-    var text = $('#add-line-comment-' + projectFileId).val();
+    var textarea = $('#add-line-comment-' + projectFileId);
+    var text = textarea.val();
+    var $form = textarea.parents('form')[0];
+    var projectFile = airboat.getModel('.changeset[data-identifier=' + changesetIdentifier + '] .projectFile[data-id=' + projectFileId + ']');
 
     $.post(uri.lineComment.addComment,
         { changesetIdentifier: changesetIdentifier, projectFileId:projectFileId, text:text, lineNumber:lineNumber},
-        function (threadGroupsWithSnippetsForCommentedFile) {
-            if (threadGroupsWithSnippetsForCommentedFile.errors == null) {
-                updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId);
-                closeLineCommentForm(changesetIdentifier, projectFileId);
+        function (threadPositions) {
+            if (threadPositions.errors) {
+                renderCommentErrors(threadPositions.errors, $form);
             } else {
-                renderLineCommentErrors(threadGroupsWithSnippetsForCommentedFile.errors, '.validationErrors')
+                projectFile.updateCommentThreads(threadPositions);
+                closeLineCommentForm(changesetIdentifier, projectFileId);
             }
         },
         "json"
@@ -98,35 +116,18 @@ function removeLineCommentPopover($fileListings) {
     });
 }
 
-function addReply(threadId, changesetIdentifier, projectFileId){
-    var text = $('.changeset[data-identifier=' + changesetIdentifier + ']').find('.addThreadReply[data-identifier=' + threadId + ']').val();
-
-    $.post(uri.lineComment.addReply,
-        { threadId: threadId, text:text, changesetIdentifier: changesetIdentifier, projectFileId: projectFileId},
-        function (threadGroupsWithSnippetsForCommentedFile) {
-            if (threadGroupsWithSnippetsForCommentedFile.errors == null) {
-                updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId);
-            }
-            else {
-                renderLineCommentErrors(threadGroupsWithSnippetsForCommentedFile.errors, '.validationErrors[data-identifier=' + threadId + ']')
-            }
-        },
-        "json"
-    );
-
-}
-
-function renderLineCommentErrors(error, placeSelector) {
+function renderCommentErrors(error, $form) {
+    var $validationErrors = $form.find('.validationErrors');
     if (error.code == "maxSize.exceeded") {
-        $(placeSelector)
+        $validationErrors
             .html($('#errorCommentTemplate')
-            .render(" Your comment is too long!"))
+            .render(" Your comment is too long."))
             .hide().fadeIn();
     }
     else if (error.code == "blank") {
-        $(placeSelector)
+        $validationErrors
             .html($('#errorCommentTemplate')
-            .render("Comment can't be empty!"))
+            .render("Comment can't be empty."))
             .hide().fadeIn();
     }
 }
@@ -139,17 +140,5 @@ function expandCommentForm($form) {
 function resetCommentForm($form) {
     $form.find('textarea').val('').attr('rows', 1);
     $form.find('.buttons').hide();
-    $form.find('.longComment').remove();
+    $form.find('.validationErrorsToChangeset').html("").hide();
 }
-
-function expandReplyForm(threadId, changesetId) {
-    $('.changeset[data-identifier=' + changesetId + ']').find('.threadReplyFormButtons[data-identifier=' + threadId + ']').slideDown(100);
-    $('.changeset[data-identifier=' + changesetId + ']').find('.addThreadReply[data-identifier=' + threadId + ']').attr('rows', 3);
-}
-
-function cancelReply(threadId, changesetId) {
-    $('.changeset[data-identifier=' + changesetId + ']').find('.threadReplyFormButtons[data-identifier=' + threadId + ']').hide();
-    $('.changeset[data-identifier=' + changesetId + ']').find('.addThreadReply[data-identifier=' + threadId + ']').attr('rows', 1);
-    $('.changeset[data-identifier=' + changesetId + ']').find('.addThreadReply[data-identifier=' + threadId + ']').val("");
-}
-

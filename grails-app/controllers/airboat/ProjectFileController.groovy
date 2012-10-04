@@ -32,46 +32,47 @@ class ProjectFileController {
                 isText: projectFile.textFormat] as JSON)
     }
 
-    def getLineCommentsWithSnippetsToFile(String changesetIdentifier, Long projectFileId) {
+    def getThreadPositionAggregatesForFile(String changesetIdentifier, Long projectFileId) {
         def changeset = Changeset.findByIdentifier(changesetIdentifier)
         def projectFile = ProjectFile.findById(projectFileId)
-        def threads = getLineCommentsInThreads(changeset, projectFile)
-        def threadGroupsWithSnippets = getThreadsGroupsWithSnippets(changeset, projectFile, threads)
-        render([
-                fileType: projectFile.fileType,
-                threadGroupsWithSnippets: threadGroupsWithSnippets,
-                commentsCount: threads.collect{it.commentsCount}.sum()
-        ] as JSON)
-    }
-
-    private getLineCommentsInThreads(Changeset changeset, ProjectFile projectFile) {
         def projectFileInChangeset = ProjectFileInChangeset.findByChangesetAndProjectFile(changeset, projectFile)
         checkArgument(projectFileInChangeset != null, "${projectFile} is not associated with ${changeset}")
-        def threadPositions = projectFileInChangeset.commentThreadsPositions
 
-        return threadPositions.collect { ThreadPositionInFile threadPosition ->
-            def comments = threadPosition.thread.comments
-            comments = comments.collect { LineComment comment ->
-                def properties = comment.properties + [
-                        author: comment.author.email,
-                        dateCreated: comment.dateCreated.format('yyyy-MM-dd HH:mm'),
-                        date: comment.dateCreated
-                ]
-                properties.keySet().retainAll('id', 'author', 'dateCreated', 'text', 'date')
-                properties
-            }
-            [threadId: threadPosition.thread.id, lineNumber: threadPosition.lineNumber, comments: comments.sort{it.date}, commentsCount: comments.size(), projectFileId: threadPosition.projectFileInChangeset.projectFile.id]
+        def threadPositionsProperties = getThreadPositionsProperties(projectFileInChangeset)
+        def threadPositionsWithSnippets = addSnippetsToThreadPositions(changeset, projectFile, threadPositionsProperties)
+        render(threadPositionsWithSnippets as JSON)
+    }
+
+    private List<Map<String, Object>> getThreadPositionsProperties(ProjectFileInChangeset projectFileInChangeset) {
+        projectFileInChangeset.commentThreadsPositions.collect() {
+            getThredPositionProperties(it)
         }
     }
 
-    private getThreadsGroupsWithSnippets(Changeset changeset, ProjectFile file, List<Map<String, Object>> threads
-    ) {
-        if (!threads.isEmpty()) {
-            def fileContent = scmAccessService.getFileContent(changeset, file)
+    private def getThredPositionProperties(ThreadPositionInFile threadPositionInFile) {
+        return [
+            lineNumber: threadPositionInFile.lineNumber,
+            thread: getThreadProperties(threadPositionInFile.thread)
+        ]
+    }
 
-            return snippetWithCommentsService.prepareThreadGroupsWithSnippets(threads, fileContent)
-        }
-        return threads
+    private def getThreadProperties(CommentThread commentThread) {
+        return [
+            id: commentThread.id,
+                comments: commentThread.comments.collect { comment ->
+                    [
+                            author: comment.author.email,
+                            dateCreated: comment.dateCreated.format('yyyy-MM-dd HH:mm'),
+                            date: comment.dateCreated,
+                            text: comment.text
+                    ]
+                }
+        ]
+    }
+
+    private addSnippetsToThreadPositions(Changeset changeset, ProjectFile file, positions) {
+        def fileContent = scmAccessService.getFileContent(changeset, file)
+        return snippetWithCommentsService.prepareThreadPositionsWithSnippets(positions, fileContent)
     }
 
 }

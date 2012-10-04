@@ -155,7 +155,7 @@ class ChangesetController {
                 changeType: projectFileInChangeset.changeType
         ]
         projectFileProperties.keySet().retainAll(
-                'id', 'name', 'textFormat', 'commentsCount', 'changeType'
+                'id', 'name', 'textFormat', 'commentsCount', 'changeType', 'fileType'
         )
         projectFileProperties
     }

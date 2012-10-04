@@ -9,10 +9,14 @@ class CommentThread {
     }
 
     static mapping = {
-        comments sort: 'dateCreated', order: 'asc'
+        comments fetch: 'join', sort: 'dateCreated', order: 'asc'
     }
 
     CommentThread(LineComment comment) {
         addToComments(comment)
+    }
+
+    def getCreationDate() {
+        comments*.dateCreated.min()
     }
 }

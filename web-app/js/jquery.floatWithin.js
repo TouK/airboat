@@ -18,7 +18,7 @@
     $.fn.floatWithin.defaults = {
         animationDuration: 500
         , debouncingPeriod: 200
-        , stickToBottomOffset: 50
+        , stickToBottomOffset: 25
         , offset: 0
     }
 

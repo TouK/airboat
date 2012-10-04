@@ -1,7 +1,6 @@
 package airboat
 
 import grails.plugin.spock.IntegrationSpec
-import util.DbPurger
 
 class ProjectFileControllerIntegrationSpec extends IntegrationSpec {
 
@@ -28,34 +27,33 @@ class ProjectFileControllerIntegrationSpec extends IntegrationSpec {
     def 'should return Comments for ProjectFile with their position in given Changeset'() {
         given:
         controller.snippetWithCommentsService = snippetWithCommentsService
-        Changeset firstChangeset = Changeset.build(project: project)
-        Changeset secondChangeset = Changeset.build(project: project)
 
-        buildThreadWithPosition(firstChangeset, 13)
-        buildThreadWithPosition(secondChangeset, 42)
+        def projectFileInFirstChangeset = buildThreadInChangesetWithPosition(Changeset.build(project: project), 13)
+        def projectFileInSecondChangeset = buildThreadInChangesetWithPosition(Changeset.build(project: project), 42)
 
         expect:
         controller.snippetWithCommentsService != null
 
         when:
-        def comments = controller.getLineCommentsInThreads(firstChangeset, projectFile)
+        def positions = controller.getThreadPositionsProperties(projectFileInFirstChangeset)
 
         then:
-        comments*.lineNumber == firstChangeset.projectFilesInChangeset*.commentThreadsPositions.flatten()*.lineNumber
+        positions*.lineNumber == projectFileInFirstChangeset.commentThreadsPositions*.lineNumber
 
         when:
-        comments = controller.getLineCommentsInThreads(secondChangeset, projectFile)
+        positions = controller.getThreadPositionsProperties(projectFileInSecondChangeset)
 
         then:
-        comments*.lineNumber == secondChangeset.projectFilesInChangeset*.commentThreadsPositions.flatten()*.lineNumber
+        positions*.lineNumber == projectFileInSecondChangeset.commentThreadsPositions*.lineNumber
     }
 
-    private void buildThreadWithPosition(Changeset changeset, int lineNumber) {
+    private ProjectFileInChangeset buildThreadInChangesetWithPosition(Changeset changeset, int lineNumber) {
         def projectFileInChangeset = ProjectFileInChangeset.build(changeset: changeset, projectFile: projectFile)
         ThreadPositionInFile.build(
                 projectFileInChangeset: projectFileInChangeset,
                 'thread.comments': [comment],
                 lineNumber: lineNumber
         )
+        projectFileInChangeset
     }
 }

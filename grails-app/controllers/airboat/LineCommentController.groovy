@@ -52,7 +52,7 @@ class LineCommentController {
             render(position.errors as JSON)
         } else {
             thread.save()
-            redirect(controller: 'projectFile', action: 'getLineCommentsWithSnippetsToFile',
+            redirect(controller: 'projectFile', action: 'getThreadPositionAggregatesForFile',
                     params: [changesetIdentifier: changeset.identifier, projectFileId: projectFile.id])
         }
     }
@@ -60,15 +60,14 @@ class LineCommentController {
     @Secured('isAuthenticated()')
     def addReply(Long threadId, String text, String changesetIdentifier, Long projectFileId) {
         def thread = CommentThread.findById(threadId)
-
-        checkArgument(thread != null, "No such thread found")
+        checkArgument(thread != null, "No thread with id [${threadId}] found")
         thread.addToComments(new LineComment(authenticatedUser, text))
         thread.validate()
         if (thread.hasErrors()) {
             render(thread.errors as JSON)
         } else {
             thread.save()
-            redirect(controller: 'projectFile', action: 'getLineCommentsWithSnippetsToFile',
+            redirect(controller: 'projectFile', action: 'getThreadPositionAggregatesForFile',
                     params: [changesetIdentifier: changesetIdentifier, projectFileId: projectFileId])
         }
     }
