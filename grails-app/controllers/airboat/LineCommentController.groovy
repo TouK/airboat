@@ -8,6 +8,7 @@ import grails.converters.JSON
 class LineCommentController {
 
     def scmAccessService
+    def commentConverterService
 
     @Secured('isAuthenticated()')
     def checkCanAddComment(String changesetIdentifier, Long projectFileId) {
@@ -52,7 +53,7 @@ class LineCommentController {
             render(position.errors as JSON)
         } else {
             thread.save()
-            redirect(controller: 'projectFile', action: 'getLineCommentsWithSnippetsToFile',
+            redirect(controller: 'projectFile', action: 'getThreadPositionAggregatesForFile',
                     params: [changesetIdentifier: changeset.identifier, projectFileId: projectFile.id])
         }
     }
@@ -60,16 +61,15 @@ class LineCommentController {
     @Secured('isAuthenticated()')
     def addReply(Long threadId, String text, String changesetIdentifier, Long projectFileId) {
         def thread = CommentThread.findById(threadId)
-
-        checkArgument(thread != null, "No such thread found")
-        thread.addToComments(new LineComment(authenticatedUser, text))
+        checkArgument(thread != null, "No thread with id [${threadId}] found")
+        def comment = new LineComment(authenticatedUser, text)
+        thread.addToComments(comment)
         thread.validate()
         if (thread.hasErrors()) {
             render(thread.errors as JSON)
         } else {
-            thread.save()
-            redirect(controller: 'projectFile', action: 'getLineCommentsWithSnippetsToFile',
-                    params: [changesetIdentifier: changesetIdentifier, projectFileId: projectFileId])
+            thread.save(flush: true)
+            render commentConverterService.getCommentJSONproperties(comment) as JSON
         }
     }
 }

@@ -24,7 +24,7 @@
             },
             projectFile:{
                 getFileListings:"${createLink(uri:'/projectFile/getFileListings/')}",
-                getLineCommentsWithSnippetsToFile:"${createLink(uri:'/projectFile/getLineCommentsWithSnippetsToFile/')}"
+                getThreadPositionAggregatesForFile:"${createLink(uri:'/projectFile/getThreadPositionAggregatesForFile/')}"
             },
             user:{
                 changePassword:"${createLink(uri: '/user/changePassword')}"
@@ -79,6 +79,10 @@
                     }
                 }
 
+            }
+
+            , parentModel: function ($element, selector) {
+                return this.getModel($element.parents(selector)[0]);
             }
 
             , getModel:function (selectorOrElement) {

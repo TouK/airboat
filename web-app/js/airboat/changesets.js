@@ -197,99 +197,18 @@ $('.changeset-date').livequery(function () {
     $(this).tooltip({title:this.dataset.date, trigger:"hover", placement:"bottom"});
 });
 
-function appendChangeset(changeset, dayElement) {
-
-    changeset.shortIdentifier = changeset.identifier.substr(0, hashAbbreviationLength) + "...";
-    changeset.allComments = function () {
-        var projectFilesComments = 0;
-        $(this.projectFiles).each(function () {
-            projectFilesComments += this.commentsCount
-        });
-        return this.comments.length + projectFilesComments
-    };
-
-    $(changeset.projectFiles).each(function () {
-        $.extend(this, {
-            changeset:changeset,
-            collapseId:(changeset.identifier + this.id),
-            name:sliceName(this.name),
-            isDisplayed:false
-        });
+function onChange(observed, observedProperty, callback) {
+    $(observed).on('propertyChange', function (_, changeDetails) {
+        if (changeDetails.path == observedProperty) {
+            callback();
+        }
     });
+}
 
+function appendChangeset(changesetData, dayElement) {
+    var changeset = new Changeset(changesetData)
     dayElement.children('.changesets').append($("<span id='templatePlaceholder'></span>"));
     $.link.changesetTemplate('#templatePlaceholder', changeset, {target:'replace'});
-
-    $('#comment-form-' + changeset.identifier).append($("#commentFormTemplate").render(changeset));
-}
-
-function updateAccordion(threadGroupsWithSnippetsForCommentedFile, changesetIdentifier, projectFileId) {
-    renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippetsForCommentedFile);
-    var projectFile = airboat.getModel('.changeset[data-identifier=' + changesetIdentifier + '] .projectFile[data-id=' + projectFileId + ']');
-    $.observable(projectFile).setProperty('commentsCount', threadGroupsWithSnippetsForCommentedFile.commentsCount);
-    $.observable(airboat.getModel('.changeset[data-identifier=' + changesetIdentifier + ']')).setProperty('allComments')
-}
-
-function appendSnippetToFileInAccordion(changesetIdentifier, projectFileId) {
-    $.getJSON(uri.projectFile.getLineCommentsWithSnippetsToFile + '?' + $.param({
-        changesetIdentifier:changesetIdentifier, projectFileId:projectFileId
-    }),
-        function (threadGroupsWithSnippetsForFile) {
-            renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippetsForFile);
-        }
-    );
-}
-
-function renderCommentGroupsWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippetsForFile) {
-    var fileType = threadGroupsWithSnippetsForFile.fileType;
-    var threadGroupsWithSnippets = threadGroupsWithSnippetsForFile.threadGroupsWithSnippets;
-
-    if (threadGroupsWithSnippets.length > 0) {
-        $('#fileComments-' + changesetIdentifier + projectFileId).html("");
-
-        for (var j = 0; j < threadGroupsWithSnippets.length; j++) {
-            renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, threadGroupsWithSnippets[j], fileType);
-        }
-    }
-}
-
-function renderCommentGroupWithSnippets(changesetIdentifier, projectFileId, threadGroupWithSnippet, fileType) {
-    var lineNumber = threadGroupWithSnippet.lineNumber;
-
-    var snippet = $("#snippetTemplate").render({
-        fileId:projectFileId,
-        lineNumber:lineNumber,
-        changesetId:changesetIdentifier
-    });
-
-    var fileComments = $('#fileComments-' + changesetIdentifier + projectFileId);
-    var snippetObject = $(snippet).appendTo(fileComments);
-
-    snippetObject.children('.codeSnippet')
-        .html("<pre class='codeViewer'/></pre>")
-        .children(".codeViewer")
-        .text(threadGroupWithSnippet.snippet)
-        .addClass("linenums:" + lineNumber)
-        .addClass("language-" + fileType)
-        .syntaxHighlight();
-
-    for (i = 0; i < threadGroupWithSnippet.threads.length; i++) {
-        var threadTemplate = $("#threadTemplate").render({threadId: threadGroupWithSnippet.threads[i].threadId, changesetId: changesetIdentifier, projectFileId: projectFileId});
-        $(threadTemplate).appendTo(snippetObject.find('.threads'));
-        var commentsInThread = snippetObject.find('.threadComments[data-identifier=' + threadGroupWithSnippet.threads[i].threadId + ']');
-        renderCommentGroup(commentsInThread, threadGroupWithSnippet.threads[i].comments);
-    }
-}
-
-function renderCommentGroup(object, commentGroup) {
-    for (var k = 0; k < commentGroup.length; k++) {
-        var comment = $("#commentTemplate").render(commentGroup[k]);
-        object.append(comment);
-    }
-}
-
-function sliceName(name) {
-    return name.toString().replace(/\//g, '/&#8203;');
 }
 
 function toggleChangesetDetails(identifier) {

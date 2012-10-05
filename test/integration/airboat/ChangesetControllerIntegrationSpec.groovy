@@ -6,13 +6,13 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
 
     def springSecurityService
     def scmAccessService
-    def returnCommentsService
+    def commentConverterService
 
     ChangesetController controller = new ChangesetController()
 
     def setup() {
         controller.scmAccessService = scmAccessService
-        controller.returnCommentsService = returnCommentsService
+        controller.commentConverterService = commentConverterService
     }
 
     def 'getLastChangesets should return JSON'() {
@@ -51,7 +51,7 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         buildChangelogEntry(1)
 
         expect:
-        controller.returnCommentsService != null
+        controller.commentConverterService != null
 
         when:
         controller.getNextFewChangesetsOlderThan(latestChangeset.id)
@@ -69,7 +69,7 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
         buildChangelogEntry(0, project)
 
         expect:
-        controller.returnCommentsService != null
+        controller.commentConverterService != null
 
         when:
         controller.getNextFewChangesetsOlderThanFromSameProject(latestChangeset.id)

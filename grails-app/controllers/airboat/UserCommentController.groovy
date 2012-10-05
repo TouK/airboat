@@ -7,7 +7,7 @@ import static com.google.common.base.Preconditions.checkArgument
 
 class UserCommentController {
 
-    ReturnCommentsService returnCommentsService
+    CommentConverterService commentConverterService
 
     def index() {
     }
@@ -25,7 +25,7 @@ class UserCommentController {
         }
         else {
             userComment.save()
-            render returnCommentsService.getCommentJSONproperties(userComment) as JSON
+            render commentConverterService.getCommentJSONproperties(userComment) as JSON
         }
     }
 }

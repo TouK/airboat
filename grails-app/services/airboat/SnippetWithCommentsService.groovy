@@ -2,27 +2,41 @@ package airboat
 
 class SnippetWithCommentsService {
 
-    def prepareThreadGroupsWithSnippets(threads, fileContent) {
-        def threadGroupsWithSnippetsMap = threads.groupBy{it.lineNumber}
-        def threadGroupsWithSnippetsUnsortedList = threadGroupsWithSnippetsMap.collect{key, value -> [lineNumber: key, threads: value.sort{it.comments[0].date}]}
-        def threadGroupsWithSnippets = threadGroupsWithSnippetsUnsortedList.sort{it.lineNumber}
-        def threadGroupNumber = threadGroupsWithSnippets.size()
-        def fileLines = fileContent.readLines()
+    def prepareThreadPositionsWithSnippets(positions, fileContent) {
+        if (positions.isEmpty()) {
+            return positions
+        } else {
+            def threadPositionsByLine = positions.groupBy { it.lineNumber }
+            def threadPositionsByLineSorted = threadPositionsByLine.sort()
+            def threadPositionsWithGroupedThreads = threadPositionsByLineSorted.collect { key, positionsForLine ->
+                def threadsForLine = positionsForLine*.thread
+                threadsForLine.sort { it.creationDate }
+                [lineNumber: key, threads: threadsForLine]
+            }
+            def threadGroupsCount = threadPositionsWithGroupedThreads.size()
+            def fileLines = fileContent.readLines()
 
-        for (int i = 0; i < threadGroupNumber - 1; i++) {
-            def currentLine = threadGroupsWithSnippets[i].lineNumber
-            def nextLine = threadGroupsWithSnippets[i+1].lineNumber
-            def snippetLength = nextLine-Constants.SNIPPET_LENGTH >= currentLine ? Constants.SNIPPET_LENGTH : nextLine-currentLine
-            threadGroupsWithSnippets[i].snippet = getSnippet(fileLines, currentLine, snippetLength)
+            for (int i = 0; i < threadGroupsCount - 1; i++) {
+                def currentLine = threadPositionsWithGroupedThreads[i].lineNumber
+                def nextLine = threadPositionsWithGroupedThreads[i + 1].lineNumber
+                def snippetLength = getSnippetLength(currentLine, nextLine)
+                threadPositionsWithGroupedThreads[i].snippet = getSnippet(fileLines, currentLine, snippetLength)
+            }
+            def lastSnippetLine = threadPositionsWithGroupedThreads.last().lineNumber
+            def lastSnippet = getSnippet(fileLines, lastSnippetLine, Constants.SNIPPET_LENGTH)
+            threadPositionsWithGroupedThreads[threadGroupsCount - 1].snippet = lastSnippet
+
+            return threadPositionsWithGroupedThreads
         }
-        threadGroupsWithSnippets[threadGroupNumber-1].snippet = getSnippet(fileLines, threadGroupsWithSnippets[threadGroupNumber-1].lineNumber, Constants.SNIPPET_LENGTH)
+    }
 
-        return threadGroupsWithSnippets
+    private int getSnippetLength(currentLine, nextLine) {
+        nextLine - Constants.SNIPPET_LENGTH >= currentLine ? Constants.SNIPPET_LENGTH : nextLine - currentLine
     }
 
     def getSnippet(fileLines, lineNumber, length) {
         def snippetStart = lineNumber - 1
         def snippetEnd = Math.min(snippetStart + length - 1, fileLines.size() - 1)
-        fileLines[snippetStart..snippetEnd].collect{it == ''? ' ' : it}.join('\n')
+        fileLines[snippetStart..snippetEnd].collect {it == '' ? ' ' : it}.join('\n')
     }
 }
