@@ -2,20 +2,15 @@ package airboat
 
 class SnippetWithCommentsService {
 
-    def prepareThreadPositionsWithSnippets(positions, fileContent) {
-        if (positions.isEmpty()) {
+    def scmAccessService
+
+    def addSnippetsToThreadPositions(def threadPositionsWithGroupedThreads, ProjectFileInChangeset projectFileInChangeset) {
+        if (threadPositionsWithGroupedThreads.isEmpty()) {
             return positions
         } else {
-            def threadPositionsByLine = positions.groupBy { it.lineNumber }
-            def threadPositionsByLineSorted = threadPositionsByLine.sort()
-            def threadPositionsWithGroupedThreads = threadPositionsByLineSorted.collect { key, positionsForLine ->
-                def threadsForLine = positionsForLine*.thread
-                threadsForLine.sort { it.creationDate }
-                [lineNumber: key, threads: threadsForLine]
-            }
-            def threadGroupsCount = threadPositionsWithGroupedThreads.size()
+            def fileContent = scmAccessService.getFileContent(projectFileInChangeset.changeset, projectFileInChangeset.projectFile)
             def fileLines = fileContent.readLines()
-
+            def threadGroupsCount = threadPositionsWithGroupedThreads.size()
             for (int i = 0; i < threadGroupsCount - 1; i++) {
                 def currentLine = threadPositionsWithGroupedThreads[i].lineNumber
                 def nextLine = threadPositionsWithGroupedThreads[i + 1].lineNumber

@@ -1,14 +1,6 @@
-import airboat.Changeset
-import airboat.Constants
-import airboat.Project
-import grails.converters.JSON
+import airboat.*
 
-import static airboat.Constants.*
-import airboat.ProjectUpdateJob
-import airboat.User
-import airboat.Role
-import airboat.UserRole
-import airboat.ResetPasswordEntriesDeleteJob
+import static airboat.Constants.PROJECT_AIRBOAT_REPOSITORY_URL
 
 class BootStrap {
 

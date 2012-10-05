@@ -10,6 +10,7 @@ class ProjectFileController {
     def scmAccessService
     def snippetWithCommentsService
     def diffAccessService
+    def threadPositionConverterService
 
 
     def index() { }
@@ -38,41 +39,9 @@ class ProjectFileController {
         def projectFileInChangeset = ProjectFileInChangeset.findByChangesetAndProjectFile(changeset, projectFile)
         checkArgument(projectFileInChangeset != null, "${projectFile} is not associated with ${changeset}")
 
-        def threadPositionsProperties = getThreadPositionsProperties(projectFileInChangeset)
-        def threadPositionsWithSnippets = addSnippetsToThreadPositions(changeset, projectFile, threadPositionsProperties)
+        def threadPositionsProperties = threadPositionConverterService.getThreadPositionsProperties(projectFileInChangeset)
+        def threadPositionsWithSnippets = snippetWithCommentsService.addSnippetsToThreadPositions(threadPositionsProperties, projectFileInChangeset)
         render(threadPositionsWithSnippets as JSON)
-    }
-
-    private List<Map<String, Object>> getThreadPositionsProperties(ProjectFileInChangeset projectFileInChangeset) {
-        projectFileInChangeset.commentThreadsPositions.collect() {
-            getThredPositionProperties(it)
-        }
-    }
-
-    private def getThredPositionProperties(ThreadPositionInFile threadPositionInFile) {
-        return [
-            lineNumber: threadPositionInFile.lineNumber,
-            thread: getThreadProperties(threadPositionInFile.thread)
-        ]
-    }
-
-    private def getThreadProperties(CommentThread commentThread) {
-        return [
-            id: commentThread.id,
-                comments: commentThread.comments.collect { comment ->
-                    [
-                            author: comment.author.email,
-                            dateCreated: comment.dateCreated.format('yyyy-MM-dd HH:mm'),
-                            date: comment.dateCreated,
-                            text: comment.text
-                    ]
-                }
-        ]
-    }
-
-    private addSnippetsToThreadPositions(Changeset changeset, ProjectFile file, positions) {
-        def fileContent = scmAccessService.getFileContent(changeset, file)
-        return snippetWithCommentsService.prepareThreadPositionsWithSnippets(positions, fileContent)
     }
 
 }

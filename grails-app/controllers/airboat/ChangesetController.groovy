@@ -120,9 +120,7 @@ class ChangesetController {
                 email: getEmail(changeset.commiter),
                 date: changeset.date.format('yyyy-MM-dd HH:mm'),
                 commitMessage: changeset.commitMessage,
-                commentsCount: changeset.commentsCount,
                 projectName: changeset.project.name,
-                commentsCount: allCommentsCount(changeset),
                 projectFiles: getChangesetFiles(changeset),
                 comments: returnCommentsToChangeset(changeset.identifier)
         ]
@@ -147,7 +145,6 @@ class ChangesetController {
         fileProperties
     }
 
-    //FIXME adapt front-end to new object structure
     private def getFileJSONProperties(ProjectFileInChangeset projectFileInChangeset) {
         def projectFile = projectFileInChangeset.projectFile
         def projectFileProperties = projectFile.properties + [
