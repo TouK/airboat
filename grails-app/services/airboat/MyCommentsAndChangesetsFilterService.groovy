@@ -17,13 +17,13 @@ class MyCommentsAndChangesetsFilterService implements FilterServiceInterface {
 
     @Override
     @PreAuthorize('isAuthenticated()')
-    def getLastFilteredChangesets() {
+    def getLastFilteredChangesets(String additionalInfo) {
         return Changeset.findAll(conditions + order, [max: Constants.FIRST_CHANGESET_LOAD_SIZE, user: springSecurityService.getCurrentUser()]);
     }
 
     @Override
     @PreAuthorize('isAuthenticated()')
-    def getNextFilteredChangesets(Long changesetId) {
+    def getNextFilteredChangesets(Long changesetId, String additionalInfo) {
         def lastChangeset = Changeset.get(changesetId);
         return Changeset.findAll(conditions + " and changeset.date < :lastChangesetDate " + order, [max: Constants.FIRST_CHANGESET_LOAD_SIZE, user: springSecurityService.getCurrentUser(), lastChangesetDate: lastChangeset.date]);
     }

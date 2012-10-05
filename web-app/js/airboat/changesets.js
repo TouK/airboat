@@ -1,28 +1,59 @@
-function showProject(projectName) {
-    $.observable(airboat).setProperty('displayedProjectName', projectName);
+function showProject(projectName, historyOperation) {
     changesetsLoading = true;
-    $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:airboat.displayedProjectName}),
+    $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:projectName}),
         function (data) {
-            clearDisplayAndAppendChangesetsBottom({data:data, shouldLoad:true, viewType:VIEW_TYPE.PROJECT, activeSelector:'#projectsDropdown'})
+            clearDisplayAndAppendChangesetsBottom({data:data,
+                shouldLoad:true,
+                viewType:VIEW_TYPE.PROJECT,
+                activeSelector:'#projectsDropdown',
+                historyOperation: historyOperation,
+                currentFilter: {filterType:'', additionalInfo:''},
+                displayedProject: projectName})
         });
 }
 
-function showFiltered(filterType) {
-    $.observable(airboat).setProperty('currentFilter', filterType);
+function showFiltered(filter, historyOperation) {
     airboat.changesetLoading = true;
-    $.getJSON(uri.changeset.getLastFilteredChangesets + '?' + $.param({filterType:airboat.currentFilter}),
+    $.getJSON(uri.changeset.getLastFilteredChangesets + '?' + $.param({filterType:filter.filterType, additionalInfo:filter.additionalInfo}),
         function (data) {
-            clearDisplayAndAppendChangesetsBottom({data:data, shouldLoad:true, viewType:VIEW_TYPE.FILTER, activeSelector:'#filtersDropdown'})
+            clearDisplayAndAppendChangesetsBottom({data:data,
+                shouldLoad:true,
+                viewType:VIEW_TYPE.FILTER,
+                activeSelector:'#filtersDropdown',
+                historyOperation: historyOperation,
+                currentFilter: filter,
+                displayedProject: ''})
         });
 }
 
+var HISTORY_OPERATION = {NONE: 'none', PUSH: 'pushState', REPLACE: 'replaceState'};
 function clearDisplayAndAppendChangesetsBottom(dataset) {
     shouldLoadChangesets = dataset.shouldLoad;
     currentViewType = dataset.viewType;
     $('#content').html("");
-    setFilterActive(dataset.activeSelector);
+    $.observable(airboat).setProperty('displayedProjectName', dataset.displayedProject);
+    $.observable(airboat).setProperty('currentFilter', dataset.currentFilter);
+    if (dataset.historyOperation == HISTORY_OPERATION.REPLACE) {
+        history.replaceState({dataType: dataset.viewType, projectName: airboat.displayedProjectName, filterType: airboat.currentFilter.filterType, additionalInfo:airboat.currentFilter.additionalInfo}, null);
+    } else if (dataset.historyOperation == HISTORY_OPERATION.PUSH) {
+        history.pushState({dataType: currentViewType, projectName:airboat.displayedProjectName, filterType: airboat.currentFilter.filterType, additionalInfo:airboat.currentFilter.additionalInfo}, null, getHref());
+    }
+    if (currentViewType == VIEW_TYPE.PROJECT && airboat.displayedProjectName == "") {
+        setAllFiltersInactive();
+    } else {
+        setFilterActive(dataset.activeSelector);
+    }
     appendChangesetsBottom(dataset.data.changesets);
     decideImportInfoAndLoadingState(dataset.data, 21); //as in Constants.FIRST_CHANGESET_LOAD_SIZE
+}
+
+function getHref() {
+   if (currentViewType == VIEW_TYPE.PROJECT) {
+       return airboat.displayedProjectName == '' ? '?' : '?' + $.param({projectName:airboat.displayedProjectName});
+   } else if (currentViewType = VIEW_TYPE.FILTER) {
+       return '?' + $.param({filterType:airboat.currentFilter.filterType, additionalInfo:airboat.currentFilter.additionalInfo});
+   }
+   return '';
 }
 
 function appendNextChangesetsBottom(dataset) {
@@ -71,11 +102,13 @@ function countChangesets(changesetsByDay) {
 
 function setFilterActive(selector) {
     setAllFiltersInactive();
-    $(selector + ' .dropdown-toggle').css('text-decoration', 'underline');
+    $(selector + ' .currentFilter').css('text-decoration', 'underline');
+    $(selector + ' .clearFilters').css('display', 'inline');
 }
 
 function setAllFiltersInactive() {
-    $('.navbarToggle .dropdown-toggle').css('text-decoration', 'none');
+    $('.navbarToggle .currentFilter').css('text-decoration', 'none');
+    $('.navbarToggle .clearFilters').css('display', 'none');
 }
 
 function onScrollThroughBottomAttempt() {
@@ -98,7 +131,7 @@ function getControllerAction() {
     } else if (history.state.dataType == DATA_TYPE.PROJECT) {
         return uri.changeset.getNextFewChangesetsOlderThanFromSameProject  + '?' + $.param({changesetId:lastLoadedChangesetId});
     } else if (history.state.dataType == DATA_TYPE.FILTER) {
-        return uri.changeset.getNextFewFilteredChangesetsOlderThan  + '?' + $.param({changesetId:lastLoadedChangesetId, filterType: airboat.currentFilter});
+        return uri.changeset.getNextFewFilteredChangesetsOlderThan  + '?' + $.param({changesetId:lastLoadedChangesetId, filterType: airboat.currentFilter.filterType, additionalInfo:airboat.currentFilter.additionalInfo});
     }
 }
 

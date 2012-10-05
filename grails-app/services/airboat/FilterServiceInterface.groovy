@@ -1,6 +1,6 @@
 package airboat
 
 interface FilterServiceInterface {
-    def getLastFilteredChangesets()
-    def getNextFilteredChangesets(Long changesetId)
+    def getLastFilteredChangesets(String additionalInfo)
+    def getNextFilteredChangesets(Long changesetId, String additionalInfo)
 }

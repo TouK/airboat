@@ -10,19 +10,20 @@ class ChangesetController {
     ReturnCommentsService returnCommentsService
     MyCommentsAndChangesetsFilterService myCommentsAndChangesetsFilterService
     CommentedChangesetsFilterService commentedChangesetsFilterService
+    FileFilterService fileFilterService
 
-    def filterTypes = ['commentedChangesets', 'myCommentsAndChangesets']
+    def filterTypes = ['commentedChangesets', 'myCommentsAndChangesets', 'fileFilter']
 
     def index() {
         def projectName = params.projectName
         def changesetId = params.changesetId
-        def filter = params.filter
+        def filter = params.filterType
         if (projectName != null && changesetId != null) {
             renderChangesetResponse(projectName, changesetId)
         } else if (projectName != null) {
             renderProjectResponse(projectName)
         } else if (filter != null) {
-            renderFilterResponse(filter)
+            renderFilterResponse(filter, params.additionalInfo)
         } else {
             render(view: 'index', model: [projects: Project.all.sort{Project it -> it.name}, type: 'project', singleProject: false])
         }
@@ -40,11 +41,11 @@ class ChangesetController {
         render ([changesets: changesetsProperties, isImporting: isImporting(projectName)] as JSON)
     }
 
-    def getLastFilteredChangesets(String filterType) {
-        def filterServices = [commentedChangesets: commentedChangesetsFilterService, myCommentsAndChangesets: myCommentsAndChangesetsFilterService]
+    def getLastFilteredChangesets(FilterCommand filter) {
+        def filterServices = getFilterServiceMap()
         def changesets
         try {
-            changesets = filterServices.get(filterType).getLastFilteredChangesets()
+            changesets = filterServices.get(filter.filterType).getLastFilteredChangesets(filter.additionalInfo)
         } catch (AccessDeniedException e) {
             response.sendError(401)
             return
@@ -71,9 +72,9 @@ class ChangesetController {
         render ([changesets: changesetsProperties, isImporting: isImporting(projectName)] as JSON)
     }
 
-    def getNextFewFilteredChangesetsOlderThan(Long changesetId, String filterType) {
-        def filterServices = [commentedChangesets: commentedChangesetsFilterService, myCommentsAndChangesets: myCommentsAndChangesetsFilterService]
-        def changesetsProperties = getChangesetsGroups(filterServices.get(filterType).getNextFilteredChangesets(changesetId))
+    def getNextFewFilteredChangesetsOlderThan(Long changesetId, FilterCommand filter) {
+        def filterServices = getFilterServiceMap()
+        def changesetsProperties = getChangesetsGroups(filterServices.get(filter.filterType).getNextFilteredChangesets(changesetId, filter.additionalInfo))
         render ([changesets: changesetsProperties, isImporting: isImporting()] as JSON)
     }
 
@@ -192,11 +193,11 @@ class ChangesetController {
         }
     }
 
-    private def renderFilterResponse(filter) {
+    private def renderFilterResponse(filter, additionalInfo) {
         if (filter in filterTypes) {
             render(view: 'index', model: [projects: Project.all.sort{Project it -> it.name},
                     type: 'filter',
-                    filterType: filter])
+                    filter: [filterType: filter, additionalInfo: additionalInfo == null ? '':additionalInfo]])
         } else {
             response.sendError(404, 'There is no such filter')
         }
@@ -208,6 +209,12 @@ class ChangesetController {
         } else {
             return Project.findAllByStateNotEqual(Project.ProjectState.fullyImported).size() > 0
         }
+    }
+
+    private def getFilterServiceMap() {
+        [commentedChangesets: commentedChangesetsFilterService,
+                myCommentsAndChangesets: myCommentsAndChangesetsFilterService,
+                fileFilter: fileFilterService]
     }
 }
 

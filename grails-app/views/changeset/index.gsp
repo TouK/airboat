@@ -87,9 +87,7 @@
     $('body').on('click', '.projectLink', function (e) {
         $(document).scrollTop(0);
         if (currentViewType != VIEW_TYPE.PROJECT || airboat.displayedProjectName != this.dataset.project) {
-            showProject(this.dataset.project);
-            var href = this.dataset.project == '' ? '?' : '?' + $.param({projectName:this.dataset.project});
-            history.pushState({dataType:DATA_TYPE.PROJECT, projectName:airboat.displayedProjectName}, null, href);
+            showProject(this.dataset.project, HISTORY_OPERATION.PUSH);
         }
         $('#projectsDropdown').removeClass('open');
         return false;
@@ -97,9 +95,13 @@
 
     $('body').on('click', '.filterLink', function (e) {
         $(document).scrollTop(0);
-        if (currentViewType != VIEW_TYPE.FILTER || airboat.currentFilter != this.dataset.filter) {
-            showFiltered(this.dataset.filter);
-            history.pushState({dataType:DATA_TYPE.FILTER, filterType:airboat.currentFilter}, null, '?' + $.param({filter:this.dataset.filter}));
+        var additionalInfo = '';
+        if (this.dataset.filter == 'fileFilter') {
+            additionalInfo = $('#fileFilterFile').val();
+        }
+        var filter = {filterType: this.dataset.filter, additionalInfo: additionalInfo};
+        if (currentViewType != VIEW_TYPE.FILTER || airboat.currentFilter != filter) {
+            showFiltered(filter, HISTORY_OPERATION.PUSH);
         }
         $('#filtersDropdown').removeClass('open');
         return false;
@@ -126,15 +128,19 @@
     function renderProject(state) {
         $(document).scrollTop(0);
         if (currentViewType != VIEW_TYPE.PROJECT || airboat.displayedProjectName != state.projectName) {
-            showProject(state.projectName);
+            showProject(state.projectName, HISTORY_OPERATION.NONE);
         }
     }
 
     function renderFilter(state) {
         $(document).scrollTop(0);
         if (currentViewType != VIEW_TYPE.FILTER || airboat.currentFilter != state.filterType) {
-            showFiltered(state.filterType);
+            showFiltered(state.filterType, HISTORY_OPERATION.NONE);
         }
+    }
+
+    function clearFilters() {
+        showProject('', HISTORY_OPERATION.PUSH);
     }
 
     $.views.helpers({
@@ -188,6 +194,11 @@
         $.link.projectChooserTemplate('#projectChooser', airboat, {target:'replace'});
         $.link.filterChooserTemplate('#filterChooser', airboat, {target:'replace'});
 
+        $('.clearFilters').on('click', function() {
+            clearFilters();
+            return false;
+        });
+
         if ('${type}' == DATA_TYPE.CHANGESET) {
             appendChangesetsBottom(${changeset});
             toggleChangesetDetails("${changesetId}");
@@ -198,15 +209,12 @@
         } else if ('${type}' == DATA_TYPE.PROJECT) {
 
             if (toBoolean(${singleProject})) {
-                showProject("${projectName}");
+                showProject("${projectName}", HISTORY_OPERATION.REPLACE);
             } else {
-                showProject('');
+                showProject('', HISTORY_OPERATION.REPLACE);
             }
-            history.replaceState({dataType:'${type}', projectName:airboat.displayedProjectName}, null);
-
         } else if ('${type}' == DATA_TYPE.FILTER) {
-            showFiltered('${filterType}');
-            history.replaceState({dataType:'${type}', filterType:airboat.currentFilter }, null)
+            showFiltered({filterType:'${filter ? filter.filterType:''}', additionalInfo:'${filter ? filter.additionalInfo:''}'}, HISTORY_OPERATION.REPLACE);
         }
 
         $(window).scroll(function () {
@@ -259,8 +267,8 @@
 
     <ul class="nav">
         <li id="projectsDropdown" class="dropdown navbarToggle">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project <span
-                    data-link='displayedProjectName'></span> <b class="caret"></b></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project <span class='currentFilter'
+                    data-link='displayedProjectName'></span><span class="clearFilters" style="display:none"> [x]</span> <b class="caret"></b></a>
             <ul class="dropdown-menu">
                 <li><a href="javascript:void(0)" data-target="#" data-project='' class='projectLink'>All projects</a>
                 </li>
@@ -277,8 +285,8 @@
 <script id='filterChooserTemplate' type='text/x-jsrender'>
     <ul class="nav">
         <li id="filtersDropdown" class="dropdown navbarToggle">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Filters <span
-                    data-link='currentFilter'></span> <b class="caret"></b></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Filters <span class='currentFilter'
+                    data-link='currentFilter["filterType"]'></span><span class="clearFilters" style="display:none"> [x]</span> <b class="caret"></b></a>
             <ul class="dropdown-menu">
                 <li><a href="javascript:void(0)" data-target="#" data-filter='commentedChangesets'
                        class='filterLink'>Commented changesets</a>
@@ -286,6 +294,12 @@
                 <li data-link="visible{: loggedInUserName !== '' }"><a href="javascript:void(0)" data-target="#"
                                                                        data-filter='myCommentsAndChangesets'
                                                                        class='filterLink'>My comments and changesets</a>
+                </li>
+                <li>
+                    <form class="navbar-form">
+                        <input type="text" class="span2" id="fileFilterFile" placeholder='Search file...'>
+                        <i class="icon-chevron-right filterLink" data-filter='fileFilter'></i>
+                    </form>
                 </li>
             </ul>
         </li>
