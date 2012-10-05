@@ -147,18 +147,28 @@ class ChangesetController {
         fileProperties
     }
 
-    //FIXME adapt front-end to new object structure
     private def getFileJSONProperties(ProjectFileInChangeset projectFileInChangeset) {
         def projectFile = projectFileInChangeset.projectFile
         def projectFileProperties = projectFile.properties + [
                 id: projectFile.id,
                 commentsCount: projectFileInChangeset.commentThreadsPositions*.thread*.comments?.flatten()?.size(),
-                changeType: projectFileInChangeset.changeType
+                changeType: projectFileInChangeset.changeType,
+                threadPositions: getThreadPositionsProperties(projectFileInChangeset.commentThreadsPositions)
         ]
         projectFileProperties.keySet().retainAll(
-                'id', 'name', 'textFormat', 'commentsCount', 'changeType', 'fileType'
+                'id', 'name', 'textFormat', 'commentsCount', 'changeType', 'fileType', 'threadPositions'
         )
         projectFileProperties
+    }
+
+    private def getThreadPositionsProperties(Set<ThreadPositionInFile> threadPositionInFiles) {
+        threadPositionInFiles
+                .groupBy { it.lineNumber}
+                .collect(this.&threadsForLine)
+    }
+
+    private def threadsForLine(int lineNumber, Collection<ThreadPositionInFile> positions) {
+        [lineNumber: lineNumber, threads: positions.collect { [id: it.thread.id] }]
     }
 
     private def returnCommentsToChangeset(String changesetIdentifier) {

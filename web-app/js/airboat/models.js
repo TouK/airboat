@@ -67,7 +67,7 @@ function ThreadPosition(data) {
 
     $.extend(this, data, {
         threads: $.map(data.threads, function(data) {
-            var thread = new Thread(data);
+            var thread = Thread.createOrUpdate(data);
             onChange(thread, 'commentsCount', triggerChange(that, 'commentsCount'));
             return thread;
         })
@@ -96,4 +96,20 @@ function Thread(data) {
         $.observable(this).setProperty('commentsCount');
     };
 
+    this.update = function (data) {
+        $.observable(this.comments).refresh(data.comments);
+    };
+
+    Thread.instances[this.id] = this;
 }
+
+Thread.instances = {};
+Thread.createOrUpdate = function (data) {
+    var instance = Thread.instances[data.id];
+    if (instance) {
+        instance.update(data);
+    } else {
+        instance = new Thread(data);
+    }
+    return instance;
+};
