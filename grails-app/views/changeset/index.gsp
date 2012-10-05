@@ -542,7 +542,7 @@
         <span data-link="class{: isDisplayed ? '' : 'linkText' }">{{:name}}</span>
         <i class="closeButton icon-remove"
            data-link="style{: 'display:' + (isDisplayed ? 'inline-block' : 'none') }"> </i>
-        <span class="toggleComments pull-right" data-link="visible{: commentsCount != 0 }" title='Show / hide comments' data-libs='tooltip'>
+        <span class="toggleComments pull-right" data-link="visible{: commentsCount }" title='Show / hide comments' data-libs='tooltip'>
             <i class="icon-comment"></i><span class='commentsCount' data-link="commentsCount"></span>
         </span>
     </a>

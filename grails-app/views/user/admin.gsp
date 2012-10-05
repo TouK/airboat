@@ -4,6 +4,8 @@
     <title>Admin page</title>
     <meta name="layout" content="main"/>
     <script src="${createLink(uri: '/libs/jquery.cookie/jquery.cookies.js')}" type="text/javascript"></script>
+
+    %{--FIXNE get rid of this or add as a normal dependency--}%
     <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet"
           type="text/css"/>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>

@@ -86,7 +86,8 @@ function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
     var textarea = $('#add-line-comment-' + projectFileId);
     var text = textarea.val();
     var $form = textarea.parents('form')[0];
-    var projectFile = airboat.getModel('.changeset[data-identifier=' + changesetIdentifier + '] .projectFile[data-id=' + projectFileId + ']');
+    var projectFileSelector = '.changeset[data-identifier=' + changesetIdentifier + '] .projectFile[data-id=' + projectFileId + ']';
+    var projectFile = airboat.getModel(projectFileSelector);
 
     $.post(uri.lineComment.addComment,
         { changesetIdentifier: changesetIdentifier, projectFileId:projectFileId, text:text, lineNumber:lineNumber},
@@ -96,6 +97,7 @@ function addLineComment(changesetIdentifier, projectFileId, lineNumber) {
             } else {
                 projectFile.updateCommentThreads(threadPositions);
                 closeLineCommentForm(changesetIdentifier, projectFileId);
+                $(projectFileSelector).find('.details').slideDown();
             }
         },
         "json"

@@ -48,8 +48,8 @@ function hideFileListings($fileListings, callback) {
 
 function showComments($projectFile) {
     var projectFile = airboat.getModel($projectFile[0]);
-    projectFile.commentsDisplayed = true
-    if (projectFile.commentsCount != 0) {
+    projectFile.commentsDisplayed = true;
+    if (projectFile.commentsCount() != 0) {
         loadCommentThreadsWithSnippets(projectFile);
         $projectFile.find('.details').slideDown();
     }
@@ -69,6 +69,6 @@ function loadCommentThreadsWithSnippets(projectFile) {
 
 function hideComments($projectFile) {
     var projectFile = airboat.getModel($projectFile[0]);
-    projectFile.commentsDisplayed = false
-    $projectFile.find('.details').slideUp()
+    projectFile.commentsDisplayed = false;
+    $projectFile.find('.details').slideUp();
 }
