@@ -3,6 +3,7 @@ package airboat
 class LineComment {
 
     String text
+    boolean isArchived
     Date dateCreated
 
     static belongsTo = [author: User, thread: CommentThread]
@@ -13,6 +14,7 @@ class LineComment {
 
     LineComment(User author, String text) {
         this.text = text
+        isArchived = false
         author.addToLineComments(this)
     }
 }

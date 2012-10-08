@@ -130,15 +130,6 @@ class ChangesetController {
         commiter.user?.email ?: commiter.email
     }
 
-    private int allCommentsCount(Changeset changeset) {
-        def allLineComments = ThreadPositionInFile.executeQuery(
-                "select position.thread.comments from ThreadPositionInFile as position \
-                where position.projectFileInChangeset.changeset = :changeset",
-                [changeset: changeset]
-        )
-        return (allLineComments.size() + changeset.commentsCount)
-    }
-
     private List<Map> getChangesetFiles(Changeset changeset) {
         def files = changeset.projectFilesInChangeset?.sort { it.projectFile.name }
         def fileProperties = files.collect this.&getFileJSONProperties
@@ -149,7 +140,8 @@ class ChangesetController {
         def projectFile = projectFileInChangeset.projectFile
         def projectFileProperties = projectFile.properties + [
                 id: projectFile.id,
-                commentsCount: projectFileInChangeset.commentThreadsPositions*.thread*.comments?.flatten()?.size(),
+                commentsCount: projectFileInChangeset.commentThreadsPositions*.thread*.comments?.flatten()?.
+                        findResults {LineComment comment -> comment.isArchived ? null: comment}?.size(),
                 changeType: projectFileInChangeset.changeType
         ]
         projectFileProperties.keySet().retainAll(
@@ -200,7 +192,7 @@ class ChangesetController {
         }
     }
 
-    private def isImporting(projectName = null) {
+    private boolean isImporting(projectName = null) {
         if (projectName) {
             return Project.findAllByNameAndStateNotEqual(projectName, Project.ProjectState.fullyImported).size() > 0
         } else {

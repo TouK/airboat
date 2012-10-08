@@ -19,13 +19,13 @@ class CommentConverterServiceSpec extends Specification {
         def loggedInUser = User.build(username: 'logged.in@airboat.com')
         commentConverterService.springSecurityService.getCurrentUser() >> loggedInUser
         Changeset changeset = Changeset.build()
-        UserComment comment = UserComment.build(changeset: changeset, author: loggedInUser, text: 'Very well indeed.')
+        UserComment comment = UserComment.build(changeset: changeset, author: loggedInUser, text: 'Very well indeed.', isArchived: false)
 
         when:
         def result = commentConverterService.getCommentJSONproperties(comment)
 
         then:
-        result.keySet() == ['text', 'author', 'dateCreated'] as Set
+        result.keySet() == ['text', 'author', 'dateCreated', 'id'] as Set
         result.author == loggedInUser.username
         result.text == comment.text
     }

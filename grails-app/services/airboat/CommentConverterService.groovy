@@ -8,10 +8,11 @@ class CommentConverterService {
     //TODO (UserComment and LineComment should be one class or at least have a common interface, btw)
     def getCommentJSONproperties(def comment) {
         def commentProperties = comment.properties + [
+                id: comment.id,
                 author: comment.author.username,
                 dateCreated: comment.dateCreated.format('yyyy-MM-dd HH:mm')
         ]
-        commentProperties.keySet().retainAll('text', 'author', 'dateCreated')
+        commentProperties.keySet().retainAll('text', 'author', 'dateCreated', 'id')
         commentProperties
     }
 }

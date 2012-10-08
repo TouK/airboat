@@ -5,7 +5,7 @@ import grails.buildtestdata.mixin.Build
 import spock.lang.Specification
 
 @Build([Changeset])
-class ElementsGroupingAndSorting extends Specification {
+class CollectionOperations extends Specification {
 
     def 'should sort elements'() {
         given:
@@ -27,5 +27,18 @@ class ElementsGroupingAndSorting extends Specification {
 
         then:
         grouped.size() == 2
+    }
+
+    def 'should filter list without modifying it'() {
+        given:
+        def elements = [1, 2, 3, 4]
+
+        when:
+        def filteredElements = elements.findResults{it < 2 ? null: it}
+
+        then:
+        filteredElements == [2, 3, 4]
+        elements == [1, 2, 3, 4]
+
     }
 }

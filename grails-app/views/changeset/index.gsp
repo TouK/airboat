@@ -187,7 +187,7 @@
 
     $('[data-libs=tooltip]').livequery(function () {
         $(this).tooltip();
-    })
+    });
 
     $().ready(function () {
         airboat.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser', 'filterChooser', 'diffAndFileListing');
@@ -365,7 +365,7 @@
                     $.scrollTo(changeset,  scrollDuration, {offset: scrollOffset});
                     var changeset = airboat.getModel($changeset);
                     $(changeset.projectFiles).each(function (_, projectFile) {
-                        showFile(projectFile)
+                        showFile(projectFile);
                         showComments($('.left.column .projectFile[data-id="' + projectFile.id + '"]'))
                     });
                 })
@@ -420,12 +420,12 @@
                 <div class="clearfix"></div>
             </div>
 
-            <div id="changesetDetails-{{>identifier}}" style="display:none;" class="details row-fluid margin-top-small">
+            <div id="changesetDetails-{{>identifier}}" style="display:none;" class="details row-fluid margin-top-small" >
 
                 <h5>Comments:</h5>
 
                 <div class="comments" id="comments-{{>identifier}}">
-                    {{for comments tmpl='#commentTemplate' /}}
+                    {{for comments tmpl='#commentTemplate' ~archiveFunction='addToArchiveChangesetComment' /}}
                 </div>
 
                 {{for [#data] tmpl='#changesetCommentFormTemplate' /}}
@@ -549,11 +549,11 @@
 
     <div class="details" style="display:none;">
         {{for threadPositions ~fileType=fileType}}
-        <div class='threadPosition'>
+        <div class='threadPosition' data-link="visible{: commentsCount }">
             {{for threads}}
-            <div class="thread" data-id='{{:id}}'>
+            <div class="thread" data-id='{{:id}}' data-link="visible{: commentsCount }">
                 <div class="comments">
-                    {{for comments tmpl='#commentTemplate' /}}
+                    {{for comments tmpl='#commentTemplate' ~archiveFunction='addToArchiveLineComment' /}}
                 </div>
 
                 {{for [#data] tmpl='#replyCommentFormTemplate' ~submitFunction='addReply' /}}
@@ -672,7 +672,7 @@
         <textarea onfocus="expandCommentForm($(this.parentElement))" placeholder="{{:~actionPrompt}}..."
                   class="span12" rows="1"></textarea>
 
-        <div class="validationErrorsToChangeset"></div>
+        <div class="validationErrors"></div>
 
         <div class="buttons btn-group pull-right" style="display: none;">
             <button type="button" class="btn btn-primary btnWarningBackground"
@@ -687,19 +687,22 @@
 </script>
 
 <script id="changesetCommentFormTemplate" type="text/x-jsrender">
-    {{for [#data] tmpl='#commentFormTemplate' ~submitFunction='addComment' ~actionPrompt='Add comment' /}}
+    {{for [#data] tmpl='#commentFormTemplate' ~submitFunction='addComment' ~actionPrompt='Add comment'/}}
 </script>
 
 <script id="replyCommentFormTemplate" type="text/x-jsrender">
-    {{for [#data] tmpl='#commentFormTemplate' ~submitFunction='addReply' ~actionPrompt='Add reply' /}}
+    {{for [#data] tmpl='#commentFormTemplate' ~submitFunction='addReply' ~actionPrompt='Add reply'/}}
 </script>
 
 <script id="commentTemplate" type="text/x-jsrender">
 
-    <div class="comment">
+    <div class="comment" data-identifier='{{>id}}'>
         <img src="{{>~getGravatar(author, 35)}}"/>
 
         <div class="nextToGravatar">
+            <a onclick="{{:~archiveFunction}}($(this).parents('.comment').first())" class='pull-right' href="javascript:void(0)">
+                <i class='icon-remove-circle'></i>
+            </a>
             <div class="comment-content">{{>text}}</div>
 
             <div class="comment-footer">

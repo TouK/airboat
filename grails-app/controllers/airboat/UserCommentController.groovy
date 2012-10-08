@@ -28,4 +28,18 @@ class UserCommentController {
             render commentConverterService.getCommentJSONproperties(userComment) as JSON
         }
     }
+
+    @Secured('isAuthenticated()')
+    def addToArchive(Long commentId) {
+        def comment = UserComment.findById(commentId)
+        comment.isArchived = true
+
+        comment.validate()
+        if (comment.hasErrors()) {
+            render (comment.errors as JSON)
+        } else {
+            comment.save()
+            render ([success: true] as JSON)
+        }
+    }
 }

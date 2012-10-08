@@ -15,6 +15,15 @@ function Changeset(data) {
         $.observable(this).setProperty('commentsCount');
     };
 
+    this.removeComment = function (commentId) {
+        var commentObj = this.comments.filter(function(element) {return element.id == commentId});
+        if (commentObj.length > 0) {
+            var index = this.comments.indexOf(commentObj[0]);
+            $.observable(this.comments).remove(index);
+            $.observable(this).setProperty('commentsCount');
+        }
+    };
+
     this.addProjectFile = function(projectFileData) {
         var projectFile = new ProjectFile(projectFileData);
         projectFile.changeset = this;
@@ -95,5 +104,14 @@ function Thread(data) {
         $.observable(this.comments).insert(this.comments.length, commentData);
         $.observable(this).setProperty('commentsCount');
     };
+
+    this.removeComment = function (commentId) {
+        var commentObj = this.comments.filter(function(element) {return element.id == commentId});
+        if (commentObj.length > 0) {
+            var index = this.comments.indexOf(commentObj[0]);
+            $.observable(this.comments).remove(index);
+            $.observable(this).setProperty('commentsCount');
+        }
+    }
 
 }

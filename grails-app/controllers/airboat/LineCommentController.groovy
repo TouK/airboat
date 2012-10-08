@@ -72,4 +72,18 @@ class LineCommentController {
             render commentConverterService.getCommentJSONproperties(comment) as JSON
         }
     }
+
+    @Secured('isAuthenticated()')
+    def addToArchive(Long commentId) {
+        def comment = LineComment.findById(commentId)
+        comment.isArchived = true
+
+        comment.validate()
+        if (comment.hasErrors()) {
+            render (comment.errors as JSON)
+        } else {
+            comment.save()
+            render ([success: true] as JSON)
+        }
+    }
 }

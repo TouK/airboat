@@ -6,7 +6,7 @@ function addComment($form) {
         { changesetIdentifier:changeset.identifier, text:text },
         function (comment) {
             if (comment.errors) {
-                renderCommentErrors(threadGroupsWithSnippetsForCommentedFile.errors, $form);
+                renderCommentErrors(comment.errors, $form);
             } else {
                 changeset.addComment(comment);
                 resetCommentForm($form);
@@ -26,14 +26,52 @@ function addReply($form) {
         { threadId: thread.id, text:text, changesetIdentifier: changeset.identifier, projectFileId: projectFile.id},
         function (comment) {
             if (comment.errors) {
-                renderCommentErrors(threadPositions.errors, $form);
+                renderCommentErrors(comment.errors, $form);
             } else {
                 thread.addComment(comment);
             }
         },
         "json"
     );
+}
 
+function addToArchiveLineComment($commentObj) {
+    var thread = airboat.parentModel($commentObj, '.thread');
+    var projectFile = airboat.parentModel($commentObj, '.projectFile');
+    var commentId = $commentObj.data("identifier");
+    var details = $commentObj.parents('.projectFile>.details');
+
+    $.post(uri.lineComment.addToArchive,
+        { commentId: commentId},
+        function (comment) {
+            if (comment.errors) {
+                renderCommentErrors(comment.errors, thread)
+            } else {
+                thread.removeComment(commentId);
+                if(projectFile.commentsCount() == 0) {
+                    details.slideUp();
+                }
+            }
+        },
+        "json"
+    );
+}
+
+function addToArchiveChangesetComment($commentObj) {
+    var changeset = airboat.parentModel($commentObj, '.changeset');
+    var commentId = $commentObj.data("identifier");
+
+    $.post(uri.userComment.addToArchive,
+        { commentId: commentId},
+        function (comment) {
+            if (comment.errors) {
+                renderCommentErrors(comment.errors, changeset)
+            } else {
+                changeset.removeComment(commentId);
+            }
+        },
+        "json"
+    );
 }
 
 function checkCanAddLineCommentAndShowForm($listingLine, projectFile) {
@@ -126,6 +164,11 @@ function renderCommentErrors(error, $form) {
             .html($('#errorCommentTemplate')
             .render("Comment can't be empty."))
             .hide().fadeIn();
+    } else {
+        $validationErrors
+            .html($('#errorCommentTemplate')
+            .render("Error. Operation did not succeed."))
+            .hide().fadeIn();
     }
 }
 
@@ -137,5 +180,5 @@ function expandCommentForm($form) {
 function resetCommentForm($form) {
     $form.find('textarea').val('').attr('rows', 1);
     $form.find('.buttons').hide();
-    $form.find('.validationErrorsToChangeset').html("").hide();
+    $form.find('.validationErrors').html("").hide();
 }

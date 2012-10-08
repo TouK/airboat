@@ -4,6 +4,7 @@ class UserComment {
 
     String text
     Date dateCreated
+    boolean isArchived
 
     static belongsTo = [author: User, changeset: Changeset]
 
@@ -13,6 +14,7 @@ class UserComment {
 
     UserComment(User author, String text) {
         author.addToChangesetComments(this)
+        isArchived = false
         this.text = text
     }
 }

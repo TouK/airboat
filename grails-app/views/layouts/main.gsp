@@ -15,12 +15,14 @@
                 getNextFewFilteredChangesetsOlderThan: "${createLink(uri: '/changeset/getNextFewFilteredChangesetsOlderThan/')}"
             },
             userComment:{
-                addComment:"${createLink(uri: '/userComment/addComment')}"
+                addComment:"${createLink(uri: '/userComment/addComment')}",
+                addToArchive:"${createLink(uri: '/userComment/addToArchive')}"
             },
             lineComment:{
                 checkCanAddComment:"${createLink(uri: '/lineComment/checkCanAddComment')}",
                 addComment:"${createLink(uri: '/lineComment/addComment')}",
-                addReply:"${createLink(uri: '/lineComment/addReply')}"
+                addReply:"${createLink(uri: '/lineComment/addReply')}",
+                addToArchive:"${createLink(uri: '/lineComment/addToArchive')}"
             },
             projectFile:{
                 getFileListings:"${createLink(uri:'/projectFile/getFileListings/')}",
@@ -39,7 +41,7 @@
                     swf:"${createLink(uri: '/libs/clippy/clippy.swf')}"
                 }
             }
-        }
+        };
 
         var VIEW_TYPE = { SINGLE_CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
         var DATA_TYPE = { CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
@@ -68,14 +70,14 @@
                         airboat.templates.compile(this);
                     })
                 }, compile:function (templateName) {
-                    templateName += 'Template'
+                    templateName += 'Template';
                     var templateId = '#' + templateName;
                     if ($(templateId).size() != 1) {
                         $.error('Template ' + templateId + ' not found')
                     } else {
-                        var map = {}
-                        map[templateName] = templateId
-                        $.templates(map)
+                        var map = {};
+                        map[templateName] = templateId;
+                        $.templates(map);
                     }
                 }
 
@@ -86,7 +88,7 @@
             }
 
             , getModel:function (selectorOrElement) {
-                var element
+                var element;
                 if (typeof selectorOrElement === 'string')
                     element = $(selectorOrElement)[0];
                 else {
@@ -94,7 +96,7 @@
                 }
                 return $.view(element).data
             }
-        }
+        };
 
         //TODO move to airboat object
         var hashAbbreviationLength = 6;
@@ -145,7 +147,7 @@
         if ($.cookies.get('skin')) {
             $("#skin").attr("href", $.cookies.get('skin').href);
             if (!airboat.isAuthenticated()) {
-                $.cookies.del('skin')
+                $.cookies.del('skin');
                 $("#skin").attr("href", "${createLink(uri: '/libs/bootstrap/less/default/swatchmaker.less')}");
             }
         }

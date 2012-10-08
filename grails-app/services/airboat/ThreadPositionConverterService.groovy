@@ -14,6 +14,7 @@ class ThreadPositionConverterService {
                     lineNumber: lineNumber,
                     threads: positions
                             .collect { position -> getThreadProperties(position.thread) }
+                            .findResults {threadProperties -> threadProperties.comments.size() == 0 ? null : threadProperties}
                             .sort { it.comments.first().dateCreated }
             ]
         }
@@ -28,6 +29,6 @@ class ThreadPositionConverterService {
     }
 
     private List<Map<String, String>> getCommentsProperties(CommentThread commentThread) {
-        commentThread.comments.collect commentConverterService.&getCommentJSONproperties
+        commentThread.comments.findResults {LineComment comment -> comment.isArchived ? null : comment}.collect commentConverterService.&getCommentJSONproperties
     }
 }
