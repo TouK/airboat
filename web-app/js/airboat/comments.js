@@ -29,6 +29,7 @@ function addReply($form) {
                 renderCommentErrors(comment.errors, $form);
             } else {
                 thread.addComment(comment);
+                resetCommentForm($form);
             }
         },
         "json"

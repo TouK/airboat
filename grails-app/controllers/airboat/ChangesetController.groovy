@@ -38,7 +38,7 @@ class ChangesetController {
         }
         def changesetsProperties = changesets.collect this.&convertToChangesetProperties
         changesetsProperties = groupChangesetPropertiesByDay(changesetsProperties)
-        render ([changesets: changesetsProperties, isImporting: isImporting(projectName)] as JSON)
+        render ([changesets: changesetsProperties, projectsInImport: projectsInImport()] as JSON)
     }
 
     def getLastFilteredChangesets(FilterCommand filter) {
@@ -52,7 +52,7 @@ class ChangesetController {
         }
         def changesetsProperties = changesets.collect this.&convertToChangesetProperties
         changesetsProperties = groupChangesetPropertiesByDay(changesetsProperties)
-        render ([changesets: changesetsProperties, isImporting: isImporting()] as JSON)
+        render ([changesets: changesetsProperties, projectsInImport: projectsInImport()] as JSON)
     }
 
     private List<Changeset> getLastChagesetsFromProject(String projectName) {
@@ -63,19 +63,18 @@ class ChangesetController {
 
     def getNextFewChangesetsOlderThan(Long changesetId) {
         def changesetsProperties = getChangesetsGroups(getNextFewChangesetsFromAllProjects(changesetId))
-        render ([changesets: changesetsProperties, isImporting: isImporting()] as JSON)
+        render ([changesets: changesetsProperties, projectsInImport: projectsInImport()] as JSON)
     }
 
     def getNextFewChangesetsOlderThanFromSameProject(Long changesetId) {
-        def projectName = Changeset.findById(changesetId).project.name
         def changesetsProperties = getChangesetsGroups(getNextFewChangesetsFromSameProject(changesetId))
-        render ([changesets: changesetsProperties, isImporting: isImporting(projectName)] as JSON)
+        render ([changesets: changesetsProperties, projectsInImport: projectsInImport()] as JSON)
     }
 
     def getNextFewFilteredChangesetsOlderThan(Long changesetId, FilterCommand filter) {
         def filterServices = getFilterServiceMap()
         def changesetsProperties = getChangesetsGroups(filterServices.get(filter.filterType).getNextFilteredChangesets(changesetId, filter.additionalInfo))
-        render ([changesets: changesetsProperties, isImporting: isImporting()] as JSON)
+        render ([changesets: changesetsProperties, projectsInImport: projectsInImport()] as JSON)
     }
 
     private def getChangesetsGroups(List<Changeset> nextFewChangesets) {
@@ -192,12 +191,8 @@ class ChangesetController {
         }
     }
 
-    private boolean isImporting(projectName = null) {
-        if (projectName) {
-            return Project.findAllByNameAndStateNotEqual(projectName, Project.ProjectState.fullyImported).size() > 0
-        } else {
-            return Project.findAllByStateNotEqual(Project.ProjectState.fullyImported).size() > 0
-        }
+    private List<String> projectsInImport() {
+        return Project.findAllByStateNotEqual(Project.ProjectState.fullyImported).collect{Project project -> project.name}
     }
 
     private def getFilterServiceMap() {

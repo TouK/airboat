@@ -80,7 +80,7 @@
 
     function appendProjectOptionsToSelection(id) {
 
-        $.getJSON("${createLink(uri: '/project/names')}", function (namesOfProjects) {
+        $.getJSON(uri.project.names, function (namesOfProjects) {
             var options = $("#selectProjectOptions").render(namesOfProjects);
             $(id).html(options);
         });

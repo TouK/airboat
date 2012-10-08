@@ -1,8 +1,8 @@
 function showProject(projectName, historyOperation) {
     changesetsLoading = true;
     $.getJSON(uri.changeset.getLastChangesets + '?' + $.param({projectName:projectName}),
-        function (data) {
-            clearDisplayAndAppendChangesetsBottom({data:data,
+        function (serverResponse) {
+            clearDisplayAndAppendChangesetsBottom({changesetsAndImportInfo:serverResponse,
                 shouldLoad:true,
                 viewType:VIEW_TYPE.PROJECT,
                 activeSelector:'#projectsDropdown',
@@ -15,8 +15,8 @@ function showProject(projectName, historyOperation) {
 function showFiltered(filter, historyOperation) {
     airboat.changesetLoading = true;
     $.getJSON(uri.changeset.getLastFilteredChangesets + '?' + $.param({filterType:filter.filterType, additionalInfo:filter.additionalInfo}),
-        function (data) {
-            clearDisplayAndAppendChangesetsBottom({data:data,
+        function (serverResponse) {
+            clearDisplayAndAppendChangesetsBottom({changesetsAndImportInfo:serverResponse,
                 shouldLoad:true,
                 viewType:VIEW_TYPE.FILTER,
                 activeSelector:'#filtersDropdown',
@@ -26,7 +26,6 @@ function showFiltered(filter, historyOperation) {
         });
 }
 
-var HISTORY_OPERATION = {NONE: 'none', PUSH: 'pushState', REPLACE: 'replaceState'};
 function clearDisplayAndAppendChangesetsBottom(dataset) {
     shouldLoadChangesets = dataset.shouldLoad;
     currentViewType = dataset.viewType;
@@ -43,8 +42,8 @@ function clearDisplayAndAppendChangesetsBottom(dataset) {
     } else {
         setFilterActive(dataset.activeSelector);
     }
-    appendChangesetsBottom(dataset.data.changesets);
-    decideImportInfoAndLoadingState(dataset.data, 21); //as in Constants.FIRST_CHANGESET_LOAD_SIZE
+    appendChangesetsBottom(dataset.changesetsAndImportInfo.changesets);
+    decideImportInfoAndLoadingState(dataset.changesetsAndImportInfo, FIRST_CHANGESET_LOAD_SIZE);
 }
 
 function getHref() {
@@ -56,34 +55,41 @@ function getHref() {
    return '';
 }
 
-function appendNextChangesetsBottom(dataset) {
-    appendChangesetsBottom(dataset.changesets);
-    decideImportInfoAndLoadingState(dataset, 10); //as in Constants.NEXT_CHANGESET_LOAD_SIZE
+function appendNextChangesetsBottom(changesetsAndImportInfo) {
+    appendChangesetsBottom(changesetsAndImportInfo.changesets);
+    decideImportInfoAndLoadingState(changesetsAndImportInfo, NEXT_CHANGESET_LOAD_SIZE);
 }
 
-function decideImportInfoAndLoadingState(data, maxChangesetSize) {
-    showImportGritter(data.isImporting);
-    if (countChangesets(data.changesets) < maxChangesetSize) {
+function decideImportInfoAndLoadingState(changesetsAndImportInfo, maxChangesetSize) {
+    showImportInfoIfNecessary(changesetsAndImportInfo.projectsInImport);
+    if (countChangesets(changesetsAndImportInfo.changesets) < maxChangesetSize) {
         $('#content').append($('#noMoreChangesetsTemplate').render());
         shouldLoadChangesets = false;
     }
 }
 
 var importGritter;
-function showImportGritter(isImporting) {
+function showImportInfoIfNecessary(projectsInImport) {
     var importInfo;
     var shouldHide = false;
+    var shouldShowGritter = false;
     if (currentViewType == VIEW_TYPE.PROJECT && airboat.displayedProjectName != '') {
         importInfo = 'Import is in progress, older changesets may not by imported yet.';
         shouldHide = true;
+        if ($.inArray(airboat.displayedProjectName, projectsInImport) != -1) {
+            shouldShowGritter = true;
+        }
     } else {
         importInfo = 'Import is in progress, some changesets may not be displayed. To see all changesets wait' +
-            ' a while and refresh page or go into single project view.'
+            ' a while and refresh page or go into single project view.';
+        if (projectsInImport.length > 0) {
+            shouldShowGritter = true;
+        }
     }
-    if (importGritter != null && (shouldHide || isImporting)) {
+    if (importGritter != null && (shouldHide || shouldShowGritter)) {
         $.gritter.remove(importGritter, {fade:false});
     }
-    if (isImporting) {
+    if (shouldShowGritter) {
         importGritter = $.gritter.add({
             title:'Import in progress',
             text:importInfo,
@@ -93,11 +99,11 @@ function showImportGritter(isImporting) {
 }
 
 function countChangesets(changesetsByDay) {
-    var counter = 0;
+    var changesetCount = 0;
     for (var day in changesetsByDay) {
-        counter += changesetsByDay[day].length;
+        changesetCount += changesetsByDay[day].length;
     }
-    return counter;
+    return changesetCount;
 }
 
 function setFilterActive(selector) {
@@ -118,14 +124,14 @@ function onScrollThroughBottomAttempt() {
 function loadMoreChangesets() {
     if (!changesetsLoading && shouldLoadChangesets) {
         changesetsLoading = true;
-        var controllerAction = getControllerAction();
-        $.getJSON(controllerAction, function (data) {
-            appendNextChangesetsBottom(data)
+        var controllerAction = getActionForLoadingChangesets();
+        $.getJSON(controllerAction, function (changesetsAndImportInfo) {
+            appendNextChangesetsBottom(changesetsAndImportInfo)
         });
     }
 }
 
-function getControllerAction() {
+function getActionForLoadingChangesets() {
     if (history.state.dataType == DATA_TYPE.PROJECT && airboat.displayedProjectName == '') {
         return uri.changeset.getNextFewChangesetsOlderThan + '?' + $.param({changesetId:lastLoadedChangesetId});
     } else if (history.state.dataType == DATA_TYPE.PROJECT) {

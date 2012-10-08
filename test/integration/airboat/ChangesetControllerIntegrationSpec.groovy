@@ -80,17 +80,13 @@ class ChangesetControllerIntegrationSpec extends IntegrationSpec {
 
     def 'should return importing=true when state of the project is less then fullyImported'() {
         given:
-        System.out.println(state)
-        Project project = Project.build()
-        project.state = state
+        Project project = Project.build(name: 'project', state: state)
 
         when:
-        def isImportingProject = controller.isImporting(project.name)
-        def isImportingAll = controller.isImporting()
+        def projectsInImport = controller.projectsInImport()
 
         then:
-        isImportingProject == importing
-        isImportingAll == importing
+        projectsInImport.contains(project.name) == importing
 
         where:
         state                                           | importing

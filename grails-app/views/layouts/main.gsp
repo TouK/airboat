@@ -1,3 +1,4 @@
+<%@ page import="airboat.Constants" %>
 <!doctype html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -28,6 +29,9 @@
                 getFileListings:"${createLink(uri:'/projectFile/getFileListings/')}",
                 getThreadPositionAggregatesForFile:"${createLink(uri:'/projectFile/getThreadPositionAggregatesForFile/')}"
             },
+            project: {
+                names: "${createLink(uri:'/project/names')}"
+            },
             user:{
                 changePassword:"${createLink(uri: '/user/changePassword')}"
             },
@@ -45,6 +49,9 @@
 
         var VIEW_TYPE = { SINGLE_CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
         var DATA_TYPE = { CHANGESET:'changeset', PROJECT:'project', FILTER:'filter'};
+        var HISTORY_OPERATION = {NONE: 'none', PUSH: 'pushState', REPLACE: 'replaceState'};
+        var FIRST_CHANGESET_LOAD_SIZE = ${Constants.FIRST_CHANGESET_LOAD_SIZE};
+        var NEXT_CHANGESET_LOAD_SIZE = ${Constants.NEXT_CHANGESET_LOAD_SIZE};
 
         var airboat = {
             navbarOffset: 55
@@ -57,6 +64,7 @@
             , currentFilter: ''
             , currentViewType: null
             , shouldLoadChangesets: true
+            , projectNames: null
 
             , debugMode: true
 

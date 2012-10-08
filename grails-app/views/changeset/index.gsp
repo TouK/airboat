@@ -192,14 +192,8 @@
     $().ready(function () {
         airboat.templates.compileAll('loginStatus', 'changeset', 'comment', 'projectChooser', 'filterChooser', 'diffAndFileListing');
 
+        renderFiltersDropdowns();
         $.link.loginStatusTemplate('#loginStatus', airboat, {target:'replace'});
-        $.link.projectChooserTemplate('#projectChooser', airboat, {target:'replace'});
-        $.link.filterChooserTemplate('#filterChooser', airboat, {target:'replace'});
-
-        $('.clearFilters').on('click', function() {
-            clearFilters();
-            return false;
-        });
 
         if ('${type}' == DATA_TYPE.CHANGESET) {
             appendChangesetsBottom(${changeset});
@@ -230,6 +224,20 @@
 
         $('body').on('airboat-pageStructureChanged')
     });
+
+    function renderFiltersDropdowns() {
+        $.getJSON(uri.project.names, function (namesOfProjects) {
+            airboat.projectNames = namesOfProjects;
+
+            $.link.projectChooserTemplate('#projectChooser', airboat, {target:'replace'});
+            $.link.filterChooserTemplate('#filterChooser', airboat, {target:'replace'});
+
+            $('.clearFilters').on('click', function() {
+                clearFilters();
+                return false;
+            });
+        });
+    }
 
     var loadingGritter;
 
@@ -274,11 +282,11 @@
             <ul class="dropdown-menu">
                 <li><a href="javascript:void(0)" data-target="#" data-project='' class='projectLink'>All projects</a>
                 </li>
-                <g:each in="${projects}" var="project">
+                {{for projectNames}}
                     <li><a href="javascript:void(0)" data-target="#"
-                           data-project='${project.name}' class='projectLink'>${project.name}</a>
+                           data-project='{{:name}}' class='projectLink'>{{:name}}</a>
                     </li>
-                </g:each>
+                {{/for}}
             </ul>
         </li>
     </ul>
@@ -672,7 +680,7 @@
         <textarea onfocus="expandCommentForm($(this.parentElement))" placeholder="{{:~actionPrompt}}..."
                   class="span12" rows="1"></textarea>
 
-        <div class="validationErrors"></div>
+        <div class="validationErrors"/>
 
         <div class="buttons btn-group pull-right" style="display: none;">
             <button type="button" class="btn btn-primary btnWarningBackground"
