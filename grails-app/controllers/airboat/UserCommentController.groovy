@@ -24,7 +24,7 @@ class UserCommentController {
             render(userComment.errors as JSON)
         }
         else {
-            userComment.save()
+            userComment.save(flush: true)
             render commentConverterService.getCommentJSONproperties(userComment) as JSON
         }
     }

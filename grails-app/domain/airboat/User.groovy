@@ -14,7 +14,6 @@ class User {
 
     static hasMany = [committers: Commiter, changesetComments: UserComment, lineComments: LineComment]
 
-
     static constraints = {
         username blank: false, email: true, unique: true
         email blank: false, email: true, unique: true
@@ -23,6 +22,7 @@ class User {
 
     static mapping = {
         password column: '`password`'
+        table 'users'
     }
 
     User(String username, String password) {
@@ -51,8 +51,6 @@ class User {
             encodePassword()
         }
     }
-
-
 
     protected void encodePassword() {
         password = springSecurityService.encodePassword(password)

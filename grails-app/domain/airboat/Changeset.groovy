@@ -27,6 +27,5 @@ class Changeset {
     static constraints = {
         identifier blank: false, unique: ['project']
         commitMessage blank: true, maxSize: 4096
-        projectFilesInChangeset minSize: 1
     }
 }
