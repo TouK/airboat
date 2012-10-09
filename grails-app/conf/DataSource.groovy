@@ -32,8 +32,13 @@ environments {
     production {
         dataSource {
             dbCreate = 'update'
-            url = 'jdbc:h2:/tmp/prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000'
+            url = 'jdbc:postgresql://localhost:5432/airboat'
             pooled = true
+            driverClassName = "org.postgresql.Driver"
+            username = "airboat"
+            password = "airboat"
+
+            dialect = net.sf.hibernate.dialect.PostgreSQLDialect
             properties {
                 maxActive = -1
                 minEvictableIdleTimeMillis = 1800000
