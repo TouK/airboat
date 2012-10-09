@@ -8,10 +8,10 @@ class MyCommentsAndChangesetsFilterService implements FilterServiceInterface {
     SpringSecurityService springSecurityService
 
     static private def conditions =  "from Changeset changeset where \
-                                        (exists (from UserComment comment where comment.changeset = changeset and comment.author = :user)) or \
+                                        (exists (from UserComment comment where comment.changeset = changeset and comment.author = :user and comment.isArchived = false)) or \
                                         (changeset.commiter in (from Commiter where user = :user)) or \
                                         (exists (from ProjectFileInChangeset p where changeset.date = (select max(file.changeset.date) from ProjectFileInChangeset file where file.projectFile = p.projectFile) and \
-                                        exists (from ThreadPositionInFile pos where pos.projectFileInChangeset = p and :user in (select author from LineComment where thread = pos.thread))))"
+                                        exists (from ThreadPositionInFile pos where pos.projectFileInChangeset = p and :user in (select author from LineComment where thread = pos.thread and isArchived = false))))"
 
     static private def order = "order by changeset.date desc"
 

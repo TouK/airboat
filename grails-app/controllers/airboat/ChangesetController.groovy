@@ -151,7 +151,7 @@ class ChangesetController {
 
     private def returnCommentsToChangeset(String changesetIdentifier) {
         def changeset = Changeset.findByIdentifier(changesetIdentifier) //TODO check that only one query is executed, refactor otherwise
-        def comments = UserComment.findAllByChangeset(changeset)
+        def comments = UserComment.findAllByChangesetAndIsArchived(changeset, false)
         def commentsProperties = comments.collect commentConverterService.&getCommentJSONproperties
         commentsProperties
     }

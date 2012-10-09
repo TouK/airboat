@@ -2,9 +2,9 @@ package airboat
 
 class CommentedChangesetsFilterService implements FilterServiceInterface {
 
-    static private def conditions = "from Changeset c where userComments.size > 0 or \
+    static private def conditions = "from Changeset c where (exists (from UserComment comment where comment.changeset = c and comment.isArchived = false)) or \
                                     exists (from ProjectFileInChangeset p where c.date = (select max(file.changeset.date) from ProjectFileInChangeset file where file.projectFile = p.projectFile) and \
-                                    exists (from ThreadPositionInFile pos where pos.projectFileInChangeset = p and pos.thread.comments.size > 0))"
+                                    exists (from ThreadPositionInFile pos where pos.projectFileInChangeset = p and exists (from LineComment where thread = pos.thread and isArchived = false)))"
 
     static private def order = "order by c.date desc"
 
