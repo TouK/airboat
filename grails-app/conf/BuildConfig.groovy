@@ -21,6 +21,7 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
+        compile "postgresql:postgresql:9.1-901.jdbc4"
         compile "com.google.guava:guava:12.0"
         compile "org.eclipse.jgit:org.eclipse.jgit:2.0.0.201206130900-r"
     }
