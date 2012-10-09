@@ -14,7 +14,12 @@ environments {
     development {
         dataSource {
             dbCreate = 'update' // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = 'jdbc:h2:/tmp/devDb;MVCC=TRUE;LOCK_TIMEOUT=10000'
+            url = 'jdbc:postgresql://localhost:5432/airboat'
+            driverClassName = "org.postgresql.Driver"
+            username = "airboat"
+            password = "airboat"
+
+            dialect = net.sf.hibernate.dialect.PostgreSQLDialect
         }
     }
     test {
