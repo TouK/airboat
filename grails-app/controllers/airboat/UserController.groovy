@@ -159,7 +159,7 @@ class UserController {
 
     private void setNewPassword(user, password) {
         user.password = password
-        user.save()
+        user.save(flash: true)
     }
 
 
