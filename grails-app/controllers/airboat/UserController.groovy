@@ -138,7 +138,7 @@ class UserController {
 
     private void validateOldPasswordAndSetNewPassword(ChangePasswordCommand command) {
         if (isPasswordValid(command.oldPassword)) {
-            setNewPassword(authenticatedUser, password)
+            setNewPassword(authenticatedUser, command.newPassword)
             render([success: true, message: message(code: 'passwordChanged')] as JSON)
         } else {
             command.errors['oldPassword'] = 'invalidOldPassword'
