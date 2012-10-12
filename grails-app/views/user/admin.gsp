@@ -4,6 +4,7 @@
     <title>Admin page</title>
     <meta name="layout" content="main"/>
     <script src="${createLink(uri: '/libs/jquery.cookie/jquery.cookies.js')}" type="text/javascript"></script>
+    <script src="${createLink(uri: '/libs/bootstrap-modified/bootstrap-modal.js')}" type="text/javascript"></script>
 
     %{--FIXNE get rid of this or add as a normal dependency--}%
     <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet"
@@ -22,6 +23,20 @@
 
                 <div class="alert-success" id="removalSuccess"></div>
                 <ul id="nameSelect"></ul>
+                <div class="modal hide fade" id="confirmRemoval">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h3>Confirm removal</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p>Do You want to remove <span class='project'></span> project?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn" class="close" data-dismiss="modal" aria-hidden="true">No</a>
+                        <a href="javascript:void(0)" class="btn btn-primary"
+                           onclick="removeProject($(this).parents('#confirmRemoval').data('modal').options.project)">Yes</a>
+                    </div>
+                </div>
             </div>
 
             <div class="well-small">
@@ -54,7 +69,7 @@
 
 
 <script id="selectProjectOptions" type="text/x-jsrender">
-    <li>{{>name}}  <i class="icon-remove" onclick="confirmRemoval('{{>name}}')"></i></li>
+    <li>{{>name}}  <a href="#confirmRemoval" role="button" data-toggle="modal" data-project="{{>name}}"><i class="icon-remove"></i></a></li>
 </script>
 
 <script id="formErrorsTemplate" type="text/x-jsrender">
@@ -109,13 +124,14 @@
     }
 
     function removeProject(name) {
-        $.post("${createLink(uri: '/project/remove')}", {name:name},function (project) {
+        $("#confirmRemoval").modal("hide");
+       $.post("${createLink(uri: '/project/remove')}", {name:name},function (project) {
             var removalNotice = "Project " + name + project.message;
             $("#removalSuccess").text(removalNotice);
         }, 'json').then(function () {
                     eraseForms();
                     appendProjectOptionsToSelection("#nameSelect");
-                })
+                });
     }
 
     function eraseForms() {
@@ -124,24 +140,10 @@
         $("#urlInput").val("");
     }
 
-    function confirmRemoval(name) {
-        $("<div>Are you sure about the removal of project " + name + "?</div>").dialog({ buttons:[
-            {
-                text:"Ok",
-                click:function () {
-                    $(this).dialog("close");
-                    removeProject(name);
-                }
-            },
-            {
-                text:"Cancel",
-                click:function () {
-                    $(this).dialog("close");
-                }
-            }
-        ] });
-        return false;
-    }
+    $('#confirmRemoval').on('show', function (event) {
+        var name = $(this).data('modal').options.project;
+        $(this).find('.project').html(name);
+    })
 
 </script>
 </body>
