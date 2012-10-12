@@ -1,6 +1,7 @@
 @gravatarSize:          50px;
 @commentGravatarSize:   35px;
 @gravatarPadding:       9px;
+@sideContentPadding:        3%;
 
 textarea {
     resize: none;
@@ -75,8 +76,12 @@ textarea {
 }
 
 .padding {
-    margin-left: 3%;
-    margin-right: 3%;
+    margin-left: @sideContentPadding;
+    margin-right: @sideContentPadding;
+}
+
+.navbar > .navbar-inner > .container {
+    width: 100% - 2 * @sideContentPadding;
 }
 
 .margin-top-small {
