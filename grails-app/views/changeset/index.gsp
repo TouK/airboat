@@ -306,7 +306,7 @@
                                                                        class='filterLink'>My comments and changesets</a>
                 </li>
                 <li>
-                    <form class="navbar-form">
+                    <form class="navbar-form"  onsubmit="$(this).children('.filterLink').trigger('click'); return false;">
                         <input type="text" class="span2" id="fileFilterFile" placeholder='Search file...'>
                         <i class="icon-chevron-right filterLink" data-filter='fileFilter'></i>
                     </form>
