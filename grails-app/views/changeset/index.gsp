@@ -395,7 +395,7 @@
             <div class="basicInfo row-fluid">
                 <img class="pull-left" src='{{>~getGravatar(email)}}'/>
 
-                <div class="pull-right">
+                <div class="pull-right" data-link="visible{: commentsCount }">
                     <i class="icon-comment"></i>
                     <span class='commentsCount' data-link="commentsCount"></span>
                 </div>
