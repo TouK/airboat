@@ -7,8 +7,6 @@ More on the conception behind the app can be read [here] (https://github.com/Tou
 # Demo
 is available [here](http://cr.touk.pl/demo) (new version is deployed about-weekly, all data is deleted).
 
-Also, continuous deployment is made to [this] (http://cr-cd.touk.pl/cd) place.
-
 Any contributions (bug reports / feature requests / pull requests) are most welcome!
 
 # Frameworks and libraries used
